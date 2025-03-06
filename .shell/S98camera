@@ -31,7 +31,9 @@ start() {
                 FORMAT=$(v4l2-ctl -d $VIDEO --list-formats| grep '\[' | tail -1| cut -d "'" -f2)
                 echo $FORMAT
                 if [ -f /THIS_IS_NOT_YOUR_ROOT_FILESYSTEM ]; then
-                    umount /data/.mod/
+                    while ! umount /data/.mod/; then
+                        sleep 5
+                    fi
                     chroot $MOD start-stop-daemon -S -b -m -p $PID_FILE --exec /bin/ustreamer -- -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS --format=$FORMAT -s 0.0.0.0
                     mount --bind /data/lost+found /data/.mod
                 else
