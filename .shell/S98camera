@@ -16,7 +16,7 @@ source /opt/config/mod_data/camera.conf
 PID_FILE=/run/camera.pid
 
 start() {
-    if [ $START = "on" ]
+    if [ $START = "on" ] && [ -c /dev/$VIDEO ]
         then
             v4l2-ctl -d /dev/$VIDEO --list-formats
             if v4l2-ctl -d /dev/$VIDEO  --list-formats | grep MJPG; then
@@ -29,15 +29,14 @@ start() {
             else
                 FORMAT=$(v4l2-ctl -d /dev/$VIDEO --list-formats| grep '\[' | tail -1| cut -d "'" -f2)
                 if [ -f /THIS_IS_NOT_YOUR_ROOT_FILESYSTEM ]; then
-                    while ! umount /data/.mod/; do
-                        sleep 5
-                    done
+                    umount /data/.mod/
                     chroot $MOD start-stop-daemon -S -b -m -p $PID_FILE --exec /bin/ustreamer -- -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS --format=$FORMAT -s 0.0.0.0
                     mount --bind /data/lost+found /data/.mod
                 else
                     start-stop-daemon -S -b -m -p $PID_FILE --exec /bin/ustreamer -- -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS --format=$FORMAT -s 0.0.0.0
                 fi
             fi
+            echo "Запуск камеры завершен"
         else
             echo "Камера отключена"
     fi
