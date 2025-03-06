@@ -18,8 +18,8 @@ PID_FILE=/run/camera.pid
 start() {
     if [ $START = "on" ]
         then
-            v4l2-ctl -d $VIDEO --list-formats
-            if v4l2-ctl -d /dev/video0  --list-formats | grep MJPG; then
+            v4l2-ctl -d /dev/$VIDEO --list-formats
+            if v4l2-ctl -d /dev/$VIDEO  --list-formats | grep MJPG; then
                 /usr/bin/v4l2-ctl --set-fmt-video=width=${WIDTH},height=${HEIGHT},pixelformat=1
                 if [ -f /THIS_IS_NOT_YOUR_ROOT_FILESYSTEM ]; then
                     start-stop-daemon -S -b -m -p $PID_FILE --exec /opt/config/mod/.shell/eabi/mjpg_streamer -- -o "/opt/config/mod/.shell/eabi/lib/output_http.so -w /opt/mjpg-streamer/www -p 8080" -i  "/opt/config/mod/.shell/eabi/lib/input_uvc.so -b 1 -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS -fs $(( ${WIDTH} * ${HEIGHT} * 2 ))"
@@ -27,7 +27,7 @@ start() {
                     start-stop-daemon -S -b -m -p $PID_FILE --exec /usr/bin/mjpg_streamer -- -o "/usr/lib/mjpg-streamer/output_http.so -w /usr/share/mjpg-streamer/www -p 8080" -i  "/usr/lib/mjpg-streamer/input_uvc.so -b 1 -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS -fs $(( ${WIDTH} * ${HEIGHT} * 2 ))"
                 fi
             else
-                FORMAT=$(v4l2-ctl -d $VIDEO --list-formats| grep '\[' | tail -1| cut -d "'" -f2)
+                FORMAT=$(v4l2-ctl -d /dev/$VIDEO --list-formats| grep '\[' | tail -1| cut -d "'" -f2)
                 if [ -f /THIS_IS_NOT_YOUR_ROOT_FILESYSTEM ]; then
                     while ! umount /data/.mod/; do
                         sleep 5
