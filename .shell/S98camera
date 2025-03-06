@@ -18,7 +18,7 @@ start() {
     if [ $START = "on" ]
         then
 
-            if v4l2-ctl -d /dev/video0  --list-formats | grep MJPG2; then
+            if v4l2-ctl -d /dev/video0  --list-formats | grep MJPG; then
                 /usr/bin/v4l2-ctl --set-fmt-video=width=${WIDTH},height=${HEIGHT},pixelformat=1
                 if [ -f /THIS_IS_NOT_YOUR_ROOT_FILESYSTEM ]; then
                     start-stop-daemon -S -b -m -p $PID_FILE --exec /opt/config/mod/.shell/eabi/mjpg_streamer -- -o "/opt/config/mod/.shell/eabi/lib/output_http.so -w /opt/mjpg-streamer/www -p 8080" -i  "/opt/config/mod/.shell/eabi/lib/input_uvc.so -b 1 -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS"
