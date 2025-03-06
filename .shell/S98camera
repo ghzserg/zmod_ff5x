@@ -27,7 +27,9 @@ start() {
                     start-stop-daemon -S -b -m -p $PID_FILE --exec /usr/bin/mjpg_streamer -- -o "/usr/lib/mjpg-streamer/output_http.so -w /usr/share/mjpg-streamer/www -p 8080" -i  "/usr/lib/mjpg-streamer/input_uvc.so -b 1 -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS -fs $(( ${WIDTH} * ${HEIGHT} * 2 ))"
                 fi
             else
-                FORMAT=$(v4l2-ctl -d /dev/video0  --list-formats| grep '\[' | tail -1| cut -d "'" -f2)
+                v4l2-ctl -d $VIDEO --list-formats
+                FORMAT=$(v4l2-ctl -d $VIDEO --list-formats| grep '\[' | tail -1| cut -d "'" -f2)
+                echo $FORMAT
                 if [ -f /THIS_IS_NOT_YOUR_ROOT_FILESYSTEM ]; then
                     umount /data/.mod/
                     chroot $MOD start-stop-daemon -S -b -m -p $PID_FILE --exec /bin/ustreamer -- -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS --format=$FORMAT -s 0.0.0.0
