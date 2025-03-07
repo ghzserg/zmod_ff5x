@@ -12,7 +12,7 @@ if [ -f "/root/printer_data/version.txt" ]
     fi
 fi
 
-
+echo "Установлено с флешки: ${VER_FF}. Обновление с Fluidd/Mainsaill: ${VER_MOD}"
 if [ "${VER_FF}" != "${VER_MOD}" ]
     then
         echo "RESPOND TYPE=error MSG=\"Обновите ZMOD с флешки, последняя версия ${VER_FF}, текущая версия ${VER_MOD}\"" >/tmp/printer
