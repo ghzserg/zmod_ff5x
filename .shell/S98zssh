@@ -3,9 +3,11 @@
 # Start TelegramBot
 #
 
+source /opt/config/mod/.shell/0.sh
+
 if ! [ -f /opt/config/mod_data/ssh.key ] || ! [ -f /opt/config/mod_data/ssh.pub.txt ]; then
-    dropbearkey -t ed25519 -f /opt/config/mod_data/ssh.key
-    dropbearkey -y -t ed25519 -f /opt/config/mod_data/ssh.key |grep root@kunos >/opt/config/mod_data/ssh.pub.txt
+    dropbearkey -t ${KEY_TYPE} -f /opt/config/mod_data/ssh.key
+    dropbearkey -y -t ${KEY_TYPE} -f /opt/config/mod_data/ssh.key |grep root >/opt/config/mod_data/ssh.pub.txt
 fi
 
 if ! [ -f /opt/config/mod_data/ssh.conf ]; then
