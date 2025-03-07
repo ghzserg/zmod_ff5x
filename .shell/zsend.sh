@@ -1,5 +1,7 @@
 #!/bin/sh
 
+source /opt/config/mod/.shell/0.sh
+
 unset LD_PRELOAD
 unset LD_LIBRARY_PATH
 
@@ -11,10 +13,10 @@ fi
 
 if [ $# -eq 2 ]
     then
-        M109=$(head -1000 "/data/$2" | grep "^M109" | head -1)
-        [ "$M109" == "" ] && M109=$(head -1000 "/data/$2" | grep "^M104" | head -1 | sed 's|M104|M109|')
-        M190=$(head -1000 "/data/$2" | grep "^M190" | head -1)
-        [ "$M190" == "" ] && M190=$(head -1000 "/data/$2" | grep "^M140" | head -1 | sed 's|M140|M190|')
+        M109=$(head -1000 "${DATA_GCODES}/$2" | grep "^M109" | head -1)
+        [ "$M109" == "" ] && M109=$(head -1000 "${DATA_GCODES}/$2" | grep "^M104" | head -1 | sed 's|M104|M109|')
+        M190=$(head -1000 "${DATA_GCODES}/$2" | grep "^M190" | head -1)
+        [ "$M190" == "" ] && M190=$(head -1000 "${DATA_GCODES}/$2" | grep "^M140" | head -1 | sed 's|M140|M190|')
 
         if [ "$M190" == "" ] || [ "$M109" == "" ]
             then

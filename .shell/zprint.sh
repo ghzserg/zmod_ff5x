@@ -4,6 +4,8 @@
 # "printerSerialNumber"
 # Adventurer5M.json
 
+source /opt/config/mod/.shell/0.sh
+
 if [ $# -ne 2 ]; then echo "Используйте $0 PRINT|CLOSE FILE"; exit 1; fi
 
 if ! [ -f /THIS_IS_NOT_YOUR_ROOT_FILESYSTEM ]; then
@@ -26,7 +28,7 @@ if [ "$1" == "CLOSE" ]; then
     echo "Нет ответа от принтера с IP $ip. Необходимо настроить принтер. На экране принтера: \"Настройки\" -> \"Иконка WiFi\" -> \"Сетевой режим\" -> включить ползунок \"Только локальные сети\""
 else
     if [ "$1" == "PRINT" ]; then
-        if ! [ -f "/data/$2" ]; then
+        if ! [ -f "${DATA_GCODES}/$2" ]; then
             echo "RESPOND TYPE=error MSG=\"Файл $2 не найден.\"" >/tmp/printer
             echo "CANCEL_PRINT" >/tmp/printer
             exit 1

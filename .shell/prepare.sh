@@ -2,11 +2,11 @@
 
 set -x
 
-MOD=/data/.mod/.zmod
+source /opt/config/mod/.shell/0.sh
 
 remove_base()
 {
-    rm -rf /data/.mod
+    rm -rf ${UMOUNT_MOD}
     rm /etc/init.d/S00fix
     rm /etc/init.d/S99moon
     rm /etc/init.d/S98camera
@@ -70,9 +70,9 @@ start_moon()
     VER=$(cat /root/version)
     chroot $MOD /opt/config/mod/.shell/root/start.sh "$SWAP" "$VER" "$MACHINE" &
 
-    mkdir -p /data/lost+found
+    mkdir -p ${REMOUNT_MOD}
     sleep 10
-    mount --bind /data/lost+found /data/.mod
+    mount --bind ${REMOUNT_MOD} ${UMOUNT_MOD}
     mount
     ps
     sleep 60
@@ -95,9 +95,9 @@ start_prepare()
     mkdir -p $MOD/opt/config
     mount --bind /opt/config $MOD/opt/config
 
-    mkdir -p $MOD/data
-    mount --bind /data $MOD/data
-#    mount --bind /mnt/usb $MOD/data/usb
+    mkdir -p $MOD${DATA_GCODES}
+    mount --bind ${DATA_GCODES} $MOD${DATA_GCODES}
+#    mount --bind /mnt/usb $MOD${DATA_GCODES}/usb
 
 #    mkdir -p $MOD/var/run/
 #    mount --bind /var/run/ $MOD/var/run/
@@ -135,7 +135,7 @@ start_prepare()
 if [ -f /opt/config/mod/SKIP_ZMOD ]
  then
     rm -f /opt/config/mod/SKIP_ZMOD
-    mount --bind /data/lost+found /data/.mod
+    mount --bind ${REMOUNT_MOD} ${UMOUNT_MOD}
     exit 0
 fi
 

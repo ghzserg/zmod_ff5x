@@ -4,7 +4,7 @@
 #
 
 set -x
-MOD=/data/.mod/.zmod
+source /opt/config/mod/.shell/0.sh
 
 if ! [ -f /opt/config/mod_data/camera.conf ]
     then
@@ -39,9 +39,9 @@ up() {
             else
                 FORMAT=$(v4l2-ctl -d /dev/$VIDEO --list-formats| grep '\[' | tail -1| cut -d "'" -f2)
                 if [ -f /THIS_IS_NOT_YOUR_ROOT_FILESYSTEM ]; then
-                    [ "$1" != init ] && umount /data/.mod/
+                    [ "$1" != init ] && umount ${UMOUNT_MOD}
                     chroot $MOD start-stop-daemon -S -b -m -p $PID_FILE --exec /bin/ustreamer -- -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS --format=$FORMAT -s 0.0.0.0
-                    [ "$1" != init ] && mount --bind /data/lost+found /data/.mod
+                    [ "$1" != init ] && mount --bind ${REMOUNT_MOD} ${UMOUNT_MOD}
                 else
                     start-stop-daemon -S -b -m -p $PID_FILE --exec /bin/ustreamer -- -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS --format=$FORMAT -s 0.0.0.0
                 fi

@@ -132,7 +132,7 @@ fix_config()
 {
     echo "START fix_config"
     date
-    fstrim /data -v
+    fstrim ${$DATA} -v
     fstrim / -v
 
     [ -f /etc/profile.d/path.sh ] || echo "export PATH=\"$PATH:/opt/bin/:/opt/sbin/\"" >/etc/profile.d/path.sh

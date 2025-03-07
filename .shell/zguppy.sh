@@ -1,16 +1,16 @@
 #!/bin/sh
 
-MOD=/data/.mod/.zmod
+source /opt/config/mod/.shell/0.sh
 
 unset LD_PRELOAD
 
 up()
 {
     if [ -f /THIS_IS_NOT_YOUR_ROOT_FILESYSTEM ]; then
-        umount /data/.mod/
+        umount ${UMOUNT_MOD}
         chroot $MOD /etc/init.d/S80guppyscreen start &
         sleep 15
-        mount --bind /data/lost+found /data/.mod
+        mount --bind ${REMOUNT_MOD} ${UMOUNT_MOD}
     else
         /etc/init.d/S80guppyscreen up
     fi
@@ -19,10 +19,10 @@ up()
 stop()
 {
     if [ -f /THIS_IS_NOT_YOUR_ROOT_FILESYSTEM ]; then
-        umount /data/.mod/
+        umount ${UMOUNT_MOD}
         chroot $MOD /etc/init.d/S80guppyscreen stop &
         sleep 15
-        mount --bind /data/lost+found /data/.mod
+        mount --bind ${REMOUNT_MOD} ${UMOUNT_MOD}
     else
         /etc/init.d/S80guppyscreen stop
     fi

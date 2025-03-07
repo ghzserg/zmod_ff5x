@@ -5,7 +5,7 @@
 
 unset LD_PRELOAD
 
-MOD=/data/.mod/.zmod
+source /opt/config/mod/.shell/0.sh
 
 WEB="fluidd"
 grep -q "CLIENT=$WEB" /opt/config/mod_data/web.conf && WEB="mainsail"
@@ -24,7 +24,7 @@ sync
 if ! [ -f /THIS_IS_NOT_YOUR_ROOT_FILESYSTEM ]; then
     /opt/config/mod/.shell/root/S70httpd restart
 else
-    umount /data/.mod/
+    umount ${UMOUNT_MOD}
     chroot $MOD /opt/config/mod/.shell/root/S70httpd restart
-    mount --bind /data/lost+found /data/.mod
+    mount --bind ${REMOUNT_MOD} ${UMOUNT_MOD}
 fi

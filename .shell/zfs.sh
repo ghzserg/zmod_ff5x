@@ -1,17 +1,19 @@
 #!/bin/bash
 
+source /opt/config/mod/.shell/0.sh
+
 # Более точный замер времени - Alexander
 if [ $# -ne 2 ] && [ $# -ne 3 ] && [ $# -ne 4 ]; then echo "Используйте $0 SIZE [SYNC] [FLASH] [RANDOM]\nhttps://github.com/ghzserg/zmod/wiki/Macros#test_emmc"; exit 1; fi
 
 SIZE=$1
-FILE="/data"
+FILE="${DATA_GCODES}"
 INFILE="/dev/zero"
 t3=0
 
 [ "$3" == "1" ] && FILE="/media" && echo "Тестирование USB FLASH"
 [ "$3" == "2" ] && FILE="/tmp" && echo "Тестирование RAM"
 
-if [ "$FILE" == "/data" ]; then
+if [ "$FILE" == "${DATA_GCODES}" ]; then
     life=$(cat /sys/block/mmcblk0/device/life_time | awk '{print $1}'| while read a; do printf "%d0" $a; done;)
     echo "Износ EMMC: $life%"
 fi

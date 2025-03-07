@@ -1,5 +1,7 @@
 #!/bin/sh
 
+source /opt/config/mod/.shell/0.sh
+
 prepare_chroot()
 {
     mv /tmp/localtime /etc/localtime
@@ -80,9 +82,9 @@ V2=$(cat /opt/config/mod/version.txt)
 grep -q PRETTY_NAME /etc/os-release || echo "VERSION_CODENAME=\"${V1} -> ${V2}\"" >>/etc/os-release
 grep -q "PRETTY_NAME=\"${V1} -> ${V2}\"" /etc/os-release || sed -i "s|PRETTY_NAME=.*|PRETTY_NAME=\"${V1} -> ${V2}\"|" /etc/os-release
 
-mkdir -p /data/tmp
+mkdir -p ${DATA_GCODES}/tmp
 
-mount --bind /data/lost+found /data/.mod
+mount --bind ${REMOUNT_MOD} ${UMOUNT_MOD}
 
 #if grep -q "klipper12 = 1" /opt/config/mod_data/variables.cfg; then
 #    /opt/config/mod/.shell/root/S60klipper start

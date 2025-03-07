@@ -1,6 +1,6 @@
 #!/bin/sh
 
-MOD=/data/.mod/.zmod
+source /opt/config/mod/.shell/0.sh
 
 unset LD_PRELOAD
 
@@ -13,9 +13,9 @@ fi
 
 if [ -f /opt/config/mod_data/klipper_data.json ]; then
     if [ -f /THIS_IS_NOT_YOUR_ROOT_FILESYSTEM ]; then
-        umount /data/.mod/
+        umount ${UMOUNT_MOD}
         chroot $MOD /opt/config/mod/.shell/root/restore_gcode
-        mount --bind /data/lost+found /data/.mod
+        mount --bind ${REMOUNT_MOD} ${UMOUNT_MOD}
     else
         /opt/config/mod/.shell/root/restore_gcode
     fi
