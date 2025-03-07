@@ -25,6 +25,6 @@ if ! [ -f /THIS_IS_NOT_YOUR_ROOT_FILESYSTEM ]; then
     /opt/config/mod/.shell/root/S70httpd restart
 else
     umount ${UMOUNT_MOD}
-    chroot $MOD /opt/config/mod/.shell/root/S70httpd restart
+    chroot ${MOD} /opt/config/mod/.shell/root/S70httpd restart
     mount --bind ${REMOUNT_MOD} ${UMOUNT_MOD}
 fi

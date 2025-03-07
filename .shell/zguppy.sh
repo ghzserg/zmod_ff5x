@@ -8,7 +8,7 @@ up()
 {
     if [ -f /THIS_IS_NOT_YOUR_ROOT_FILESYSTEM ]; then
         umount ${UMOUNT_MOD}
-        chroot $MOD /etc/init.d/S80guppyscreen start &
+        chroot ${MOD} /etc/init.d/S80guppyscreen start &
         sleep 15
         mount --bind ${REMOUNT_MOD} ${UMOUNT_MOD}
     else
@@ -20,7 +20,7 @@ stop()
 {
     if [ -f /THIS_IS_NOT_YOUR_ROOT_FILESYSTEM ]; then
         umount ${UMOUNT_MOD}
-        chroot $MOD /etc/init.d/S80guppyscreen stop &
+        chroot ${MOD} /etc/init.d/S80guppyscreen stop &
         sleep 15
         mount --bind ${REMOUNT_MOD} ${UMOUNT_MOD}
     else

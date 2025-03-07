@@ -68,7 +68,7 @@ start_moon()
     grep -q '^MACHINE=Adventurer5MPro$' /opt/auto_run.sh && MACHINE=Adventurer5MPro
     grep -q '^MACHINE=Adventurer5M$' /opt/auto_run.sh && MACHINE=Adventurer5M
     VER=$(cat /root/version)
-    chroot $MOD /opt/config/mod/.shell/root/start.sh "$SWAP" "$VER" "$MACHINE" &
+    chroot ${MOD} /opt/config/mod/.shell/root/start.sh "$SWAP" "$VER" "$MACHINE" &
 
     mkdir -p ${REMOUNT_MOD}
     sleep 10
@@ -85,41 +85,41 @@ start_prepare()
 
     [ -L /etc/init.d/S00fix ] || ln -s /opt/config/mod/.shell/fix_config.sh /etc/init.d/S00fix
     echo "System start" >/opt/config/mod_data/log/ssh.log
-    mount -t proc /proc $MOD/proc
-    mount --rbind /sys $MOD/sys
-    mount --rbind /dev $MOD/dev
+    mount -t proc /proc ${MOD}/proc
+    mount --rbind /sys ${MOD}/sys
+    mount --rbind /dev ${MOD}/dev
 
-    mount --bind /tmp $MOD/tmp
-    mount --bind /run $MOD/run
+    mount --bind /tmp ${MOD}/tmp
+    mount --bind /run ${MOD}/run
 
-    mkdir -p $MOD/opt/config
-    mount --bind /opt/config $MOD/opt/config
+    mkdir -p ${MOD}/opt/config
+    mount --bind /opt/config ${MOD}/opt/config
 
-    mkdir -p $MOD${DATA_GCODES}
-    mount --bind ${DATA_GCODES} $MOD${DATA_GCODES}
-#    mount --bind /mnt/usb $MOD${DATA_GCODES}/usb
+    mkdir -p ${MOD}${DATA_GCODES}
+    mount --bind ${DATA_GCODES} ${MOD}${DATA_GCODES}
+#    mount --bind /mnt/usb ${MOD}${DATA_GCODES}/usb
 
-#    mkdir -p $MOD/var/run/
-#    mount --bind /var/run/ $MOD/var/run/
+#    mkdir -p ${MOD}/var/run/
+#    mount --bind /var/run/ ${MOD}/var/run/
 
-    mkdir -p $MOD/opt/PROGRAM/
-    mount --bind /opt/PROGRAM/ $MOD/opt/PROGRAM/
+    mkdir -p ${MOD}/opt/PROGRAM/
+    mount --bind /opt/PROGRAM/ ${MOD}/opt/PROGRAM/
 
-    mkdir -p $MOD/root/printer_data/misc
-    mkdir -p $MOD/root/printer_data/tmp
-    mkdir -p $MOD/root/printer_data/comms
-    mkdir -p $MOD/root/printer_data/certs
+    mkdir -p ${MOD}/root/printer_data/misc
+    mkdir -p ${MOD}/root/printer_data/tmp
+    mkdir -p ${MOD}/root/printer_data/comms
+    mkdir -p ${MOD}/root/printer_data/certs
 
-    if  ! [ -d $MOD/opt/klipper/docs ]
+    if  ! [ -d ${MOD}/opt/klipper/docs ]
      then
-        mkdir -p $MOD/opt/klipper/docs
-        cp /opt/klipper/docs/* $MOD/opt/klipper/docs
+        mkdir -p ${MOD}/opt/klipper/docs
+        cp /opt/klipper/docs/* ${MOD}/opt/klipper/docs
     fi
 
-    if ! [ -d $MOD/opt/klipper/config ]
+    if ! [ -d ${MOD}/opt/klipper/config ]
      then
-        mkdir -p $MOD/opt/klipper/config
-        cp /opt/klipper/config/* $MOD/opt/klipper/config
+        mkdir -p ${MOD}/opt/klipper/config
+        cp /opt/klipper/config/* ${MOD}/opt/klipper/config
     fi
 
     cat /etc/localtime >/tmp/localtime

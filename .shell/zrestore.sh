@@ -14,7 +14,7 @@ fi
 if [ -f /opt/config/mod_data/klipper_data.json ]; then
     if [ -f /THIS_IS_NOT_YOUR_ROOT_FILESYSTEM ]; then
         umount ${UMOUNT_MOD}
-        chroot $MOD /opt/config/mod/.shell/root/restore_gcode
+        chroot ${MOD} /opt/config/mod/.shell/root/restore_gcode
         mount --bind ${REMOUNT_MOD} ${UMOUNT_MOD}
     else
         /opt/config/mod/.shell/root/restore_gcode

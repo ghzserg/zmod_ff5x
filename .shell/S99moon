@@ -11,7 +11,7 @@ start() {
 stop() {
     printf "Stopping moon: "
     umount ${UMOUNT_MOD}
-    chroot $MOD /opt/config/mod/.shell/root/stop.sh
+    chroot ${MOD} /opt/config/mod/.shell/root/stop.sh
     mount --bind ${REMOUNT_MOD} ${UMOUNT_MOD}
     echo "OK"
 }
@@ -19,7 +19,7 @@ stop() {
 up() {
     printf "Starting moon: "
     umount ${UMOUNT_MOD}/
-    chroot $MOD /opt/config/mod/.shell/root/start.sh &
+    chroot ${MOD} /opt/config/mod/.shell/root/start.sh &
     sleep 15
     mount --bind ${REMOUNT_MOD} ${UMOUNT_MOD}
     echo "OK"
