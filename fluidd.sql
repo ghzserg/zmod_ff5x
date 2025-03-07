@@ -272,6 +272,14 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "visible": true
         },
         {
+            "alias": "",
+            "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
+            "color": "",
+            "disabledWhilePrinting": false,
+            "name": "restart_guppy",
+            "visible": true
+        },
+        {
             "alias": "Восстановить печать",
             "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
             "color": "",
@@ -1245,6 +1253,14 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
                "showInPause" : false,
                "showInPrinting" : false,
                "showInStandby" : true
+            },
+            {
+               "color" : "group",
+               "name" : "RESTART_GUPPY",
+               "pos" : 28,
+               "showInPause" : false,
+               "showInPrinting" : false,
+               "showInStandby" : true
             }
          ],
          "name" : "2. Система",
@@ -1450,6 +1466,9 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('gupp
       "hidden": true
     },
     "REBOOT": {
+      "hidden": true
+    },
+    "RESTART_GUPPY": {
       "hidden": true
     },
     "REMOVE_ZMOD": {
