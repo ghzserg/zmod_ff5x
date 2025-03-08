@@ -1,5 +1,8 @@
 #!/bin/sh
 
+source /opt/config/mod/.shell/0.sh
+
+[ ${NEED_REMOUNT} -eq 0 ] && exit 0
 [ -f /ZMOD ] && exit 0
 
 F="/opt/klipper/klippy/mcu.py"
