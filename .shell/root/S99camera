@@ -6,9 +6,8 @@
 set -x
 source /opt/config/mod/.shell/0.sh
 
-if ! [ -f /opt/config/mod_data/camera.conf ]
-    then
-        /opt/config/mod/.shell/zcamera.sh off 640 480 20 video0 0 NOTRESTART
+if ! [ -f /opt/config/mod_data/camera.conf ]; then
+    /opt/config/mod/.shell/zcamera.sh off 640 480 20 video0 0 NOTRESTART
 fi
 
 VIDEO="video0"
@@ -16,6 +15,7 @@ FS=0
 source /opt/config/mod_data/camera.conf
 PID_FILE=/run/camera.pid
 up() {
+    v4l2-ctl --all
     if [ $START = "on" ] && [ -c /dev/$VIDEO ]; then
         v4l2-ctl -d /dev/$VIDEO --list-formats
         if v4l2-ctl -d /dev/$VIDEO  --list-formats | grep MJPG; then
