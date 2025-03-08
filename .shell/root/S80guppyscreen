@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Start guppyscreen
 #
@@ -35,7 +35,7 @@ restart() {
 
 case "$1" in
     start)
-        start
+        start &> /opt/config/mod_data/log/guppyscreen_start.log
         ;;
     stop)
         stop
