@@ -3,7 +3,7 @@
 source /opt/config/mod/.shell/0.sh
 
 if [ -f /ZMOD ]; then
-    unset LD_PRELOAD
+
     DIR="/opt/config/mod/.shell/root"
 else
     DIR="/opt/config/mod/.shell"
@@ -75,6 +75,7 @@ if ! [ -f /ZMOD ]; then
     echo "Оригиналы файлов можно найти по ссылке https://github.com/ghzserg/zmod/tree/main/stock"
     echo "Самопроверка zmod"
     [ ${FF5X} -eq 0 ] && [ "$1" != "init" ] && umount ${UMOUNT_MOD}
+    unset LD_PRELOAD
     chroot ${MOD} /opt/config/mod/.shell/zcheckmd5.sh
     [ ${FF5X} -eq 0 ] && [ "$1" != "init" ] && mount --bind ${REMOUNT_MOD} ${UMOUNT_MOD}
 fi

@@ -45,6 +45,7 @@ find .  \
     -and -not -path "./proc" \
     -and -not -path "./root" \
     -and -not -path "./sys" \
+    -and -not -path "./dev/*" \
     -and -not -path "./etc/timezone" \
     -and -not -path "./etc/localtime" \
     -exec ./link.sh {} "dir" \; >>list.link
@@ -63,6 +64,7 @@ find .  \
     -and -not -path "./proc" \
     -and -not -path "./root" \
     -and -not -path "./sys" \
+    -and -not -path "./dev/*" \
     -and -not -path "./etc/timezone" \
     -and -not -path "./etc/localtime" \
     -exec ./link.sh {} link \; >>list.link
@@ -80,6 +82,7 @@ find .  \
     -and -not -path "./proc" \
     -and -not -path "./root" \
     -and -not -path "./sys" \
+    -and -not -path "./dev/*" \
     -and -not -path "./etc/timezone" \
     -and -not -path "./etc/localtime" \
     -exec ./link.sh {} "file" \; >>list.link
@@ -96,6 +99,7 @@ find .  \
     -and -not -path "./proc" \
     -and -not -path "./root" \
     -and -not -path "./sys" \
+    -and -not -path "./dev/*" \
     -and -not -path "./etc/timezone" \
     -and -not -path "./etc/localtime" \
     -exec md5sum {} \; >md5sum.list
