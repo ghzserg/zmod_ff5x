@@ -450,7 +450,7 @@ stepper: stepper_x, stepper_y, stepper_z
         NEED_REBOOT=1
     fi
     awk 'NF {last = NR} {lines[NR] = $0} END {for (i=1; i<=last; i++) print lines[i]}' ${PRINTER_CFG} >${PRINTER_CFG}.save
-    if diff ${PRINTER_CFG} ${PRINTER_CFG}.save; then
+    if ! diff ${PRINTER_CFG} ${PRINTER_CFG}.save; then
         mv ${PRINTER_CFG}.save ${PRINTER_CFG}
         NEED_REBOOT=1
     else
