@@ -39,6 +39,14 @@ find .  \
     -and -not -name "md5.sh" \
     -and -not -name "link.sh" \
     -and -not -name "list.link" \
+    -and -not -name "ts.conf" \
+    -and -not -name "os-release" \
+    -and -not -path "./tmp" \
+    -and -not -path "./proc" \
+    -and -not -path "./root" \
+    -and -not -path "./sys" \
+    -and -not -path "./etc/timezone" \
+    -and -not -path "./etc/localtime" \
     -exec ./link.sh {} "dir" \; >>list.link
 
 echo "echo 'Проверка символических ссылок...'" >>list.link
@@ -49,6 +57,14 @@ find .  \
     -and -not -name "md5.sh" \
     -and -not -name "link.sh" \
     -and -not -name "list.link" \
+    -and -not -name "ts.conf" \
+    -and -not -name "os-release" \
+    -and -not -path "./tmp" \
+    -and -not -path "./proc" \
+    -and -not -path "./root" \
+    -and -not -path "./sys" \
+    -and -not -path "./etc/timezone" \
+    -and -not -path "./etc/localtime" \
     -exec ./link.sh {} link \; >>list.link
 
 echo "echo 'Проверяю права на файлы...'">>list.link
@@ -58,6 +74,14 @@ find .  \
     -and -not -name "md5.sh" \
     -and -not -name "link.sh" \
     -and -not -name "list.link" \
+    -and -not -name "ts.conf" \
+    -and -not -name "os-release" \
+    -and -not -path "./tmp" \
+    -and -not -path "./proc" \
+    -and -not -path "./root" \
+    -and -not -path "./sys" \
+    -and -not -path "./etc/timezone" \
+    -and -not -path "./etc/localtime" \
     -exec ./link.sh {} "file" \; >>list.link
 
 find .  \
@@ -66,4 +90,12 @@ find .  \
     -and -not -name "md5.sh" \
     -and -not -name "link.sh" \
     -and -not -name "list.link" \
+    -and -not -name "ts.conf" \
+    -and -not -name "os-release" \
+    -and -not -path "./tmp" \
+    -and -not -path "./proc" \
+    -and -not -path "./root" \
+    -and -not -path "./sys" \
+    -and -not -path "./etc/timezone" \
+    -and -not -path "./etc/localtime" \
     -exec md5sum {} \; >md5sum.list

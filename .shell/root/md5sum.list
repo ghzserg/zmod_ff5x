@@ -9264,7 +9264,6 @@ dc28c2719fde4b162857ab9e151fbe81  ./usr/lib/python3.12/socket.pyc
 ba830187f8b8a3b459a83eb33d4bd58a  ./usr/lib/libblas.so.3.10.1
 6f1303098042702e97b74779413dd02d  ./usr/lib/libv4l2rds.so.0.0.0
 89fdf0f8f59763dfecf345f76e32fe7b  ./usr/lib/libblkid.so.1.1.0
-4b2a3823a47525fa9822703961cdf497  ./usr/lib/os-release
 e485cfc3b922aaf8f10615b4146a19a4  ./usr/lib/gconv/EN300-468-TAB00.so
 ba450fa8ee6bc7341bbc7e369b8fdd35  ./usr/lib/gconv/gconv-modules
 6aea5b51fa6b90f27971b61865729d20  ./usr/lib/gconv/ARIB-STD-B24.so
@@ -11306,7 +11305,6 @@ c75a0237f0ebfdeba8b4fdb45b850d6b  ./etc/ssl/certs/ca-certificates.crt
 f632f5cbce86412e9d973653b05e700d  ./etc/nsswitch.conf
 6ce04fdb2ca015186862d66bcab35311  ./etc/mke2fs.conf
 95650f8f829ce21431c3aa4ce0f3ed55  ./etc/hostname
-33bb4005e37a51139b7d0beda47d140e  ./etc/timezone
 9ebdc6f90a6070a1cdac5ecde97fbd33  ./etc/services
 48411b4a74eab31bc1a68b34fb0f2531  ./etc/shadow
 359ec096fae48c11cdb9adb8e113bc3c  ./etc/profile.d/umask.sh
@@ -11322,7 +11320,6 @@ ee326ba11249b6cb7fb0d7c68f98ae42  ./etc/mc/sfs.ini
 008c6d0205315a87a977c7cd74a1526e  ./etc/mc/edit.indent.rc
 91ea973c7047279d0b0442a3cf15bccc  ./etc/mc/filehighlight.ini
 fa7934ef882bf912be9f11728f20e6d1  ./etc/inputrc
-37b6add5a78fd44a942860cd4b3261a1  ./etc/ts.conf
 7c04e662b37e09a98c46141cf08fb247  ./etc/passwd
 a15e99b47a5596f2593399c71bf3bade  ./etc/protocols
 d8444e8a2595130625a33d34a35d0686  ./etc/profile

@@ -3,6 +3,7 @@
 source /opt/config/mod/.shell/0.sh
 
 if [ -f /ZMOD ]; then
+    unset LD_PRELOAD
     DIR="/opt/config/mod/.shell/root"
 else
     DIR="/opt/config/mod/.shell"
@@ -42,9 +43,9 @@ fi
 
 echo "/"
 cd /
-FF_VERSION="$(cat /root/version)"
+FF_VERSION="$(cat /root/version 2>/dev/null)"
 MIN_VERSION="3.1.3"
-if [ "${FF_VERSION//./}" -lt "${MIN_VERSION//./}" ] && ! [ -f /ZMOD ]; then
+if ! [ -f /ZMOD ] && [ "${FF_VERSION//./}" -lt "${MIN_VERSION//./}" ]; then
     sed '/\/nim\//d' ${DIR}/md5sum.list >${DIR}/md5sum_nim.list
     md5sum -c ${DIR}/md5sum_nim.list 2>/dev/null | grep -v -e "OK$" | tee /opt/config/mod/bad.list
     rm -f ${DIR}/md5sum_nim.list
@@ -54,14 +55,14 @@ fi
 
 if [ "$1" == "restore" ]; then
     if [ -f /ZMOD ]; then
-        echo "Переустановите zmod с флешки"
+        echo "Восстановление zmod не поддерживается, если есть ошибки переустановите zmod с флешки"
     else
         cat /opt/config/mod/bad.list|grep ": FAILED$"|sed 's|: FAILED||' | sed 's|^./|/|' | while read a; do restore_file "$a"; done
     fi
 fi
 rm -f /opt/config/mod/bad.list
 
-if [ "${FF_VERSION//./}" -lt "${MIN_VERSION//./}" ] && ! [ -f /ZMOD ]; then
+if ! [ -f /ZMOD ] && [ "${FF_VERSION//./}" -lt "${MIN_VERSION//./}" ]; then
     sed '/\/nim\//d' ${DIR}/list.link >${DIR}/md5sum_nim.list
     chmod +x ${DIR}/md5sum_nim.list
     ${DIR}/md5sum_nim.list 2>/dev/null
@@ -71,9 +72,9 @@ else
 fi
 
 if ! [ -f /ZMOD ]; then
+    echo "Оригиналы файлов можно найти по ссылке https://github.com/ghzserg/zmod/tree/main/stock"
     echo "Самопроверка zmod"
     [ ${FF5X} -eq 0 ] && [ "$1" != "init" ] && umount ${UMOUNT_MOD}
     chroot ${MOD} /opt/config/mod/.shell/zcheckmd5.sh
     [ ${FF5X} -eq 0 ] && [ "$1" != "init" ] && mount --bind ${REMOUNT_MOD} ${UMOUNT_MOD}
 fi
-echo "Оригиналы файлов можно найти по ссылке https://github.com/ghzserg/zmod/tree/main/stock"
