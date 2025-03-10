@@ -59,6 +59,8 @@ restart() {
 }
 
 case "$1" in
+  start)
+        ;;
   up|init)
         up $1 &>/opt/config/mod_data/log/camera.log
         ;;

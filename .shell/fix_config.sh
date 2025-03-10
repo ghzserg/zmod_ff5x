@@ -498,11 +498,11 @@ stepper: stepper_x, stepper_y, stepper_z
 
 mkdir -p /opt/config/mod_data/log/
 
-mv /opt/config/mod_data/log/fix_config.4.log/opt/config/mod_data/log/fix_config.5.log
+mv /opt/config/mod_data/log/fix_config.4.log /opt/config/mod_data/log/fix_config.5.log
 mv /opt/config/mod_data/log/fix_config.3.log /opt/config/mod_data/log/fix_config.4.log
 mv /opt/config/mod_data/log/fix_config.2.log /opt/config/mod_data/log/fix_config.3.log
 mv /opt/config/mod_data/log/fix_config.1.log /opt/config/mod_data/log/fix_config.2.log
-mv /opt/config/mod_data/log/fix_config.log /opt/config/mod_data/log/fix_config.1.log
+mv /opt/config/mod_data/log/fix_config.log   /opt/config/mod_data/log/fix_config.1.log
 
 if [ -f /opt/config/mod/SKIP_ZMOD ] || [ -f /opt/config/mod/REMOVE ] || [ -f /opt/config/mod/FULL_REMOVE ]; then
     restore_base &>/opt/config/mod_data/log/fix_config.log
