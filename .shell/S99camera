@@ -60,7 +60,7 @@ restart() {
 
 case "$1" in
   up|init)
-        up &>/opt/config/mod_data/log/camera.log
+        up $1 &>/opt/config/mod_data/log/camera.log
         ;;
   stop)
         stop
