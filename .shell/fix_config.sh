@@ -152,6 +152,7 @@ fix_config()
     [ -f /etc/init.d/S50sshd ] && rm -f /etc/init.d/S50sshd
     [ -f /etc/init.d/S55date ] && rm -f /etc/init.d/S55date
     [ -f /bin/dropbearmulti ] && rm -f /bin/dropbearmulti
+    [ -L /etc/init.d/S98camera ] && rm -f /etc/init.d/S98camera
     [ -f /etc/init.d/S98camera ] && rm -f /etc/init.d/S98camera
 
     check_link /bin/dropbearkey /opt/config/mod/.shell/eabi/dropbear

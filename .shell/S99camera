@@ -3,14 +3,76 @@
 # Start Camera
 #
 
+set -x
+
 source /opt/config/mod/.shell/0.sh
 
-[ "$1" == "start" ] && exit 0
-
-if [ -f /ZMOD ]; then
-    /etc/init.d/S99camera $1
-else
-    [ ${FF5X} -eq 0 ] && [ "$1" != "init" ] && umount ${UMOUNT_MOD}
-    chroot ${MOD} /etc/init.d/S99camera $1
-    [ ${FF5X} -eq 0 ] && [ "$1" != "init" ] && mount --bind ${REMOUNT_MOD} ${UMOUNT_MOD}
+if ! [ -f /opt/config/mod_data/camera.conf ]; then
+    /opt/config/mod/.shell/zcamera.sh off 640 480 20 video0 0 NOTRESTART
 fi
+
+VIDEO="video0"
+FS=0
+source /opt/config/mod_data/camera.conf
+PID_FILE=/run/camera.pid
+
+up() {
+    v4l2-ctl --all
+    if [ $START = "on" ] && [ -c /dev/$VIDEO ]; then
+        v4l2-ctl -d /dev/$VIDEO --list-formats
+        if v4l2-ctl -d /dev/$VIDEO  --list-formats | grep MJPG; then
+            if [ "$FS" -ne "0" ]; then
+                FFS="-fs $(( ${WIDTH} * ${HEIGHT} * 2 ))"
+            else
+                FFS=""
+            fi
+            v4l2-ctl --set-fmt-video=width=${WIDTH},height=${HEIGHT},pixelformat=1
+            if [ -f /ZMOD ]; then
+                start-stop-daemon -S -b -m -p $PID_FILE --exec /usr/bin/mjpg_streamer -- -o "/usr/lib/mjpg-streamer/output_http.so -w /usr/share/mjpg-streamer/www -p 8080" -i  "/usr/lib/mjpg-streamer/input_uvc.so -b 1 -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS $FFS"
+            else
+                [ ${FF5X} -eq 0 ] && [ "$1" != "init" ] && umount ${UMOUNT_MOD}
+                chroot ${MOD} start-stop-daemon -S -b -m -p $PID_FILE --exec /opt/config/mod/.shell/eabi/mjpg_streamer -- -o "/opt/config/mod/.shell/eabi/lib/output_http.so -w /opt/mjpg-streamer/www -p 8080" -i  "/opt/config/mod/.shell/eabi/lib/input_uvc.so -b 1 -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS $FFS"
+                [ ${FF5X} -eq 0 ] && [ "$1" != "init" ] && mount --bind ${REMOUNT_MOD} ${UMOUNT_MOD}
+            fi
+        else
+            FORMAT=$(v4l2-ctl -d /dev/$VIDEO --list-formats| grep '\[' | tail -1| cut -d "'" -f2)
+            if [ -f /ZMOD ]; then
+                start-stop-daemon -S -b -m -p $PID_FILE --exec /bin/ustreamer -- -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS --format=$FORMAT -s 0.0.0.0
+            else
+                [ ${FF5X} -eq 0 ] && [ "$1" != "init" ] && umount ${UMOUNT_MOD}
+                chroot ${MOD} start-stop-daemon -S -b -m -p $PID_FILE --exec /bin/ustreamer -- -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS --format=$FORMAT -s 0.0.0.0
+                [ ${FF5X} -eq 0 ] && [ "$1" != "init" ] && mount --bind ${REMOUNT_MOD} ${UMOUNT_MOD}
+            fi
+        fi
+        echo "Запуск камеры завершен"
+    else
+        echo "Камера отключена"
+    fi
+}
+
+stop() {
+    start-stop-daemon -K -p $PID_FILE 2>/dev/null >/dev/null
+    killall mjpg_streamer ustreamer
+}
+restart() {
+    stop
+    sleep 2
+    up
+}
+
+case "$1" in
+  up|init)
+        up &>/opt/config/mod_data/log/camera.log
+        ;;
+  stop)
+        stop
+        ;;
+  restart|reload)
+        restart
+        ;;
+  *)
+        echo "Usage: $0 {init|up|stop|restart}"
+        exit 1
+esac
+
+exit $?
