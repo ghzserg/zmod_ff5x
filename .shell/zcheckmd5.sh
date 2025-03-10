@@ -47,20 +47,23 @@ FF_VERSION="$(cat /root/version 2>/dev/null)"
 MIN_VERSION="3.1.3"
 if ! [ -f /ZMOD ] && [ "${FF_VERSION//./}" -lt "${MIN_VERSION//./}" ]; then
     sed '/\/nim\//d' ${DIR}/md5sum.list >${DIR}/md5sum_nim.list
-    md5sum -c ${DIR}/md5sum_nim.list 2>/dev/null | grep -v -e "OK$" | tee /opt/config/mod/bad.list
+    md5sum -c ${DIR}/md5sum_nim.list 2>/dev/null | grep -v -e "OK$" | tee /opt/config/mod_data/bad.list
     rm -f ${DIR}/md5sum_nim.list
 else
-    md5sum -c ${DIR}/md5sum.list 2>/dev/null | grep -v -e "OK$" | tee /opt/config/mod/bad.list
+    md5sum -c ${DIR}/md5sum.list 2>/dev/null | grep -v -e "OK$" | tee /opt/config/mod_data/bad.list
 fi
 
 if [ "$1" == "restore" ]; then
-    if [ -f /ZMOD ]; then
-        echo "Восстановление zmod не поддерживается, если есть ошибки переустановите zmod с флешки"
-    else
-        cat /opt/config/mod/bad.list|grep ": FAILED$"|sed 's|: FAILED||' | sed 's|^./|/|' | while read a; do restore_file "$a"; done
+    cnt=$(cat /opt/config/mod_data/bad.list|grep ": FAILED$"| wc -l)
+    if [ "$cnt" -ne 0 ]; then
+        if [ -f /ZMOD ]; then
+            echo "Найдены повреждения zmod. Переустановите с флешки"
+        else
+            cat /opt/config/mod_data/bad.list|grep ": FAILED$"|sed 's|: FAILED||' | sed 's|^./|/|' | while read a; do restore_file "$a"; done
+        fi
     fi
 fi
-rm -f /opt/config/mod/bad.list
+rm -f /opt/config/mod_data/bad.list
 
 if ! [ -f /ZMOD ] && [ "${FF_VERSION//./}" -lt "${MIN_VERSION//./}" ]; then
     sed '/\/nim\//d' ${DIR}/list.link >${DIR}/md5sum_nim.list
@@ -78,4 +81,9 @@ if ! [ -f /ZMOD ]; then
     unset LD_PRELOAD
     chroot ${MOD} /opt/config/mod/.shell/zcheckmd5.sh
     [ ${FF5X} -eq 0 ] && [ "$1" != "init" ] && mount --bind ${REMOUNT_MOD} ${UMOUNT_MOD}
+else
+    cd /opt/config/mod
+    git clean -f
+    git restore .
+    git status --porcelain
 fi
