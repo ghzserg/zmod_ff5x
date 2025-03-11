@@ -75,15 +75,15 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "alias": "Тест EMMC",
             "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
             "color": "",
-            "disabledWhilePrinting": false,
+            "disabledWhilePrinting": true,
             "name": "test_emmc",
             "visible": true
         },
         {
             "alias": "Очистить EMMC",
             "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
-            "color": "",
-            "disabledWhilePrinting": false,
+            "color": "#ff0000",
+            "disabledWhilePrinting": true,
             "name": "clear_emmc",
             "visible": true
         },
@@ -131,7 +131,7 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "alias": "",
             "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
             "color": "",
-            "disabledWhilePrinting": false,
+            "disabledWhilePrinting": true,
             "name": "start_zmod",
             "visible": true
         },
@@ -251,7 +251,7 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "alias": "Обновить MCU",
             "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
             "color": "",
-            "disabledWhilePrinting": false,
+            "disabledWhilePrinting": true,
             "name": "update_mcu",
             "visible": false
         },
@@ -266,8 +266,8 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
         {
             "alias": "",
             "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
-            "color": "",
-            "disabledWhilePrinting": false,
+            "color": "#ff0000",
+            "disabledWhilePrinting": true,
             "name": "reboot",
             "visible": true
         },
@@ -283,7 +283,7 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "alias": "Восстановить печать",
             "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
             "color": "",
-            "disabledWhilePrinting": false,
+            "disabledWhilePrinting": true,
             "name": "zrestore",
             "visible": true
         },
@@ -306,7 +306,7 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
         {
             "alias": "Выключить принтер",
             "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
-            "color": "",
+            "color": "#ff0000",
             "disabledWhilePrinting": false,
             "name": "shutdown",
             "visible": true
@@ -314,7 +314,7 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
         {
             "alias": "",
             "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
-            "color": "",
+            "color": "#ff0000",
             "disabledWhilePrinting": false,
             "name": "skip_zmod",
             "visible": true
@@ -330,7 +330,7 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
         {
             "alias": "Перезапустить ZMOD камеру",
             "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
-            "color": "",
+            "color": "#008800",
             "disabledWhilePrinting": false,
             "name": "camera_restart",
             "visible": true
@@ -346,16 +346,16 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
         {
             "alias": "Выключить экран принтера",
             "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
-            "color": "",
-            "disabledWhilePrinting": false,
+            "color": "#ff0000",
+            "disabledWhilePrinting": true,
             "name": "display_off",
             "visible": true
         },
         {
             "alias": "Включить экран принтера",
             "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
-            "color": "",
-            "disabledWhilePrinting": false,
+            "color": "#ff0000",
+            "disabledWhilePrinting": true,
             "name": "display_on",
             "visible": true
         },
@@ -402,15 +402,14 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
         {
             "alias": "Удалить ZMOD",
             "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
-            "color": "",
-            "disabledWhilePrinting": false,
+            "color": "#ff0000",
+            "disabledWhilePrinting": true,
             "name": "remove_zmod",
             "visible": true
         },
         {
             "alias": "Калибровка стола",
             "categoryId": "244d667b-c410-4e01-9bf1-e8e0b9deabe2",
-            "color": "",
             "disabledWhilePrinting": true,
             "name": "auto_full_bed_level",
             "visible": true
@@ -418,7 +417,6 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
         {
             "alias": "Калибровка шейперов",
             "categoryId": "244d667b-c410-4e01-9bf1-e8e0b9deabe2",
-            "color": "",
             "disabledWhilePrinting": true,
             "name": "zshaper",
             "visible": true
@@ -426,7 +424,6 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
         {
             "alias": "Калибровка ремней",
             "categoryId": "244d667b-c410-4e01-9bf1-e8e0b9deabe2",
-            "color": "",
             "disabledWhilePrinting": true,
             "name": "belts_shaper_calibration",
             "visible": true
@@ -434,7 +431,6 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
         {
             "alias": "Регулировка винтов стола",
             "categoryId": "244d667b-c410-4e01-9bf1-e8e0b9deabe2",
-            "color": "",
             "disabledWhilePrinting": true,
             "name": "bed_level_screws_tune",
             "visible": true
@@ -442,7 +438,7 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
         {
             "alias": "Контроль сопла",
             "categoryId": "244d667b-c410-4e01-9bf1-e8e0b9deabe2",
-            "color": "",
+            "color": "#ff0000",
             "disabledWhilePrinting": true,
             "name": "nozzle_control",
             "visible": true
@@ -458,7 +454,6 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
         {
             "alias": "",
             "categoryId": "244d667b-c410-4e01-9bf1-e8e0b9deabe2",
-            "color": "",
             "disabledWhilePrinting": false,
             "name": "set_gcode_offset",
             "visible": false
@@ -473,16 +468,16 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
         },
         {
             "alias": "Отменить печать",
-            "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
-            "color": "",
+            "categoryId": "0",
+            "color": "#ff0000",
             "disabledWhilePrinting": false,
             "name": "cancel_print",
-            "visible": true
+            "visible": false
         },
         {
             "alias": "",
             "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
-            "color": "",
+            "color": "#008800",
             "disabledWhilePrinting": false,
             "name": "led",
             "visible": true
@@ -506,7 +501,6 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
         {
             "alias": "Калибровка PID стола",
             "categoryId": "244d667b-c410-4e01-9bf1-e8e0b9deabe2",
-            "color": "",
             "disabledWhilePrinting": true,
             "name": "pid_tune_bed",
             "visible": true
@@ -522,15 +516,14 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
         {
             "alias": "",
             "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
-            "color": "",
+            "color": "#00ff00",
             "disabledWhilePrinting": false,
             "name": "resume",
-            "visible": true
+            "visible": false
         },
         {
             "alias": "Калибровка PID экструдера",
             "categoryId": "244d667b-c410-4e01-9bf1-e8e0b9deabe2",
-            "color": "",
             "disabledWhilePrinting": true,
             "name": "pid_tune_extruder",
             "visible": true
@@ -562,10 +555,10 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
         {
             "alias": "",
             "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
-            "color": "",
+            "color": "#ffff00",
             "disabledWhilePrinting": false,
             "name": "pause",
-            "visible": true
+            "visible": false
         },
         {
             "alias": "",
@@ -722,13 +715,14 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
         {
             "alias": "Сохранить параметры ZMOD",
             "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
-            "color": "",
+            "color": "#008800",
             "disabledWhilePrinting": false,
             "name": "save_zmod_data",
             "visible": true
         }
     ]
 }');
+
 DELETE FROM "main"."namespace_store"  WHERE namespace="mainsail" AND key="macros";
 INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('mainsail', 'macros', '{
    "macrogroups" : {
