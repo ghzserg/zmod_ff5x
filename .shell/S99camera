@@ -25,7 +25,7 @@ up() {
             else
                 FFS=""
             fi
-            ${V4l2} --set-fmt-video=width=${WIDTH},height=${HEIGHT},pixelformat=1
+            ${V4l2} -d /dev/$VIDEO --set-fmt-video=width=${WIDTH},height=${HEIGHT},pixelformat=1
             if [ -f /ZMOD ]; then
                 start-stop-daemon -S -b -m -p $PID_FILE --exec /usr/bin/mjpg_streamer -- -o "/usr/lib/mjpg-streamer/output_http.so -w /usr/share/mjpg-streamer/www -p 8080" -i  "/usr/lib/mjpg-streamer/input_uvc.so -b 1 -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS $FFS"
             else
