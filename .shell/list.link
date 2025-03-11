@@ -29,7 +29,7 @@ check_file()
 }
 
 
-echo 'Проверяю права на каталоги...'
+echo 'Проверка прав на каталоги...'
 check_dir '.' '755'
 check_dir './sbin' '755'
 check_dir './system' '755'
@@ -3208,7 +3208,7 @@ check_link './bin/usleep' 'busybox'
 check_link './bin/cpio' 'busybox'
 check_link './bin/fdflush' 'busybox'
 check_link './bin/rmdir' 'busybox'
-echo 'Проверяю права на файлы...'
+echo 'Проверка прав на файлы...'
 check_file './sbin/tune2fs' '755'
 check_file './sbin/dumpe2fs' '755'
 check_file './sbin/tipc' '755'
