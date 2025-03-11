@@ -16,23 +16,23 @@ source /opt/config/mod_data/camera.conf
 PID_FILE=/run/camera.pid
 
 up() {
-    ${V412} --all
+    ${V4l2} --all
     if [ $START = "on" ] && [ -c /dev/$VIDEO ]; then
-        ${V412} -d /dev/$VIDEO --list-formats
-        if ${V412} -d /dev/$VIDEO  --list-formats | grep MJPG; then
+        ${V4l2} -d /dev/$VIDEO --list-formats
+        if ${V4l2} -d /dev/$VIDEO  --list-formats | grep MJPG; then
             if [ "$FS" -ne "0" ]; then
                 FFS="-fs $(( ${WIDTH} * ${HEIGHT} * 2 ))"
             else
                 FFS=""
             fi
-            ${V412} --set-fmt-video=width=${WIDTH},height=${HEIGHT},pixelformat=1
+            ${V4l2} --set-fmt-video=width=${WIDTH},height=${HEIGHT},pixelformat=1
             if [ -f /ZMOD ]; then
                 start-stop-daemon -S -b -m -p $PID_FILE --exec /usr/bin/mjpg_streamer -- -o "/usr/lib/mjpg-streamer/output_http.so -w /usr/share/mjpg-streamer/www -p 8080" -i  "/usr/lib/mjpg-streamer/input_uvc.so -b 1 -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS $FFS"
             else
                 start-stop-daemon -S -b -m -p $PID_FILE --exec /opt/config/mod/.shell/eabi/mjpg_streamer -- -o "/opt/config/mod/.shell/eabi/lib/output_http.so -w /opt/mjpg-streamer/www -p 8080" -i  "/opt/config/mod/.shell/eabi/lib/input_uvc.so -b 1 -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS $FFS"
             fi
         else
-            FORMAT=$(${V412} -d /dev/$VIDEO --list-formats| grep '\[' | tail -1| cut -d "'" -f2)
+            FORMAT=$(${V4l2} -d /dev/$VIDEO --list-formats| grep '\[' | tail -1| cut -d "'" -f2)
             if [ -f /ZMOD ]; then
                 start-stop-daemon -S -b -m -p $PID_FILE --exec /bin/ustreamer -- -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS --format=$FORMAT -s 0.0.0.0
             else
