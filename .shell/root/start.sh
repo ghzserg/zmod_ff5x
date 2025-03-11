@@ -41,8 +41,10 @@ prepare_chroot()
     [ -L /bin/boot_eboard_mcu ] || ln -s /opt/config/mod/.shell/root/mcu/boot_eboard_mcu /bin/boot_eboard_mcu
     [ -L /bin/backlight ] || ln -s /opt/config/mod/.shell/root/backlight /bin/backlight
 
-    rm -rf /root/moonraker-env/lib/python3.12/site-packages/uvloop*  || echo "uvloop уже убит"
-    rm -rf /root/moonraker-env/lib/python3.12/site-packages/msgspec* || echo "msgspec уже убит"
+    if [ ${FF5X} -eq 0 ]; then
+        rm -rf /root/moonraker-env/lib/python3.12/site-packages/uvloop*  || echo "uvloop уже убит"
+        rm -rf /root/moonraker-env/lib/python3.12/site-packages/msgspec* || echo "msgspec уже убит"
+    fi
 }
 
 SWAP="$1"

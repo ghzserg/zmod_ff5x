@@ -164,7 +164,7 @@ fix_config()
     check_link /etc/init.d/S00fix /opt/config/mod/.shell/fix_config.sh
     check_link /etc/init.d/S99camera /opt/config/mod/.shell/S99camera
     check_link /usr/bin/audio.py /opt/config/mod/.shell/root/audio/audio.py
-    check_link /data/logFiles/zmod/ /opt/config/mod_data/log/
+    check_link ${DATA}/logFiles/zmod /opt/config/mod_data/log/
 
     NEED_REBOOT=0
     PRINTER_BASE_ORIG="/opt/config/printer.base.cfg"
