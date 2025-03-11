@@ -3,7 +3,6 @@
 source /opt/config/mod/.shell/0.sh
 
 if [ -f /ZMOD ]; then
-
     DIR="/opt/config/mod/.shell/root"
 else
     DIR="/opt/config/mod/.shell"
@@ -21,9 +20,8 @@ restore_file()
     fi
 }
 
-echo "Началась проверка. Она может занять много времени...."
-
 if ! [ -f /ZMOD ]; then
+    echo "Началась проверка родной системы. Она может занять много времени..."
     find /opt/PROGRAM/ -name md5sum.list | while read a;
         do
             b=$(pwd)
@@ -39,6 +37,8 @@ if ! [ -f /ZMOD ]; then
             fi
             cd "$b"
         done
+else
+    echo "Началась проверка ZMOD. Она может занять много времени..."
 fi
 
 echo "/"
@@ -57,7 +57,7 @@ if [ "$1" == "restore" ]; then
     cnt=$(cat /opt/config/mod_data/bad.list|grep ": FAILED$"| wc -l)
     if [ "$cnt" -ne 0 ]; then
         if [ -f /ZMOD ]; then
-            echo "Найдены повреждения zmod. Переустановите с флешки"
+            echo "Найдены повреждения ZMOD. Переустановите мод с флешки"
         else
             cat /opt/config/mod_data/bad.list|grep ": FAILED$"|sed 's|: FAILED||' | sed 's|^./|/|' | while read a; do restore_file "$a"; done
         fi
@@ -76,7 +76,7 @@ fi
 
 if ! [ -f /ZMOD ]; then
     echo "Оригиналы файлов можно найти по ссылке https://github.com/ghzserg/zmod/tree/main/stock"
-    echo "Самопроверка zmod"
+    echo "Проверка родной системы окончена"
     [ ${FF5X} -eq 0 ] && [ "$1" != "init" ] && umount ${UMOUNT_MOD}
     unset LD_PRELOAD
     chroot ${MOD} /opt/config/mod/.shell/zcheckmd5.sh
@@ -86,4 +86,5 @@ else
     git clean -f
     git restore .
     git status --porcelain
+    echo "Самопроверка ZMOD окончена"
 fi
