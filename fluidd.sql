@@ -779,11 +779,11 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
         },
         {
             "alias": "Сохранить параметры ZMOD",
-            "categoryId": "09a46273-5af4-4fc4-b232-442934c1e810",
+            "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
             "color": "#008800",
             "disabledWhilePrinting": false,
             "name": "save_zmod_data",
-            "order": 4,
+            "order": 13,
             "visible": true
         }
     ]
