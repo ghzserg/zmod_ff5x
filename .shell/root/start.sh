@@ -6,7 +6,7 @@ prepare_chroot()
 {
 
     echo ZMOD >/ZMOD
-    mv /tmp/localtime /etc/localtime
+    [ ${FF5X} -eq 0 ] && mv /tmp/localtime /etc/localtime
 
     mv /tmp/pointercal /etc/pointercal
     mv /tmp/ts.conf /etc/ts.conf
@@ -47,14 +47,15 @@ prepare_chroot()
     fi
 }
 
-SWAP="$1"
-echo "SWAP=$SWAP"
+if [ ${FF5X} -eq 0 ]; then
+    SWAP="$1"
+    echo "SWAP=$SWAP"
 
-if ! [ -f /root/swap ]; then dd if=/dev/zero of=/root/swap bs=1024 count=131072; mkswap /root/swap; fi;
+    if ! [ -f /root/swap ]; then dd if=/dev/zero of=/root/swap bs=1024 count=131072; mkswap /root/swap; fi;
 
-if [ "$SWAP" == "/root/swap" ]
-    then
+    if [ "$SWAP" == "/root/swap" ]; then
         grep -q "use_swap = 0" /opt/config/mod_data/variables.cfg || swapon $SWAP
+    fi
 fi
 
 date 2024.01.01-00:00:00

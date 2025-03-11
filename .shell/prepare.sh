@@ -123,9 +123,9 @@ start_prepare()
         cp ${KLIPPER_DIR}/config/* ${MOD}/opt/klipper/config
     fi
 
-    cat /etc/localtime >/tmp/localtime
-    cp /opt/tslib-1.12/etc/pointercal /tmp/pointercal
-    cp /opt/tslib-1.12/etc/ts.conf /tmp/ts.conf
+    [ ${FF5X} -eq 0 ] && cat /etc/localtime >/tmp/localtime
+    cp ${TS_LIB}/pointercal /tmp/pointercal
+    cp ${TS_LIB}/ts.conf /tmp/ts.conf
 
     # Запуск камеры
     /etc/init.d/S99camera init
