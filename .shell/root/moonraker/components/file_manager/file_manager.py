@@ -772,7 +772,7 @@ class FileManager:
                         rel_path, {})
                     path_info.update(metadata)
                 flist['files'].append(path_info)
-        usage = shutil.disk_usage("/usr/data")
+        usage = shutil.disk_usage("/data")
         flist['disk_usage'] = usage._asdict()
         flist['root_info'] = {
             'name': root,
