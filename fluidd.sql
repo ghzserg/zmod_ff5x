@@ -14,28 +14,21 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "name": "2. Система"
         },
         {
-            "id": "09a46273-5af4-4fc4-b232-442934c1e810",
-            "name": "3. ZMOD"
-        },
-        {
             "id": "89ac157d-a16a-43f1-900a-498d683bf557",
-            "name": "4. Филамент"
+            "name": "3. Филамент"
         },
         {
             "id": "e004b7a8-256d-4070-8d81-90a2ccef470b",
-            "name": "5. Pro"
+            "name": "4. Pro"
         },
         {
             "id": "5ceaef9c-2e66-4bbf-998b-94fcab116597",
             "name": "6. Вызов макроса на слое"
-        },
-        {
-            "id": "69809e15-439e-45e3-b181-42ccbdde50eb",
-            "name": "7. Редкое"
         }
     ],
     "expanded": [
-        0
+        0,
+        1
     ],
     "stored": [
         {
@@ -64,101 +57,90 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
         },
         {
             "alias": "Установить временную зону",
-            "categoryId": "69809e15-439e-45e3-b181-42ccbdde50eb",
+            "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
             "color": "",
             "disabledWhilePrinting": false,
             "name": "set_timezone",
-            "order": 1,
             "visible": true
         },
         {
             "alias": "Включить ZSSH",
-            "categoryId": "09a46273-5af4-4fc4-b232-442934c1e810",
+            "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
             "color": "",
             "disabledWhilePrinting": false,
             "name": "zssh_on",
-            "order": 7,
             "visible": true
         },
         {
             "alias": "Тест EMMC",
             "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
             "color": "",
-            "disabledWhilePrinting": true,
+            "disabledWhilePrinting": false,
             "name": "test_emmc",
-            "order": 4,
             "visible": true
         },
         {
             "alias": "Очистить EMMC",
             "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
-            "color": "#ff0000",
-            "disabledWhilePrinting": true,
+            "color": "",
+            "disabledWhilePrinting": false,
             "name": "clear_emmc",
-            "order": 5,
             "visible": true
         },
         {
             "alias": "Выключить ZSSH",
-            "categoryId": "09a46273-5af4-4fc4-b232-442934c1e810",
+            "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
             "color": "",
             "disabledWhilePrinting": false,
             "name": "zssh_off",
-            "order": 8,
             "visible": true
         },
         {
             "alias": "Рестарт ZSSH",
-            "categoryId": "09a46273-5af4-4fc4-b232-442934c1e810",
+            "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
             "color": "",
             "disabledWhilePrinting": false,
             "name": "zssh_restart",
-            "order": 5,
             "visible": true
         },
         {
             "alias": "",
-            "categoryId": "69809e15-439e-45e3-b181-42ccbdde50eb",
+            "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
             "color": "",
             "disabledWhilePrinting": false,
             "name": "zssh_reload",
-            "order": 0,
             "visible": true
         },
         {
             "alias": "Архивировать конфиг",
-            "categoryId": "09a46273-5af4-4fc4-b232-442934c1e810",
+            "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
             "color": "",
             "disabledWhilePrinting": false,
             "name": "tar_config",
-            "order": 9,
             "visible": true
         },
         {
             "alias": "",
-            "categoryId": "69809e15-439e-45e3-b181-42ccbdde50eb",
+            "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
             "color": "",
             "disabledWhilePrinting": false,
             "name": "stop_zmod",
-            "order": 5,
             "visible": true
         },
         {
             "alias": "",
-            "categoryId": "69809e15-439e-45e3-b181-42ccbdde50eb",
+            "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
             "color": "",
-            "disabledWhilePrinting": true,
+            "disabledWhilePrinting": false,
             "name": "start_zmod",
-            "order": 4,
             "visible": true
         },
         {
             "alias": "Текущее время",
-            "categoryId": "69809e15-439e-45e3-b181-42ccbdde50eb",
+            "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
             "color": "",
             "disabledWhilePrinting": false,
             "name": "date_get",
-            "order": 2,
             "visible": true
         },
         {
@@ -167,16 +149,14 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "color": "",
             "disabledWhilePrinting": false,
             "name": "web",
-            "order": 7,
             "visible": true
         },
         {
             "alias": "Изменить время",
-            "categoryId": "69809e15-439e-45e3-b181-42ccbdde50eb",
+            "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
             "color": "",
             "disabledWhilePrinting": false,
             "name": "date_set",
-            "order": 3,
             "visible": true
         },
         {
@@ -265,34 +245,30 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "color": "",
             "disabledWhilePrinting": false,
             "name": "mem",
-            "order": 6,
             "visible": true
         },
         {
             "alias": "Обновить MCU",
             "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
             "color": "",
-            "disabledWhilePrinting": true,
+            "disabledWhilePrinting": false,
             "name": "update_mcu",
-            "order": 14,
             "visible": false
         },
         {
             "alias": "Проверить систему",
             "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
-            "color": "#00ff00",
+            "color": "",
             "disabledWhilePrinting": true,
             "name": "check_system",
-            "order": 3,
             "visible": true
         },
         {
             "alias": "",
             "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
-            "color": "#ff0000",
-            "disabledWhilePrinting": true,
+            "color": "",
+            "disabledWhilePrinting": false,
             "name": "reboot",
-            "order": 2,
             "visible": true
         },
         {
@@ -301,16 +277,14 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "color": "",
             "disabledWhilePrinting": false,
             "name": "restart_guppy",
-            "order": 11,
             "visible": true
         },
         {
             "alias": "Восстановить печать",
             "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
             "color": "",
-            "disabledWhilePrinting": true,
+            "disabledWhilePrinting": false,
             "name": "zrestore",
-            "order": 10,
             "visible": true
         },
         {
@@ -319,7 +293,6 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "color": "",
             "disabledWhilePrinting": false,
             "name": "mute",
-            "order": 1,
             "visible": true
         },
         {
@@ -328,70 +301,62 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "color": "",
             "disabledWhilePrinting": false,
             "name": "clear_nozzle",
-            "order": 4,
             "visible": true
         },
         {
             "alias": "Выключить принтер",
             "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
-            "color": "#ff0000",
+            "color": "",
             "disabledWhilePrinting": false,
             "name": "shutdown",
-            "order": 10,
-            "visible": false
+            "visible": true
         },
         {
             "alias": "",
-            "categoryId": "69809e15-439e-45e3-b181-42ccbdde50eb",
-            "color": "#ff0000",
+            "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
+            "color": "",
             "disabledWhilePrinting": false,
             "name": "skip_zmod",
-            "order": 6,
             "visible": true
         },
         {
             "alias": "Отключить ZMOD камеру",
-            "categoryId": "09a46273-5af4-4fc4-b232-442934c1e810",
+            "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
             "color": "",
             "disabledWhilePrinting": false,
             "name": "camera_off",
-            "order": 2,
             "visible": true
         },
         {
             "alias": "Перезапустить ZMOD камеру",
-            "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
-            "color": "#008800",
+            "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
+            "color": "",
             "disabledWhilePrinting": false,
             "name": "camera_restart",
-            "order": 12,
             "visible": true
         },
         {
             "alias": "Включить ZMOD камеру",
-            "categoryId": "09a46273-5af4-4fc4-b232-442934c1e810",
+            "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
             "color": "",
             "disabledWhilePrinting": false,
             "name": "camera_on",
-            "order": 1,
             "visible": true
         },
         {
             "alias": "Выключить экран принтера",
             "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
-            "color": "#ff0000",
-            "disabledWhilePrinting": true,
+            "color": "",
+            "disabledWhilePrinting": false,
             "name": "display_off",
-            "order": 8,
             "visible": true
         },
         {
             "alias": "Включить экран принтера",
             "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
-            "color": "#ff0000",
-            "disabledWhilePrinting": true,
+            "color": "",
+            "disabledWhilePrinting": false,
             "name": "display_on",
-            "order": 9,
             "visible": true
         },
         {
@@ -436,11 +401,10 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
         },
         {
             "alias": "Удалить ZMOD",
-            "categoryId": "69809e15-439e-45e3-b181-42ccbdde50eb",
-            "color": "#ff0000",
-            "disabledWhilePrinting": true,
+            "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
+            "color": "",
+            "disabledWhilePrinting": false,
             "name": "remove_zmod",
-            "order": 7,
             "visible": true
         },
         {
@@ -449,7 +413,6 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "color": "",
             "disabledWhilePrinting": true,
             "name": "auto_full_bed_level",
-            "order": 1,
             "visible": true
         },
         {
@@ -458,7 +421,6 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "color": "",
             "disabledWhilePrinting": true,
             "name": "zshaper",
-            "order": 7,
             "visible": true
         },
         {
@@ -467,7 +429,6 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "color": "",
             "disabledWhilePrinting": true,
             "name": "belts_shaper_calibration",
-            "order": 6,
             "visible": true
         },
         {
@@ -476,16 +437,14 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "color": "",
             "disabledWhilePrinting": true,
             "name": "bed_level_screws_tune",
-            "order": 0,
             "visible": true
         },
         {
             "alias": "Контроль сопла",
             "categoryId": "244d667b-c410-4e01-9bf1-e8e0b9deabe2",
-            "color": "#ff0000",
+            "color": "",
             "disabledWhilePrinting": true,
             "name": "nozzle_control",
-            "order": 5,
             "visible": true
         },
         {
@@ -494,7 +453,6 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "color": "",
             "disabledWhilePrinting": false,
             "name": "load_gcode_offset",
-            "order": 8,
             "visible": true
         },
         {
@@ -503,7 +461,6 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "color": "",
             "disabledWhilePrinting": false,
             "name": "set_gcode_offset",
-            "order": 9,
             "visible": false
         },
         {
@@ -516,19 +473,18 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
         },
         {
             "alias": "Отменить печать",
-            "categoryId": "0",
-            "color": "#ff0000",
+            "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
+            "color": "",
             "disabledWhilePrinting": false,
             "name": "cancel_print",
-            "visible": false
+            "visible": true
         },
         {
             "alias": "",
             "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
-            "color": "#008800",
+            "color": "",
             "disabledWhilePrinting": false,
             "name": "led",
-            "order": 0,
             "visible": true
         },
         {
@@ -537,7 +493,6 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "color": "",
             "disabledWhilePrinting": false,
             "name": "led_off",
-            "order": 6,
             "visible": true
         },
         {
@@ -546,7 +501,6 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "color": "",
             "disabledWhilePrinting": false,
             "name": "led_on",
-            "order": 7,
             "visible": true
         },
         {
@@ -555,7 +509,6 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "color": "",
             "disabledWhilePrinting": true,
             "name": "pid_tune_bed",
-            "order": 2,
             "visible": true
         },
         {
@@ -564,17 +517,15 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "color": "",
             "disabledWhilePrinting": false,
             "name": "play_midi",
-            "order": 9,
             "visible": true
         },
         {
             "alias": "",
             "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
-            "color": "#00ff00",
+            "color": "",
             "disabledWhilePrinting": false,
             "name": "resume",
-            "order": 14,
-            "visible": false
+            "visible": true
         },
         {
             "alias": "Калибровка PID экструдера",
@@ -582,7 +533,6 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "color": "",
             "disabledWhilePrinting": true,
             "name": "pid_tune_extruder",
-            "order": 3,
             "visible": true
         },
         {
@@ -612,11 +562,10 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
         {
             "alias": "",
             "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
-            "color": "#ffff00",
+            "color": "",
             "disabledWhilePrinting": false,
             "name": "pause",
-            "order": 13,
-            "visible": false
+            "visible": true
         },
         {
             "alias": "",
@@ -664,7 +613,6 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "color": "",
             "disabledWhilePrinting": false,
             "name": "load_cell_tare",
-            "order": 4,
             "visible": true
         },
         {
@@ -713,7 +661,6 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "color": "",
             "disabledWhilePrinting": false,
             "name": "close_dialogs",
-            "order": 5,
             "visible": true
         },
         {
@@ -730,7 +677,6 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "color": "",
             "disabledWhilePrinting": false,
             "name": "sdcard_print_file",
-            "order": 15,
             "visible": false
         },
         {
@@ -739,7 +685,6 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "color": "",
             "disabledWhilePrinting": false,
             "name": "sdcard_reset_file",
-            "order": 16,
             "visible": false
         },
         {
@@ -756,16 +701,14 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "color": "",
             "disabledWhilePrinting": false,
             "name": "fast_close_dialogs",
-            "order": 3,
             "visible": true
         },
         {
             "alias": "Получить параметры ZMOD",
-            "categoryId": "09a46273-5af4-4fc4-b232-442934c1e810",
+            "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
             "color": "",
             "disabledWhilePrinting": false,
             "name": "get_zmod_data",
-            "order": 3,
             "visible": true
         },
         {
@@ -774,16 +717,14 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "color": "",
             "disabledWhilePrinting": false,
             "name": "new_save_config",
-            "order": 8,
             "visible": true
         },
         {
-            "alias": "Параметры ZMOD",
-            "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
-            "color": "#008800",
+            "alias": "Сохранить параметры ZMOD",
+            "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
+            "color": "",
             "disabledWhilePrinting": false,
             "name": "save_zmod_data",
-            "order": 13,
             "visible": true
         }
     ]

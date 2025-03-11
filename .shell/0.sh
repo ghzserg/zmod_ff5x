@@ -1,13 +1,13 @@
 #!/bin/sh
 
-DATA=/data
-DATA_GCODES=${DATA}
+DATA=/usr/data
+DATA_GCODES=/usr/data/gcodes/
 REMOUNT_MOD=${DATA}/lost+found
 UMOUNT_MOD=${DATA}/.mod
 MOD=${UMOUNT_MOD}/.zmod
-FF5X=0
-KEY_TYPE="ed25519"
-KLIPPER_DIR="/opt/klipper"
-TS_LIB="/opt/tslib-1.12/etc"
-VIDEO="video0"
+FF5X=1
+KEY_TYPE="ecdsa"
+KLIPPER_DIR="/usr/prog/klipper"
+TS_LIB="/usr/prog/tslib-1.12/etc"
+VIDEO="video3"
 V4l2="v4l2-ctl"
