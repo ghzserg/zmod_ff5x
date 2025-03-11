@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 LOG_FILES="/data/logFiles"
 source /opt/config/mod/.shell/0.sh

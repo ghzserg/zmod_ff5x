@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 if [ $2 == 'file' ]; then
     stat -c "check_file '%n' '%a'" "$1"

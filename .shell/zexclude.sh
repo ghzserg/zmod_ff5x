@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 source /opt/config/mod/.shell/0.sh
 
