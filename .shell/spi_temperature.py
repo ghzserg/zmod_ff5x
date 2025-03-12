@@ -7,7 +7,7 @@
 import math, logging
 from . import bus
 
-# Zcontrol 1.3
+# Zcontrol 1.4
 
 ######################################################################
 # SensorBase
@@ -98,9 +98,10 @@ class SensorBase:
         # zmod
         if temp>self.max_temp and self.zcontrol == 1:
             if self.zcommand == 1:
+                gcmd.respond_raw("!! Удар сопла о стол или отрыв детали. PAUSE")
                 self.gcode.run_script("PAUSE")
             else:
-                self.printer.invoke_async_shutdown("Удар сопла о стол или отрыв детали")
+                self.printer.invoke_async_shutdown("Удар сопла о стол или отрыв детали. FIRMWARE_RESTART")
             return
         next_clock      = self.mcu.clock32_to_clock64(params['next_clock'])
         last_read_clock = next_clock - self._report_clock
