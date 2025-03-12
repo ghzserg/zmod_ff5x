@@ -21,7 +21,6 @@ else
         export LD_LIBRARY_PATH=/usr/prog/opencv-4.2.0_mips/lib:$LD_LIBRARY_PATH
         export LD_LIBRARY_PATH=/usr/prog/libzip-1.10.1/lib:$LD_LIBRARY_PATH
         export LD_LIBRARY_PATH=/usr/prog/nim/lib:$LD_LIBRARY_PATH
-        export LD_PRELOAD=/usr/prog/curl-7.55.1-https/lib
     fi
     CCURL="${CURL}"
 fi
