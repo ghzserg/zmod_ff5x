@@ -11,6 +11,10 @@ else if [ -f "/root/printer_data/scripts/version.txt" ]; then
     VER_MOD=$(cat /root/printer_data/scripts/version.txt 2>/dev/null| cut  -d "." -f 1,2)
     VER_MOD_FULL=$(cat /root/printer_data/version.txt 2>/dev/null| cut  -d "." -f 1,2,3)
     fi
+else if [ -f "/usr/data/.mod/.zmod/root/printer_data/version.txt" ]; then
+    VER_MOD=$(cat /usr/data/.mod/.zmod/root/printer_data/version.txt 2>/dev/null| cut  -d "." -f 1,2)
+    VER_MOD_FULL=$(cat /usr/data/.mod/.zmod/root/printer_data/version.txt 2>/dev/null| cut  -d "." -f 1,2,3)
+    fi
 fi
 
 echo "Установлено с флешки: ${VER_MOD_FULL}. Обновление с Fluidd/Mainsaill: ${VER_FF_FULL}"
