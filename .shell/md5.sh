@@ -80,7 +80,7 @@ check_file()
 
 " >list.link
 
-echo "echo 'Проверяю права на каталоги...'">>list.link
+echo "echo 'Проверка прав на каталоги...'">>list.link
 find .  \
     -type d \
     -and -not -name "*.pyc" \
@@ -173,7 +173,7 @@ find .  \
     -and -not -path "./Settings/Trolltech.conf" \
     -exec ./link.sh {} link \; >>list.link
 
-echo "echo 'Проверяю права на файлы...'">>list.link
+echo "echo 'Проверка прав на файлы...'">>list.link
 find .  \
     -type f \
     -and -not -name "*.pyc" \

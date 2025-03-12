@@ -29,7 +29,7 @@ check_file()
 }
 
 
-echo 'Проверяю права на каталоги...'
+echo 'Проверка прав на каталоги...'
 check_dir '.' '755'
 check_dir './media' '755'
 check_dir './run' '755'
@@ -1878,7 +1878,7 @@ check_link './etc/dropbear' '/var/run/dropbear'
 check_link './etc/mtab' '../proc/self/mounts'
 check_link './etc/mc/mc.keymap' 'mc.default.keymap'
 check_link './bin' 'usr/bin'
-echo 'Проверяю права на файлы...'
+echo 'Проверка прав на файлы...'
 check_file './usr/sbin/tune2fs' '755'
 check_file './usr/sbin/dumpe2fs' '755'
 check_file './usr/sbin/filefrag' '755'
