@@ -2,7 +2,12 @@
 
 set -x
 
-source /opt/config/mod/.shell/0.sh
+if [ -f /opt/config/mod/.shell/0.sh ]; then
+    source /opt/config/mod/.shell/0.sh
+else if [ -f /usr/data/config/mod/.shell/0.sh ]; then
+    source /usr/data/config/mod/.shell/0.sh
+fi
+fi
 
 remove_base()
 {
@@ -70,7 +75,11 @@ start_moon()
     grep -q '^MACHINE=Adventurer5M$' /opt/auto_run.sh && MACHINE=Adventurer5M
     grep -q "^MACHINE=AD5X" /usr/prog/app_startup.sh && MACHINE=AD5X
     [ ${FF5X} -eq 0 ] && VER=$(cat /root/version)
-    [ ${FF5X} -eq 1 ] && VER=$(cat ${MOD}/root/printer_data/version.txt)
+    [ ${FF5X} -eq 1 ] && VER=$(find /usr/prog/PROGRAM/software/ -type d | sed 's|/usr/prog/PROGRAM/software/||' | grep .)
+
+    # Запуск камеры
+    [ ${FF5X} -eq 0 ] && ${MOD_CONF}/mod/.shell/S99camera init
+
     chroot ${MOD} /opt/config/mod/.shell/root/start.sh "$SWAP" "$VER" "$MACHINE" &
 
     [ ${FF5X} -eq 0 ] && mkdir -p ${REMOUNT_MOD}
@@ -122,7 +131,6 @@ start_prepare()
     mkdir -p ${MOD}/root/printer_data/comms
     mkdir -p ${MOD}/root/printer_data/certs
 
-
 #    if  ! [ -d ${MOD}/opt/klipper/docs ]
 #     then
 #        mkdir -p ${MOD}/opt/klipper/docs
@@ -138,9 +146,6 @@ start_prepare()
     [ ${FF5X} -eq 0 ] && cat /etc/localtime >/tmp/localtime
     cp ${TS_LIB}/pointercal /tmp/pointercal
     cp ${TS_LIB}/ts.conf /tmp/ts.conf
-
-    # Запуск камеры
-    [ ${FF5X} -eq 0 ] && /etc/init.d/S99camera init
 
     start_moon
 }

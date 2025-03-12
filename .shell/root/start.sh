@@ -4,7 +4,6 @@ source /opt/config/mod/.shell/0.sh
 
 prepare_chroot()
 {
-
     echo ZMOD >/ZMOD
     [ ${FF5X} -eq 0 ] && mv /tmp/localtime /etc/localtime
 
@@ -57,7 +56,6 @@ if [ ${FF5X} -eq 0 ]; then
     fi
 fi
 
-date 2025.03.03-00:00:00
 prepare_chroot
 
 if grep -q display_off.cfg /opt/config/printer.cfg; then
@@ -103,10 +101,6 @@ mkdir -p ${DATA_GCODES}/tmp
 
 # Пробуем синхронизировать время
 ntpd -dd -n -q -p ru.pool.ntp.org || \
-ntpd -dd -n -q -p 1.ru.pool.ntp.org || \
-ntpd -dd -n -q -p 2.ru.pool.ntp.org || \
-ntpd -dd -n -q -p 3.ru.pool.ntp.org || \
-ntpd -dd -n -q -p 4.ru.pool.ntp.org || \
 ntpd -dd -n -q -p ntp1.vniiftri.ru || \
 ntpd -dd -n -q -p ntp2.vniiftri.ru || \
 ntpd -dd -n -q -p ntp3.vniiftri.ru || \
@@ -138,22 +132,17 @@ git log | head -3|grep Date >/opt/config/mod_data/date.txt
 echo "ZSSH_RELOAD" >/tmp/printer
 
 # 10 минут пробуем получить время
-for i in `seq 0 50`
-    do 
-        ntpd -dd -n -q -p ru.pool.ntp.org && break
-        ntpd -dd -n -q -p 1.ru.pool.ntp.org && break
-        ntpd -dd -n -q -p 2.ru.pool.ntp.org && break
-        ntpd -dd -n -q -p 3.ru.pool.ntp.org && break
-        ntpd -dd -n -q -p 4.ru.pool.ntp.org && break
-        ntpd -dd -n -q -p ntp1.vniiftri.ru && break
-        ntpd -dd -n -q -p ntp2.vniiftri.ru && break
-        ntpd -dd -n -q -p ntp3.vniiftri.ru && break
-        ntpd -dd -n -q -p ntp4.vniiftri.ru && break
-        ntpd -dd -n -q -p ntp5.vniiftri.ru && break
-        ntpd -dd -n -q -p ntp.sstf.nsk.ru && break
-        ntpd -dd -n -q -p timesstf.sstf.nsk.ru && break
-        ntpd -dd -n -q -p ntp.kam.vniiftri.net && break
-        sleep 5
+for i in `seq 0 50`; do 
+    ntpd -dd -n -q -p ru.pool.ntp.org && break
+    ntpd -dd -n -q -p ntp1.vniiftri.ru && break
+    ntpd -dd -n -q -p ntp2.vniiftri.ru && break
+    ntpd -dd -n -q -p ntp3.vniiftri.ru && break
+    ntpd -dd -n -q -p ntp4.vniiftri.ru && break
+    ntpd -dd -n -q -p ntp5.vniiftri.ru && break
+    ntpd -dd -n -q -p ntp.sstf.nsk.ru && break
+    ntpd -dd -n -q -p timesstf.sstf.nsk.ru && break
+    ntpd -dd -n -q -p ntp.kam.vniiftri.net && break
+    sleep 5
 done
 date
 echo "Start END"
