@@ -12,7 +12,7 @@ restore_file()
 {
     fname="$1"
     echo -n "Восстанавливаю файл $fname: "
-    if /opt/cloud/curl-7.55.1-https/bin/curl --create-dirs -s -k -H 'Accept: application/vnd.github.v3.raw' -o "$fname" -L "https://api.github.com/repos/ghzserg/zmod/contents/stock${fname}"; then
+    if ${CURL} --create-dirs -s -k -H 'Accept: application/vnd.github.v3.raw' -o "$fname" -L "https://api.github.com/repos/ghzserg/zmod/contents/stock${fname}"; then
         chmod 777 "$fname"
         echo "Успешно"
     else

@@ -192,7 +192,7 @@ fix_config()
         echo "#!/bin/sh
 unset LD_PRELOAD
 
-#/opt/cloud/curl-7.55.1-https/bin/curl -k https://mail.ru
+#${CURL} -k https://mail.ru
 " >${MOD_CONF}/mod_data/power_off.sh
     chmod +x ${MOD_CONF}/mod_data/power_off.sh
     fi

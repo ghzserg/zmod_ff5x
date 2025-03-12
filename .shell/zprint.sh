@@ -9,9 +9,9 @@ source /opt/config/mod/.shell/0.sh
 if [ $# -ne 2 ]; then echo "Используйте $0 PRINT|CLOSE FILE"; exit 1; fi
 
 if [ -f /ZMOD ]; then
-    CURL="/usr/bin/curl"
+    CCURL="/usr/bin/curl"
 else
-    CURL="/opt/cloud/curl-7.55.1-https/bin/curl"
+    CCURL="${CURL}"
 fi
 
 ip=$(ip addr | grep inet | grep wlan0 | awk -F" " '{print $2}'| sed -e 's/\/.*$//')
@@ -21,7 +21,7 @@ serialNumber=$(cat /opt/config/Adventurer5M.json | grep "printerSerialNumber"| c
 checkCode=$(cat /opt/config/Adventurer5M.json | grep "lanCode"| cut  -d ":" -f2| awk '{print $1}' | sed 's|[",]||g')
 
 if [ "$1" == "CLOSE" ]; then
-    $CURL -m 60 -s \
+    ${CCURL} -m 60 -s \
         http://$ip:8898/control \
         -H 'Content-Type: application/json' \
         -d "{\"serialNumber\":\"$serialNumber\",\"checkCode\":\"$checkCode\",\"payload\":{\"cmd\":\"stateCtrl_cmd\",\"args\":{\"action\":\"setClearPlatform\"}}}" || \
@@ -34,7 +34,7 @@ else
             exit 1
         fi
 
-        $CURL -m 60 -s \
+        ${CCURL} -m 60 -s \
             http://$ip:8898/printGcode \
             -H 'Content-Type: application/json' \
             -d "{\"serialNumber\":\"$serialNumber\",\"checkCode\":\"$checkCode\",\"fileName\":\"$2\",\"levelingBeforePrint\":true}'" || \
