@@ -16,8 +16,6 @@ prepare_chroot()
 
     [ -L /root/printer_data/scripts ] || ln -s /opt/config/mod/.shell /root/printer_data/scripts
 
-    #[ -L /root/klipper-env/lib/python3.12/site-packages/numpy ] || ln -s /usr/lib/python3.12/site-packages/numpy /root/klipper-env/lib/python3.12/site-packages/
-
     [ -d /etc/init.d/ ] || mkdir -p /etc/init.d/
 
     [ -L /etc/init.d/S98zssh ] || ln -s /opt/config/mod/.shell/S98zssh /etc/init.d/
@@ -27,7 +25,7 @@ prepare_chroot()
     [ -L /etc/init.d/S35tslib ] || ln -s /opt/config/mod/.shell/root/S35tslib /etc/init.d/
     [ -L /etc/init.d/S80guppyscreen ] || ln -s /opt/config/mod/.shell/root/S80guppyscreen /etc/init.d/
 
-    #[ -L /etc/init.d/S60klipper ] || ln -s /opt/config/mod/.shell/root/S60klipper /etc/init.d/
+
     [ -L /etc/init.d/S65moonraker ] || ln -s /opt/config/mod/.shell/root/S65moonraker /etc/init.d/
     [ -L /etc/init.d/S70httpd ] || ln -s /opt/config/mod/.shell/root/S70httpd /etc/init.d/
 
@@ -38,8 +36,10 @@ prepare_chroot()
     [ -L /usr/bin/audio_midi.sh ] || ln -s /opt/config/mod/.shell/root/audio/audio_midi.sh /usr/bin/audio_midi.sh
     [ -L /usr/bin/audio.py ] || ln -s /opt/config/mod/.shell/root/audio/audio.py /usr/bin/audio.py
 
-    [ -L /bin/boot_eboard_mcu ] || ln -s /opt/config/mod/.shell/root/mcu/boot_eboard_mcu /bin/boot_eboard_mcu
-    [ -L /bin/backlight ] || ln -s /opt/config/mod/.shell/root/backlight /bin/backlight
+#    [ -L /bin/boot_eboard_mcu ] || ln -s /opt/config/mod/.shell/root/mcu/boot_eboard_mcu /bin/boot_eboard_mcu
+#    [ -L /bin/backlight ] || ln -s /opt/config/mod/.shell/root/backlight /bin/backlight
+#    [ -L /root/klipper-env/lib/python3.12/site-packages/numpy ] || ln -s /usr/lib/python3.12/site-packages/numpy /root/klipper-env/lib/python3.12/site-packages/
+#    [ -L /etc/init.d/S60klipper ] || ln -s /opt/config/mod/.shell/root/S60klipper /etc/init.d/
 
     if [ ${FF5X} -eq 0 ]; then
         rm -rf /root/moonraker-env/lib/python3.12/site-packages/uvloop*  || echo "uvloop уже убит"
@@ -100,6 +100,9 @@ mkdir -p ${DATA_GCODES}/tmp
 #fi
 
 # Пробуем синхронизировать время
+/opt/config/mod/.shell/root/S65moonraker start
+/opt/config/mod/.shell/root/S70httpd start
+
 ntpd -dd -n -q -p ru.pool.ntp.org || \
 ntpd -dd -n -q -p 1.ru.pool.ntp.org || \
 ntpd -dd -n -q -p 2.ru.pool.ntp.org || \
@@ -113,9 +116,6 @@ ntpd -dd -n -q -p ntp5.vniiftri.ru || \
 ntpd -dd -n -q -p ntp.sstf.nsk.ru || \
 ntpd -dd -n -q -p timesstf.sstf.nsk.ru || \
 ntpd -dd -n -q -p ntp.kam.vniiftri.net
-
-/opt/config/mod/.shell/root/S65moonraker start
-/opt/config/mod/.shell/root/S70httpd start
 
 test_file()
 {
