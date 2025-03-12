@@ -3,7 +3,6 @@
 source /opt/config/mod/.shell/0.sh
 
 [ ${FF5X} -eq 1 ] && echo "Еще не реализованно" && exit 0
-[ -f /ZMOD ] && exit 0
 
 F="${KLIPPER_DIR}/klippy/toolhead.py"
 
