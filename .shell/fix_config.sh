@@ -96,7 +96,7 @@ pin:PB7
     fi
 
     # Возвращаем gcode_button check_level_pin
-    if ! grep -q '^\[gcode_button check_level_pin' ${MOD_CONF}/printer.base.cfg
+    if [ ${FF5X} -eq 0 ] && ! grep -q '^\[gcode_button check_level_pin' ${MOD_CONF}/printer.base.cfg
         then
             echo '
 [gcode_button check_level_pin]
@@ -106,7 +106,7 @@ press_gcode:
 ' >>${MOD_CONF}/printer.base.cfg
     fi
 
-    if grep -q "motion_sensor = 1" ${MOD_CONF}/mod_data/variables.cfg; then
+    if [ ${FF5X} -eq 0 ] && grep -q "motion_sensor = 1" ${MOD_CONF}/mod_data/variables.cfg; then
         # Возвращаем filament_motion_sensor e0_sensor
         if ! grep -q '\[filament_motion_sensor e0_sensor' ${MOD_CONF}/printer.base.cfg
             then
@@ -122,7 +122,7 @@ runout_gcode:
         fi
     else
         # Возвращаем filament_switch_sensor e0_sensor
-        if ! grep -q '\[filament_switch_sensor e0_sensor' ${MOD_CONF}/printer.base.cfg
+        if [ ${FF5X} -eq 0 ] && ! grep -q '\[filament_switch_sensor e0_sensor' ${MOD_CONF}/printer.base.cfg
             then
                 echo '
 [filament_switch_sensor e0_sensor]
@@ -368,7 +368,7 @@ max_temp: 130
     fi
 
     # Возвращаем gcode_button check_level_pin
-    if ! grep -q '^\[gcode_button check_level_pin' ${PRINTER_BASE}
+    if [ ${FF5X} -eq 0 ] && ! grep -q '^\[gcode_button check_level_pin' ${PRINTER_BASE}
         then
             NEED_REBOOT=1
             cd ${MOD_CONF}
@@ -382,7 +382,7 @@ press_gcode:
     fi
 
     # Удаляем filament_switch_sensor e0_sensor
-    if grep -q '^\[filament_switch_sensor e0_sensor' ${PRINTER_BASE}
+    if [ ${FF5X} -eq 0 ] && grep -q '^\[filament_switch_sensor e0_sensor' ${PRINTER_BASE}
         then
             NEED_REBOOT=1
             cd ${MOD_CONF}
@@ -401,7 +401,7 @@ press_gcode:
     fi
 
     # Удаляем filament_motion_sensor e0_sensor
-    if grep -q '^\[filament_motion_sensor e0_sensor' ${PRINTER_BASE}
+    if [ ${FF5X} -eq 0 ] && grep -q '^\[filament_motion_sensor e0_sensor' ${PRINTER_BASE}
         then
             NEED_REBOOT=1
             cd ${MOD_CONF}
@@ -447,29 +447,31 @@ stepper: stepper_x, stepper_y, stepper_z
         fi
     fi
 
-    ! grep -q "motion_sensor" ${MOD_CONF}/mod_data/variables.cfg && sed -i '2 i\motion_sensor = 0' ${MOD_CONF}/mod_data/variables.cfg
+    if [ ${FF5X} -eq 0 ]; then
+        ! grep -q "motion_sensor" ${MOD_CONF}/mod_data/variables.cfg && sed -i '2 i\motion_sensor = 0' ${MOD_CONF}/mod_data/variables.cfg
 
-    # Режим с экраном
-    if grep -q '^\[include ./mod/mod.cfg\]' ${PRINTER_CFG}; then
-        grep -q '^\[include ./mod/switch_sensor_display_off.cfg\]' ${PRINTER_CFG} && sed -i '/^\[include .\/mod\/switch_sensor_display_off.cfg\]/d' ${PRINTER_CFG} && NEED_REBOOT=1
-        if grep -q "motion_sensor = 1" ${MOD_CONF}/mod_data/variables.cfg; then
-            ! grep -q '^\[include ./mod/motion_sensor.cfg\]'       ${PRINTER_CFG} && sed -i '/^\[include \.\/mod\/mod\.cfg\]/a [include ./mod/motion_sensor.cfg]' ${PRINTER_CFG} && NEED_REBOOT=1
-              grep -q '^\[include ./mod/switch_sensor.cfg\]'       ${PRINTER_CFG} && sed -i '/^\[include .\/mod\/switch_sensor.cfg\]/d' ${PRINTER_CFG} && NEED_REBOOT=1
-        else
-            ! grep -q '^\[include ./mod/switch_sensor.cfg\]'       ${PRINTER_CFG} && sed -i '/^\[include \.\/mod\/mod\.cfg\]/a [include ./mod/switch_sensor.cfg]' ${PRINTER_CFG} && NEED_REBOOT=1
-              grep -q '^\[include ./mod/motion_sensor.cfg\]'       ${PRINTER_CFG} && sed -i '/^\[include .\/mod\/motion_sensor.cfg\]/d' ${PRINTER_CFG} && NEED_REBOOT=1
+        # Режим с экраном
+        if grep -q '^\[include ./mod/mod.cfg\]' ${PRINTER_CFG}; then
+            grep -q '^\[include ./mod/switch_sensor_display_off.cfg\]' ${PRINTER_CFG} && sed -i '/^\[include .\/mod\/switch_sensor_display_off.cfg\]/d' ${PRINTER_CFG} && NEED_REBOOT=1
+            if grep -q "motion_sensor = 1" ${MOD_CONF}/mod_data/variables.cfg; then
+                ! grep -q '^\[include ./mod/motion_sensor.cfg\]'       ${PRINTER_CFG} && sed -i '/^\[include \.\/mod\/mod\.cfg\]/a [include ./mod/motion_sensor.cfg]' ${PRINTER_CFG} && NEED_REBOOT=1
+                  grep -q '^\[include ./mod/switch_sensor.cfg\]'       ${PRINTER_CFG} && sed -i '/^\[include .\/mod\/switch_sensor.cfg\]/d' ${PRINTER_CFG} && NEED_REBOOT=1
+            else
+                ! grep -q '^\[include ./mod/switch_sensor.cfg\]'       ${PRINTER_CFG} && sed -i '/^\[include \.\/mod\/mod\.cfg\]/a [include ./mod/switch_sensor.cfg]' ${PRINTER_CFG} && NEED_REBOOT=1
+                  grep -q '^\[include ./mod/motion_sensor.cfg\]'       ${PRINTER_CFG} && sed -i '/^\[include .\/mod\/motion_sensor.cfg\]/d' ${PRINTER_CFG} && NEED_REBOOT=1
+            fi
         fi
-    fi
 
-    # Режим без экрана
-    if grep -q '^\[include ./mod/display_off.cfg\]' ${PRINTER_CFG}; then
-        grep -q '^\[include ./mod/switch_sensor.cfg\]'                   ${PRINTER_CFG} && sed -i '/^\[include .\/mod\/switch_sensor.cfg\]/d' ${PRINTER_CFG} && NEED_REBOOT=1
-        if grep -q "motion_sensor = 1" ${MOD_CONF}/mod_data/variables.cfg; then
-            ! grep -q '^\[include ./mod/motion_sensor.cfg\]' ${PRINTER_CFG} && sed -i '/^\[include \.\/mod\/display_off\.cfg\]/a [include ./mod/motion_sensor.cfg]' ${PRINTER_CFG} && NEED_REBOOT=1
-              grep -q '^\[include ./mod/switch_sensor_display_off.cfg\]' ${PRINTER_CFG} && sed -i '/^\[include .\/mod\/switch_sensor_display_off.cfg\]/d' ${PRINTER_CFG} && NEED_REBOOT=1
-        else
-            ! grep -q '^\[include ./mod/switch_sensor_display_off.cfg\]' ${PRINTER_CFG} && sed -i '/^\[include \.\/mod\/display_off\.cfg\]/a [include ./mod/switch_sensor_display_off.cfg]' ${PRINTER_CFG} && NEED_REBOOT=1
-              grep -q '^\[include ./mod/motion_sensor.cfg\]'             ${PRINTER_CFG} && sed -i '/^\[include .\/mod\/motion_sensor.cfg\]/d' ${PRINTER_CFG} && NEED_REBOOT=1
+        # Режим без экрана
+        if grep -q '^\[include ./mod/display_off.cfg\]' ${PRINTER_CFG}; then
+            grep -q '^\[include ./mod/switch_sensor.cfg\]'                   ${PRINTER_CFG} && sed -i '/^\[include .\/mod\/switch_sensor.cfg\]/d' ${PRINTER_CFG} && NEED_REBOOT=1
+            if grep -q "motion_sensor = 1" ${MOD_CONF}/mod_data/variables.cfg; then
+                ! grep -q '^\[include ./mod/motion_sensor.cfg\]' ${PRINTER_CFG} && sed -i '/^\[include \.\/mod\/display_off\.cfg\]/a [include ./mod/motion_sensor.cfg]' ${PRINTER_CFG} && NEED_REBOOT=1
+                  grep -q '^\[include ./mod/switch_sensor_display_off.cfg\]' ${PRINTER_CFG} && sed -i '/^\[include .\/mod\/switch_sensor_display_off.cfg\]/d' ${PRINTER_CFG} && NEED_REBOOT=1
+            else
+                ! grep -q '^\[include ./mod/switch_sensor_display_off.cfg\]' ${PRINTER_CFG} && sed -i '/^\[include \.\/mod\/display_off\.cfg\]/a [include ./mod/switch_sensor_display_off.cfg]' ${PRINTER_CFG} && NEED_REBOOT=1
+                  grep -q '^\[include ./mod/motion_sensor.cfg\]'             ${PRINTER_CFG} && sed -i '/^\[include .\/mod\/motion_sensor.cfg\]/d' ${PRINTER_CFG} && NEED_REBOOT=1
+            fi
         fi
     fi
 
@@ -499,8 +501,8 @@ stepper: stepper_x, stepper_y, stepper_z
             sync
             cat ${PRINTER_CFG} >${PRINTER_CFG_ORIG}
     fi
-    diff -u ${PRINTER_BASE} ${PRINTER_BASE_ORIG}
-    diff -u ${PRINTER_CFG} ${PRINTER_CFG_ORIG}
+    diff -u ${PRINTER_BASE_ORIG} ${PRINTER_BASE}
+    diff -u ${PRINTER_CFG_ORIG} ${PRINTER_CFG}
     echo "END fix_config"
 
     if [ "$1" == "start" ] && [ ${FF5X} -eq 0 ]; then
