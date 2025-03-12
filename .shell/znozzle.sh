@@ -10,4 +10,4 @@ fi
 sync
 sleep 5
 sync
-reboot
+grep -q display_off.cfg /opt/config/printer.cfg && echo "FIRMWARE_RESTART" >/tmp/printer || reboot
