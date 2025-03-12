@@ -57,7 +57,6 @@ if [ ${FF5X} -eq 0 ]; then
     fi
 fi
 
-date 2024.03.03-00:00:00
 prepare_chroot
 
 if grep -q display_off.cfg /opt/config/printer.cfg; then
