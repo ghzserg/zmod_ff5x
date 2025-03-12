@@ -7,7 +7,7 @@
 import math, logging
 from . import bus
 
-# Zcontrol 1.2
+# Zcontrol 1.3
 
 ######################################################################
 # SensorBase
@@ -62,9 +62,9 @@ class SensorBase:
             else:
                 gcmd.respond_info("Вес: %d; Контроль настроен и не активен." % (self.max_temp))
             if self.zcommand == 1:
-                gcmd.respond_info("При сработке вызывается PAUSE. // ZCONTROL_PAUSE" % (self.max_temp))
+                gcmd.respond_info("При сработке вызывается PAUSE. // ZCONTROL_PAUSE")
             else:
-                gcmd.respond_info("При сработке отключается Klipper. // ZCONTROL_ABORT" % (self.max_temp))
+                gcmd.respond_info("При сработке отключается Klipper. // ZCONTROL_ABORT")
 
     def cmd_ZCONTROL_OFF(self, gcmd):
         self.zcontrol = 0
