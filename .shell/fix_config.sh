@@ -23,7 +23,8 @@ china_block()
 
 check_link()
 {
-    a=$(readlink "$1" 2>/dev/null)
+#    a=$(readlink "$1" 2>/dev/null)
+    a=$(readlink "$1")
     if [ "$a" != "$2" ]; then
         echo -n "$1 - Ошибочная ссылка ($a!=$2): "
         rm -f "$1" 2>/dev/null
