@@ -5,6 +5,8 @@ source /opt/config/mod/.shell/0.sh
 unset LD_PRELOAD
 unset LD_LIBRARY_PATH
 
+[ ${FF5X} -eq 1 ] && export LD_PRELOAD=/usr/prog/curl-7.55.1-https/lib
+
 if [ $# -eq 1 ]; then
     RET=$(${PYTHON} /opt/config/mod/.shell/zsend.py "$1" 2>&1)
     [ $? -ne 0 ] && echo "Ошибка передачи сообщения на родной экран. Он у вас работает?"

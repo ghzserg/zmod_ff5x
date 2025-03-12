@@ -11,6 +11,7 @@ if [ $# -ne 2 ]; then echo "Используйте $0 PRINT|CLOSE FILE"; exit 1;
 if [ -f /ZMOD ]; then
     CCURL="/usr/bin/curl"
 else
+    [ ${FF5X} -eq 1 ] && export LD_PRELOAD=/usr/prog/curl-7.55.1-https/lib
     CCURL="${CURL}"
 fi
 
