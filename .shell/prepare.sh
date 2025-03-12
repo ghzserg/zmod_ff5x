@@ -98,11 +98,11 @@ start_prepare()
     mkdir -p ${MOD}/opt/config
     mount --bind ${MOD_CONF} ${MOD}/opt/config
 
-    if [ ${FF5X} -eq 1 ]
+    if [ ${FF5X} -eq 1 ]; then
         mkdir -p ${MOD}${MOD_CONF}/config/
         mount --bind ${MOD_CONF}/config/ ${MOD}${MOD_CONF}/config/
         mount --bind ${MOD}/opt/ /opt
-        mount --bind /usr/data/config/ /opt/config/
+        mount --bind ${MOD_CONF}/config/ /opt/config/
 
         mkdir -p ${MOD}${LOG_FILES}
         mount --bind ${LOG_FILES}/ ${MOD}${LOG_FILES}/
@@ -145,8 +145,7 @@ start_prepare()
     start_moon
 }
 
-if [ -f ${MOD_CONF}/mod/SKIP_ZMOD ]
- then
+if [ -f ${MOD_CONF}/mod/SKIP_ZMOD ]; then
     rm -f ${MOD_CONF}/mod/SKIP_ZMOD
     [ ${FF5X} -eq 0 ] && mount --bind ${REMOUNT_MOD} ${UMOUNT_MOD}
     exit 0
