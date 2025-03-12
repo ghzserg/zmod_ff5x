@@ -2,7 +2,8 @@
 
 set -x
 
-source /opt/config/mod/.shell/0.sh
+WORKDIR=$(dirname $0)
+source $WORKDIR/0.sh
 
 remove_base()
 {

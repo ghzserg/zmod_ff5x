@@ -1,7 +1,8 @@
 #!/bin/sh
 
 set -x
-source /opt/config/mod/.shell/0.sh
+WORKDIR=$(dirname $0)
+source $WORKDIR/0.sh
 
 # Разблокировка
 china_razbl()
@@ -69,7 +70,7 @@ restore_base()
     # Удаляем controller_fan driver_fan
     if grep -q '^\[controller_fan driver_fan' ${MOD_CONF}/printer.base.cfg
         then
-            cd ${MOD_CONF}/
+            cd ${MOD_CONF}
             sed -e '/^\[controller_fan driver_fan/,/^\[/d' printer.base.cfg >printer.base.tmp
             diff -u printer.base.cfg printer.base.tmp | grep -v "printer.base.cfg" |grep "^-" | cut -b 2- >heater_bed.txt
             sed -i '$d' heater_bed.txt
@@ -136,14 +137,14 @@ fix_config()
     echo "START fix_config"
     date
     fstrim ${DATA} -v
-    fstrim / -v
+    [ ${FF5X} -eq 0 ] && fstrim / -v || fstrim /usr/prog -v
 
     [ -f /etc/profile.d/path.sh ] || echo "export PATH=\"$PATH:/opt/bin/:/opt/sbin/\"" >/etc/profile.d/path.sh
 
     [ -f ${MOD_CONF}/mod_data/variables.cfg ] || echo "[Variables]" >${MOD_CONF}/mod_data/variables.cfg
 
     # Защита от самонадеянных, кто выклчюает SWAP при 128 мегабайтах оперативной памяти
-    if grep -q "use_swap = 0" ${MOD_CONF}/mod_data/variables.cfg; then
+    if [ ${FF5X} -eq 0 ] && grep -q "use_swap = 0" ${MOD_CONF}/mod_data/variables.cfg; then
         MEM=$(cat /proc/meminfo | grep MemTotal| awk '{print $2}')
         MEM=$(($MEM/1024))
         [ "$MEM" -le 128 ] && sed -i "s/use_swap = 0/use_swap = 1/" ${MOD_CONF}/mod_data/variables.cfg
@@ -151,13 +152,13 @@ fix_config()
 
     [ -f ${MOD_CONF}/mod_data/nozzle.cfg ] || echo "">${MOD_CONF}/mod_data/nozzle.cfg
 
-    [ -f /etc/init.d/S50sshd ] && rm -f /etc/init.d/S50sshd
-    [ -f /etc/init.d/S55date ] && rm -f /etc/init.d/S55date
-    [ -f /bin/dropbearmulti ] && rm -f /bin/dropbearmulti
-    [ -L /etc/init.d/S98camera ] && rm -f /etc/init.d/S98camera
-    [ -f /etc/init.d/S98camera ] && rm -f /etc/init.d/S98camera
-
     if [ ${FF5X} -eq 0 ]; then
+        [ -f /etc/init.d/S50sshd ] && rm -f /etc/init.d/S50sshd
+        [ -f /etc/init.d/S55date ] && rm -f /etc/init.d/S55date
+        [ -f /bin/dropbearmulti ] && rm -f /bin/dropbearmulti
+        [ -L /etc/init.d/S98camera ] && rm -f /etc/init.d/S98camera
+        [ -f /etc/init.d/S98camera ] && rm -f /etc/init.d/S98camera
+
         check_link /bin/dropbearkey /opt/config/mod/.shell/eabi/dropbear
         check_link /bin/dropbear /opt/config/mod/.shell/eabi/dropbear
         check_link /bin/dbclient /opt/config/mod/.shell/eabi/dropbear
@@ -239,8 +240,8 @@ unset LD_PRELOAD
         rm -f ${KLIPPER_DIR}/klippy/extras/load_cell_tare.py
     fi
 
-    [[ $(tail -c1 ${PRINTER_BASE}) != "" ]] && echo >> ${PRINTER_BASE} && NEED_REBOOT=1
-    if [[ $(tail -n2 "$PRINTER_BASE" | wc -l) -lt 2 || $(tail -n2 "$PRINTER_BASE" | grep -vc '^$') -ne 0 ]]; then
+    [ $(tail -c1 ${PRINTER_BASE}) != "" ] && echo >> ${PRINTER_BASE} && NEED_REBOOT=1
+    if [ $(tail -n2 "$PRINTER_BASE" | wc -l) -lt 2 ] || [ $(tail -n2 "$PRINTER_BASE" | grep -vc '^$') -ne 0 ]; then
         echo >> "$PRINTER_BASE"
         NEED_REBOOT=1
     fi
@@ -275,6 +276,7 @@ unset LD_PRELOAD
     if ! grep -q '^\[heater_bed' ${PRINTER_CFG}
         then
             NEED_REBOOT=1
+            cd ${MOD_CONF}
 
             # Copy and remove from printer.base.cfg
             if grep -q '^\[heater_bed' ${PRINTER_BASE}
@@ -318,6 +320,7 @@ max_temp: 130
     if grep -q '^\[heater_bed' ${PRINTER_BASE}
         then
             NEED_REBOOT=1
+            cd ${MOD_CONF}
 
             sed -e '/^\[heater_bed/,/^\[/d' ${PRINTER_BASE} >printer.base.tmp
             diff -u ${PRINTER_BASE} printer.base.tmp | grep -v "printer.base.cfg" |grep "^-" | cut -b 2- >heater_bed.txt
@@ -333,6 +336,7 @@ max_temp: 130
     if grep -q '^\[fan_generic pcb_fan' ${PRINTER_BASE}
         then
             NEED_REBOOT=1
+            cd ${MOD_CONF}
 
             sed -e '/^\[fan_generic pcb_fan/,/^\[/d' ${PRINTER_BASE} >printer.base.tmp
             diff -u ${PRINTER_BASE} printer.base.tmp | grep -v "printer.base.cfg" |grep "^-" | cut -b 2- >heater_bed.txt
@@ -348,6 +352,7 @@ max_temp: 130
     if grep -q '^\[controller_fan pcb_fan' ${PRINTER_BASE}
         then
             NEED_REBOOT=1
+            cd ${MOD_CONF}
 
             sed -e '/^\[controller_fan pcb_fan/,/^\[/d' ${PRINTER_BASE} >printer.base.tmp
             diff -u ${PRINTER_BASE} printer.base.tmp | grep -v "printer.base.cfg" |grep "^-" | cut -b 2- >heater_bed.txt
@@ -363,6 +368,8 @@ max_temp: 130
     if ! grep -q '^\[gcode_button check_level_pin' ${PRINTER_BASE}
         then
             NEED_REBOOT=1
+            cd ${MOD_CONF}
+
             echo '
 [gcode_button check_level_pin]
 pin: !PE0
@@ -375,6 +382,7 @@ press_gcode:
     if grep -q '^\[filament_switch_sensor e0_sensor' ${PRINTER_BASE}
         then
             NEED_REBOOT=1
+            cd ${MOD_CONF}
 
             ! grep -q "motion_sensor" ${MOD_CONF}/mod_data/variables.cfg && sed -i '2 i\motion_sensor = 0' ${MOD_CONF}/mod_data/variables.cfg
             #sed -i "s/^motion_sensor.*/motion_sensor = 0/" ${MOD_CONF}/mod_data/variables.cfg
@@ -393,6 +401,7 @@ press_gcode:
     if grep -q '^\[filament_motion_sensor e0_sensor' ${PRINTER_BASE}
         then
             NEED_REBOOT=1
+            cd ${MOD_CONF}
 
             ! grep -q "motion_sensor" ${MOD_CONF}/mod_data/variables.cfg && sed -i '2 i\motion_sensor = 1' ${MOD_CONF}/mod_data/variables.cfg
             sed -i "s/^motion_sensor.*/motion_sensor = 1/" ${MOD_CONF}/mod_data/variables.cfg
@@ -411,6 +420,8 @@ press_gcode:
     if ! grep -q '^\[controller_fan driver_fan' ${PRINTER_BASE}
         then
             NEED_REBOOT=1
+            cd ${MOD_CONF}
+
             echo '
 [controller_fan driver_fan]
 pin:PB7
@@ -459,8 +470,8 @@ stepper: stepper_x, stepper_y, stepper_z
         fi
     fi
 
-    [[ $(tail -c1 ${PRINTER_BASE}) != "" ]] && echo >> ${PRINTER_BASE} && NEED_REBOOT=1
-    if [[ $(tail -n2 "$PRINTER_BASE" | wc -l) -lt 2 || $(tail -n2 "$PRINTER_BASE" | grep -vc '^$') -ne 0 ]]; then
+    [ $(tail -c1 ${PRINTER_BASE}) != "" ] && echo >> ${PRINTER_BASE} && NEED_REBOOT=1
+    if [ $(tail -n2 "$PRINTER_BASE" | wc -l) -lt 2 ] || [ $(tail -n2 "$PRINTER_BASE" | grep -vc '^$') -ne 0 ]; then
         echo >> "$PRINTER_BASE"
         NEED_REBOOT=1
     fi
@@ -489,7 +500,7 @@ stepper: stepper_x, stepper_y, stepper_z
     diff -u ${PRINTER_CFG} ${PRINTER_CFG_ORIG}
     echo "END fix_config"
 
-    if [ "$1" == "start" ]; then
+    if [ "$1" == "start" ] && [ ${FF5X} -eq 0 ]; then
 #        if grep -q "klipper12 = 1" ${MOD_CONF}/mod_data/variables.cfg; then
 #            cnt=$(find /opt/PROGRAM/control/ -name Update|wc -l)
 #            if [ "$cnt" -ne 0 ]; then
