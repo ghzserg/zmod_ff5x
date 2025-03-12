@@ -25,7 +25,6 @@ prepare_chroot()
     [ -L /etc/init.d/S35tslib ] || ln -s /opt/config/mod/.shell/root/S35tslib /etc/init.d/
     [ -L /etc/init.d/S80guppyscreen ] || ln -s /opt/config/mod/.shell/root/S80guppyscreen /etc/init.d/
 
-
     [ -L /etc/init.d/S65moonraker ] || ln -s /opt/config/mod/.shell/root/S65moonraker /etc/init.d/
     [ -L /etc/init.d/S70httpd ] || ln -s /opt/config/mod/.shell/root/S70httpd /etc/init.d/
 
@@ -58,7 +57,7 @@ if [ ${FF5X} -eq 0 ]; then
     fi
 fi
 
-date 2024.01.01-00:00:00
+date 2025.03.03-00:00:00
 prepare_chroot
 
 if grep -q display_off.cfg /opt/config/printer.cfg; then
@@ -74,11 +73,11 @@ fi
 rm -f /root/guppyscreen/guppyconfig.json
 ln -s /opt/config/mod_data/guppyconfig.json /root/guppyscreen/guppyconfig.json
 
-if [ "$3" == "Adventurer5M" ]; then
+if [ "$3" == "Adventurer5M" ] || [ "$3" == "AD5X" ]; then
     [ -f /opt/config/mod_data/guppyconfig.json ] || cp /opt/config/mod/guppyconfig.json /opt/config/mod_data/guppyconfig.json
-fi
-if [ "$3" == "Adventurer5MPro" ]; then
+else if [ "$3" == "Adventurer5MPro" ]; then
     [ -f /opt/config/mod_data/guppyconfig.json ] || cp /opt/config/mod/guppyconfig_pro.json /opt/config/mod_data/guppyconfig.json
+fi
 fi
 
 VER="$3 $2"
@@ -99,10 +98,10 @@ mkdir -p ${DATA_GCODES}/tmp
 #    /opt/config/mod/.shell/root/S60klipper start
 #fi
 
-# Пробуем синхронизировать время
 /opt/config/mod/.shell/root/S65moonraker start
 /opt/config/mod/.shell/root/S70httpd start
 
+# Пробуем синхронизировать время
 ntpd -dd -n -q -p ru.pool.ntp.org || \
 ntpd -dd -n -q -p 1.ru.pool.ntp.org || \
 ntpd -dd -n -q -p 2.ru.pool.ntp.org || \

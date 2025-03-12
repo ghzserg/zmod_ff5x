@@ -27,29 +27,31 @@ check_link()
 
 restore_base()
 {
-    grep -q '^\[include mod.user.cfg' /opt/config/printer.cfg && sed -i '/include mod.user.cfg/d' /opt/config/printer.cfg
-    grep -q '^\[include ./mod/mod.cfg' /opt/config/printer.cfg && sed -i '/mod.cfg/d' /opt/config/printer.cfg
-    grep -q '^\[include ./mod_data/user.cfg' /opt/config/printer.cfg && sed -i '/user.cfg/d' /opt/config/printer.cfg
-    grep -q '^\[include ./mod/switch_sensor.cfg' /opt/config/printer.cfg && sed -i '/switch_sensor.cfg/d' /opt/config/printer.cfg
-    grep -q '^\[include ./mod/motion_sensor.cfg' /opt/config/printer.cfg && sed -i '/motion_sensor.cfg/d' /opt/config/printer.cfg
-    grep -q '^\[include ./mod/switch_sensor_display_off.cfg' /opt/config/printer.cfg && sed -i '/switch_sensor_display_off.cfg/d' /opt/config/printer.cfg
-    grep -q '^\[include ./mod/display_off.cfg' /opt/config/printer.cfg && sed -i '/display_off.cfg/d' /opt/config/printer.cfg
+    grep -q '^\[include mod.user.cfg' ${MOD_CONF}/printer.cfg && sed -i '/include mod.user.cfg/d' ${MOD_CONF}/printer.cfg
+    grep -q '^\[include ./mod/mod.cfg' ${MOD_CONF}/printer.cfg && sed -i '/mod.cfg/d' ${MOD_CONF}/printer.cfg
+    grep -q '^\[include ./mod_data/user.cfg' ${MOD_CONF}/printer.cfg && sed -i '/user.cfg/d' ${MOD_CONF}/printer.cfg
+    grep -q '^\[include ./mod/switch_sensor.cfg' ${MOD_CONF}/printer.cfg && sed -i '/switch_sensor.cfg/d' ${MOD_CONF}/printer.cfg
+    grep -q '^\[include ./mod/motion_sensor.cfg' ${MOD_CONF}/printer.cfg && sed -i '/motion_sensor.cfg/d' ${MOD_CONF}/printer.cfg
+    grep -q '^\[include ./mod/switch_sensor_display_off.cfg' ${MOD_CONF}/printer.cfg && sed -i '/switch_sensor_display_off.cfg/d' ${MOD_CONF}/printer.cfg
+    grep -q '^\[include ./mod/display_off.cfg' ${MOD_CONF}/printer.cfg && sed -i '/display_off.cfg/d' ${MOD_CONF}/printer.cfg
 
-    china_razbl api.cloud.flashforge.com
-    china_razbl api.fdmcloud.flashforge.com
-    china_razbl cloud.sz3dp.com
-    china_razbl hz.sz3dp.com
-    china_razbl printer2.polar3d.com
-    china_razbl qvs.qiniuapi.com
-    china_razbl update.cn.sz3dp.com
-    china_razbl update.sz3dp.com
-    china_razbl cloud.sz3dp.com
-    china_razbl polar3d.com
+    if [ ${FF5X} -eq 0 ]; then
+        china_razbl api.cloud.flashforge.com
+        china_razbl api.fdmcloud.flashforge.com
+        china_razbl cloud.sz3dp.com
+        china_razbl hz.sz3dp.com
+        china_razbl printer2.polar3d.com
+        china_razbl qvs.qiniuapi.com
+        china_razbl update.cn.sz3dp.com
+        china_razbl update.sz3dp.com
+        china_razbl cloud.sz3dp.com
+        china_razbl polar3d.com
+    fi
 
-    grep -q _output_callback_gcode ${KLIPPER_DIR}/klippy/webhooks.py && cp /opt/config/mod/.shell/webhooks.py.orig ${KLIPPER_DIR}/klippy/webhooks.py
-    grep -q ZLOAD_VARIABLE ${KLIPPER_DIR}/klippy/extras/save_variables.py && cp /opt/config/mod/.shell/save_variables.py.orig ${KLIPPER_DIR}/klippy/extras/save_variables.py
-    grep -q zmod ${KLIPPER_DIR}/klippy/extras/spi_temperature.py && cp /opt/config/mod/.shell/spi_temperature.py.orig ${KLIPPER_DIR}/klippy/extras/spi_temperature.py
-    grep -q receive_time ${KLIPPER_DIR}/klippy/extras/buttons.py && cp /opt/config/mod/.shell/buttons.py.orig ${KLIPPER_DIR}/klippy/extras/buttons.py
+    grep -q _output_callback_gcode ${KLIPPER_DIR}/klippy/webhooks.py && cp ${MOD_CONF}/mod/.shell/webhooks.py.orig ${KLIPPER_DIR}/klippy/webhooks.py
+    grep -q ZLOAD_VARIABLE ${KLIPPER_DIR}/klippy/extras/save_variables.py && cp ${MOD_CONF}/mod/.shell/save_variables.py.orig ${KLIPPER_DIR}/klippy/extras/save_variables.py
+    grep -q zmod ${KLIPPER_DIR}/klippy/extras/spi_temperature.py && cp ${MOD_CONF}/mod/.shell/spi_temperature.py.orig ${KLIPPER_DIR}/klippy/extras/spi_temperature.py
+    grep -q receive_time ${KLIPPER_DIR}/klippy/extras/buttons.py && cp ${MOD_CONF}/mod/.shell/buttons.py.orig ${KLIPPER_DIR}/klippy/extras/buttons.py
     rm -f ${KLIPPER_DIR}/klippy/extras/zmod.py
 
     rm -f /etc/profile.d/path.sh
@@ -65,9 +67,9 @@ restore_base()
     fi
 
     # Удаляем controller_fan driver_fan
-    if grep -q '^\[controller_fan driver_fan' /opt/config/printer.base.cfg
+    if grep -q '^\[controller_fan driver_fan' ${MOD_CONF}/printer.base.cfg
         then
-            cd /opt/config/
+            cd ${MOD_CONF}/
             sed -e '/^\[controller_fan driver_fan/,/^\[/d' printer.base.cfg >printer.base.tmp
             diff -u printer.base.cfg printer.base.tmp | grep -v "printer.base.cfg" |grep "^-" | cut -b 2- >heater_bed.txt
             sed -i '$d' heater_bed.txt
@@ -79,28 +81,28 @@ restore_base()
     fi
 
     # Возвращаем fan_generic pcb_fan
-    if ! grep -q '^\[fan_generic pcb_fan' /opt/config/printer.base.cfg
+    if ! grep -q '^\[fan_generic pcb_fan' ${MOD_CONF}/printer.base.cfg
         then
             echo '
 [fan_generic pcb_fan]
 pin:PB7
-' >>/opt/config/printer.base.cfg
+' >>${MOD_CONF}/printer.base.cfg
     fi
 
     # Возвращаем gcode_button check_level_pin
-    if ! grep -q '^\[gcode_button check_level_pin' /opt/config/printer.base.cfg
+    if ! grep -q '^\[gcode_button check_level_pin' ${MOD_CONF}/printer.base.cfg
         then
             echo '
 [gcode_button check_level_pin]
 pin: !PE0
 press_gcode:
     M105
-' >>/opt/config/printer.base.cfg
+' >>${MOD_CONF}/printer.base.cfg
     fi
 
-    if grep -q "motion_sensor = 1" /opt/config/mod_data/variables.cfg; then
+    if grep -q "motion_sensor = 1" ${MOD_CONF}/mod_data/variables.cfg; then
         # Возвращаем filament_motion_sensor e0_sensor
-        if ! grep -q '\[filament_motion_sensor e0_sensor' /opt/config/printer.base.cfg
+        if ! grep -q '\[filament_motion_sensor e0_sensor' ${MOD_CONF}/printer.base.cfg
             then
                 echo '
 [filament_motion_sensor e0_sensor]
@@ -110,11 +112,11 @@ switch_pin: !PB14
 pause_on_runout: True
 runout_gcode:
   RESPOND TYPE=command MSG="!! Кончился или остановился филамент"
-' >>/opt/config/printer.base.cfg
+' >>${MOD_CONF}/printer.base.cfg
         fi
     else
         # Возвращаем filament_switch_sensor e0_sensor
-        if ! grep -q '\[filament_switch_sensor e0_sensor' /opt/config/printer.base.cfg
+        if ! grep -q '\[filament_switch_sensor e0_sensor' ${MOD_CONF}/printer.base.cfg
             then
                 echo '
 [filament_switch_sensor e0_sensor]
@@ -122,11 +124,11 @@ pause_on_runout: False
 switch_pin: !PB14
 event_delay: 1.0
 
-' >>/opt/config/printer.base.cfg
+' >>${MOD_CONF}/printer.base.cfg
         fi
     fi
 
-    grep -q '^minimum_cruise_ratio' /opt/config/printer.base.cfg && sed -i 's|^minimum_cruise_ratio.*|max_accel_to_decel:5000|' /opt/config/printer.base.cfg
+    grep -q '^minimum_cruise_ratio' ${MOD_CONF}/printer.base.cfg && sed -i 's|^minimum_cruise_ratio.*|max_accel_to_decel:5000|' ${MOD_CONF}/printer.base.cfg
 }
 
 fix_config()
@@ -138,16 +140,16 @@ fix_config()
 
     [ -f /etc/profile.d/path.sh ] || echo "export PATH=\"$PATH:/opt/bin/:/opt/sbin/\"" >/etc/profile.d/path.sh
 
-    [ -f /opt/config/mod_data/variables.cfg ] || echo "[Variables]" >/opt/config/mod_data/variables.cfg
+    [ -f ${MOD_CONF}/mod_data/variables.cfg ] || echo "[Variables]" >${MOD_CONF}/mod_data/variables.cfg
 
     # Защита от самонадеянных, кто выклчюает SWAP при 128 мегабайтах оперативной памяти
-    if grep -q "use_swap = 0" /opt/config/mod_data/variables.cfg; then
+    if grep -q "use_swap = 0" ${MOD_CONF}/mod_data/variables.cfg; then
         MEM=$(cat /proc/meminfo | grep MemTotal| awk '{print $2}')
         MEM=$(($MEM/1024))
-        [ "$MEM" -le 128 ] && sed -i "s/use_swap = 0/use_swap = 1/" /opt/config/mod_data/variables.cfg
+        [ "$MEM" -le 128 ] && sed -i "s/use_swap = 0/use_swap = 1/" ${MOD_CONF}/mod_data/variables.cfg
     fi
 
-    [ -f /opt/config/mod_data/nozzle.cfg ] || echo "">/opt/config/mod_data/nozzle.cfg
+    [ -f ${MOD_CONF}/mod_data/nozzle.cfg ] || echo "">${MOD_CONF}/mod_data/nozzle.cfg
 
     [ -f /etc/init.d/S50sshd ] && rm -f /etc/init.d/S50sshd
     [ -f /etc/init.d/S55date ] && rm -f /etc/init.d/S55date
@@ -155,20 +157,23 @@ fix_config()
     [ -L /etc/init.d/S98camera ] && rm -f /etc/init.d/S98camera
     [ -f /etc/init.d/S98camera ] && rm -f /etc/init.d/S98camera
 
-    check_link /bin/dropbearkey /opt/config/mod/.shell/eabi/dropbear
-    check_link /bin/dropbear /opt/config/mod/.shell/eabi/dropbear
-    check_link /bin/dbclient /opt/config/mod/.shell/eabi/dropbear
-    check_link /bin/scp /opt/config/mod/.shell/eabi/dropbear
-    check_link /bin/ssh /opt/config/mod/.shell/eabi/dropbear
-    check_link /etc/init.d/S60dropbear /opt/config/mod/.shell/S60dropbear
-    check_link /etc/init.d/S00fix /opt/config/mod/.shell/fix_config.sh
-    check_link /etc/init.d/S99camera /opt/config/mod/.shell/S99camera
-    check_link /usr/bin/audio.py /opt/config/mod/.shell/root/audio/audio.py
-    check_link ${LOG_FILES}/zmod /opt/config/mod_data/log/
+    if [ ${FF5X} -eq 0 ]; then
+        check_link /bin/dropbearkey /opt/config/mod/.shell/eabi/dropbear
+        check_link /bin/dropbear /opt/config/mod/.shell/eabi/dropbear
+        check_link /bin/dbclient /opt/config/mod/.shell/eabi/dropbear
+        check_link /bin/scp /opt/config/mod/.shell/eabi/dropbear
+        check_link /bin/ssh /opt/config/mod/.shell/eabi/dropbear
+        check_link /etc/init.d/S60dropbear /opt/config/mod/.shell/S60dropbear
+        check_link /etc/init.d/S00fix /opt/config/mod/.shell/fix_config.sh
+        check_link /etc/init.d/S99camera /opt/config/mod/.shell/S99camera
+        check_link /usr/bin/audio.py /opt/config/mod/.shell/root/audio/audio.py
+    fi
+
+    check_link ${LOG_FILES}/zmod ${MOD_CONF}/mod_data/log/
 
     NEED_REBOOT=0
-    PRINTER_BASE_ORIG="/opt/config/printer.base.cfg"
-    PRINTER_CFG_ORIG="/opt/config/printer.cfg"
+    PRINTER_BASE_ORIG="${MOD_CONF}/printer.base.cfg"
+    PRINTER_CFG_ORIG="${MOD_CONF}/printer.cfg"
     PRINTER_BASE="/tmp/printer.base.cfg"
     PRINTER_CFG="/tmp/printer.cfg"
 
@@ -177,49 +182,59 @@ fix_config()
     cat ${PRINTER_BASE}
     cat ${PRINTER_CFG}
 
-    if ! [ -f /opt/config/mod_data/power_off.sh ]; then
+    if ! [ -f ${MOD_CONF}/mod_data/power_off.sh ]; then
         echo "#!/bin/sh
 unset LD_PRELOAD
 
 #/opt/cloud/curl-7.55.1-https/bin/curl -k https://mail.ru
-" >/opt/config/mod_data/power_off.sh
-    chmod +x /opt/config/mod_data/power_off.sh
+" >${MOD_CONF}/mod_data/power_off.sh
+    chmod +x ${MOD_CONF}/mod_data/power_off.sh
     fi
 
     # Rem стукач
-    if grep -q "china_cloud = 1" /opt/config/mod_data/variables.cfg; then
-        china_razbl api.cloud.flashforge.com
-        china_razbl api.fdmcloud.flashforge.com
-        china_razbl cloud.sz3dp.com
-        china_razbl hz.sz3dp.com
-        china_razbl printer2.polar3d.com
-        china_razbl qvs.qiniuapi.com
-        china_razbl update.cn.sz3dp.com
-        china_razbl update.sz3dp.com
-        china_razbl cloud.sz3dp.com
-        china_razbl polar3d.com
+    if grep -q "china_cloud = 1" ${MOD_CONF}/mod_data/variables.cfg; then
+        if [ ${FF5X} -eq 0 ]; then
+            china_razbl api.cloud.flashforge.com
+            china_razbl api.fdmcloud.flashforge.com
+            china_razbl cloud.sz3dp.com
+            china_razbl hz.sz3dp.com
+            china_razbl printer2.polar3d.com
+            china_razbl qvs.qiniuapi.com
+            china_razbl update.cn.sz3dp.com
+            china_razbl update.sz3dp.com
+            china_razbl cloud.sz3dp.com
+            china_razbl polar3d.com
+        fi
     else
-        china_block api.cloud.flashforge.com
-        china_block api.fdmcloud.flashforge.com
-        china_block cloud.sz3dp.com
-        china_block hz.sz3dp.com
-        china_block printer2.polar3d.com
-        china_block qvs.qiniuapi.com
-        china_block update.cn.sz3dp.com
-        china_block update.sz3dp.com
-        china_block cloud.sz3dp.com
-        china_block polar3d.com
+        if [ ${FF5X} -eq 0 ]; then
+            china_block api.cloud.flashforge.com
+            china_block api.fdmcloud.flashforge.com
+            china_block cloud.sz3dp.com
+            china_block hz.sz3dp.com
+            china_block printer2.polar3d.com
+            china_block qvs.qiniuapi.com
+            china_block update.cn.sz3dp.com
+            china_block update.sz3dp.com
+            china_block cloud.sz3dp.com
+            china_block polar3d.com
+        else
+            mount --bind /usr/data/.mod/.zmod/.shell/hosts /etc/hosts
+        fi
     fi
 
-    grep -q "zmod 1.1" ${KLIPPER_DIR}/klippy/webhooks.py || cp /opt/config/mod/.shell/webhooks.py ${KLIPPER_DIR}/klippy/webhooks.py
-    grep -q ZLOAD_VARIABLE ${KLIPPER_DIR}/klippy/extras/save_variables.py || cp /opt/config/mod/.shell/save_variables.py ${KLIPPER_DIR}/klippy/extras/save_variables.py
-    grep -q "Zcontrol 1.1" ${KLIPPER_DIR}/klippy/extras/spi_temperature.py || cp /opt/config/mod/.shell/spi_temperature.py ${KLIPPER_DIR}/klippy/extras/spi_temperature.py
-    check_link ${KLIPPER_DIR}/klippy/extras/zmod.py /opt/config/mod/.shell/zmod.py
+    grep -q "zmod 1.1" ${KLIPPER_DIR}/klippy/webhooks.py || cp ${MOD_CONF}/mod/.shell/webhooks.py ${KLIPPER_DIR}/klippy/webhooks.py
+    grep -q ZLOAD_VARIABLE ${KLIPPER_DIR}/klippy/extras/save_variables.py || cp ${MOD_CONF}/mod/.shell/save_variables.py ${KLIPPER_DIR}/klippy/extras/save_variables.py
+    if [ ${FF5X} -eq 0 ] && ! grep -q "Zcontrol 1.1" ${KLIPPER_DIR}/klippy/extras/spi_temperature.py; then
+        cp ${MOD_CONF}/mod/.shell/spi_temperature.py ${KLIPPER_DIR}/klippy/extras/spi_temperature.py
+    fi
+    check_link ${KLIPPER_DIR}/klippy/extras/zmod.py ${MOD_CONF}/mod/.shell/zmod.py
 
-    # Fix possible ordering issue if a callback blocks in button handler#6440
-    grep -q receive_time ${KLIPPER_DIR}/klippy/extras/buttons.py || cp /opt/config/mod/.shell/buttons.py ${KLIPPER_DIR}/klippy/extras/buttons.py
+    if [ ${FF5X} -eq 0 ]; then
+        # Fix possible ordering issue if a callback blocks in button handler#6440
+        grep -q receive_time ${KLIPPER_DIR}/klippy/extras/buttons.py || cp /opt/config/mod/.shell/buttons.py ${KLIPPER_DIR}/klippy/extras/buttons.py
+    fi
 
-    grep -q zmod_1.0 ${KLIPPER_DIR}/klippy/extras/gcode_shell_command.py || cp /opt/config/mod/.shell/gcode_shell_command.py ${KLIPPER_DIR}/klippy/extras/gcode_shell_command.py
+    grep -q zmod_1.0 ${KLIPPER_DIR}/klippy/extras/gcode_shell_command.py || cp ${MOD_CONF}/mod/.shell/gcode_shell_command.py ${KLIPPER_DIR}/klippy/extras/gcode_shell_command.py
     if [ -L ${KLIPPER_DIR}/klippy/extras/load_cell_tare.py ] || [ -f ${KLIPPER_DIR}/klippy/extras/load_cell_tare.py ]; then
         rm -f ${KLIPPER_DIR}/klippy/extras/load_cell_tare.py
     fi
@@ -249,11 +264,11 @@ unset LD_PRELOAD
     ! grep -q '^\[include ./mod_data/user.cfg\]'  ${PRINTER_CFG} && sed -i '3 i\[include ./mod_data/user.cfg]' ${PRINTER_CFG} && NEED_REBOOT=1
 
     # Восстанавливаем настройки
-    if grep -q "display_off = 1" /opt/config/mod_data/variables.cfg; then
+    if grep -q "display_off = 1" ${MOD_CONF}/mod_data/variables.cfg; then
         grep -q '^\[include ./mod_data/user.cfg\]' ${PRINTER_CFG} && sed -i 's|\[include ./mod/mod.cfg\]|\[include ./mod/display_off.cfg\]|' ${PRINTER_CFG} && NEED_REBOOT=1
     fi
 
-    if grep -q "display_off = 0" /opt/config/mod_data/variables.cfg; then
+    if grep -q "display_off = 0" ${MOD_CONF}/mod_data/variables.cfg; then
         grep -q '^\[include ./mod/display_off.cfg\]' ${PRINTER_CFG} && sed -i 's|\[include ./mod/display_off.cfg\]|\[include ./mod/mod.cfg\]|' ${PRINTER_CFG} && NEED_REBOOT=1
     fi
 
@@ -361,8 +376,8 @@ press_gcode:
         then
             NEED_REBOOT=1
 
-            ! grep -q "motion_sensor" /opt/config/mod_data/variables.cfg && sed -i '2 i\motion_sensor = 0' /opt/config/mod_data/variables.cfg
-            #sed -i "s/^motion_sensor.*/motion_sensor = 0/" /opt/config/mod_data/variables.cfg
+            ! grep -q "motion_sensor" ${MOD_CONF}/mod_data/variables.cfg && sed -i '2 i\motion_sensor = 0' ${MOD_CONF}/mod_data/variables.cfg
+            #sed -i "s/^motion_sensor.*/motion_sensor = 0/" ${MOD_CONF}/mod_data/variables.cfg
 
             sed -e '/^\[filament_switch_sensor e0_sensor/,/^\[/d' ${PRINTER_BASE} >printer.base.tmp
             diff -u ${PRINTER_BASE} printer.base.tmp | grep -v "printer.base.cfg" |grep "^-" | cut -b 2- >heater_bed.txt
@@ -379,8 +394,8 @@ press_gcode:
         then
             NEED_REBOOT=1
 
-            ! grep -q "motion_sensor" /opt/config/mod_data/variables.cfg && sed -i '2 i\motion_sensor = 1' /opt/config/mod_data/variables.cfg
-            sed -i "s/^motion_sensor.*/motion_sensor = 1/" /opt/config/mod_data/variables.cfg
+            ! grep -q "motion_sensor" ${MOD_CONF}/mod_data/variables.cfg && sed -i '2 i\motion_sensor = 1' ${MOD_CONF}/mod_data/variables.cfg
+            sed -i "s/^motion_sensor.*/motion_sensor = 1/" ${MOD_CONF}/mod_data/variables.cfg
 
             sed -e '/^\[filament_motion_sensor e0_sensor/,/^\[/d' ${PRINTER_BASE} >printer.base.tmp
             diff -u ${PRINTER_BASE} printer.base.tmp | grep -v "printer.base.cfg" |grep "^-" | cut -b 2- >heater_bed.txt
@@ -406,26 +421,24 @@ stepper: stepper_x, stepper_y, stepper_z
     fi
 
     # Klipper12 FIX
-    if grep -q "klipper12 = 1" /opt/config/mod_data/variables.cfg; then
-        if grep -q '^max_accel_to_decel' ${PRINTER_BASE}
-            then
-                NEED_REBOOT=1
-                sed -i 's|^max_accel_to_decel.*|minimum_cruise_ratio: 0.5|' ${PRINTER_BASE}
+    if grep -q "klipper12 = 1" ${MOD_CONF}/mod_data/variables.cfg || [ ${FF5X} -eq 1 ]; then
+        if grep -q '^max_accel_to_decel' ${PRINTER_BASE}; then
+            NEED_REBOOT=1
+            sed -i 's|^max_accel_to_decel.*|minimum_cruise_ratio: 0.5|' ${PRINTER_BASE}
         fi
     else
-        if grep -q '^minimum_cruise_ratio' ${PRINTER_BASE}
-            then
-                NEED_REBOOT=1
-                sed -i 's|^minimum_cruise_ratio.*|max_accel_to_decel:5000|' ${PRINTER_BASE}
+        if grep -q '^minimum_cruise_ratio' ${PRINTER_BASE}; then
+            NEED_REBOOT=1
+            sed -i 's|^minimum_cruise_ratio.*|max_accel_to_decel:5000|' ${PRINTER_BASE}
         fi
     fi
 
-    ! grep -q "motion_sensor" /opt/config/mod_data/variables.cfg && sed -i '2 i\motion_sensor = 0' /opt/config/mod_data/variables.cfg
+    ! grep -q "motion_sensor" ${MOD_CONF}/mod_data/variables.cfg && sed -i '2 i\motion_sensor = 0' ${MOD_CONF}/mod_data/variables.cfg
 
     # Режим с экраном
     if grep -q '^\[include ./mod/mod.cfg\]' ${PRINTER_CFG}; then
         grep -q '^\[include ./mod/switch_sensor_display_off.cfg\]' ${PRINTER_CFG} && sed -i '/^\[include .\/mod\/switch_sensor_display_off.cfg\]/d' ${PRINTER_CFG} && NEED_REBOOT=1
-        if grep -q "motion_sensor = 1" /opt/config/mod_data/variables.cfg; then
+        if grep -q "motion_sensor = 1" ${MOD_CONF}/mod_data/variables.cfg; then
             ! grep -q '^\[include ./mod/motion_sensor.cfg\]'       ${PRINTER_CFG} && sed -i '/^\[include \.\/mod\/mod\.cfg\]/a [include ./mod/motion_sensor.cfg]' ${PRINTER_CFG} && NEED_REBOOT=1
               grep -q '^\[include ./mod/switch_sensor.cfg\]'       ${PRINTER_CFG} && sed -i '/^\[include .\/mod\/switch_sensor.cfg\]/d' ${PRINTER_CFG} && NEED_REBOOT=1
         else
@@ -437,7 +450,7 @@ stepper: stepper_x, stepper_y, stepper_z
     # Режим без экрана
     if grep -q '^\[include ./mod/display_off.cfg\]' ${PRINTER_CFG}; then
         grep -q '^\[include ./mod/switch_sensor.cfg\]'                   ${PRINTER_CFG} && sed -i '/^\[include .\/mod\/switch_sensor.cfg\]/d' ${PRINTER_CFG} && NEED_REBOOT=1
-        if grep -q "motion_sensor = 1" /opt/config/mod_data/variables.cfg; then
+        if grep -q "motion_sensor = 1" ${MOD_CONF}/mod_data/variables.cfg; then
             ! grep -q '^\[include ./mod/motion_sensor.cfg\]' ${PRINTER_CFG} && sed -i '/^\[include \.\/mod\/display_off\.cfg\]/a [include ./mod/motion_sensor.cfg]' ${PRINTER_CFG} && NEED_REBOOT=1
               grep -q '^\[include ./mod/switch_sensor_display_off.cfg\]' ${PRINTER_CFG} && sed -i '/^\[include .\/mod\/switch_sensor_display_off.cfg\]/d' ${PRINTER_CFG} && NEED_REBOOT=1
         else
@@ -477,16 +490,16 @@ stepper: stepper_x, stepper_y, stepper_z
     echo "END fix_config"
 
     if [ "$1" == "start" ]; then
-#        if grep -q "klipper12 = 1" /opt/config/mod_data/variables.cfg; then
+#        if grep -q "klipper12 = 1" ${MOD_CONF}/mod_data/variables.cfg; then
 #            cnt=$(find /opt/PROGRAM/control/ -name Update|wc -l)
 #            if [ "$cnt" -ne 0 ]; then
 #                # Если обновляем MCU
 #                find /opt/PROGRAM/control/ -name Update| sed 's/Update//'| while read a; do
-#                    mount -o bind /opt/config/mod/.shell/update_mcu.sh ${a}run.sh
+#                    mount -o bind ${MOD_CONF}/mod/.shell/update_mcu.sh ${a}run.sh
 #                done
 #            else
 #                # Если обновлений нет
-#                mount -o bind /opt/config/mod/.shell/klipper12.sh ${KLIPPER_DIR}/start.sh
+#                mount -o bind ${MOD_CONF}/mod/.shell/klipper12.sh ${KLIPPER_DIR}/start.sh
 #                sync
 #            fi
 #        else
@@ -497,18 +510,18 @@ stepper: stepper_x, stepper_y, stepper_z
     sync
 }
 
-mkdir -p /opt/config/mod_data/log/
+mkdir -p ${MOD_CONF}/mod_data/log/
 
-mv /opt/config/mod_data/log/fix_config.4.log /opt/config/mod_data/log/fix_config.5.log
-mv /opt/config/mod_data/log/fix_config.3.log /opt/config/mod_data/log/fix_config.4.log
-mv /opt/config/mod_data/log/fix_config.2.log /opt/config/mod_data/log/fix_config.3.log
-mv /opt/config/mod_data/log/fix_config.1.log /opt/config/mod_data/log/fix_config.2.log
-mv /opt/config/mod_data/log/fix_config.log   /opt/config/mod_data/log/fix_config.1.log
+mv ${MOD_CONF}/mod_data/log/fix_config.4.log ${MOD_CONF}/mod_data/log/fix_config.5.log
+mv ${MOD_CONF}/mod_data/log/fix_config.3.log ${MOD_CONF}/mod_data/log/fix_config.4.log
+mv ${MOD_CONF}/mod_data/log/fix_config.2.log ${MOD_CONF}/mod_data/log/fix_config.3.log
+mv ${MOD_CONF}/mod_data/log/fix_config.1.log ${MOD_CONF}/mod_data/log/fix_config.2.log
+mv ${MOD_CONF}/mod_data/log/fix_config.log   ${MOD_CONF}/mod_data/log/fix_config.1.log
 
-if [ -f /opt/config/mod/SKIP_ZMOD ] || [ -f /opt/config/mod/REMOVE ] || [ -f /opt/config/mod/FULL_REMOVE ]; then
-    restore_base &>/opt/config/mod_data/log/fix_config.log
+if [ -f ${MOD_CONF}/mod/SKIP_ZMOD ] || [ -f ${MOD_CONF}/mod/REMOVE ] || [ -f ${MOD_CONF}/mod/FULL_REMOVE ]; then
+    restore_base &>${MOD_CONF}/mod_data/log/fix_config.log
 else
-    fix_config "$1" &>/opt/config/mod_data/log/fix_config.log
+    fix_config "$1" &>${MOD_CONF}/mod_data/log/fix_config.log
 fi
 
 sync

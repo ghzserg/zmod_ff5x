@@ -34,12 +34,12 @@ remove_base()
     rm -rf /usr/lib/python3.7/site-packages/mido/
     sync
 
-    [ -f /opt/config/mod/FULL_REMOVE ] && rm -rf /opt/config/mod_data/
+    [ -f ${MOD_CONF}/mod/FULL_REMOVE ] && rm -rf ${MOD_CONF}/mod_data/
     sync
 
     rm -f /etc/init.d/prepare.sh
     sync
-    rm -rf /opt/config/mod/
+    rm -rf ${MOD_CONF}/mod/
     sync
     reboot
     exit
@@ -48,7 +48,7 @@ remove_base()
 start_moon()
 {
     SWAP="/root/swap"
-    if grep -q "use_swap = 2" /opt/config/mod_data/variables.cfg; then
+    if grep -q "use_swap = 2" ${MOD_CONF}/mod_data/variables.cfg && [ ${FF5X} -eq 0 ]; then
         for i in `seq 1 6`; do mount |grep /media && break; echo $i; sleep 10; done;
 
         if mount |grep /media; then
@@ -68,7 +68,9 @@ start_moon()
     MACHINE="Неизвестная машина"
     grep -q '^MACHINE=Adventurer5MPro$' /opt/auto_run.sh && MACHINE=Adventurer5MPro
     grep -q '^MACHINE=Adventurer5M$' /opt/auto_run.sh && MACHINE=Adventurer5M
-    VER=$(cat /root/version)
+    grep -q "^MACHINE=AD5X" /usr/prog/app_startup.sh && MACHINE=AD5X
+    [ ${FF5X} -eq 0 ] && VER=$(cat /root/version)
+    [ ${FF5X} -eq 1 ] && VER=$(cat ${MOD}/root/printer_data/version.txt)
     chroot ${MOD} /opt/config/mod/.shell/root/start.sh "$SWAP" "$VER" "$MACHINE" &
 
     [ ${FF5X} -eq 0 ] && mkdir -p ${REMOUNT_MOD}
@@ -76,80 +78,90 @@ start_moon()
     [ ${FF5X} -eq 0 ] && mount --bind ${REMOUNT_MOD} ${UMOUNT_MOD}
     mount
     ps
-    sleep 60
-    umount ${KLIPPER_DIR}/start.sh
+    #sleep 60
+    #umount ${KLIPPER_DIR}/start.sh
 }
 
 start_prepare()
 {
-    /opt/config/mod/.shell/znice.sh
+    ${MOD_CONF}/mod/.shell/znice.sh
 
-    [ -L /etc/init.d/S00fix ] || ln -s /opt/config/mod/.shell/fix_config.sh /etc/init.d/S00fix
-    echo "System start" >/opt/config/mod_data/log/ssh.log
+    if [ ${FF5X} -eq 0 ] && ! [ -L /etc/init.d/S00fix ]; then ln -s ${MOD_CONF}/mod/.shell/fix_config.sh /etc/init.d/S00fix; fi
+    echo "System start" >${MOD_CONF}/mod_data/log/ssh.log
+
     mount -t proc /proc ${MOD}/proc
     mount --rbind /sys ${MOD}/sys
     mount --rbind /dev ${MOD}/dev
-
     mount --bind /tmp ${MOD}/tmp
     mount --bind /run ${MOD}/run
 
     mkdir -p ${MOD}/opt/config
-    mount --bind /opt/config ${MOD}/opt/config
+    mount --bind ${MOD_CONF} ${MOD}/opt/config
+
+    if [ ${FF5X} -eq 1 ]
+        mkdir -p ${MOD}${MOD_CONF}/config/
+        mount --bind ${MOD_CONF}/config/ ${MOD}${MOD_CONF}/config/
+        mount --bind ${MOD}/opt/ /opt
+        mount --bind /usr/data/config/ /opt/config/
+
+        mkdir -p ${MOD}${LOG_FILES}
+        mount --bind ${LOG_FILES}/ ${MOD}${LOG_FILES}/
+    else
+        mkdir -p ${MOD}/opt/PROGRAM/
+        mount --bind /opt/PROGRAM/ ${MOD}/opt/PROGRAM/
+    fi
+
+    mkdir -p ${MOD}${KLIPPER_DIR}
+    mount --bind ${KLIPPER_DIR}/ ${MOD}${KLIPPER_DIR}/
 
     mkdir -p ${MOD}${DATA_GCODES}
     mount --bind ${DATA_GCODES} ${MOD}${DATA_GCODES}
-#    mount --bind /mnt/usb ${MOD}${DATA_GCODES}/usb
-
-#    mkdir -p ${MOD}/var/run/
-#    mount --bind /var/run/ ${MOD}/var/run/
-
-    mkdir -p ${MOD}/opt/PROGRAM/
-    mount --bind /opt/PROGRAM/ ${MOD}/opt/PROGRAM/
 
     mkdir -p ${MOD}/root/printer_data/misc
     mkdir -p ${MOD}/root/printer_data/tmp
     mkdir -p ${MOD}/root/printer_data/comms
     mkdir -p ${MOD}/root/printer_data/certs
 
-    if  ! [ -d ${MOD}/opt/klipper/docs ]
-     then
-        mkdir -p ${MOD}/opt/klipper/docs
-        cp ${KLIPPER_DIR}/docs/* ${MOD}/opt/klipper/docs
-    fi
 
-    if ! [ -d ${MOD}/opt/klipper/config ]
-     then
-        mkdir -p ${MOD}/opt/klipper/config
-        cp ${KLIPPER_DIR}/config/* ${MOD}/opt/klipper/config
-    fi
+#    if  ! [ -d ${MOD}/opt/klipper/docs ]
+#     then
+#        mkdir -p ${MOD}/opt/klipper/docs
+#        cp ${KLIPPER_DIR}/docs/* ${MOD}/opt/klipper/docs
+#    fi
+#
+#    if ! [ -d ${MOD}/opt/klipper/config ]
+#     then
+#        mkdir -p ${MOD}/opt/klipper/config
+#        cp ${KLIPPER_DIR}/config/* ${MOD}/opt/klipper/config
+#    fi
 
     [ ${FF5X} -eq 0 ] && cat /etc/localtime >/tmp/localtime
     cp ${TS_LIB}/pointercal /tmp/pointercal
     cp ${TS_LIB}/ts.conf /tmp/ts.conf
 
     # Запуск камеры
-    /etc/init.d/S99camera init
+    [ ${FF5X} -eq 0 ] && /etc/init.d/S99camera init
 
     start_moon
 }
 
-if [ -f /opt/config/mod/SKIP_ZMOD ]
+if [ -f ${MOD_CONF}/mod/SKIP_ZMOD ]
  then
-    rm -f /opt/config/mod/SKIP_ZMOD
+    rm -f ${MOD_CONF}/mod/SKIP_ZMOD
     [ ${FF5X} -eq 0 ] && mount --bind ${REMOUNT_MOD} ${UMOUNT_MOD}
     exit 0
 fi
 
-if [ -f /opt/config/mod/REMOVE ] || [ -f /opt/config/mod/FULL_REMOVE ]; then
+if [ -f ${MOD_CONF}/mod/REMOVE ] || [ -f ${MOD_CONF}/mod/FULL_REMOVE ]; then
   remove_base
   exit 0
 fi
 
 while ! mount |grep /dev/mmcblk0p7; do sleep 10; done
 
-mv /opt/config/mod_data/log/zmod.4.log /opt/config/mod_data/log/zmod.5.log
-mv /opt/config/mod_data/log/zmod.3.log /opt/config/mod_data/log/zmod.4.log
-mv /opt/config/mod_data/log/zmod.2.log /opt/config/mod_data/log/zmod.3.log
-mv /opt/config/mod_data/log/zmod.1.log /opt/config/mod_data/log/zmod.2.log
-mv /opt/config/mod_data/log/zmod.log /opt/config/mod_data/log/zmod.1.log
-start_prepare &>/opt/config/mod_data/log/zmod.log
+mv ${MOD_CONF}/mod_data/log/zmod.4.log ${MOD_CONF}/mod_data/log/zmod.5.log
+mv ${MOD_CONF}/mod_data/log/zmod.3.log ${MOD_CONF}/mod_data/log/zmod.4.log
+mv ${MOD_CONF}/mod_data/log/zmod.2.log ${MOD_CONF}/mod_data/log/zmod.3.log
+mv ${MOD_CONF}/mod_data/log/zmod.1.log ${MOD_CONF}/mod_data/log/zmod.2.log
+mv ${MOD_CONF}/mod_data/log/zmod.log ${MOD_CONF}/mod_data/log/zmod.1.log
+start_prepare &>${MOD_CONF}/mod_data/log/zmod.log
