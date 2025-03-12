@@ -245,13 +245,11 @@ unset LD_PRELOAD
         rm -f ${KLIPPER_DIR}/klippy/extras/load_cell_tare.py
     fi
 
-    [ $(tail -c1 ${PRINTER_BASE}) != "" ] && echo >> ${PRINTER_BASE} && NEED_REBOOT=1
-    if [ $(tail -n2 "$PRINTER_BASE" | wc -l) -lt 2 ] || [ $(tail -n2 "$PRINTER_BASE" | grep -vc '^$') -ne 0 ]; then
+    [ "$(tail -c1 ${PRINTER_BASE})" != "" ] && echo >> ${PRINTER_BASE} && NEED_REBOOT=1
+    if [ "$(tail -n2 "$PRINTER_BASE" | wc -l)" -lt 2 ] || [ "$(tail -n2 "$PRINTER_BASE" | grep -vc '^$')" -ne 0 ]; then
         echo >> "$PRINTER_BASE"
         NEED_REBOOT=1
     fi
-
-
 
     grep -q '^\[include check_md5.cfg\]' ${PRINTER_CFG} && sed -i '/^\[include check_md5.cfg\]/d' ${PRINTER_CFG} && NEED_REBOOT=1
 
@@ -475,8 +473,8 @@ stepper: stepper_x, stepper_y, stepper_z
         fi
     fi
 
-    [ $(tail -c1 ${PRINTER_BASE}) != "" ] && echo >> ${PRINTER_BASE} && NEED_REBOOT=1
-    if [ $(tail -n2 "$PRINTER_BASE" | wc -l) -lt 2 ] || [ $(tail -n2 "$PRINTER_BASE" | grep -vc '^$') -ne 0 ]; then
+    [ "$(tail -c1 ${PRINTER_BASE})" != "" ] && echo >> ${PRINTER_BASE} && NEED_REBOOT=1
+    if [ "$(tail -n2 "$PRINTER_BASE" | wc -l)" -lt 2 ] || [ "$(tail -n2 "$PRINTER_BASE" | grep -vc '^$')" -ne 0 ]; then
         echo >> "$PRINTER_BASE"
         NEED_REBOOT=1
     fi
