@@ -1030,21 +1030,10 @@ d2ab1478f513706ceb4083671d623b15  ./usr/lib/libsocketcan.so.2.2.1
 db53b3af8320367c0504eb9d8c253744  ./usr/lib/python3.7/site-packages/kmod/list.so
 5f4b6d6780304aafeded5e6ccfe3802f  ./usr/lib/python3.7/site-packages/kmod/_util.so
 8079f350a19e7a211da7663b9e22f6ee  ./usr/lib/python3.7/site-packages/kmod/kmod.so
-ad65f4f88f6ba9bd69ade8f330389bfc  ./usr/lib/python3.7/site-packages/audio.py
 c074d6492d08b05896c5236e79e71b94  ./usr/lib/python3.7/site-packages/libmount/pylibmount.so
 d3711c76dde9edbc20f54b644c8810dc  ./usr/lib/python3.7/site-packages/README.txt
 2bee14e4d063ff9dc9079a8d8fbb8de6  ./usr/lib/python3.7/site-packages/smbus-1.1-py3.7.egg-info
 edaea2bb6399d8719a0bf893c510720c  ./usr/lib/python3.7/site-packages/smbus.cpython-37m-arm-linux-gnueabi.so
-b6ce1878a6dfc1ec9d73fe8fadbd370e  ./usr/lib/python3.7/site-packages/mido/backends/portmidi.py
-586b89fa99b1e3e3bb1b6679c4746643  ./usr/lib/python3.7/site-packages/mido/backends/pygame.py
-1cf5ee0d044ad1c08cbc31b1bc34e362  ./usr/lib/python3.7/site-packages/mido/backends/_parser_queue.py
-a517add0f5e3c0ca1c34b1dc57b7428a  ./usr/lib/python3.7/site-packages/mido/backends/portmidi_init.py
-a783821c1d7e38d3291b9ee7acb32a51  ./usr/lib/python3.7/site-packages/mido/backends/rtmidi.py
-752f64a0448cf7420c1ad13973127b32  ./usr/lib/python3.7/site-packages/mido/backends/rtmidi_utils.py
-49db9ada55e879223b36d914dfe6d0be  ./usr/lib/python3.7/site-packages/mido/backends/amidi.py
-caa341978ccfd7a666323113ee21e565  ./usr/lib/python3.7/site-packages/mido/backends/rtmidi_python.py
-0791dd6f871467652076837f949e2cc4  ./usr/lib/python3.7/site-packages/mido/frozen.py
-1cb254ce03f62199d2c7f973e6fa542d  ./usr/lib/python3.7/site-packages/mido/__init__.py
 f257cc14f81685691652a3d3e1b5d754  ./usr/lib/python3.7/LICENSE.txt
 e714c17c4f0f4e915a53e88cebbe484b  ./usr/lib/python3.7/turtledemo/turtle.cfg
 4f07d2dd8728abd73f4fd5141ae617de  ./usr/lib/python3.7/ensurepip/_bundled/setuptools-40.6.2-py2.py3-none-any.whl
@@ -5323,7 +5312,6 @@ bc6c05c9e2a7a7105d5d859de2ab0e24  ./usr/bin/mysql
 8b13763b3b71598b0f0e46deaf23210c  ./usr/bin/arecord
 d121ffccfd1e10a762e837fd7fdee124  ./usr/bin/iperf3
 7ec44c31a385a7b416889908549e12e5  ./usr/bin/vencoderDemo
-13a4578d0c9fb4f803f790bd84f33518  ./usr/bin/audio_midi.sh
 4dbc007c4b043d83b51f5acfa53dd062  ./usr/bin/cec-compliance
 113f3920578975dc405b7a76b21787a5  ./usr/bin/ts_verify
 219d6a16f8196613c6eac255e8b49543  ./usr/bin/pcre2grep
@@ -5428,7 +5416,6 @@ f4d456777016513a4c22610ae17f9496  ./usr/bin/udevadm
 3643926dd540ae9ff227fd6729da3418  ./usr/bin/resolveip
 9e5e9ab31828817dad902a816a818cfc  ./usr/bin/wavcmp
 45a260002b788f9ccd25b100c933576f  ./usr/bin/mysqltest
-eaf10e794da06df5c3fdf194ce10bc45  ./usr/bin/audio
 86faf9856939e64b33a3ee564a8bf879  ./usr/bin/decode-dimms
 ad7e13166ce61a75866d0315be958626  ./usr/bin/initdb
 eeeacf0f63f0fd83951ec17907a7f464  ./usr/bin/pcregrep

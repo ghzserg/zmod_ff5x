@@ -172,10 +172,15 @@ fix_config()
         check_link /etc/init.d/S60dropbear /opt/config/mod/.shell/S60dropbear
         check_link /etc/init.d/S00fix /opt/config/mod/.shell/fix_config.sh
         check_link /etc/init.d/S99camera /opt/config/mod/.shell/S99camera
-        check_link /usr/bin/audio.py /opt/config/mod/.shell/root/audio/audio.py
     fi
 
     check_link ${LOG_FILES}/zmod ${MOD_CONF}/mod_data/log/
+
+    rm -f /usr/bin/audio /usr/bin/audio_midi.sh /usr/lib/python3.7/site-packages/audio.py
+    [ -d ${PYTHON_DIR}/site-packages/mido ] && rm -rf ${PYTHON_DIR}/site-packages/mido
+    [ -d ${PYTHON_DIR}/site-packages/mido-1.3.3.dist-info ] && rm -rf ${PYTHON_DIR}/site-packages/mido-1.3.3.dist-info
+    check_link ${PYTHON_DIR}/site-packages/mido /opt/config/mod/.shell/root/mido/
+    check_link ${PYTHON_DIR}/site-packages/mido-1.3.3.dist-info /opt/config/mod/.shell/root/mido-1.3.3.dist-info/
 
     NEED_REBOOT=0
     PRINTER_BASE_ORIG="${MOD_CONF}/printer.base.cfg"
@@ -230,7 +235,7 @@ unset LD_PRELOAD
 
     grep -q "zmod 1.1" ${KLIPPER_DIR}/klippy/webhooks.py || cp ${MOD_CONF}/mod/.shell/webhooks.py ${KLIPPER_DIR}/klippy/webhooks.py
     grep -q ZLOAD_VARIABLE ${KLIPPER_DIR}/klippy/extras/save_variables.py || cp ${MOD_CONF}/mod/.shell/save_variables.py ${KLIPPER_DIR}/klippy/extras/save_variables.py
-    if [ ${FF5X} -eq 0 ] && ! grep -q "Zcontrol 1.5" ${KLIPPER_DIR}/klippy/extras/spi_temperature.py; then
+    if [ ${FF5X} -eq 0 ] && ! grep -q "Zcontrol 1.7" ${KLIPPER_DIR}/klippy/extras/spi_temperature.py; then
         cp ${MOD_CONF}/mod/.shell/spi_temperature.py ${KLIPPER_DIR}/klippy/extras/spi_temperature.py
     fi
     check_link ${KLIPPER_DIR}/klippy/extras/zmod.py ${MOD_CONF}/mod/.shell/zmod.py
