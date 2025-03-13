@@ -9,4 +9,4 @@ if ! [ -f "/opt/config/mod_data/midi/$1" ]
         exit 1
 fi
 
-audio midi -m "/opt/config/mod_data/midi/$1" &
+/opt/config/mod/.shell/root/audio midi -m "/opt/config/mod_data/midi/$1" &
