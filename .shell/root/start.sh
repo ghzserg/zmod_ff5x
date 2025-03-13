@@ -10,6 +10,7 @@ prepare_chroot()
     mv /tmp/pointercal /etc/pointercal
     mv /tmp/ts.conf /etc/ts.conf
 
+    [ -d /root/guppyscreen ] || mkdir -p /root/guppyscreen
     rm -f /root/guppyscreen/guppyscreen
     cp /opt/config/mod/.shell/root/guppyscreen /root/guppyscreen/guppyscreen
 
