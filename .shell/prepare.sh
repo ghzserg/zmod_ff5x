@@ -12,38 +12,43 @@ fi
 remove_base()
 {
     rm -rf ${UMOUNT_MOD}
-    rm /etc/init.d/S00fix
-    rm /etc/init.d/S99moon
-    rm /etc/init.d/S98camera
-    rm /etc/init.d/S99camera
-    rm /etc/init.d/S98zssh
-    rm /etc/init.d/K99moon
-    # REMOVE SCRIPTS
-    rm -rf /root/printer_data/scripts
-    # REMOVE ENTWARE
-    rm -rf /opt/bin
-    rm -rf /opt/etc
-    rm -rf /opt/home
-    rm -rf /opt/lib
-    rm -rf /opt/libexec
-    rm -rf /opt/root
-    rm -rf /opt/sbin
-    rm -rf /opt/share
-    rm -rf /opt/tmp
-    rm -rf /opt/usr
-    rm -rf /opt/var
-    # Remove ROOT
-    rm -rf /etc/init.d/S50sshd /etc/init.d/S55date /bin/dropbearmulti /bin/dropbear /bin/dropbearkey /bin/scp /etc/dropbear /etc/init.d/S60dropbear
-    # Remove BEEP
-    rm -f /usr/bin/audio.py /usr/bin/audio /usr/lib/python3.7/site-packages/audio.py /usr/bin/audio_midi.sh ${KLIPPER_DIR}/klippy/extras/gcode_shell_command.py
-    rm -rf /usr/lib/python3.7/site-packages/mido/
-    sync
 
     [ -f ${MOD_CONF}/mod/FULL_REMOVE ] && rm -rf ${MOD_CONF}/mod_data/
     sync
 
-    rm -f /etc/init.d/prepare.sh
+    if [ ${FF5X} -eq 0 ]; then
+        rm /etc/init.d/S00fix
+        rm /etc/init.d/S99moon
+        rm /etc/init.d/S98camera
+        rm /etc/init.d/S99camera
+        rm /etc/init.d/S98zssh
+        rm /etc/init.d/K99moon
+        # REMOVE SCRIPTS
+        rm -rf /root/printer_data/scripts
+        # REMOVE ENTWARE
+        rm -rf /opt/bin
+        rm -rf /opt/etc
+        rm -rf /opt/home
+        rm -rf /opt/lib
+        rm -rf /opt/libexec
+        rm -rf /opt/root
+        rm -rf /opt/sbin
+        rm -rf /opt/share
+        rm -rf /opt/tmp
+        rm -rf /opt/usr
+        rm -rf /opt/var
+        # Remove ROOT
+        rm -rf /etc/init.d/S50sshd /etc/init.d/S55date /bin/dropbearmulti /bin/dropbear /bin/dropbearkey /bin/scp /etc/dropbear /etc/init.d/S60dropbear
+        # Remove BEEP
+        rm -f /usr/bin/audio.py /usr/bin/audio /usr/lib/python3.7/site-packages/audio.py /usr/bin/audio_midi.sh ${KLIPPER_DIR}/klippy/extras/gcode_shell_command.py
+        rm -rf /usr/lib/python3.7/site-packages/mido/
+        rm -f /etc/init.d/prepare.sh
+    else
+        sed -i '/fix_config.sh/d' /usr/prog/app_startup.sh
+        sed -i '/prepare.sh/d' /usr/prog/app_startup.sh
+    fi
     sync
+
     rm -rf ${MOD_CONF}/mod/
     sync
     reboot
@@ -130,18 +135,6 @@ start_prepare()
     mkdir -p ${MOD}/root/printer_data/tmp
     mkdir -p ${MOD}/root/printer_data/comms
     mkdir -p ${MOD}/root/printer_data/certs
-
-#    if  ! [ -d ${MOD}/opt/klipper/docs ]
-#     then
-#        mkdir -p ${MOD}/opt/klipper/docs
-#        cp ${KLIPPER_DIR}/docs/* ${MOD}/opt/klipper/docs
-#    fi
-#
-#    if ! [ -d ${MOD}/opt/klipper/config ]
-#     then
-#        mkdir -p ${MOD}/opt/klipper/config
-#        cp ${KLIPPER_DIR}/config/* ${MOD}/opt/klipper/config
-#    fi
 
     [ ${FF5X} -eq 0 ] && cat /etc/localtime >/tmp/localtime
     cp ${TS_LIB}/pointercal /tmp/pointercal
