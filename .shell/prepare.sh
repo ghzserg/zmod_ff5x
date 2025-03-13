@@ -2,6 +2,9 @@
 
 set -x
 
+unset LD_LIBRARY_PATH
+unset LD_PRELOAD
+
 if [ -f /opt/config/mod/.shell/0.sh ]; then
     source /opt/config/mod/.shell/0.sh
 else if [ -f /usr/data/config/mod/.shell/0.sh ]; then
