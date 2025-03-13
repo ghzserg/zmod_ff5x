@@ -7,7 +7,7 @@
 import math, logging
 from . import bus
 
-# Zcontrol 1.4
+# Zcontrol 1.5
 
 ######################################################################
 # SensorBase
@@ -33,6 +33,7 @@ class SensorBase:
 
         self.zcontrol = 0
         self.zcommand = 0
+        self.printer.load_object(config, 'pause_resume')
         self.gcode = self.printer.lookup_object('gcode')
         if (chip_type == 'MAX31856'):
             self.gcode.register_command('ZCONTROL_ON', self.cmd_ZCONTROL_ON)
@@ -99,7 +100,9 @@ class SensorBase:
         if temp>self.max_temp and self.zcontrol == 1:
             if self.zcommand == 1:
                 self.gcode.respond_raw("!! Удар сопла о стол или отрыв детали. PAUSE")
-                self.gcode.run_script("PAUSE")
+                pause_resume = self.printer.lookup_object('pause_resume')
+                pause_resume.send_pause_command()
+                self.gcode.run_script("PAUSE\nM400\n")
             else:
                 self.printer.invoke_async_shutdown("Удар сопла о стол или отрыв детали. FIRMWARE_RESTART")
             return
