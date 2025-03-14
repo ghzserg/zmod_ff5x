@@ -22,7 +22,7 @@ restore_file()
 
 if ! [ -f /ZMOD ]; then
     echo "Началась проверка родной системы. Она может занять много времени..."
-    find /opt/PROGRAM/ -name md5sum.list | while read a;
+    find ${PROGRAM_DIR} -name md5sum.list | while read a;
         do
             b=$(pwd)
             c=$(echo $a|sed 's/md5sum.list//')
