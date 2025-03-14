@@ -9352,7 +9352,6 @@ f09b93e971b4264ab6771e5bac437097  ./usr/bin/git-upload-pack
 d2fcda1edabea9125ff6d237b1e767d3  ./usr/bin/speaker-test
 22253d0d9af91f800154537aa36f4dcc  ./usr/bin/htop
 671f790aa92df3bb30dd69145246a85e  ./usr/bin/touchpad-edge-detector
-9f45281ac36676a63e4b758be0c93cf1  ./usr/bin/guppyscreen
 f27f1406023041809643ccc5ffb2eda7  ./usr/bin/elfedit
 f484417245b1b1640a71f8e6cffdfa4d  ./usr/bin/media-ctl
 49cdb0f555c62c229653e475c5a6217e  ./usr/bin/qconvex
