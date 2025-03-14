@@ -8,15 +8,17 @@ else
     DIR="/opt/config/mod/.shell"
 fi
 
+if [ ${FF5X} -eq 1 ]; then
+    STOCK="stock5x"
+    export LD_LIBRARY_PATH=/usr/prog/curl-7.55.1-https/lib:$LD_LIBRARY_PATH
+else
+    STOCK="stock"
+fi
+
 restore_file()
 {
     fname="$1"
     /bin/echo -n "Восстанавливаю файл $fname: "
-    STOCK="stock"
-    if [ ${FF5X} -eq 1 ]; then
-        STOCK="stock5x"
-        export LD_LIBRARY_PATH=/usr/prog/curl-7.55.1-https/lib:$LD_LIBRARY_PATH
-    fi
     if ${CURL} --create-dirs -s -k -H 'Accept: application/vnd.github.v3.raw' -o "$fname" -L "https://api.github.com/repos/ghzserg/zmod/contents/${STOCK}${fname}"; then
         chmod 777 "$fname"
         echo "Успешно"
@@ -80,7 +82,7 @@ else
 fi
 
 if ! [ -f /ZMOD ]; then
-    echo "Оригиналы файлов можно найти по ссылке https://github.com/ghzserg/zmod/tree/main/stock"
+    echo "Оригиналы файлов можно найти по ссылке https://github.com/ghzserg/zmod/tree/main/${STOCK}"
     echo "Проверка родной системы окончена"
     [ ${FF5X} -eq 0 ] && [ "$1" != "init" ] && umount ${UMOUNT_MOD}
     unset LD_PRELOAD
