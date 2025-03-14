@@ -39,6 +39,7 @@ find .  \
     -and -not -path "./usr/prog/wifi/rtl_hostapd_2G.conf" \
     -and -not -path "./usr/data/database/*" \
     -and -not -path "./usr/data/camera/*" \
+    -and -not -path "./usr/prog/nginx/logs/*" \
     -exec mkdir -p ../stock/{} \;
 
 echo "#!/bin/sh
@@ -47,7 +48,7 @@ check_dir()
 {
     a=\$(/opt/config/mod/.shell/stat-coreutils -c '%a' \"\$1\" 2>/dev/null)
     if [ \"\$a\" != \"\$2\" ]; then
-        echo -n \"\$1 - Ошибочные права (\$a!=\$2): \"
+        /bin/echo -n \"\$1 - Ошибочные права (\$a!=\$2): \"
         mkdir -p \"\$1\" && chmod \"\$2\" \"\$1\" 2>/dev/null && echo \"Исправлено\" || echo \"Ошибка исправления\"
     fi
 }
@@ -56,7 +57,7 @@ check_link()
 {
     a=\$(readlink \"\$1\" 2>/dev/null)
     if [ \"\$a\" != \"\$2\" ]; then
-        echo -n \"\$1 - Ошибочная ссылка (\$a!=\$2): \"
+        /bin/echo -n \"\$1 - Ошибочная ссылка (\$a!=\$2): \"
         rm -f \"\$1\" 2>/dev/null
         ln -s \"\$2\" \"\$1\" 2>/dev/null && echo \"Исправлено\"  || echo \"Ошибка исправления\"
     fi
@@ -66,7 +67,7 @@ check_file()
 {
     a=\$(/opt/config/mod/.shell/stat-coreutils -c '%a' \"\$1\" 2>/dev/null)
     if [ \"\$a\" != \"\$2\" ]; then
-        echo -n \"\$1 - Ошибочные права (\$a!=\$2): \"
+        /bin/echo -n \"\$1 - Ошибочные права (\$a!=\$2): \"
         chmod \"\$2\" \"\$1\" 2>/dev/null && echo \"Исправлено\" || echo \"Ошибка исправления\"
     fi
 }
@@ -112,6 +113,7 @@ find .  \
     -and -not -path "./usr/prog/wifi/rtl_hostapd_2G.conf" \
     -and -not -path "./usr/data/database/*" \
     -and -not -path "./usr/data/camera/*" \
+    -and -not -path "./usr/prog/nginx/logs/*" \
     -exec ./link.sh {} link \; >>list.link
 
 find .  \
@@ -150,6 +152,7 @@ find .  \
     -and -not -path "./usr/prog/wifi/rtl_hostapd_2G.conf" \
     -and -not -path "./usr/data/database/*" \
     -and -not -path "./usr/data/camera/*" \
+    -and -not -path "./usr/prog/nginx/logs/*" \
     -exec cp -a {} ../stock/{} \;
 
 find .  \
@@ -188,6 +191,7 @@ find .  \
     -and -not -path "./usr/prog/wifi/rtl_hostapd_2G.conf" \
     -and -not -path "./usr/data/database/*" \
     -and -not -path "./usr/data/camera/*" \
+    -and -not -path "./usr/prog/nginx/logs/*" \
     -exec md5sum {} \; >md5sum.list
 
 exit
@@ -228,6 +232,7 @@ find .  \
     -and -not -path "./usr/prog/wifi/rtl_hostapd_2G.conf" \
     -and -not -path "./usr/data/database/*" \
     -and -not -path "./usr/data/camera/*" \
+    -and -not -path "./usr/prog/nginx/logs/*" \
     -exec ./link.sh {} "file" \; >>list.link
 
 echo "echo 'Проверка прав на каталоги...'">>list.link
@@ -267,4 +272,5 @@ find .  \
     -and -not -path "./usr/prog/wifi/rtl_hostapd_2G.conf" \
     -and -not -path "./usr/data/database/*" \
     -and -not -path "./usr/data/camera/*" \
+    -and -not -path "./usr/prog/nginx/logs/*" \
     -exec ./link.sh {} "dir" \; >>list.link

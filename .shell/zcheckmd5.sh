@@ -11,7 +11,7 @@ fi
 restore_file()
 {
     fname="$1"
-    echo -n "Восстанавливаю файл $fname: "
+    /bin/echo -n "Восстанавливаю файл $fname: "
     if ${CURL} --create-dirs -s -k -H 'Accept: application/vnd.github.v3.raw' -o "$fname" -L "https://api.github.com/repos/ghzserg/zmod/contents/stock${fname}"; then
         chmod 777 "$fname"
         echo "Успешно"
@@ -45,7 +45,7 @@ echo "/"
 cd /
 FF_VERSION="$(cat /root/version 2>/dev/null)"
 MIN_VERSION="3.1.3"
-if ! [ -f /ZMOD ] && [ "${FF_VERSION//./}" -lt "${MIN_VERSION//./}" ]; then
+if [ ${FF5X} -eq 0 ] && ! [ -f /ZMOD ] && [ "${FF_VERSION//./}" -lt "${MIN_VERSION//./}" ]; then
     sed '/\/nim\//d' ${DIR}/md5sum.list >${DIR}/md5sum_nim.list
     md5sum -c ${DIR}/md5sum_nim.list 2>/dev/null | grep -v -e "OK$" | tee /opt/config/mod_data/bad.list
     rm -f ${DIR}/md5sum_nim.list
@@ -65,7 +65,7 @@ if [ "$1" == "restore" ]; then
 fi
 rm -f /opt/config/mod_data/bad.list
 
-if ! [ -f /ZMOD ] && [ "${FF_VERSION//./}" -lt "${MIN_VERSION//./}" ]; then
+if [ ${FF5X} -eq 0 ] && ! [ -f /ZMOD ] && [ "${FF_VERSION//./}" -lt "${MIN_VERSION//./}" ]; then
     sed '/\/nim\//d' ${DIR}/list.link >${DIR}/md5sum_nim.list
     chmod +x ${DIR}/md5sum_nim.list
     ${DIR}/md5sum_nim.list 2>/dev/null

@@ -8947,9 +8947,6 @@ e7bf6f5c3f43d7a85a65eff9592a865e  ./usr/prog/nginx/sbin/nginx
 e7bf6f5c3f43d7a85a65eff9592a865e  ./usr/prog/nginx/sbin/nginx.old
 e3eb0a1df437f3f97a64aca5952c8ea0  ./usr/prog/nginx/html/index.html
 d74f9cdd604653c22c6752c46fffd587  ./usr/prog/nginx/html/50x.html
-bd0c37ed02d1268ca912882864f472df  ./usr/prog/nginx/logs/nginx.pid
-b133e4336af68b39d959978cde6b7255  ./usr/prog/nginx/logs/access.log
-fdb1caab61d1077ee110929d92bad4de  ./usr/prog/nginx/logs/error.log
 025ce59fab18cc6e29d7cba7b60f3162  ./usr/prog/nginx/off
 bfa0b80381fed2b1dfcf617b0ba204ec  ./usr/prog/nginx/conf/koi-win
 820029b6ba09d8de25cbf8d8b6a725c6  ./usr/prog/nginx/conf/nginx.conf
