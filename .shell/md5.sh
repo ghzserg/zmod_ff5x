@@ -54,7 +54,7 @@ check_dir()
 {
     a=\$(/opt/config/mod/.shell/stat-coreutils -c '%a' \"\$1\" 2>/dev/null)
     if [ \"\$a\" != \"\$2\" ]; then
-        echo -n \"\$1 - Ошибочные права (\$a!=\$2): \"
+        /bin/echo -n \"\$1 - Ошибочные права (\$a!=\$2): \"
         mkdir -p \"\$1\" && chmod \"\$2\" \"\$1\" 2>/dev/null && echo \"Исправлено\" || echo \"Ошибка исправления\"
     fi
 }
@@ -63,7 +63,7 @@ check_link()
 {
     a=\$(readlink \"\$1\" 2>/dev/null)
     if [ \"\$a\" != \"\$2\" ]; then
-        echo -n \"\$1 - Ошибочная ссылка (\$a!=\$2): \"
+        /bin/echo -n \"\$1 - Ошибочная ссылка (\$a!=\$2): \"
         rm -f \"\$1\" 2>/dev/null
         ln -s \"\$2\" \"\$1\" 2>/dev/null && echo \"Исправлено\"  || echo \"Ошибка исправления\"
     fi
@@ -73,7 +73,7 @@ check_file()
 {
     a=\$(/opt/config/mod/.shell/stat-coreutils -c '%a' \"\$1\" 2>/dev/null)
     if [ \"\$a\" != \"\$2\" ]; then
-        echo -n \"\$1 - Ошибочные права (\$a!=\$2): \"
+        /bin/echo -n \"\$1 - Ошибочные права (\$a!=\$2): \"
         chmod \"\$2\" \"\$1\" 2>/dev/null && echo \"Исправлено\" || echo \"Ошибка исправления\"
     fi
 }
