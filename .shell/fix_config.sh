@@ -284,7 +284,7 @@ unset LD_PRELOAD
         grep -q '^\[include ./mod/display_off.cfg\]' ${PRINTER_CFG} && sed -i 's|\[include ./mod/display_off.cfg\]|\[include ./mod/mod.cfg\]|' ${PRINTER_CFG} && NEED_REBOOT=1
     fi
 
-    if ! grep -q '^\[heater_bed' ${PRINTER_CFG}
+    if [ ${FF5X} -eq 0 ] && ! grep -q '^\[heater_bed' ${PRINTER_CFG}
         then
             NEED_REBOOT=1
             cd ${MOD_CONF}
@@ -328,7 +328,7 @@ max_temp: 130
             rm heater_bed.txt || echo "Not heater_bed.txt"
     fi
 
-    if grep -q '^\[heater_bed' ${PRINTER_BASE}
+    if [ ${FF5X} -eq 0 ] && grep -q '^\[heater_bed' ${PRINTER_BASE}
         then
             NEED_REBOOT=1
             cd ${MOD_CONF}
