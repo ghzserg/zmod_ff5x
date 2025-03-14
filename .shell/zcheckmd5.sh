@@ -12,7 +12,12 @@ restore_file()
 {
     fname="$1"
     /bin/echo -n "Восстанавливаю файл $fname: "
-    if ${CURL} --create-dirs -s -k -H 'Accept: application/vnd.github.v3.raw' -o "$fname" -L "https://api.github.com/repos/ghzserg/zmod/contents/stock${fname}"; then
+    STOCK="stock"
+    if [ ${FF5X} -eq 1 ]; then
+        STOCK="stock5x"
+        export LD_LIBRARY_PATH=/usr/prog/curl-7.55.1-https/lib:$LD_LIBRARY_PATH
+    fi
+    if ${CURL} --create-dirs -s -k -H 'Accept: application/vnd.github.v3.raw' -o "$fname" -L "https://api.github.com/repos/ghzserg/zmod/contents/${STOCK}${fname}"; then
         chmod 777 "$fname"
         echo "Успешно"
     else
