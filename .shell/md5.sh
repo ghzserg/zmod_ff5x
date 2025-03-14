@@ -31,7 +31,14 @@ find .  \
     -and -not -path "./usr/prog/MAC" \
     -and -not -path "./usr/prog/app_startup.sh" \
     -and -not -path "./usr/prog/wifi/wpa_supplicant.conf" \
-    -and -not -path "/usr/prog/tslib-1.12/etc/pointercal" \
+    -and -not -path "./usr/prog/tslib-1.12/etc/pointercal" \
+    -and -not -path "./usr/data/logs/*" \
+    -and -not -path "./usr/data/gcodes/*" \
+    -and -not -path "./usr/prog/etc/shadow-" \
+    -and -not -path "./usr/prog/etc/shadow" \
+    -and -not -path "./usr/prog/wifi/rtl_hostapd_2G.conf" \
+    -and -not -path "./usr/data/database/*" \
+    -and -not -path "./usr/data/camera/*" \
     -exec mkdir -p ../stock/{} \;
 
 echo "#!/bin/sh
@@ -97,7 +104,14 @@ find .  \
     -and -not -path "./usr/prog/MAC" \
     -and -not -path "./usr/prog/app_startup.sh" \
     -and -not -path "./usr/prog/wifi/wpa_supplicant.conf" \
-    -and -not -path "/usr/prog/tslib-1.12/etc/pointercal" \
+    -and -not -path "./usr/prog/tslib-1.12/etc/pointercal" \
+    -and -not -path "./usr/data/logs/*" \
+    -and -not -path "./usr/data/gcodes/*" \
+    -and -not -path "./usr/prog/etc/shadow-" \
+    -and -not -path "./usr/prog/etc/shadow" \
+    -and -not -path "./usr/prog/wifi/rtl_hostapd_2G.conf" \
+    -and -not -path "./usr/data/database/*" \
+    -and -not -path "./usr/data/camera/*" \
     -exec ./link.sh {} link \; >>list.link
 
 find .  \
@@ -128,7 +142,14 @@ find .  \
     -and -not -path "./usr/prog/MAC" \
     -and -not -path "./usr/prog/app_startup.sh" \
     -and -not -path "./usr/prog/wifi/wpa_supplicant.conf" \
-    -and -not -path "/usr/prog/tslib-1.12/etc/pointercal" \
+    -and -not -path "./usr/prog/tslib-1.12/etc/pointercal" \
+    -and -not -path "./usr/data/logs/*" \
+    -and -not -path "./usr/data/gcodes/*" \
+    -and -not -path "./usr/prog/etc/shadow-" \
+    -and -not -path "./usr/prog/etc/shadow" \
+    -and -not -path "./usr/prog/wifi/rtl_hostapd_2G.conf" \
+    -and -not -path "./usr/data/database/*" \
+    -and -not -path "./usr/data/camera/*" \
     -exec cp -a {} ../stock/{} \;
 
 find .  \
@@ -159,7 +180,14 @@ find .  \
     -and -not -path "./usr/prog/MAC" \
     -and -not -path "./usr/prog/app_startup.sh" \
     -and -not -path "./usr/prog/wifi/wpa_supplicant.conf" \
-    -and -not -path "/usr/prog/tslib-1.12/etc/pointercal" \
+    -and -not -path "./usr/prog/tslib-1.12/etc/pointercal" \
+    -and -not -path "./usr/data/logs/*" \
+    -and -not -path "./usr/data/gcodes/*" \
+    -and -not -path "./usr/prog/etc/shadow-" \
+    -and -not -path "./usr/prog/etc/shadow" \
+    -and -not -path "./usr/prog/wifi/rtl_hostapd_2G.conf" \
+    -and -not -path "./usr/data/database/*" \
+    -and -not -path "./usr/data/camera/*" \
     -exec md5sum {} \; >md5sum.list
 
 exit
@@ -192,7 +220,14 @@ find .  \
     -and -not -path "./usr/prog/MAC" \
     -and -not -path "./usr/prog/app_startup.sh" \
     -and -not -path "./usr/prog/wifi/wpa_supplicant.conf" \
-    -and -not -path "/usr/prog/tslib-1.12/etc/pointercal" \
+    -and -not -path "./usr/prog/tslib-1.12/etc/pointercal" \
+    -and -not -path "./usr/data/logs/*" \
+    -and -not -path "./usr/data/gcodes/*" \
+    -and -not -path "./usr/prog/etc/shadow-" \
+    -and -not -path "./usr/prog/etc/shadow" \
+    -and -not -path "./usr/prog/wifi/rtl_hostapd_2G.conf" \
+    -and -not -path "./usr/data/database/*" \
+    -and -not -path "./usr/data/camera/*" \
     -exec ./link.sh {} "file" \; >>list.link
 
 echo "echo 'Проверка прав на каталоги...'">>list.link
@@ -224,5 +259,12 @@ find .  \
     -and -not -path "./usr/prog/MAC" \
     -and -not -path "./usr/prog/app_startup.sh" \
     -and -not -path "./usr/prog/wifi/wpa_supplicant.conf" \
-    -and -not -path "/usr/prog/tslib-1.12/etc/pointercal" \
+    -and -not -path "./usr/prog/tslib-1.12/etc/pointercal" \
+    -and -not -path "./usr/data/logs/*" \
+    -and -not -path "./usr/data/gcodes/*" \
+    -and -not -path "./usr/prog/etc/shadow-" \
+    -and -not -path "./usr/prog/etc/shadow" \
+    -and -not -path "./usr/prog/wifi/rtl_hostapd_2G.conf" \
+    -and -not -path "./usr/data/database/*" \
+    -and -not -path "./usr/data/camera/*" \
     -exec ./link.sh {} "dir" \; >>list.link

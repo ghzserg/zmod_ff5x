@@ -253,121 +253,6 @@ df8c71e25e0356ffc539742f08fddfff  ./usr/data/nginx/scgi_params
 178a634a52a0777a4cf6f3a394fd2b53  ./usr/data/nginx/fastcgi.conf
 0f39cbfca77d4f3bb5d33f009a514c71  ./usr/data/nginx/win-utf
 88ac833ee8ea60904a8b3063fde791de  ./usr/data/nginx/uwsgi_params
-f00ebbb66529b2c413ea4854625938f9  ./usr/data/logs/firmwareExe.log.1
-b4dfca013b689991456cd2165dbb528b  ./usr/data/logs/firmwareExe.log.3
-5eba1ce4ec7f94b0176db5df7b67b79c  ./usr/data/logs/firmwareExe.log.6
-75968eea20b837c8f0f6a2c3bf0fa780  ./usr/data/logs/printer.log
-84e7e87e500ab6f8fd92eb645429d32d  ./usr/data/logs/firmwareExe.log.8
-217cd0cea4b97976807a490047e0dce0  ./usr/data/logs/firmwareExe.log.4
-2ce8ec1f9e2d13ca01af5e89cd44663c  ./usr/data/logs/firmwareExe.log.7
-e6df58139f853b61485f85a5c3c7f509  ./usr/data/logs/firmwareExe.log.2
-567ce607f9b8814e37d523fa606fe24b  ./usr/data/logs/firmwareExe.log
-19ae174b09af9fcc40da52cbc3432460  ./usr/data/logs/firmwareExe.log.5
-9c511ddf509796ca8eaec580d6a61a9d  ./usr/data/gcodes/FlashForge-TestModel-01.3mf
-f33b30634f84d70c8abb953da8023e0a  ./usr/data/gcodes/FlashForge-TestModel-01.bmp
-016fbe1d1c772abeadfc15b27257436f  ./usr/data/gcodes/3DBenchy_PLA.3mf
-1cdf4364fba069483ddd37f21e884fe3  ./usr/data/gcodes/3mf/model/OrcaPlug_PLA/3D/3dmodel.model
-b7fb56d71d164a01c05b68c6a7b3adaa  ./usr/data/gcodes/3mf/model/OrcaPlug_PLA/Metadata/slice_info.config
-bd727187dbbaa9331e64b8fe71bfdd29  ./usr/data/gcodes/3mf/model/OrcaPlug_PLA/Metadata/plate_1_small.png
-a80313b9c69f7b1cff58f9b85da131f9  ./usr/data/gcodes/3mf/model/OrcaPlug_PLA/Metadata/plate_no_light_1.png
-a560ce70f2dd90e674682f92bf0ca7af  ./usr/data/gcodes/3mf/model/OrcaPlug_PLA/Metadata/pick_1.png
-d736028254b8ef47536ce595817a62f0  ./usr/data/gcodes/3mf/model/OrcaPlug_PLA/Metadata/_rels/model_settings.config.rels
-1f0b235022d9288203800457b857e468  ./usr/data/gcodes/3mf/model/OrcaPlug_PLA/Metadata/plate_1.gcode
-a971265a701e649f33f2581a7b3b5fca  ./usr/data/gcodes/3mf/model/OrcaPlug_PLA/Metadata/model_settings.config
-468416a76e7857b2facdc434e51037e0  ./usr/data/gcodes/3mf/model/OrcaPlug_PLA/Metadata/plate_1.gcode.md5
-d050f67fd22be2172a1107b9d950f601  ./usr/data/gcodes/3mf/model/OrcaPlug_PLA/Metadata/plate_1.json
-097c1d401641e43b7731e4f7e03e3563  ./usr/data/gcodes/3mf/model/OrcaPlug_PLA/Metadata/filament_settings_1.config
-5203ccda49e2277c4bfd59cbc9a11323  ./usr/data/gcodes/3mf/model/OrcaPlug_PLA/Metadata/top_1.png
-a43f3bd166d4f3c732b5320607de3267  ./usr/data/gcodes/3mf/model/OrcaPlug_PLA/Metadata/project_settings.config
-b35861dd774468442a7167bc87979caa  ./usr/data/gcodes/3mf/model/OrcaPlug_PLA/Metadata/plate_1.png
-cb79604e19f9d2907ac75a67e64d33ba  ./usr/data/gcodes/3mf/model/OrcaPlug_PLA/_rels/.rels
-dde62d9153ff0b4c54529bc0fb5ac0cb  ./usr/data/gcodes/3mf/model/OrcaPlug_PLA/[Content_Types].xml
-1cdf4364fba069483ddd37f21e884fe3  ./usr/data/gcodes/3mf/model/FISH_PLA/3D/3dmodel.model
-e54f453926a7fda96567b560348683ec  ./usr/data/gcodes/3mf/model/FISH_PLA/Metadata/slice_info.config
-78a21d9bb7911b3e751234cd0fdb0eb3  ./usr/data/gcodes/3mf/model/FISH_PLA/Metadata/filament_settings_2.config
-57bb30728d6cd7affeb055516e32fb51  ./usr/data/gcodes/3mf/model/FISH_PLA/Metadata/plate_1_small.png
-9d79d5dd665184b7ba40d263476f1334  ./usr/data/gcodes/3mf/model/FISH_PLA/Metadata/plate_no_light_1.png
-f657dd094390b935e20d5646c4c35262  ./usr/data/gcodes/3mf/model/FISH_PLA/Metadata/pick_1.png
-d736028254b8ef47536ce595817a62f0  ./usr/data/gcodes/3mf/model/FISH_PLA/Metadata/_rels/model_settings.config.rels
-f0810d3cd89939ebfdf5687691bc13cc  ./usr/data/gcodes/3mf/model/FISH_PLA/Metadata/process_settings_1.config
-f04e231e109542e3bbfb6ea464dc2fb6  ./usr/data/gcodes/3mf/model/FISH_PLA/Metadata/plate_1.gcode
-a971265a701e649f33f2581a7b3b5fca  ./usr/data/gcodes/3mf/model/FISH_PLA/Metadata/model_settings.config
-448dab3186d401a178afb9b6d3e33cd3  ./usr/data/gcodes/3mf/model/FISH_PLA/Metadata/plate_1.gcode.md5
-91d20d59753fb32c11de39e50292e234  ./usr/data/gcodes/3mf/model/FISH_PLA/Metadata/filament_settings_3.config
-45516e7e33c550ef66418d014652a67b  ./usr/data/gcodes/3mf/model/FISH_PLA/Metadata/process_settings_2.config
-688bf6446d39a7e7478cf9840e7dd557  ./usr/data/gcodes/3mf/model/FISH_PLA/Metadata/plate_1.json
-b980e4153c2ba231d6e9592e7f31606b  ./usr/data/gcodes/3mf/model/FISH_PLA/Metadata/filament_settings_1.config
-9082fe57918604c5f7b1c2789857a7e9  ./usr/data/gcodes/3mf/model/FISH_PLA/Metadata/top_1.png
-a256febb1efb42a0fe070d205072c534  ./usr/data/gcodes/3mf/model/FISH_PLA/Metadata/project_settings.config
-aa63c5973a875343cf05e2754bc582cf  ./usr/data/gcodes/3mf/model/FISH_PLA/Metadata/plate_1.png
-cb79604e19f9d2907ac75a67e64d33ba  ./usr/data/gcodes/3mf/model/FISH_PLA/_rels/.rels
-dde62d9153ff0b4c54529bc0fb5ac0cb  ./usr/data/gcodes/3mf/model/FISH_PLA/[Content_Types].xml
-1cdf4364fba069483ddd37f21e884fe3  ./usr/data/gcodes/3mf/model/Earphone support_PLA/3D/3dmodel.model
-cea6910be6b0569a9c173baddd05de27  ./usr/data/gcodes/3mf/model/Earphone support_PLA/Metadata/slice_info.config
-17255e2830fb11135b7a4d3c8311781c  ./usr/data/gcodes/3mf/model/Earphone support_PLA/Metadata/plate_1_small.png
-933dc9fff51721ee41b5f52996df26d7  ./usr/data/gcodes/3mf/model/Earphone support_PLA/Metadata/plate_no_light_1.png
-e104411bf35e7874c40117bc56e2ddfb  ./usr/data/gcodes/3mf/model/Earphone support_PLA/Metadata/pick_1.png
-d736028254b8ef47536ce595817a62f0  ./usr/data/gcodes/3mf/model/Earphone support_PLA/Metadata/_rels/model_settings.config.rels
-096811ece7fc008e2109dd26d80c2449  ./usr/data/gcodes/3mf/model/Earphone support_PLA/Metadata/plate_1.gcode
-a971265a701e649f33f2581a7b3b5fca  ./usr/data/gcodes/3mf/model/Earphone support_PLA/Metadata/model_settings.config
-3507f91c01def92955cd5cf9d428869f  ./usr/data/gcodes/3mf/model/Earphone support_PLA/Metadata/plate_1.gcode.md5
-c48d7322a93af030de32f6101b1bd732  ./usr/data/gcodes/3mf/model/Earphone support_PLA/Metadata/plate_1.json
-38422ea3e76c1d8505fd2cbd6bfbf726  ./usr/data/gcodes/3mf/model/Earphone support_PLA/Metadata/filament_settings_1.config
-8b88b409027577af09bdb5784af4fbea  ./usr/data/gcodes/3mf/model/Earphone support_PLA/Metadata/top_1.png
-a5e1c3eb1f7ac83e57e59623195a2e5d  ./usr/data/gcodes/3mf/model/Earphone support_PLA/Metadata/project_settings.config
-69006c7cac7cd2c7ba8d586fcd642e7d  ./usr/data/gcodes/3mf/model/Earphone support_PLA/Metadata/plate_1.png
-cb79604e19f9d2907ac75a67e64d33ba  ./usr/data/gcodes/3mf/model/Earphone support_PLA/_rels/.rels
-dde62d9153ff0b4c54529bc0fb5ac0cb  ./usr/data/gcodes/3mf/model/Earphone support_PLA/[Content_Types].xml
-facd058ec4c82d86241f1d8794317c2c  ./usr/data/gcodes/3mf/model/3DBenchy_PLA/3D/3dmodel.model
-6a405cf8a922503c80d5d2b8d62254b2  ./usr/data/gcodes/3mf/model/3DBenchy_PLA/Metadata/plate_no_light_2.png
-6a405cf8a922503c80d5d2b8d62254b2  ./usr/data/gcodes/3mf/model/3DBenchy_PLA/Metadata/plate_2.png
-3e0d70d03a8f87f7c3f9e45b34003859  ./usr/data/gcodes/3mf/model/3DBenchy_PLA/Metadata/slice_info.config
-6a405cf8a922503c80d5d2b8d62254b2  ./usr/data/gcodes/3mf/model/3DBenchy_PLA/Metadata/pick_2.png
-f91c22cc247b91fd5e5867b4ce4f2058  ./usr/data/gcodes/3mf/model/3DBenchy_PLA/Metadata/plate_1_small.png
-6a405cf8a922503c80d5d2b8d62254b2  ./usr/data/gcodes/3mf/model/3DBenchy_PLA/Metadata/top_2.png
-0b0f38ce060bf8e7a97ec6a21e8dad3b  ./usr/data/gcodes/3mf/model/3DBenchy_PLA/Metadata/plate_no_light_1.png
-8fe1862d0e869c1392f45c372a4fe9b8  ./usr/data/gcodes/3mf/model/3DBenchy_PLA/Metadata/pick_1.png
-d736028254b8ef47536ce595817a62f0  ./usr/data/gcodes/3mf/model/3DBenchy_PLA/Metadata/_rels/model_settings.config.rels
-8de4f6d08e4dd76f13825750520e4935  ./usr/data/gcodes/3mf/model/3DBenchy_PLA/Metadata/plate_1.gcode
-a2c12c476a29a85d5dfebbb62ce94c38  ./usr/data/gcodes/3mf/model/3DBenchy_PLA/Metadata/model_settings.config
-2aeac2780c601b608980d49f889a296e  ./usr/data/gcodes/3mf/model/3DBenchy_PLA/Metadata/plate_1.gcode.md5
-5263e2719c9a654240ff1bcdb0ea859b  ./usr/data/gcodes/3mf/model/3DBenchy_PLA/Metadata/plate_1.json
-960b78dbee1ba160517d7d875f8231ba  ./usr/data/gcodes/3mf/model/3DBenchy_PLA/Metadata/filament_settings_1.config
-0802b29d3532a578c7a94f85bcd136bb  ./usr/data/gcodes/3mf/model/3DBenchy_PLA/Metadata/top_1.png
-cf8a6708ca2f5b27bc9f406d12805d1b  ./usr/data/gcodes/3mf/model/3DBenchy_PLA/Metadata/plate_2_small.png
-68145471c6165693ab75b0db62991756  ./usr/data/gcodes/3mf/model/3DBenchy_PLA/Metadata/project_settings.config
-59faa43175f41edfa79eae7556a0b948  ./usr/data/gcodes/3mf/model/3DBenchy_PLA/Metadata/plate_1.png
-cb79604e19f9d2907ac75a67e64d33ba  ./usr/data/gcodes/3mf/model/3DBenchy_PLA/_rels/.rels
-dde62d9153ff0b4c54529bc0fb5ac0cb  ./usr/data/gcodes/3mf/model/3DBenchy_PLA/[Content_Types].xml
-f13789f8b6973bd8bc93a3eb9da872c3  ./usr/data/gcodes/3mf/model/FlashForge-TestModel-01/3D/3dmodel.model
-3f118696299febd4a75686484b7469c2  ./usr/data/gcodes/3mf/model/FlashForge-TestModel-01/Metadata/slice_info.config
-7da41fbef60d25882e8b9c11b1f57da8  ./usr/data/gcodes/3mf/model/FlashForge-TestModel-01/Metadata/filament_settings_2.config
-c10b37fb981528f61e74b72dac3fb920  ./usr/data/gcodes/3mf/model/FlashForge-TestModel-01/Metadata/plate_1_small.png
-c78f8a2a4ba8e51a94fac0b6efa920b2  ./usr/data/gcodes/3mf/model/FlashForge-TestModel-01/Metadata/plate_no_light_1.png
-2752fad4029d07fea349f1745259c6e5  ./usr/data/gcodes/3mf/model/FlashForge-TestModel-01/Metadata/pick_1.png
-d736028254b8ef47536ce595817a62f0  ./usr/data/gcodes/3mf/model/FlashForge-TestModel-01/Metadata/_rels/model_settings.config.rels
-a254d83459a628fe1490c17199636a22  ./usr/data/gcodes/3mf/model/FlashForge-TestModel-01/Metadata/plate_1.gcode
-a971265a701e649f33f2581a7b3b5fca  ./usr/data/gcodes/3mf/model/FlashForge-TestModel-01/Metadata/model_settings.config
-795ce20a0f607cbdfe2cefa74223eaf6  ./usr/data/gcodes/3mf/model/FlashForge-TestModel-01/Metadata/plate_1.gcode.md5
-0cbb33ade2922ec0a871038afb17d538  ./usr/data/gcodes/3mf/model/FlashForge-TestModel-01/Metadata/plate_1.json
-6565b084840466a9a9919660e2137948  ./usr/data/gcodes/3mf/model/FlashForge-TestModel-01/Metadata/filament_settings_1.config
-0f696d57783ccd2ae7d93b0a4f4eb18f  ./usr/data/gcodes/3mf/model/FlashForge-TestModel-01/Metadata/top_1.png
-133341f779465fc5a48acf38bf0a6691  ./usr/data/gcodes/3mf/model/FlashForge-TestModel-01/Metadata/project_settings.config
-b5e2020030849e2c5f45acc25416e8b1  ./usr/data/gcodes/3mf/model/FlashForge-TestModel-01/Metadata/plate_1.png
-cb79604e19f9d2907ac75a67e64d33ba  ./usr/data/gcodes/3mf/model/FlashForge-TestModel-01/_rels/.rels
-dde62d9153ff0b4c54529bc0fb5ac0cb  ./usr/data/gcodes/3mf/model/FlashForge-TestModel-01/[Content_Types].xml
-b5e2020030849e2c5f45acc25416e8b1  ./usr/data/gcodes/3mf/thum/FlashForge-TestModel-01.png
-59faa43175f41edfa79eae7556a0b948  ./usr/data/gcodes/3mf/thum/3DBenchy_PLA.png
-b35861dd774468442a7167bc87979caa  ./usr/data/gcodes/3mf/thum/OrcaPlug_PLA.png
-17bc8e2b88ead70b255bf7d9a557c303  ./usr/data/gcodes/3mf/thum/AD5X下线检验模型-多色方块.png
-69006c7cac7cd2c7ba8d586fcd642e7d  ./usr/data/gcodes/3mf/thum/Earphone support_PLA.png
-aa63c5973a875343cf05e2754bc582cf  ./usr/data/gcodes/3mf/thum/FISH_PLA.png
-dfc2f00babe3495ce486277197b39227  ./usr/data/gcodes/Earphone support_PLA.3mf
-5d3eb90d4e3779b117d7796852ea88e9  ./usr/data/gcodes/OrcaPlug_PLA.3mf
-35cc3b7077196aa741861d8d05475b19  ./usr/data/gcodes/FISH_PLA.3mf
-53b4e185a1b3ad86dc52cd7c645edb31  ./usr/data/database/lock.mdb
-3b0de6bf52e4a6528b59e72ec89b5e4c  ./usr/data/database/data.mdb
-204aa76bb5feae6aa48418ef152a35d3  ./usr/data/camera/camera.jpg
 04f45026771cd254ed775641362f65d0  ./usr/libexec/bluetooth/bluetoothd
 cddfa8ad2cb264f1e97546016bcd4c9b  ./usr/libexec/dbus-daemon-launch-helper
 1e43e61b0e4fba70d63b5b6d3dce2a7c  ./usr/share/terminfo/a/ansi
@@ -528,14 +413,12 @@ f0c6c4cd97dbe4dfb2d7e1db90c12697  ./usr/prog/etc/network/if-pre-up.d/wait_iface
 3ddc9e6cbaa6ac1e55c1e37ba840c6c8  ./usr/prog/etc/network/interfaces
 cbac8f56a12586e05e6f2009cdf120cc  ./usr/prog/etc/hostname
 d41d8cd98f00b204e9800998ecf8427e  ./usr/prog/etc/factory_test/factory_test_conf
-d244f2ff9973d85895ef1693914c9008  ./usr/prog/etc/shadow-
 5f0f476a35a66972aaf671d85b170eea  ./usr/prog/etc/wpa_supplicant.conf
 df38534cc670c70a91cf9b035845d244  ./usr/prog/etc/e2scrub.conf
 4990d3c1f74995310d20bfcf5cbade78  ./usr/prog/etc/inittab
 bd1bfa92ac0f140f0fbc580066ef1108  ./usr/prog/etc/cron.d/e2scrub_all
 9528c60fae7c1680f86f2f20f9091192  ./usr/prog/etc/fstab
 f632f5cbce86412e9d973653b05e700d  ./usr/prog/etc/nsswitch.conf
-8ec2c23f85860e419cac9d12e01c6032  ./usr/prog/etc/shadow
 12080d34c91e6b39fbe5406c17246a14  ./usr/prog/etc/mke2fs.conf
 799a237894b3d8b828e62bd1e1462c48  ./usr/prog/etc/ota_bin/ota_img_data_provider.sh
 d6ff641d35ba20fe0bec7b1696a5ef78  ./usr/prog/etc/ota_bin/network_ota_update.sh
@@ -573,7 +456,6 @@ ae69f39193bb6a95b8ef1ca4ea495668  ./usr/prog/x264/include/x264_config.h
 7724746bf3ff0ca580593f3ff90dc6f9  ./usr/prog/x264/include/x264.h
 613fb98bd9bc3f240ad8f70c1ed26f8c  ./usr/prog/x264/bin/x264
 73996424af7377471933037887c395a4  ./usr/prog/wifi/8821cu.ko
-f5e3d71eb6cd40c51228a2fca566818c  ./usr/prog/wifi/rtl_hostapd_2G.conf
 d1f4004fa9eda1446986b3b3eae88940  ./usr/prog/wifi/udhcpd.conf
 84a110efebebec5b5ba1dcd02409a66f  ./usr/prog/wifi/bin/iwlist
 c7f13a41ed4fa955d8d5eed904bcac2b  ./usr/prog/wifi/bin/wifi_reconnect
@@ -4733,7 +4615,6 @@ b854a23e4f3f9bea35bbd571714a0dec  ./usr/prog/libffi-3.4.4/lib/pkgconfig/libffi.p
 ec135451c508a6065a9deac3aa4d5a7b  ./usr/prog/libffi-3.4.4/include/ffitarget.h
 28a2d8c476f6601f78d35ab8da53c0d5  ./usr/prog/libffi-3.4.4/include/ffi.h
 ae35053cdacd1953a0b011522c4e4b47  ./usr/prog/tslib-1.12/etc/ts.conf
-0e1993dbab039190e0674bd456b6ffca  ./usr/prog/tslib-1.12/etc/pointercal
 345e17c4d46a2f0cc5f9e48a9c8eb988  ./usr/prog/tslib-1.12/share/man/man3/ts_error_fn.3
 3f288eacb2eaec907b871bac2eb02ace  ./usr/prog/tslib-1.12/share/man/man3/ts_setup.3
 efe2b2095a8d22416293b1c92e0178f8  ./usr/prog/tslib-1.12/share/man/man3/ts_open.3
