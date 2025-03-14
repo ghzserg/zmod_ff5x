@@ -5,14 +5,17 @@ source /opt/config/mod/.shell/0.sh
 unset LD_PRELOAD
 unset LD_LIBRARY_PATH
 
-if ! [ -f "/opt/config/mod_data/midi/$1" ]
+if ! [ -f "/opt/config/mod_data/midi/$1" ] && ! [ -f "/opt/config/mod_data/midi/$1.wav" ]
     then
         echo "Файл mod_data/midi/$1 не найден"
+        [ ${FF5X} -eq 1 ] && echo "FF5X воспроизводит wav файлы"
         exit 1
 fi
 
 if [ ${FF5X} -eq 1 ]; then
-    chroot $MOD aplay /opt/config/mod_data/midi/$1 &
+    [ -f "/opt/config/mod_data/midi/$1.wav" ] && chroot $MOD aplay /opt/config/mod_data/midi/$1.wav &
+    [ -f "/opt/config/mod_data/midi/$1" ] && chroot $MOD aplay /opt/config/mod_data/midi/$1 &
+    rm -f /opt/config/mod_data/midi/*.mid 2>/dev/null
 #    export LD_LIBRARY_PATH=/usr/prog/qt-4.8.6/lib:$LD_LIBRARY_PATH
 #    export LD_LIBRARY_PATH=/usr/prog/openssl-1.0.2d/lib:$LD_LIBRARY_PATH
 #    export LD_LIBRARY_PATH=/usr/prog/curl-7.55.1-https/lib:$LD_LIBRARY_PATH
