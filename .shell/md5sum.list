@@ -492,7 +492,6 @@ d30bfffa8a83544525827f657172b7b8  ./usr/prog/moonraker/moonraker/.git/logs/refs/
 b4e8dae1642380818dafccf14b3d15f1  ./usr/prog/moonraker/moonraker/.git/logs/refs/remotes/origin/dependabot/pip/scripts/tornado-6.3.2
 b8e41e96fe76fa5e93eb1c49527046cb  ./usr/prog/moonraker/moonraker/.git/logs/refs/remotes/origin/dependabot/pip/tornado-6.3.2
 616d8f27cafa25b92ba060f35d4c0d10  ./usr/prog/moonraker/moonraker/.git/logs/HEAD
-dc239674239de0201acd228f664004e9  ./usr/prog/moonraker/moonraker/.git/index
 c40b0acdeca9cef011710530e36037ad  ./usr/prog/moonraker/moonraker/.git/HEAD
 a0a7c3fff21f2aea3cfa1d0316dd816c  ./usr/prog/moonraker/moonraker/.git/description
 3c5989301dd4b949dfa1f43738a22819  ./usr/prog/moonraker/moonraker/.git/hooks/pre-push.sample
