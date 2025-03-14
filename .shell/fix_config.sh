@@ -149,7 +149,19 @@ fix_config()
 
     [ -f /etc/profile.d/path.sh ] || echo "export PATH=\"$PATH:/opt/bin/:/opt/sbin/\"" >/etc/profile.d/path.sh
 
+    mkdir -p ${MOD_CONF}/mod_data/database/
+    [ -f ${MOD_CONF}/mod_data/user.cfg ] || echo "" >${MOD_CONF}/mod_data/user.cfg
     [ -f ${MOD_CONF}/mod_data/variables.cfg ] || echo "[Variables]" >${MOD_CONF}/mod_data/variables.cfg
+    if ! [ -f ${MOD_CONF}/mod_data/user.moonraker.conf ]; then
+        echo "#Enter user config here
+[authorization]
+trusted_clients:
+  0.0.0.0/0
+
+cors_domains:
+  *
+" >${MOD_CONF}/mod_data/user.moonraker.conf;
+    fi
 
     # Защита от самонадеянных, кто выклчюает SWAP при 128 мегабайтах оперативной памяти
     if [ ${FF5X} -eq 0 ] && grep -q "use_swap = 0" ${MOD_CONF}/mod_data/variables.cfg; then
