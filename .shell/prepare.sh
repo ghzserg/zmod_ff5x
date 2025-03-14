@@ -47,11 +47,13 @@ remove_base()
         rm -rf /usr/lib/python3.7/site-packages/mido/
         rm -f /etc/init.d/prepare.sh
     else
+        rm -f /usr/data/zmod_install.log
         sed -i '/fix_config.sh/d' /usr/prog/app_startup.sh
         sed -i '/prepare.sh/d' /usr/prog/app_startup.sh
     fi
     sync
 
+    rm -f ${LOG_FILES}/zmod
     rm -rf ${MOD_CONF}/mod/
     sync
     reboot
