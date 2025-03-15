@@ -60,13 +60,15 @@ else
     md5sum -c ${DIR}/md5sum.list 2>/dev/null | grep -v -e "OK$" | tee /opt/config/mod_data/bad.list
 fi
 
-if [ "$1" == "restore" ]; then
-    cnt=$(cat /opt/config/mod_data/bad.list|grep ": FAILED$"| wc -l)
-    if [ "$cnt" -ne 0 ]; then
-        if [ -f /ZMOD ]; then
-            echo "Найдены повреждения ZMOD. Переустановите мод с флешки"
-        else
+cnt=$(cat /opt/config/mod_data/bad.list|grep ": FAILED$"| wc -l)
+if [ "$cnt" -ne 0 ]; then
+    if [ -f /ZMOD ]; then
+        echo "Найдены повреждения ZMOD. Переустановите мод с флешки"
+    else
+        if [ "$1" == "restore" ]; then
             cat /opt/config/mod_data/bad.list|grep ": FAILED$"|sed 's|: FAILED||' | sed 's|^./|/|' | while read a; do restore_file "$a"; done
+        else
+            echo "Найдены повреждения родной прошивки. Можно попробовать восстановить: CHECK_SYSTEM RESTORE=1"
         fi
     fi
 fi
