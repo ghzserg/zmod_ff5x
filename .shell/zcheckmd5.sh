@@ -30,20 +30,20 @@ restore_file()
 if ! [ -f /ZMOD ]; then
     echo "Началась проверка родной системы. Она может занять много времени..."
     find ${PROGRAM_DIR} -name md5sum.list | while read a;
-        do
-            b=$(pwd)
-            c=$(echo $a|sed 's/md5sum.list//')
-            echo "$c"
-            cd "$c"
-            if echo $c | grep -q control; then
-                touch Update
-            fi
-            md5sum -c md5sum.list 2>/dev/null | grep -v -e "OK$"
-            if echo $c | grep -q control; then
-                rm -f Update
-            fi
-            cd "$b"
-        done
+    do
+        b=$(pwd)
+        c=$(echo $a|sed 's/md5sum.list//')
+        echo "$c"
+        cd "$c"
+        if echo $c | grep -q control; then
+            touch Update
+        fi
+        md5sum -c md5sum.list 2>/dev/null | grep -v -e "OK$"
+        if echo $c | grep -q control; then
+            rm -f Update
+        fi
+        cd "$b"
+    done
 else
     echo "Началась проверка ZMOD. Она может занять много времени..."
 fi
