@@ -22,7 +22,7 @@ prepare_chroot()
     [ -L /etc/init.d/S98camera ] && rm -f /etc/init.d/S98camera
     [ -L /etc/init.d/S99camera ] || ln -s /opt/config/mod/.shell/root/S99camera /etc/init.d/
 
-    [ -L /etc/init.d/S35tslib ] || ln -s /opt/config/mod/.shell/root/S35tslib /etc/init.d/
+    [ -L /etc/init.d/S35tslib ] && rm -f /etc/init.d/S35tslib
     [ -L /etc/init.d/S80guppyscreen ] || ln -s /opt/config/mod/.shell/root/S80guppyscreen /etc/init.d/
 
     [ -L /etc/init.d/S65moonraker ] || ln -s /opt/config/mod/.shell/root/S65moonraker /etc/init.d/

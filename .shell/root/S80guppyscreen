@@ -3,12 +3,34 @@
 # Start guppyscreen
 #
 
+source /opt/config/mod/.shell/0.sh
+
 GUPPYSCREEN=/root/guppyscreen/guppyscreen
 PID_FILE=/run/guppyscreen.pid
 NICENESS=10
 
 start() {
-    backlight 0
+    xzcat /opt/config/mod/.shell/screen_off.raw.xz > /dev/fb0
+    [ ${FF5X} -eq 0 ] && backlight 0
+
+    TSNAME="Touchscreen"
+    EVENT=event0
+    for i in 0 1 2 3; do
+        file=/sys/class/input/event$i/device/name
+            for name in `cat $file`; do
+                echo $name
+            done
+            if [ "$name" == $TSNAME ];then
+               EVENT=event$i
+               break;
+            fi
+    done
+
+    export TSLIB_TSDEVICE=/dev/input/$EVENT
+    export TSLIB_PLUGINDIR=/usr/lib/ts
+    export TSLIB_CONFFILE=/etc/ts.conf
+    export TSLIB_CALIBFILE=/etc/pointercal
+    export TSLIB_FBDEVICE=/dev/fb0
 
     mv /opt/config/mod_data/log/guppyscreen.4.log /opt/config/mod_data/log/guppyscreen.5.log
     mv /opt/config/mod_data/log/guppyscreen.3.log /opt/config/mod_data/log/guppyscreen.4.log
@@ -16,14 +38,12 @@ start() {
     mv /opt/config/mod_data/log/guppyscreen.1.log /opt/config/mod_data/log/guppyscreen.2.log
     mv /opt/config/mod_data/log/guppyscreen.log /opt/config/mod_data/log/guppyscreen.1.log
 
-    /etc/init.d/S35tslib start
     killall guppyscreen
-    backlight 60
+    [ ${FF5X} -eq 0 ] && backlight 60
     start-stop-daemon -S -b -m -p $PID_FILE -N $NICENESS --exec /bin/sh -- -c $GUPPYSCREEN
 }
 
 stop() {
-    /etc/init.d/S35tslib stop
     killall guppyscreen
 }
 
