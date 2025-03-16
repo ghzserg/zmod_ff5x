@@ -11,6 +11,7 @@ NICENESS=10
 
 start() {
     [ ${FF5X} -eq 0 ] && backlight 0
+    xzcat /opt/config/mod/.shell/screen_off.raw.xz > /dev/fb0
 
     mv /opt/config/mod_data/log/guppyscreen.4.log /opt/config/mod_data/log/guppyscreen.5.log
     mv /opt/config/mod_data/log/guppyscreen.3.log /opt/config/mod_data/log/guppyscreen.4.log
