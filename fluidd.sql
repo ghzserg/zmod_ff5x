@@ -785,6 +785,15 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "name": "save_zmod_data",
             "order": 13,
             "visible": true
+        },
+        {
+            "alias": "COLOR",
+            "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
+            "color": "#008800",
+            "disabledWhilePrinting": true,
+            "name": "get_zcolor",
+            "order": 14,
+            "visible": true
         }
     ]
 }');
