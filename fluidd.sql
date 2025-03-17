@@ -30,12 +30,8 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "name": "6. Вызов макроса на слое"
         },
         {
-            "id": "69809e15-439e-45e3-b181-42ccbdde5555",
-            "name": "7. Цветная печать"
-        },
-        {
             "id": "69809e15-439e-45e3-b181-42ccbdde50eb",
-            "name": "8. Редкое"
+            "name": "7. Редкое"
         }
     ],
     "expanded": [
@@ -437,14 +433,6 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "disabledWhilePrinting": false,
             "name": "m357",
             "visible": false
-        },
-        {
-            "alias": "Подбор цвета
-            "categoryId": "69809e15-439e-45e3-b181-42ccbdde5555",
-            "color": "#ff0000",
-            "disabledWhilePrinting": true,
-            "name": "get_zcolor",
-            "visible": true
         },
         {
             "alias": "Удалить ZMOD",
