@@ -359,7 +359,7 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "visible": true
         },
         {
-            "alias": "Перезапустить ZMOD камеру",
+            "alias": "Перезапустить камеру",
             "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
             "color": "#008800",
             "disabledWhilePrinting": false,
@@ -547,7 +547,7 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "disabledWhilePrinting": false,
             "name": "led_on",
             "order": 7,
-            "visible": true
+            "visible": false
         },
         {
             "alias": "Калибровка PID стола",
@@ -714,7 +714,7 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "disabledWhilePrinting": false,
             "name": "close_dialogs",
             "order": 5,
-            "visible": true
+            "visible": false
         },
         {
             "alias": "Печать файла + leveling",
