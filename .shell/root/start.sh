@@ -72,10 +72,13 @@ fi
 rm -f /root/guppyscreen/guppyconfig.json
 ln -s /opt/config/mod_data/guppyconfig.json /root/guppyscreen/guppyconfig.json
 
-if [ "$3" == "Adventurer5M" ] || [ "$3" == "AD5X" ]; then
+if [ "$3" == "Adventurer5M" ]; then
     [ -f /opt/config/mod_data/guppyconfig.json ] || cp /opt/config/mod/guppyconfig.json /opt/config/mod_data/guppyconfig.json
 else if [ "$3" == "Adventurer5MPro" ]; then
     [ -f /opt/config/mod_data/guppyconfig.json ] || cp /opt/config/mod/guppyconfig_pro.json /opt/config/mod_data/guppyconfig.json
+else if [ "$3" == "AD5X" ]; then
+    [ -f /opt/config/mod_data/guppyconfig.json ] || cp /opt/config/mod/guppyconfig_5x.json /opt/config/mod_data/guppyconfig.json
+fi
 fi
 fi
 
