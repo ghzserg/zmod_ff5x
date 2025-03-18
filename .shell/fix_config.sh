@@ -527,7 +527,7 @@ stepper: stepper_x, stepper_y, stepper_z
     diff -u ${PRINTER_CFG_ORIG} ${PRINTER_CFG}
     echo "END fix_config"
 
-    if [ "$1" == "start" ] && [ ${FF5X} -eq 0 ]; then
+#    if [ "$1" == "start" ] && [ ${FF5X} -eq 0 ]; then
 #        if grep -q "klipper12 = 1" ${MOD_CONF}/mod_data/variables.cfg; then
 #            cnt=$(find /opt/PROGRAM/control/ -name Update|wc -l)
 #            if [ "$cnt" -ne 0 ]; then
@@ -541,10 +541,10 @@ stepper: stepper_x, stepper_y, stepper_z
 #                sync
 #            fi
 #        else
-            A=$(find /opt/PROGRAM/control/ -name NationsCommand |head -1)
-            $A -r || $A -r
+#            A=$(find /opt/PROGRAM/control/ -name NationsCommand |head -1)
+#            $A -r || $A -r
 #        fi
-    fi
+#    fi
     sync
 }
 
