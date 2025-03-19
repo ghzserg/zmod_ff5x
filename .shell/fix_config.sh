@@ -245,7 +245,7 @@ unset LD_PRELOAD
             china_block cloud.sz3dp.com
             china_block polar3d.com
         else
-            mount --bind /usr/data/.mod/.zmod/.shell/hosts /etc/hosts
+            mount --bind /usr/data/config/mod/.shell/hosts /etc/hosts
         fi
     fi
 
