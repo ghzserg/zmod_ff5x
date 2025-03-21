@@ -3,7 +3,7 @@
   "default_printer": "FF5M",
   "display_brightness": 90,
   "display_rotate": 0,
-  "display_sleep_sec": 600,
+  "display_sleep_sec": -1,
   "guppy_init_script": "/etc/init.d/S80guppyscreen",
   "log_path": "/opt/config/mod_data/log/guppyscreen.log",
   "printers": {
