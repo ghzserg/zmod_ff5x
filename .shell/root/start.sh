@@ -36,7 +36,7 @@ prepare_chroot()
     [ -L /usr/bin/audio.py ] || ln -s /opt/config/mod/.shell/root/audio/audio.py /usr/bin/audio.py
 
 #    [ -L /bin/boot_eboard_mcu ] || ln -s /opt/config/mod/.shell/root/mcu/boot_eboard_mcu /bin/boot_eboard_mcu
-#    [ -L /bin/backlight ] || ln -s /opt/config/mod/.shell/root/backlight /bin/backlight
+    [ -L /bin/backlight ] || ln -s /opt/config/mod/.shell/root/backlight /bin/backlight
 #    [ -L /root/klipper-env/lib/python3.12/site-packages/numpy ] || ln -s /usr/lib/python3.12/site-packages/numpy /root/klipper-env/lib/python3.12/site-packages/
 #    [ -L /etc/init.d/S60klipper ] || ln -s /opt/config/mod/.shell/root/S60klipper /etc/init.d/
 
