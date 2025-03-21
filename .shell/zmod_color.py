@@ -38,6 +38,18 @@ class zmod_color:
             desc=self.cmd_GET_ZCOLOR_help
         )
         self.gcode.register_command(
+            'SET_ZCOLOR', self.cmd_SET_ZCOLOR,
+            desc=self.cmd_SET_ZCOLOR_help
+        )
+        self.gcode.register_command(
+            'PRINT_ZCOLOR', self.cmd_PRINT_ZCOLOR,
+            desc=self.cmd_PRINT_ZCOLOR_help
+        )
+        self.gcode.register_command(
+            'CHANCGE_TOOL_ZCOLOR', self.cmd_CHANCGE_TOOL_ZCOLOR,
+            desc=self.cmd_CHANCGE_TOOL_ZCOLOR_help
+        )
+        self.gcode.register_command(
             'RUN_ZCOLOR', self.cmd_RUN_ZCOLOR,
             desc=self.cmd_RUN_ZCOLOR_help
         )
@@ -67,17 +79,22 @@ class zmod_color:
             except:
                 pass
         return "Not found"
-    def zsend_post_request(self, api, payload=None):
+
+    def zsend_post_request(self, api, payload=None, send_data=None):
         base_ip = self.get_printer_ip()
         url = f"http://{base_ip}:8898{api}"
         headers = {
             "Accept": "*/*",
             "Content-Type": "application/json"
         }
-        data = {
-            "serialNumber": self.serialNumber,
-            "checkCode": self.checkCode
-        }
+        if send_data is not None:
+            data = send_data
+        else:
+            data = {}
+
+        data["serialNumber"] = self.serialNumber
+        data["checkCode"] = self.checkCode
+
         if payload is not None:
             data["payload"] = payload
 
@@ -91,6 +108,7 @@ class zmod_color:
             return response.status_code, response.json()
         except requests.exceptions.RequestException as e:
             return None, str(e)
+
     def parse_printer_response(self, response_data):
         slots_info = []
         slots = response_data.get('detail', {}).get('matlStationInfo', {}).get('slotInfos', [])
@@ -109,8 +127,10 @@ class zmod_color:
                     'HEX': hex_color.upper()
                 })
         return slots_info
+#############################################################################################
     cmd_GET_ZCOLOR_help = "Получить сохраненные цвета"
     def cmd_GET_ZCOLOR(self, gcmd):
+        gcmd.respond_raw("// action:prompt_end")
         status_code, response_data = self.zsend_post_request("/detail")
         if status_code:
 #            gcmd.respond_raw(json.dumps(response_data, indent=2))
@@ -124,6 +144,185 @@ class zmod_color:
 
             gcmd.respond_raw("// action:prompt_button_group_end")
             gcmd.respond_raw("// action:prompt_footer_button Отмена|RESPOND TYPE=command MSG=action:prompt_end")
+            gcmd.respond_raw("// action:prompt_show")
+        else:
+            gcmd.respond_raw(f"!! Нет ответа от принтера. Необходимо настроить принтер. На экране принтера: \"Настройки\" -> \"Иконка WiFi\" -> \"Сетевой режим\" -> включить ползунок \"Только локальные сети\"\n{response_data}")
+
+    cmd_PRINT_ZCOLOR_help = "Печать файла с сопостовлением цветов"
+    def cmd_PRINT_ZCOLOR(self, gcmd):
+        gcmd.respond_raw("// action:prompt_end")
+        fname = gcmd.get('FILENAME', '')
+        if fname == '':
+            raise gcmd.error("Не указано имя файла (FILENAME).")
+        leveling = gcmd.get_int('LEVELING', 0)
+        if leveling != 0 and leveling != 1:
+            raise gcmd.error(f"Неверный LEVELING {leveling}. Допустимые: 0-1")
+        ztool0 = gcmd.get_int('TOOL0', 1)
+        if ztool0 < 1 or ztool0 > 4:
+            raise gcmd.error("Неверный TOOL0. Допустимые: 1-4")
+        ztool1 = gcmd.get_int('TOOL1', 2)
+        if ztool1 < 1 or ztool1 > 4:
+            raise gcmd.error("Неверный TOOL1. Допустимые: 1-4")
+        ztool2 = gcmd.get_int('TOOL2', 3)
+        if ztool2 < 1 or ztool2 > 4:
+            raise gcmd.error("Неверный TOOL2. Допустимые: 1-4")
+        ztool3 = gcmd.get_int('TOOL3', 4)
+        if ztool3 < 1 or ztool3 > 4:
+            raise gcmd.error("Неверный TOOL3. Допустимые: 1-4")
+
+        status_code, response_data = self.zsend_post_request("/detail")
+        if status_code:
+#            gcmd.respond_raw(json.dumps(response_data, indent=2))
+            result = self.parse_printer_response(response_data)
+            data = {
+                "fileName": fname,
+                "levelingBeforePrint": bool(leveling),
+                "flowCalibration": True,
+                "useMatlStation": True,
+                "gcodeToolCnt": 4,
+                "materialMappings": [
+                    {
+                        "toolId": 0,
+                        "slotId": result[ztool0-1]['ID'],
+                        "materialName": result[ztool0-1]['Материал'],
+                        "toolMaterialColor": f"#{result[ztool0-1]['HEX']}",
+                        "slotMaterialColor": f"#{result[ztool0-1]['HEX']}"
+                    },
+                    {
+                        "toolId": 1,
+                        "slotId": result[ztool1-1]['ID'],
+                        "materialName": result[ztool1-1]['Материал'],
+                        "toolMaterialColor": f"#{result[ztool1-1]['HEX']}",
+                        "slotMaterialColor": f"#{result[ztool1-1]['HEX']}"
+                    },
+                    {
+                        "toolId": 2,
+                        "slotId": result[ztool2-1]['ID'],
+                        "materialName": result[ztool2-1]['Материал'],
+                        "toolMaterialColor": f"#{result[ztool2-1]['HEX']}",
+                        "slotMaterialColor": f"#{result[ztool2-1]['HEX']}"
+                    },
+                    {
+                        "toolId": 3,
+                        "slotId": result[ztool3-1]['ID'],
+                        "materialName": result[ztool3-1]['Материал'],
+                        "toolMaterialColor": f"#{result[ztool3-1]['HEX']}",
+                        "slotMaterialColor": f"#{result[ztool3-1]['HEX']}"
+                    }
+                ]
+            }
+            status_code2, response_data2 = self.zsend_post_request("/printGcode", None, data)
+            gcmd.respond_raw(f"{data}")
+            if status_code2:
+                gcmd.respond_raw(f"{response_data2}")
+            else:
+                gcmd.respond_raw(f"!! Ошибка печати файла\n{response_data2}")
+
+        else:
+            gcmd.respond_raw(f"!! Нет ответа от принтера. Необходимо настроить принтер. На экране принтера: \"Настройки\" -> \"Иконка WiFi\" -> \"Сетевой режим\" -> включить ползунок \"Только локальные сети\"\n{response_data}")
+
+    cmd_SET_ZCOLOR_help = "Сопоставить цвета файла с катушками принтера"
+    def cmd_SET_ZCOLOR(self, gcmd):
+        gcmd.respond_raw("// action:prompt_end")
+        fname = gcmd.get('FILENAME', '')
+        if fname == '':
+            raise gcmd.error("Не указано имя файла (FILENAME).")
+        leveling = gcmd.get_int('LEVELING', 0)
+        if leveling != 0 and leveling != 1:
+            raise gcmd.error(f"Неверный LEVELING {leveling}. Допустимые: 0-1")
+        ztool0 = gcmd.get_int('TOOL0', 1)
+        if ztool0 < 1 or ztool0 > 4:
+            raise gcmd.error("Неверный TOOL0. Допустимые: 1-4")
+        ztool1 = gcmd.get_int('TOOL1', 2)
+        if ztool1 < 1 or ztool1 > 4:
+            raise gcmd.error("Неверный TOOL1. Допустимые: 1-4")
+        ztool2 = gcmd.get_int('TOOL2', 3)
+        if ztool2 < 1 or ztool2 > 4:
+            raise gcmd.error("Неверный TOOL2. Допустимые: 1-4")
+        ztool3 = gcmd.get_int('TOOL3', 4)
+        if ztool3 < 1 or ztool3 > 4:
+            raise gcmd.error("Неверный TOOL3. Допустимые: 1-4")
+
+        status_code, response_data = self.zsend_post_request("/detail")
+        if status_code:
+#            gcmd.respond_raw(json.dumps(response_data, indent=2))
+            gcmd.respond_raw("// action:prompt_begin Загруженный материал")
+            gcmd.respond_raw("// action:prompt_text Сопоставьте номер цвета из файла с катушкой в принетре")
+            gcmd.respond_raw(f"// action:prompt_text Файл для печати: {fname}")
+            if leveling == 0:
+                gcmd.respond_raw(f"// action:prompt_text Печать без построения карты стола")
+            else:
+                gcmd.respond_raw(f"// action:prompt_text Печать с построением карты стола")
+            gcmd.respond_raw("// action:prompt_button_group_start")
+            result = self.parse_printer_response(response_data)
+
+            gcmd.respond_raw(f"// action:prompt_button В файле: 1 => в катушке: {result[ztool0-1]['ID']}: {result[ztool0-1]['Материал']}/{result[ztool0-1]['Цвет']}|CHANCGE_TOOL_ZCOLOR LEVELING={leveling} FILENAME={fname} TOOL=1 TOOL0={ztool0} TOOL1={ztool1} TOOL2={ztool2} TOOL3={ztool3} |primary")
+            gcmd.respond_raw(f"// action:prompt_button В файле: 2 => в катушке: {result[ztool1-1]['ID']}: {result[ztool1-1]['Материал']}/{result[ztool1-1]['Цвет']}|CHANCGE_TOOL_ZCOLOR LEVELING={leveling} FILENAME={fname} TOOL=2 TOOL0={ztool0} TOOL1={ztool1} TOOL2={ztool2} TOOL3={ztool3} |primary")
+            gcmd.respond_raw(f"// action:prompt_button В файле: 3 => в катушке: {result[ztool2-1]['ID']}: {result[ztool2-1]['Материал']}/{result[ztool2-1]['Цвет']}|CHANCGE_TOOL_ZCOLOR LEVELING={leveling} FILENAME={fname} TOOL=3 TOOL0={ztool0} TOOL1={ztool1} TOOL2={ztool2} TOOL3={ztool3} |primary")
+            gcmd.respond_raw(f"// action:prompt_button В файле: 4 => в катушке: {result[ztool3-1]['ID']}: {result[ztool3-1]['Материал']}/{result[ztool3-1]['Цвет']}|CHANCGE_TOOL_ZCOLOR LEVELING={leveling} FILENAME={fname} TOOL=4 TOOL0={ztool0} TOOL1={ztool1} TOOL2={ztool2} TOOL3={ztool3} |primary")
+
+            gcmd.respond_raw("// action:prompt_button_group_end")
+            gcmd.respond_raw(f"// action:prompt_footer_button Отправить на печать|PRINT_ZCOLOR LEVELING={leveling} FILENAME={fname} TOOL0={ztool0} TOOL1={ztool1} TOOL2={ztool2} TOOL3={ztool3} |red")
+            gcmd.respond_raw("// action:prompt_footer_button Отмена|RESPOND TYPE=command MSG=action:prompt_end")
+            gcmd.respond_raw("// action:prompt_show")
+        else:
+            gcmd.respond_raw(f"!! Нет ответа от принтера. Необходимо настроить принтер. На экране принтера: \"Настройки\" -> \"Иконка WiFi\" -> \"Сетевой режим\" -> включить ползунок \"Только локальные сети\"\n{response_data}")
+
+    cmd_CHANCGE_TOOL_ZCOLOR_help = "Сопоставить цвета в файле с конкретной катушкой"
+    def cmd_CHANCGE_TOOL_ZCOLOR(self, gcmd):
+        gcmd.respond_raw("// action:prompt_end")
+        fname = gcmd.get('FILENAME', '')
+        if fname == '':
+            raise gcmd.error("Не указано имя файла (FILENAME).")
+        leveling = gcmd.get_int('LEVELING', 0)
+        if leveling != 0 and leveling != 1:
+            raise gcmd.error(f"Неверный LEVELING {leveling}. Допустимые: 0-1")
+        ztool = gcmd.get_int('TOOL', 0)
+        if ztool < 1 or ztool > 4:
+            raise gcmd.error("Неверный TOOL. Допустимые: 1-4")
+        ztool0 = gcmd.get_int('TOOL0', 1)
+        if ztool0 < 1 or ztool0 > 4:
+            raise gcmd.error("Неверный TOOL0. Допустимые: 1-4")
+        ztool1 = gcmd.get_int('TOOL1', 2)
+        if ztool1 < 1 or ztool1 > 4:
+            raise gcmd.error("Неверный TOOL1. Допустимые: 1-4")
+        ztool2 = gcmd.get_int('TOOL2', 3)
+        if ztool2 < 1 or ztool2 > 4:
+            raise gcmd.error("Неверный TOOL2. Допустимые: 1-4")
+        ztool3 = gcmd.get_int('TOOL3', 4)
+        if ztool3 < 1 or ztool3 > 4:
+            raise gcmd.error("Неверный TOOL3. Допустимые: 1-4")
+        if ztool == 1:
+            tool_id = ztool0
+            str_add=f"TOOL1={ztool1} TOOL2={ztool2} TOOL3={ztool3} FILENAME={fname} LEVELING={leveling} "
+        elif ztool == 2:
+            tool_id = ztool1
+            str_add=f"TOOL0={ztool0} TOOL2={ztool2} TOOL3={ztool3} FILENAME={fname} LEVELING={leveling} "
+        elif ztool == 3:
+            tool_id = ztool2
+            str_add=f"TOOL0={ztool0} TOOL1={ztool1} TOOL3={ztool3} FILENAME={fname} LEVELING={leveling} "
+        else:
+            tool_id = ztool3
+            str_add=f"TOOL0={ztool0} TOOL1={ztool1} TOOL2={ztool2} FILENAME={fname} LEVELING={leveling} "
+
+        status_code, response_data = self.zsend_post_request("/detail")
+        if status_code:
+#            gcmd.respond_raw(json.dumps(response_data, indent=2))
+            gcmd.respond_raw("// action:prompt_begin Загруженный материал")
+            gcmd.respond_raw("// action:prompt_text Сопоставьте номер цвета из файла с катушкой в принетре")
+            result = self.parse_printer_response(response_data)
+
+            gcmd.respond_raw(f"// action:prompt_text В файле: {ztool} => в катушке: {result[tool_id-1]['ID']}: {result[tool_id-1]['Материал']}/{result[tool_id-1]['Цвет']}")
+            gcmd.respond_raw(f"// action:prompt_text Файл для печати: {fname}")
+            gcmd.respond_raw("// action:prompt_button_group_start")
+
+            gcmd.respond_raw(f"// action:prompt_button В файле {ztool} => в катушке: {result[0]['ID']}: {result[0]['Материал']}/{result[0]['Цвет']}|SET_ZCOLOR TOOL{ztool-1}=1 {str_add} |primary")
+            gcmd.respond_raw(f"// action:prompt_button В файле {ztool} => в катушке: {result[1]['ID']}: {result[1]['Материал']}/{result[1]['Цвет']}|SET_ZCOLOR TOOL{ztool-1}=2 {str_add} |primary")
+            gcmd.respond_raw(f"// action:prompt_button В файле {ztool} => в катушке: {result[2]['ID']}: {result[2]['Материал']}/{result[2]['Цвет']}|SET_ZCOLOR TOOL{ztool-1}=3 {str_add} |primary")
+            gcmd.respond_raw(f"// action:prompt_button В файле {ztool} => в катушке: {result[3]['ID']}: {result[3]['Материал']}/{result[3]['Цвет']}|SET_ZCOLOR TOOL{ztool-1}=4 {str_add} |primary")
+
+            gcmd.respond_raw("// action:prompt_button_group_end")
+            gcmd.respond_raw(f"// action:prompt_footer_button Отмена|SET_ZCOLOR TOOL{ztool-1}={tool_id} {str_add}")
             gcmd.respond_raw("// action:prompt_show")
         else:
             gcmd.respond_raw(f"!! Нет ответа от принтера. Необходимо настроить принтер. На экране принтера: \"Настройки\" -> \"Иконка WiFi\" -> \"Сетевой режим\" -> включить ползунок \"Только локальные сети\"\n{response_data}")
