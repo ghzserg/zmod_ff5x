@@ -11,11 +11,10 @@ PID_FILE=/run/moonraker.pid
 
 start() {
     NEED="N"
-    if [ -f "/opt/config/mod_data/database/moonraker-sql.db" ]
-        then
-            grep -q "save_moonraker = 1" /opt/config/mod_data/variables.cfg || sqlite3 /opt/config/mod_data/database/moonraker-sql.db </opt/config/mod/fluidd.sql
-        else
-            NEED="Y"
+    if [ -f "/opt/config/mod_data/database/moonraker-sql.db" ]; then
+        grep -q "save_moonraker = 1" /opt/config/mod_data/variables.cfg || sqlite3 /opt/config/mod_data/database/moonraker-sql.db </opt/config/mod/fluidd.sql
+    else
+        NEED="Y"
     fi
 
     rm -rf $PRINTER_DATA_TMP && mkdir -p $PRINTER_DATA_TMP # clean temp
@@ -23,10 +22,9 @@ start() {
 
     start-stop-daemon -S -b -m -p $PID_FILE --exec $PYTHON -- $MOONRAKER -d $PRINTER_DATA
 
-    if [ "$NEED" == "Y" ]
-        then
-            sleep 10
-            sqlite3 /opt/config/mod_data/database/moonraker-sql.db </opt/config/mod/fluidd.sql
+    if [ "$NEED" == "Y" ]; then
+        sleep 10
+        sqlite3 /opt/config/mod_data/database/moonraker-sql.db </opt/config/mod/fluidd.sql
     fi
 }
 
