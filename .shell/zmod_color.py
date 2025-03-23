@@ -256,11 +256,14 @@ class zmod_color:
             gcmd.respond_raw("// action:prompt_button_group_start")
             result = self.parse_printer_response(response_data)
 
-            gcmd.respond_raw(f"// action:prompt_button В файле: 1 => в катушке: {result[ztool0-1]['ID']}: {result[ztool0-1]['Материал']}/{result[ztool0-1]['Цвет']}|CHANCGE_TOOL_ZCOLOR LEVELING={leveling} FILENAME={fname} TOOL=1 TOOL0={ztool0} TOOL1={ztool1} TOOL2={ztool2} TOOL3={ztool3} |primary")
-            gcmd.respond_raw(f"// action:prompt_button В файле: 2 => в катушке: {result[ztool1-1]['ID']}: {result[ztool1-1]['Материал']}/{result[ztool1-1]['Цвет']}|CHANCGE_TOOL_ZCOLOR LEVELING={leveling} FILENAME={fname} TOOL=2 TOOL0={ztool0} TOOL1={ztool1} TOOL2={ztool2} TOOL3={ztool3} |primary")
+            if 0 <= (ztool0 - 1) < len(result):
+                gcmd.respond_raw(f"// action:prompt_button В файле: 1 => в катушке: {result[ztool0-1]['ID']}: {result[ztool0-1]['Материал']}/{result[ztool0-1]['Цвет']}|CHANCGE_TOOL_ZCOLOR LEVELING={leveling} FILENAME={fname} TOOL=1 TOOL0={ztool0} TOOL1={ztool1} TOOL2={ztool2} TOOL3={ztool3} |primary")
+            if 0 <= (ztool1 - 1) < len(result):
+                gcmd.respond_raw(f"// action:prompt_button В файле: 2 => в катушке: {result[ztool1-1]['ID']}: {result[ztool1-1]['Материал']}/{result[ztool1-1]['Цвет']}|CHANCGE_TOOL_ZCOLOR LEVELING={leveling} FILENAME={fname} TOOL=2 TOOL0={ztool0} TOOL1={ztool1} TOOL2={ztool2} TOOL3={ztool3} |primary")
+            if 0 <= (ztool2 - 1) < len(result):
             gcmd.respond_raw(f"// action:prompt_button В файле: 3 => в катушке: {result[ztool2-1]['ID']}: {result[ztool2-1]['Материал']}/{result[ztool2-1]['Цвет']}|CHANCGE_TOOL_ZCOLOR LEVELING={leveling} FILENAME={fname} TOOL=3 TOOL0={ztool0} TOOL1={ztool1} TOOL2={ztool2} TOOL3={ztool3} |primary")
-            gcmd.respond_raw(f"// action:prompt_button В файле: 4 => в катушке: {result[ztool3-1]['ID']}: {result[ztool3-1]['Материал']}/{result[ztool3-1]['Цвет']}|CHANCGE_TOOL_ZCOLOR LEVELING={leveling} FILENAME={fname} TOOL=4 TOOL0={ztool0} TOOL1={ztool1} TOOL2={ztool2} TOOL3={ztool3} |primary")
-
+            if 0 <= (ztool3 - 1) < len(result):
+                gcmd.respond_raw(f"// action:prompt_button В файле: 4 => в катушке: {result[ztool3-1]['ID']}: {result[ztool3-1]['Материал']}/{result[ztool3-1]['Цвет']}|CHANCGE_TOOL_ZCOLOR LEVELING={leveling} FILENAME={fname} TOOL=4 TOOL0={ztool0} TOOL1={ztool1} TOOL2={ztool2} TOOL3={ztool3} |primary")
             gcmd.respond_raw("// action:prompt_button_group_end")
             gcmd.respond_raw(f"// action:prompt_footer_button Отправить на печать|PRINT_ZCOLOR LEVELING={leveling} FILENAME={fname} TOOL0={ztool0} TOOL1={ztool1} TOOL2={ztool2} TOOL3={ztool3} |red")
             gcmd.respond_raw("// action:prompt_footer_button Отмена|RESPOND TYPE=command MSG=action:prompt_end")
@@ -316,10 +319,14 @@ class zmod_color:
             gcmd.respond_raw(f"// action:prompt_text Файл для печати: {fname}")
             gcmd.respond_raw("// action:prompt_button_group_start")
 
-            gcmd.respond_raw(f"// action:prompt_button В файле {ztool} => в катушке: {result[0]['ID']}: {result[0]['Материал']}/{result[0]['Цвет']}|SET_ZCOLOR TOOL{ztool-1}=1 {str_add} |primary")
-            gcmd.respond_raw(f"// action:prompt_button В файле {ztool} => в катушке: {result[1]['ID']}: {result[1]['Материал']}/{result[1]['Цвет']}|SET_ZCOLOR TOOL{ztool-1}=2 {str_add} |primary")
-            gcmd.respond_raw(f"// action:prompt_button В файле {ztool} => в катушке: {result[2]['ID']}: {result[2]['Материал']}/{result[2]['Цвет']}|SET_ZCOLOR TOOL{ztool-1}=3 {str_add} |primary")
-            gcmd.respond_raw(f"// action:prompt_button В файле {ztool} => в катушке: {result[3]['ID']}: {result[3]['Материал']}/{result[3]['Цвет']}|SET_ZCOLOR TOOL{ztool-1}=4 {str_add} |primary")
+            if 0 < len(result):
+                gcmd.respond_raw(f"// action:prompt_button В файле {ztool} => в катушке: {result[0]['ID']}: {result[0]['Материал']}/{result[0]['Цвет']}|SET_ZCOLOR TOOL{ztool-1}=1 {str_add} |primary")
+            if 1 < len(result):
+                gcmd.respond_raw(f"// action:prompt_button В файле {ztool} => в катушке: {result[1]['ID']}: {result[1]['Материал']}/{result[1]['Цвет']}|SET_ZCOLOR TOOL{ztool-1}=2 {str_add} |primary")
+            if 2 < len(result):
+                gcmd.respond_raw(f"// action:prompt_button В файле {ztool} => в катушке: {result[2]['ID']}: {result[2]['Материал']}/{result[2]['Цвет']}|SET_ZCOLOR TOOL{ztool-1}=3 {str_add} |primary")
+            if 3 < len(result):
+                gcmd.respond_raw(f"// action:prompt_button В файле {ztool} => в катушке: {result[3]['ID']}: {result[3]['Материал']}/{result[3]['Цвет']}|SET_ZCOLOR TOOL{ztool-1}=4 {str_add} |primary")
 
             gcmd.respond_raw("// action:prompt_button_group_end")
             gcmd.respond_raw(f"// action:prompt_footer_button Отмена|SET_ZCOLOR TOOL{ztool-1}={tool_id} {str_add}")
