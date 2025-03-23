@@ -3,6 +3,8 @@
 # Starts busbox httpd
 #
 
+source /opt/config/mod/.shell/0.sh
+
 PID_FILE=/run/httpd.pid
 
 CLIENT="fluidd"
@@ -22,7 +24,7 @@ cp -f /opt/config/mod/.shell/root/config.json /root/mainsail/
 
 start() {
     # start busybox httpd
-    start-stop-daemon -S -b -m -p $PID_FILE --exec httpd -- -p 80 -f -h $WEBROOT
+    start-stop-daemon -S -b -m -p $PID_FILE --exec httpd -- -p 80 -f -h $WEBROOT -c ${MOD_CONF}/mod/.shell/root/httpd.conf
 }
 
 stop() {
