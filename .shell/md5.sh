@@ -40,6 +40,7 @@ find .  \
     -and -not -path "./usr/data/database/*" \
     -and -not -path "./usr/data/camera/*" \
     -and -not -path "./usr/prog/nginx/logs/*" \
+    -and -not -path "./etc/hosts" \
     -exec mkdir -p ../stock/{} \;
 
 echo "#!/bin/sh
@@ -114,6 +115,7 @@ find .  \
     -and -not -path "./usr/data/database/*" \
     -and -not -path "./usr/data/camera/*" \
     -and -not -path "./usr/prog/nginx/logs/*" \
+    -and -not -path "./etc/hosts" \
     -exec ./link.sh {} link \; >>list.link
 
 find .  \
@@ -153,6 +155,7 @@ find .  \
     -and -not -path "./usr/data/database/*" \
     -and -not -path "./usr/data/camera/*" \
     -and -not -path "./usr/prog/nginx/logs/*" \
+    -and -not -path "./etc/hosts" \
     -exec cp -a {} ../stock/{} \;
 
 find .  \
@@ -192,6 +195,7 @@ find .  \
     -and -not -path "./usr/data/database/*" \
     -and -not -path "./usr/data/camera/*" \
     -and -not -path "./usr/prog/nginx/logs/*" \
+    -and -not -path "./etc/hosts" \
     -exec md5sum {} \; >md5sum.list
 
 exit
@@ -233,6 +237,7 @@ find .  \
     -and -not -path "./usr/data/database/*" \
     -and -not -path "./usr/data/camera/*" \
     -and -not -path "./usr/prog/nginx/logs/*" \
+    -and -not -path "./etc/hosts" \
     -exec ./link.sh {} "file" \; >>list.link
 
 echo "echo 'Проверка прав на каталоги...'">>list.link
@@ -273,4 +278,5 @@ find .  \
     -and -not -path "./usr/data/database/*" \
     -and -not -path "./usr/data/camera/*" \
     -and -not -path "./usr/prog/nginx/logs/*" \
+    -and -not -path "./etc/hosts" \
     -exec ./link.sh {} "dir" \; >>list.link

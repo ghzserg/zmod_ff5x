@@ -58,7 +58,6 @@ eb873c16e8dce4be117c94473af37a39  ./etc/ota_bin/ota_utils.sh
 c83321d8ef6dd715cad1bd5bb99a004f  ./etc/ota_bin/ota_update_rootfs_squashfs.sh
 b42341f855cc8624e7ecea38b3852417  ./etc/ota_bin/ota_local_method.sh
 a8ac6887a1167a576e733bfaa98a9d82  ./etc/ota_bin/ota_update_rtos_bin.sh
-8ca3ff8ab18504cbaec344e9dd739c1a  ./etc/hosts
 3aea2c0e0dd75e13a5f8f48f2936915f  ./etc/iproute2/group
 a1313318d6778fe6b8c680248ef5a463  ./etc/iproute2/rt_tables
 fd070252e6e9996bd04d9d59e4ce21eb  ./etc/iproute2/bpf_pinning
