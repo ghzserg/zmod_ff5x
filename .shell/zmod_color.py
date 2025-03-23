@@ -261,7 +261,7 @@ class zmod_color:
             if 0 <= (ztool1 - 1) < len(result):
                 gcmd.respond_raw(f"// action:prompt_button В файле: 2 => в катушке: {result[ztool1-1]['ID']}: {result[ztool1-1]['Материал']}/{result[ztool1-1]['Цвет']}|CHANCGE_TOOL_ZCOLOR LEVELING={leveling} FILENAME={fname} TOOL=2 TOOL0={ztool0} TOOL1={ztool1} TOOL2={ztool2} TOOL3={ztool3} |primary")
             if 0 <= (ztool2 - 1) < len(result):
-            gcmd.respond_raw(f"// action:prompt_button В файле: 3 => в катушке: {result[ztool2-1]['ID']}: {result[ztool2-1]['Материал']}/{result[ztool2-1]['Цвет']}|CHANCGE_TOOL_ZCOLOR LEVELING={leveling} FILENAME={fname} TOOL=3 TOOL0={ztool0} TOOL1={ztool1} TOOL2={ztool2} TOOL3={ztool3} |primary")
+                gcmd.respond_raw(f"// action:prompt_button В файле: 3 => в катушке: {result[ztool2-1]['ID']}: {result[ztool2-1]['Материал']}/{result[ztool2-1]['Цвет']}|CHANCGE_TOOL_ZCOLOR LEVELING={leveling} FILENAME={fname} TOOL=3 TOOL0={ztool0} TOOL1={ztool1} TOOL2={ztool2} TOOL3={ztool3} |primary")
             if 0 <= (ztool3 - 1) < len(result):
                 gcmd.respond_raw(f"// action:prompt_button В файле: 4 => в катушке: {result[ztool3-1]['ID']}: {result[ztool3-1]['Материал']}/{result[ztool3-1]['Цвет']}|CHANCGE_TOOL_ZCOLOR LEVELING={leveling} FILENAME={fname} TOOL=4 TOOL0={ztool0} TOOL1={ztool1} TOOL2={ztool2} TOOL3={ztool3} |primary")
             gcmd.respond_raw("// action:prompt_button_group_end")
