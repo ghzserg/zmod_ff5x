@@ -498,7 +498,7 @@ stepper: stepper_x, stepper_y, stepper_z
     fi
 
     if [ -f ${MOD_CONF}/mod_data/mesh_data.cfg ]; then
-        FIND_STR=$(cat ${MOD_CONF}/mod_data/mesh_data.cfg |grep bed_mesh)
+        FIND_STR=$(cat ${MOD_CONF}/mod_data/mesh_data.cfg |grep bed_mesh|sed 's/\[/\\[/g; s/\]/\\]/g')
         if ! grep "$FIND_STR" ${PRINTER_CFG}; then
             NEED_REBOOT=1
             cat ${MOD_CONF}/mod_data/mesh_data.cfg >>${PRINTER_CFG}
