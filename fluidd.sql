@@ -520,6 +520,14 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "categoryId": "244d667b-c410-4e01-9bf1-e8e0b9deabe2",
             "color": "",
             "disabledWhilePrinting": false,
+            "name": "set_led",
+            "visible": false
+        },
+        {
+            "alias": "",
+            "categoryId": "244d667b-c410-4e01-9bf1-e8e0b9deabe2",
+            "color": "",
+            "disabledWhilePrinting": false,
             "name": "save_gcode_offset",
             "visible": false
         },
@@ -1578,6 +1586,9 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('gupp
       "hidden": true
     },
     "SET_GCODE_OFFSET": {
+      "hidden": true
+    },
+    "SET_LED": {
       "hidden": true
     },
     "SET_PAUSE_AT_LAYER": {
