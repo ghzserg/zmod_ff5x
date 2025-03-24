@@ -20,5 +20,6 @@ fi
 echo "Установлено с флешки: ${VER_MOD_FULL}. Обновление с Fluidd/Mainsaill: ${VER_FF_FULL}"
 if [ "${VER_FF}" != "${VER_MOD}" ] || [ "${VER_MOD_FULL}" == "1.4.0" ] || [ "${VER_MOD_FULL}" == "1.4.1" ] || [ "${VER_MOD_FULL}" == "1.4.2" ]; then
     echo "RESPOND TYPE=error MSG=\"Обновите ZMOD с флешки, последняя версия ${VER_FF_FULL}, текущая версия ${VER_MOD_FULL}\"" >/tmp/printer
-    echo 'RESPOND TYPE=echo MSG="https://github.com/ghzserg/zmod/wiki/Setup"' >/tmp/printer
+    echo "Можно использовать макрос ZFLASH, для обновления с флешки по сети"
+    echo 'https://github.com/ghzserg/zmod/wiki/Setup'
 fi

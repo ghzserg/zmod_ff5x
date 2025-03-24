@@ -135,6 +135,15 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "visible": true
         },
         {
+            "alias": "ZFLASH",
+            "categoryId": "09a46273-5af4-4fc4-b232-442934c1e810",
+            "color": "",
+            "disabledWhilePrinting": true,
+            "name": "zflash",
+            "order": 10,
+            "visible": true
+        },
+        {
             "alias": "",
             "categoryId": "69809e15-439e-45e3-b181-42ccbdde50eb",
             "color": "",
@@ -1326,6 +1335,14 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
                "color" : "group",
                "name" : "RESTART_GUPPY",
                "pos" : 28,
+               "showInPause" : false,
+               "showInPrinting" : false,
+               "showInStandby" : true
+            },
+            {
+               "color" : "group",
+               "name" : "ZFLASH",
+               "pos" : 29,
                "showInPause" : false,
                "showInPrinting" : false,
                "showInStandby" : true
