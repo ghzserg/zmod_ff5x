@@ -497,6 +497,15 @@ stepper: stepper_x, stepper_y, stepper_z
         fi
     fi
 
+    if [ -f ${MOD_CONF}/mod_data/mesh_data.cfg ]; then
+        FIND_STR=$(cat ${MOD_CONF}/mod_data/mesh_data.cfg |grep bed_mesh|sed 's/\[/\\[/g; s/\]/\\]/g')
+        if ! grep "$FIND_STR" ${PRINTER_CFG}; then
+            NEED_REBOOT=1
+            cat ${MOD_CONF}/mod_data/mesh_data.cfg >>${PRINTER_CFG}
+        fi
+        rm -f ${MOD_CONF}/mod_data/mesh_data.cfg
+    fi
+
     [ "$(tail -c1 ${PRINTER_BASE})" != "" ] && echo >> ${PRINTER_BASE} && NEED_REBOOT=1
     if [ "$(tail -n2 "$PRINTER_BASE" | wc -l)" -lt 2 ] || [ "$(tail -n2 "$PRINTER_BASE" | grep -vc '^$')" -ne 0 ]; then
         echo >> "$PRINTER_BASE"
@@ -517,14 +526,16 @@ stepper: stepper_x, stepper_y, stepper_z
             killall firmwareExe
             sync
             sync
-            diff -u ${PRINTER_BASE} ${PRINTER_BASE_ORIG}
-            diff -u ${PRINTER_CFG} ${PRINTER_CFG_ORIG}
+            diff -u ${PRINTER_BASE_ORIG} ${PRINTER_BASE}
+            diff -u ${PRINTER_CFG_ORIG} ${PRINTER_CFG}
             cat ${PRINTER_BASE} >${PRINTER_BASE_ORIG}
             sync
             cat ${PRINTER_CFG} >${PRINTER_CFG_ORIG}
+            sync
+        else
+            diff -u ${PRINTER_BASE_ORIG} ${PRINTER_BASE}
+            diff -u ${PRINTER_CFG_ORIG} ${PRINTER_CFG}
     fi
-    diff -u ${PRINTER_BASE_ORIG} ${PRINTER_BASE}
-    diff -u ${PRINTER_CFG_ORIG} ${PRINTER_CFG}
     echo "END fix_config"
 
 #    if [ "$1" == "start" ] && [ ${FF5X} -eq 0 ]; then
