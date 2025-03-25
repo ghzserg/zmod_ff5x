@@ -497,15 +497,6 @@ stepper: stepper_x, stepper_y, stepper_z
         fi
     fi
 
-    if [ -f ${MOD_CONF}/mod_data/mesh_data.cfg ]; then
-        FIND_STR=$(cat ${MOD_CONF}/mod_data/mesh_data.cfg |grep bed_mesh|sed 's/\[/\\[/g; s/\]/\\]/g')
-        if ! grep "$FIND_STR" ${PRINTER_CFG}; then
-            NEED_REBOOT=1
-            cat ${MOD_CONF}/mod_data/mesh_data.cfg >>${PRINTER_CFG}
-        fi
-        rm -f ${MOD_CONF}/mod_data/mesh_data.cfg
-    fi
-
     [ "$(tail -c1 ${PRINTER_BASE})" != "" ] && echo >> ${PRINTER_BASE} && NEED_REBOOT=1
     if [ "$(tail -n2 "$PRINTER_BASE" | wc -l)" -lt 2 ] || [ "$(tail -n2 "$PRINTER_BASE" | grep -vc '^$')" -ne 0 ]; then
         echo >> "$PRINTER_BASE"
@@ -517,6 +508,15 @@ stepper: stepper_x, stepper_y, stepper_z
         NEED_REBOOT=1
     else
         rm ${PRINTER_CFG}.save
+    fi
+
+    if [ -f ${MOD_CONF}/mod_data/mesh_data.cfg ]; then
+        FIND_STR=$(cat ${MOD_CONF}/mod_data/mesh_data.cfg |grep bed_mesh|sed 's/\[/\\[/g; s/\]/\\]/g')
+        if ! grep "$FIND_STR" ${PRINTER_CFG}; then
+            NEED_REBOOT=1
+            cat ${MOD_CONF}/mod_data/mesh_data.cfg >>${PRINTER_CFG}
+        fi
+        rm -f ${MOD_CONF}/mod_data/mesh_data.cfg
     fi
 
     if [ ${NEED_REBOOT} -eq 1 ]
