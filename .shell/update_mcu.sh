@@ -56,7 +56,7 @@ if [ "$1" == "mainboard" ]; then
     mv /opt/config/mod_data/log/update_mcu_mainboard.log /opt/config/mod_data/log/update_mcu_mainboard.1.log
 
     update_mcu_mainboard &>/opt/config/mod_data/log/update_mcu_mainboard.log
-    /usr/bin/audio_midi.sh For_Elise.mid
+    /opt/config/mod/.shell/root/audio/audio_midi.sh For_Elise.mid
     sync
     sleep 5
     poweroff
@@ -68,7 +68,7 @@ else
     mv /opt/config/mod_data/log/update_mcu_eboard.log /opt/config/mod_data/log/update_mcu_eboard.1.log
 
     update_mcu_eboard &>/opt/config/mod_data/log/update_mcu_eboard.log
-    /usr/bin/audio_midi.sh For_Elise.mid
+    /opt/config/mod/.shell/root/audio/audio_midi.sh For_Elise.mid
     sync
 fi
 

@@ -12,7 +12,7 @@ for i in /opt/PROGRAM/control/*/; do
         if [ "$1" -eq 1 ] && ! [ -f /ZMOD ]; then
             start-stop-daemon -S -b -x /opt/config/mod/.shell/update_mcu.sh -- mainboard
         else
-            /usr/bin/audio_midi.sh For_Elise.mid
+            /opt/config/mod/.shell/root/audio/audio_midi.sh For_Elise.mid
             sync
             sleep 5
             poweroff
