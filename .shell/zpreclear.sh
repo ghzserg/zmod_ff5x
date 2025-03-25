@@ -16,7 +16,7 @@ M190=$(head -1000 "${DATA_GCODES}/$1" | grep "^M190" | head -1)
 [ "$M190" == "" ] && M190=$(head -1000 "${DATA_GCODES}/$1" | grep "^M140" | head -1 | sed 's|M140|M190|')
 
 if [ "$M190" == "" ] || [ "$M109" == "" ]; then
-    echo "RESPOND TYPE=error MSG=\"В файле $1 не найдены команды нагрева стола(M140/M190) или сопла(M104/M109).\"" >/tmp/printer
+    echo "RESPOND TYPE=error MSG=\"В файле $1 не найдены команды нагрева стола(M140/M190) или сопла(M104/M109). Они должны быть в первой 1000 строк. Эскизы G-кода 140x110/PNG\"" >/tmp/printer
     echo "CANCEL_PRINT" >/tmp/printer
     exit 1
 fi
