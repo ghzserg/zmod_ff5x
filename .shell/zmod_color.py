@@ -144,6 +144,7 @@ class zmod_color:
 
             gcmd.respond_raw("// action:prompt_button_group_end")
             gcmd.respond_raw("// action:prompt_footer_button Отмена|RESPOND TYPE=command MSG=action:prompt_end")
+            gcmd.respond_raw("// action:prompt_footer_button Сбросить цвета|RESET_ZCOLOR")
             gcmd.respond_raw("// action:prompt_show")
         else:
             gcmd.respond_raw(f"!! Нет ответа от принтера. Необходимо настроить принтер. На экране принтера: \"Настройки\" -> \"Иконка WiFi\" -> \"Сетевой режим\" -> включить ползунок \"Только локальные сети\"\n{response_data}")
@@ -174,42 +175,35 @@ class zmod_color:
         if status_code:
 #            gcmd.respond_raw(json.dumps(response_data, indent=2))
             result = self.parse_printer_response(response_data)
+            tools = [
+                {"toolId": 0, "ztool": ztool0},
+                {"toolId": 1, "ztool": ztool1},
+                {"toolId": 2, "ztool": ztool2},
+                {"toolId": 3, "ztool": ztool3},
+            ]
+
+            material_mappings = []
+            for tool in tools:
+                tool_id = tool["toolId"]
+                ztool = tool["ztool"]
+                zindex = ztool - 1
+
+                if 0 <= zindex < len(result):
+                    material_mappings.append({
+                        "toolId": tool_id,
+                        "slotId": result[zindex]['ID'],
+                        "materialName": result[zindex]['Материал'],
+                        "toolMaterialColor": f"#{result[zindex]['HEX']}",
+                        "slotMaterialColor": f"#{result[zindex]['HEX']}"
+                    })
+
             data = {
                 "fileName": fname,
                 "levelingBeforePrint": bool(leveling),
                 "flowCalibration": True,
                 "useMatlStation": True,
-                "gcodeToolCnt": 4,
-                "materialMappings": [
-                    {
-                        "toolId": 0,
-                        "slotId": result[ztool0-1]['ID'],
-                        "materialName": result[ztool0-1]['Материал'],
-                        "toolMaterialColor": f"#{result[ztool0-1]['HEX']}",
-                        "slotMaterialColor": f"#{result[ztool0-1]['HEX']}"
-                    },
-                    {
-                        "toolId": 1,
-                        "slotId": result[ztool1-1]['ID'],
-                        "materialName": result[ztool1-1]['Материал'],
-                        "toolMaterialColor": f"#{result[ztool1-1]['HEX']}",
-                        "slotMaterialColor": f"#{result[ztool1-1]['HEX']}"
-                    },
-                    {
-                        "toolId": 2,
-                        "slotId": result[ztool2-1]['ID'],
-                        "materialName": result[ztool2-1]['Материал'],
-                        "toolMaterialColor": f"#{result[ztool2-1]['HEX']}",
-                        "slotMaterialColor": f"#{result[ztool2-1]['HEX']}"
-                    },
-                    {
-                        "toolId": 3,
-                        "slotId": result[ztool3-1]['ID'],
-                        "materialName": result[ztool3-1]['Материал'],
-                        "toolMaterialColor": f"#{result[ztool3-1]['HEX']}",
-                        "slotMaterialColor": f"#{result[ztool3-1]['HEX']}"
-                    }
-                ]
+                "gcodeToolCnt": len(material_mappings),
+                "materialMappings": material_mappings
             }
             status_code2, response_data2 = self.zsend_post_request("/printGcode", None, data)
             gcmd.respond_raw(f"{data}")
