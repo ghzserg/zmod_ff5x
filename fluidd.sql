@@ -201,6 +201,38 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "categoryId": "0",
             "color": "",
             "disabledWhilePrinting": false,
+            "name": "t1",
+            "visible": false
+        },
+        {
+            "alias": "",
+            "categoryId": "0",
+            "color": "",
+            "disabledWhilePrinting": false,
+            "name": "t2",
+            "visible": false
+        },
+        {
+            "alias": "",
+            "categoryId": "0",
+            "color": "",
+            "disabledWhilePrinting": false,
+            "name": "t3",
+            "visible": false
+        },
+        {
+            "alias": "",
+            "categoryId": "0",
+            "color": "",
+            "disabledWhilePrinting": false,
+            "name": "t4",
+            "visible": false
+        },
+        {
+            "alias": "",
+            "categoryId": "0",
+            "color": "",
+            "disabledWhilePrinting": false,
             "name": "g28",
             "visible": false
         },
