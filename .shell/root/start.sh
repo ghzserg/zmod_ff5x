@@ -35,6 +35,13 @@ prepare_chroot()
     [ -L /usr/bin/audio_midi.sh ] || ln -s /opt/config/mod/.shell/root/audio/audio_midi.sh /usr/bin/audio_midi.sh
     [ -L /usr/bin/audio.py ] || ln -s /opt/config/mod/.shell/root/audio/audio.py /usr/bin/audio.py
 
+    CUR_DIR=$(pwd)
+        cd /opt/config/mod/.shell/midi/
+        for i in *.mid; do
+            [ -f "/opt/config/mod_data/midi/$i" ] || cp "/opt/config/mod/.shell/midi/$i" /opt/config/mod_data/midi/
+        done
+    cd ${CUR_DIR}
+
 #    [ -L /bin/boot_eboard_mcu ] || ln -s /opt/config/mod/.shell/root/mcu/boot_eboard_mcu /bin/boot_eboard_mcu
     [ -L /bin/backlight ] || ln -s /opt/config/mod/.shell/root/backlight /bin/backlight
 #    [ -L /root/klipper-env/lib/python3.12/site-packages/numpy ] || ln -s /usr/lib/python3.12/site-packages/numpy /root/klipper-env/lib/python3.12/site-packages/
