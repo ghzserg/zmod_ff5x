@@ -34,6 +34,10 @@ class zmod_color:
         self.printer = config.get_printer()
         self.gcode = self.printer.lookup_object('gcode')
         self.gcode.register_command(
+            'GET_T', self.cmd_GET_T,
+            desc=self.cmd_GET_T_help
+        )
+        self.gcode.register_command(
             'GET_ZCOLOR', self.cmd_GET_ZCOLOR,
             desc=self.cmd_GET_ZCOLOR_help
         )
@@ -128,6 +132,22 @@ class zmod_color:
                 })
         return slots_info
 #############################################################################################
+    cmd_GET_T_help = "Вывести цвет"
+    def cmd_GET_T(self, gcmd):
+        zslot = gcmd.get_int('SLOT', 0)
+        if zslot < 1 or zslot > 4:
+            raise gcmd.error("Неверный SLOT. Допустимые: 1-4")
+        status_code, response_data = self.zsend_post_request("/detail")
+        if status_code:
+#            gcmd.respond_raw(json.dumps(response_data, indent=2))
+            result = self.parse_printer_response(response_data)
+
+            for slot in result:
+                if zslot==slot['ID']:
+                    gcmd.respond_raw(f"Меняю на катушку {slot['ID']}: {slot['Материал']}/{slot['Цвет']}")
+        else:
+            gcmd.respond_raw(f"!! Нет ответа от принтера. Необходимо настроить принтер. На экране принтера: \"Настройки\" -> \"Иконка WiFi\" -> \"Сетевой режим\" -> включить ползунок \"Только локальные сети\"\n{response_data}")
+
     cmd_GET_ZCOLOR_help = "Получить сохраненные цвета"
     def cmd_GET_ZCOLOR(self, gcmd):
         gcmd.respond_raw("// action:prompt_end")
