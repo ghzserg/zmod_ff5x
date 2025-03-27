@@ -3,8 +3,8 @@ class zmod:
         self.printer = config.get_printer()
         gcode = self.printer.lookup_object('gcode')
         gcode.register_command('SAVE_SHAPER', self.cmd_SAVE_SHAPER)
-        self.gcode.register_command('SET_ZMOD_LANG_EN', self.cmd_SET_ZMOD_LANG_EN)
-        self.gcode.register_command('SET_ZMOD_LANG_RU', self.cmd_SET_ZMOD_LANG_RU)
+        gcode.register_command('SET_ZMOD_LANG_EN', self.cmd_SET_ZMOD_LANG_EN)
+        gcode.register_command('SET_ZMOD_LANG_RU', self.cmd_SET_ZMOD_LANG_RU)
         self.language = 'ru'
 
     def get_lang(self):
