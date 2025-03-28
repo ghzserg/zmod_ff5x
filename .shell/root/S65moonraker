@@ -3,6 +3,8 @@
 # Start moonraker
 #
 
+source /opt/config/mod/.shell/0.sh
+
 PYTHON=/root/moonraker-env/bin/python3
 MOONRAKER=/root/moonraker-env/moonraker/moonraker.py
 PRINTER_DATA=/root/printer_data
@@ -10,7 +12,7 @@ PRINTER_DATA_TMP=/root/printer_data/tmp
 PID_FILE=/run/moonraker.pid
 
 FNAME="/opt/config/mod/fluidd.sql"
-grep -q "lang = 'en'" /opt/config/mod_data/variables.cfg && FNAME="/opt/config/mod/fluidd_en.sql"
+[ ${ZLANG} == "en" ] && FNAME="/opt/config/mod/fluidd_en.sql"
 
 start() {
     NEED="N"
