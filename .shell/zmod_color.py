@@ -42,7 +42,7 @@ TRANSLATIONS = {
         'error_napr': "Недопустимое направление (0-1)",
         'error_no_filename': "Не указано имя файла (FILENAME).",
         'error_slot': "Неверный SLOT. Допустимые: 1-4",
-        'error_tool': "Неверный TOOL: {}. Допустимо: 1-4",
+        'error_tool': "Неверный TOOL{}: {}. Допустимо: 1-4",
         'error_type': "Неверный тип материала: {}. Допустимо: {}",
         'file_tool': "В файле",
         'load_error': "!! Ошибка загрузки / выгружки\n{}",
@@ -79,7 +79,7 @@ TRANSLATIONS = {
         'error_napr': "Invalid direction (0-1)",
         'error_no_filename': "Missing FILENAME parameter",
         'error_slot': "Invalid SLOT. Valid: 1-4",
-        'error_tool': "Invalid TOOL: {}. Valid: 1-4",
+        'error_tool': "Invalid TOOL{}: {}. Valid: 1-4",
         'error_type': "Invalid material type: {}. Valid: {}",
         'file_tool': "In file",
         'load_error': "!! Load/unload error\n{}",
@@ -241,7 +241,7 @@ class zmod_color:
 
         for i, tool in enumerate(tools):
             if tool < 1 or tool > 4:
-                raise gcmd.error(self._t('error_tool', i+1))
+                raise gcmd.error(self._t('error_tool', i, tool))
 
         status_code, response_data = self.zsend_post_request("/detail")
         if status_code:
@@ -307,7 +307,7 @@ class zmod_color:
 
         for i, tool in enumerate(tools):
             if tool < 1 or tool > 4:
-                raise gcmd.error(self._t('error_tool', i+1))
+                raise gcmd.error(self._t('error_tool', i, tool))
 
         status_code, response_data = self.zsend_post_request("/detail")
         if status_code:
@@ -352,9 +352,9 @@ class zmod_color:
         if leveling not in (0, 1):
             raise gcmd.error(self._t('error_leveling', leveling))
 
-        tool = gcmd.get_int('TOOL', 0)
-        if tool < 1 or tool > 4:
-            raise gcmd.error(self._t('error_tool', tool))
+        ztool = gcmd.get_int('TOOL', 0)
+        if ztool < 1 or ztool > 4:
+            raise gcmd.error(self._t('error_tool', '', ztool))
 
         tools = [
             gcmd.get_int('TOOL0', 1),
@@ -363,8 +363,22 @@ class zmod_color:
             gcmd.get_int('TOOL3', 4)
         ]
 
+        for i, tool in enumerate(tools):
+            if tool < 1 or tool > 4:
+                raise gcmd.error(self._t('error_tool', i, tool))
+
+        if ztool == 1:
+            params=f"TOOL1={tools[1]} TOOL2={tools[2]} TOOL3={tools[3]} FILENAME={fname} LEVELING={leveling} "
+        elif ztool == 2:
+            params=f"TOOL0={tools[0]} TOOL2={tools[2]} TOOL3={tools[3]} FILENAME={fname} LEVELING={leveling} "
+        elif ztool == 3:
+            params=f"TOOL0={tools[0]} TOOL1={tools[1]} TOOL3={tools[3]} FILENAME={fname} LEVELING={leveling} "
+        else:
+            params=f"TOOL0={tools[0]} TOOL1={tools[0]} TOOL2={tools[2]} FILENAME={fname} LEVELING={leveling} "
+
         status_code, response_data = self.zsend_post_request("/detail")
         if status_code:
+#            gcmd.respond_raw(json.dumps(response_data, indent=2))
             result = self.parse_printer_response(response_data)
             gcmd.respond_raw(f"// action:prompt_begin {self._t('prompt_material')}")
             gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_map_color')}")
@@ -373,24 +387,19 @@ class zmod_color:
             gcmd.respond_raw("// action:prompt_button_group_start")
             for idx, slot in enumerate(result):
                 btn_text = (
-                    f"{self._t('file_tool')} {tool} → "
+                    f"{self._t('file_tool')} {ztool} → "
                     f"{self._t('spool')} {slot['ID']}: "
                     f"{slot['Material']}/{slot['Color']}"
                 )
-                params = (
-                    f"LEVELING={leveling} FILENAME={fname} "
-                    f"TOOL0={tools[0]} TOOL1={tools[1]} "
-                    f"TOOL2={tools[2]} TOOL3={tools[3]}"
-                )
                 gcmd.respond_raw(
                     f"// action:prompt_button {btn_text}|"
-                    f"SET_ZCOLOR TOOL{tool-1}={idx+1} {params}|primary"
+                    f"SET_ZCOLOR TOOL{ztool-1}={idx+1} {params}|primary"
                 )
-            gcmd.respond_raw("// action:prompt_button_group_end")
 
+            gcmd.respond_raw("// action:prompt_button_group_end")
             gcmd.respond_raw(
                 f"// action:prompt_footer_button {self._t('cancel')}|"
-                f"SET_ZCOLOR TOOL{tool-1}={tools[tool-1]} {params}"
+                f"SET_ZCOLOR TOOL{ztool-1}={tools[ztool-1]} {params}"
             )
             gcmd.respond_raw("// action:prompt_show")
         else:
@@ -504,6 +513,7 @@ class zmod_color:
             gcmd.respond_raw(f"// action:prompt_footer_button {self._t('cancel')}|RESPOND TYPE=command MSG=action:prompt_end")
             gcmd.respond_raw("// action:prompt_show")
 
+    # Загрузка выгрузка филамента
     def cmd_IN_ZCOLOR(self, gcmd):
         gcmd.respond_raw("// action:prompt_end")
         zslot = gcmd.get_int('SLOT', 0)
