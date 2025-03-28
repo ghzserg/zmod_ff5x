@@ -153,6 +153,15 @@ fix_config()
     mkdir -p ${MOD_CONF}/mod_data/database/
     [ -f ${MOD_CONF}/mod_data/user.cfg ] || echo "" >${MOD_CONF}/mod_data/user.cfg
     [ -f ${MOD_CONF}/mod_data/variables.cfg ] || echo "[Variables]" >${MOD_CONF}/mod_data/variables.cfg
+
+    [ -f ${MOD_CONF}/mod_data/lang.cfg ] || echo -e "[zmod]\nlanguage: ru" >${MOD_CONF}/mod_data/lang.cfg
+    grep -q "lang = " ${MOD_CONF}/mod_data/variables.cfg || sed -i "2 i\lang = 'ru'" ${MOD_CONF}/mod_data/variables.cfg
+    if [ grep -q "language: en" ${MOD_CONF}/mod_data/lang.cfg ]; then
+        grep -g "lang = 'en'" || sed -i "s/lang.*/lang = 'en'/" ${MOD_CONF}/mod_data/variables.cfg
+    else
+        grep -g "lang = 'ru'" || sed -i "s/lang.*/lang = 'ru'/" ${MOD_CONF}/mod_data/variables.cfg
+    fi
+
     if ! [ -f ${MOD_CONF}/mod_data/user.moonraker.conf ]; then
         echo "#Enter user config here
 [authorization]

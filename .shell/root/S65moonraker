@@ -9,10 +9,13 @@ PRINTER_DATA=/root/printer_data
 PRINTER_DATA_TMP=/root/printer_data/tmp
 PID_FILE=/run/moonraker.pid
 
+FNAME="/opt/config/mod/fluidd.sql"
+grep -q "lang = 'en'" /opt/config/mod_data/variables.cfg && FNAME="/opt/config/mod/fluidd_en.sql"
+
 start() {
     NEED="N"
     if [ -f "/opt/config/mod_data/database/moonraker-sql.db" ]; then
-        grep -q "save_moonraker = 1" /opt/config/mod_data/variables.cfg || sqlite3 /opt/config/mod_data/database/moonraker-sql.db </opt/config/mod/fluidd.sql
+        grep -q "save_moonraker = 1" /opt/config/mod_data/variables.cfg || sqlite3 /opt/config/mod_data/database/moonraker-sql.db <${FNAME}
     else
         NEED="Y"
     fi
@@ -24,7 +27,7 @@ start() {
 
     if [ "$NEED" == "Y" ]; then
         sleep 10
-        sqlite3 /opt/config/mod_data/database/moonraker-sql.db </opt/config/mod/fluidd.sql
+        sqlite3 /opt/config/mod_data/database/moonraker-sql.db <${FNAME}
     fi
 }
 
