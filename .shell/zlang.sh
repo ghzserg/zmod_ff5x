@@ -9,7 +9,7 @@ else
 fi
 
 echo "[zmod]
-language: '${LANG}'" >${MOD_CONF}/mod_data/lang.cfg
+language: ${LANG}" >${MOD_CONF}/mod_data/lang.cfg
 
 sync
 sleep 5
