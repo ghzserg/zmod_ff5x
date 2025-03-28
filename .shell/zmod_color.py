@@ -63,7 +63,7 @@ TRANSLATIONS = {
         'send_print': "Отправить на печать",
         'spool_info': "Катушка {slot}: {type}/{color}",
         'spool': "в катушке",
-        'unload_error': "Ошибка выгрузки: {error}"
+        'unload_error': "Ошибка выгрузки: {error}",
         'unload_success': "Выгрузка начата",
         'unload': "Выгрузить"
     },
