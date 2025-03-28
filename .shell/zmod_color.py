@@ -171,7 +171,18 @@ class zmod_color:
             return None, str(e)
 
     def _t(self, key, **kwargs):
-        return TRANSLATIONS[self.language][key].format(**kwargs)
+        if self.language not in TRANSLATIONS:
+            error_msg = f"Language '{self.language}' not found in translations. Using 'ru'."
+            self.gcode.respond_raw(f"!! {error_msg}")
+            self.language = 'ru'
+
+        translations = TRANSLATIONS.get(self.language, TRANSLATIONS['ru'])
+        if key not in translations:
+            error_msg = f"Translation key '{key}' not found for language '{self.language}'"
+            self.gcode.respond_raw(f"!! {error_msg}")
+            return f"[MISSING_TRANSLATION:{key}]"
+
+        return translations[key].format(**kwargs) if kwargs else translations[key]
 
     def parse_printer_response(self, response_data):
         slots_info = []
