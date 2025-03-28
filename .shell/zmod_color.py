@@ -35,7 +35,7 @@ TRANSLATIONS = {
         'change_color': "Сменить цвет",
         'change_spool': "Меняю на катушку {}: {} / {}",
         'change_type': "Сменить тип",
-        'config_error': "!! Ошибка смены цвета / типа\n {error}",
+        'config_error': "!! Ошибка смены цвета / типа\n{}",
         'config_success': "Настройки сохранены",
         'error_color_or_type': "Укажите HEX или TYPE",
         'error_leveling': "Неверный LEVELING: {}. Допустимо: 0 или 1",
@@ -43,9 +43,9 @@ TRANSLATIONS = {
         'error_no_filename': "Не указано имя файла (FILENAME).",
         'error_slot': "Неверный SLOT. Допустимые: 1-4",
         'error_tool': "Неверный TOOL: {}. Допустимо: 1-4",
-        'error_type': "Неверный тип материала: {type}. Допустимо: {valid}",
+        'error_type': "Неверный тип материала: {}. Допустимо: {}",
         'file_tool': "В файле",
-        'load_error': "!! Ошибка загрузки / выгружки\n{error}",
+        'load_error': "!! Ошибка загрузки / выгружки\n{}",
         'load_success': "Загрузка началась",
         'load': "Загрузить",
         'no_response': "!! Нет ответа от принтера. Настройте принтер: \"Настройки\" -> \"WiFi\" -> \"Сетевой режим\" -> \"Только локальные сети\"\n{}",
@@ -61,18 +61,18 @@ TRANSLATIONS = {
         'select_color': "Выберите цвет",
         'select_type': "Выберите тип материала",
         'send_print': "Отправить на печать",
-        'spool_info': "Катушка {slot}: {type}/{color}",
+        'spool_info': "Катушка {}: {}/{}",
         'spool': "в катушке",
-        'unload_error': "Ошибка выгрузки: {error}",
+        'unload_error': "Ошибка выгрузки: {}",
         'unload_success': "Выгрузка начата",
         'unload': "Выгрузить"
     },
     'en': {
         'cancel': "Cancel",
         'change_color': "Change color",
-        'change_spool': "Changing to spool {}: {} / {}",
+        'change_spool': "Changing to spool {}: {}/{}",
         'change_type': "Change type",
-        'config_error': "!! Error changing color/type\n{error}",
+        'config_error': "!! Error changing color/type\n{}",
         'config_success': "Settings saved",
         'error_color_or_type': "Specify HEX or TYPE",
         'error_leveling': "Invalid LEVELING: {}. Valid: 0 or 1",
@@ -80,9 +80,9 @@ TRANSLATIONS = {
         'error_no_filename': "Missing FILENAME parameter",
         'error_slot': "Invalid SLOT. Valid: 1-4",
         'error_tool': "Invalid TOOL: {}. Valid: 1-4",
-        'error_type': "Invalid material type: {type}. Valid: {valid}",
+        'error_type': "Invalid material type: {}. Valid: {}",
         'file_tool': "In file",
-        'load_error': "!! Load/unload error\n{error}",
+        'load_error': "!! Load/unload error\n{}",
         'load_success': "Loading started",
         'load': "Load",
         'no_response': "!! No response from printer. Configure via: \"Settings\" -> \"WiFi\" -> \"Network Mode\" -> \"Local Only\"\n{}",
@@ -98,9 +98,9 @@ TRANSLATIONS = {
         'select_color': "Select color",
         'select_type': "Select material type",
         'send_print': "Start print",
-        'spool_info': "Spool {slot}: {type}/{color}",
+        'spool_info': "Spool {}: {}/{}",
         'spool': "in spool",
-        'unload_error': "Unloading error: {error}",
+        'unload_error': "Unloading error: {}",
         'unload_success': "Unloading started",
         'unload': "Unload"
     }
@@ -170,19 +170,8 @@ class zmod_color:
         except requests.exceptions.RequestException as e:
             return None, str(e)
 
-    def _t(self, key, **kwargs):
-        if self.language not in TRANSLATIONS:
-            error_msg = f"Language '{self.language}' not found in translations. Using 'ru'."
-            self.gcode.respond_raw(f"!! {error_msg}")
-            self.language = 'ru'
-
-        translations = TRANSLATIONS.get(self.language, TRANSLATIONS['ru'])
-        if key not in translations:
-            error_msg = f"Translation key '{key}' not found for language '{self.language}'"
-            self.gcode.respond_raw(f"!! {error_msg}")
-            return f"[MISSING_TRANSLATION:{key}]"
-
-        return translations[key].format(**kwargs) if kwargs else translations[key]
+    def _t(self, key, *args):
+        return TRANSLATIONS[self.language][key].format(*args)
 
     def parse_printer_response(self, response_data):
         slots_info = []
@@ -210,7 +199,7 @@ class zmod_color:
             result = self.parse_printer_response(response_data)
             for slot in result:
                 if zslot == int(slot['ID']):
-                    msg = self._t('change_spool', slot_id=slot['ID'], material=slot['Material'], color=slot['Color'])
+                    msg = self._t('change_spool', slot['ID'], slot['Material'], slot['Color'])
                     gcmd.respond_raw(msg)
         else:
             gcmd.respond_raw(self._t('no_response', response_data))
@@ -252,7 +241,7 @@ class zmod_color:
 
         for i, tool in enumerate(tools):
             if tool < 1 or tool > 4:
-                raise gcmd.error(self._t('error_tool', tool_num=i+1))
+                raise gcmd.error(self._t('error_tool', i+1))
 
         status_code, response_data = self.zsend_post_request("/detail")
         if status_code:
@@ -260,7 +249,7 @@ class zmod_color:
 
             gcmd.respond_raw(f"// action:prompt_begin {self._t('prompt_material')}")
             gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_map_color')}")
-            gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_file', fname=fname)}")
+            gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_file', fname)}")
 
             leveling_text = (
                 self._t('prompt_leveling_on')
@@ -297,7 +286,7 @@ class zmod_color:
             gcmd.respond_raw(f"// action:prompt_footer_button {self._t('cancel')}|RESPOND TYPE=command MSG=action:prompt_end")
             gcmd.respond_raw("// action:prompt_show")
         else:
-            gcmd.respond_raw(self._t('no_response', response_data=response_data))
+            gcmd.respond_raw(self._t('no_response', response_data))
 
     def cmd_PRINT_ZCOLOR(self, gcmd):
         gcmd.respond_raw("// action:prompt_end")
@@ -318,7 +307,7 @@ class zmod_color:
 
         for i, tool in enumerate(tools):
             if tool < 1 or tool > 4:
-                raise gcmd.error(self._t('error_tool', tool_num=i+1))
+                raise gcmd.error(self._t('error_tool', i+1))
 
         status_code, response_data = self.zsend_post_request("/detail")
         if status_code:
@@ -349,9 +338,9 @@ class zmod_color:
             if status_code2 == 200:
                 gcmd.respond_raw(f"Status: {response_data2.get('msg', 'OK')}")
             else:
-                gcmd.respond_raw(self._t('printing_error', error=response_data2))
+                gcmd.respond_raw(self._t('printing_error', response_data2))
         else:
-            gcmd.respond_raw(self._t('no_response', response_data=response_data))
+            gcmd.respond_raw(self._t('no_response', response_data))
 
     def cmd_CHANGE_TOOL_ZCOLOR(self, gcmd):
         gcmd.respond_raw("// action:prompt_end")
@@ -361,11 +350,11 @@ class zmod_color:
 
         leveling = gcmd.get_int('LEVELING', 0)
         if leveling not in (0, 1):
-            raise gcmd.error(self._t('error_leveling', leveling=leveling))
+            raise gcmd.error(self._t('error_leveling', leveling))
 
         tool = gcmd.get_int('TOOL', 0)
         if tool < 1 or tool > 4:
-            raise gcmd.error(self._t('error_tool', tool_num=tool))
+            raise gcmd.error(self._t('error_tool', tool))
 
         tools = [
             gcmd.get_int('TOOL0', 1),
@@ -379,7 +368,7 @@ class zmod_color:
             result = self.parse_printer_response(response_data)
             gcmd.respond_raw(f"// action:prompt_begin {self._t('prompt_material')}")
             gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_map_color')}")
-            gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_file', fname=fname)}")
+            gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_file', fname)}")
 
             gcmd.respond_raw("// action:prompt_button_group_start")
             for idx, slot in enumerate(result):
@@ -405,7 +394,7 @@ class zmod_color:
             )
             gcmd.respond_raw("// action:prompt_show")
         else:
-            gcmd.respond_raw(self._t('no_response', response_data=response_data))
+            gcmd.respond_raw(self._t('no_response', response_data))
 
     def cmd_RUN_ZCOLOR(self, gcmd):
         gcmd.respond_raw("// action:prompt_end")
@@ -420,10 +409,10 @@ class zmod_color:
         color_name = COLOR_MAPPING.get(zhex.lower(), {}).get(self.language, zhex)
 
         if ztype not in valid_types:
-            raise gcmd.error(self._t('error_type', type=ztype, valid=', '.join(valid_types[:-1])))
+            raise gcmd.error(self._t('error_type', ztype, ', '.join(valid_types[:-1])))
 
         gcmd.respond_raw(f"// action:prompt_begin {self._t('select_action')}")
-        gcmd.respond_raw(f"// action:prompt_text {self._t('spool_info', slot=zslot, type=ztype, color=color_name)}")
+        gcmd.respond_raw(f"// action:prompt_text {self._t('spool_info', zslot, ztype, color_name)}")
 
         gcmd.respond_raw("// action:prompt_button_group_start")
         gcmd.respond_raw(
@@ -464,7 +453,7 @@ class zmod_color:
             if ztype == '?':
                 ztype = 'PLA'
             if ztype not in valid_types:
-                raise gcmd.error(self._t('error_type', type=ztype, valid=', '.join(valid_types[:-1])))
+                raise gcmd.error(self._t('error_type', ztype, ', '.join(valid_types[:-1])))
 
             payload = {
                 "cmd": "msConfig_cmd",
@@ -479,17 +468,17 @@ class zmod_color:
                 self.cmd_GET_ZCOLOR(gcmd)
                 gcmd.respond_raw(self._t('config_success'))
             else:
-                gcmd.respond_raw(self._t('config_error', error=response_data))
+                gcmd.respond_raw(self._t('config_error', response_data))
             return
 
         if ztype:
             if ztype == '?':
                 ztype = 'PLA'
             if ztype not in valid_types:
-                raise gcmd.error(self._t('error_type', type=ztype, valid=', '.join(valid_types[:-1])))
+                raise gcmd.error(self._t('error_type', ztype, ', '.join(valid_types[:-1])))
 
             gcmd.respond_raw(f"// action:prompt_begin {self._t('select_color')}")
-            gcmd.respond_raw(f"// action:prompt_text {self._t('spool_info', slot=zslot, type=ztype, color='')}")
+            gcmd.respond_raw(f"// action:prompt_text {self._t('spool_info', zslot, ztype, '')}")
             gcmd.respond_raw("// action:prompt_button_group_start")
             for hex_code, color_data in COLOR_MAPPING.items():
                 color_name = color_data[self.language]
@@ -504,7 +493,7 @@ class zmod_color:
         if zhex:
             color_name = COLOR_MAPPING.get(zhex.lower(), {}).get(self.language, zhex)
             gcmd.respond_raw(f"// action:prompt_begin {self._t('select_type')}")
-            gcmd.respond_raw(f"// action:prompt_text {self._t('spool_info', slot=zslot, type='', color=color_name)}")
+            gcmd.respond_raw(f"// action:prompt_text {self._t('spool_info', zslot, '', color_name)}")
             gcmd.respond_raw("// action:prompt_button_group_start")
             for material in valid_types[:-1]:  # Исключаем '?'
                 gcmd.respond_raw(
@@ -537,7 +526,7 @@ class zmod_color:
         if status_code == 200:
             gcmd.respond_raw(self._t(f'{action}_success'))
         else:
-            gcmd.respond_raw(self._t(f'{action}_error', error=response_data))
+            gcmd.respond_raw(self._t(f'{action}_error', response_data))
 
 def load_config(config):
     return zmod_color(config)
