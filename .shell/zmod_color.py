@@ -3,73 +3,158 @@ import requests
 import subprocess
 
 COLOR_MAPPING = {
-    "ffffff": "белый",
-    "fef043": "ярко-желтый",
-    "dcf478": "светло-зеленый",
-    "0acc38": "зеленый",
-    "067749": "темно-зеленый",
-    "0c6283": "сине-зеленый",
-    "0de2a0": "бирюзовый",
-    "75d9f3": "голубой",
-    "45a8f9": "синий",
-    "2750e0": "темно-синий",
-    "46328e": "фиолетовый",
-    "a03cf7": "ярко-фиолетовый",
-    "f330f9": "пурпурный",
-    "d4b0dc": "сиреневый",
-    "f95d73": "розовый",
-    "f72224": "красный",
-    "7c4b00": "коричневый",
-    "f98d33": "оранжевый",
-    "fdebd5": "бежевый",
-    "d3c4a3": "светло-коричневый",
-    "af7836": "терракотовый",
-    "898989": "серый",
-    "bcbcbc": "светло-серый",
-    "161616": "черный"
+    "ffffff": {"ru": "белый", "en": "white"},
+    "fef043": {"ru": "ярко-желтый", "en": "bright yellow"},
+    "dcf478": {"ru": "светло-зеленый", "en": "light green"},
+    "0acc38": {"ru": "зеленый", "en": "green"},
+    "067749": {"ru": "темно-зеленый", "en": "dark green"},
+    "0c6283": {"ru": "сине-зеленый", "en": "cyan"},
+    "0de2a0": {"ru": "бирюзовый", "en": "turquoise"},
+    "75d9f3": {"ru": "голубой", "en": "light blue"},
+    "45a8f9": {"ru": "синий", "en": "blue"},
+    "2750e0": {"ru": "темно-синий", "en": "dark blue"},
+    "46328e": {"ru": "фиолетовый", "en": "purple"},
+    "a03cf7": {"ru": "ярко-фиолетовый", "en": "bright purple"},
+    "f330f9": {"ru": "пурпурный", "en": "magenta"},
+    "d4b0dc": {"ru": "сиреневый", "en": "lilac"},
+    "f95d73": {"ru": "розовый", "en": "pink"},
+    "f72224": {"ru": "красный", "en": "red"},
+    "7c4b00": {"ru": "коричневый", "en": "brown"},
+    "f98d33": {"ru": "оранжевый", "en": "orange"},
+    "fdebd5": {"ru": "бежевый", "en": "beige"},
+    "d3c4a3": {"ru": "светло-коричневый", "en": "light brown"},
+    "af7836": {"ru": "терракотовый", "en": "terracotta"},
+    "898989": {"ru": "серый", "en": "gray"},
+    "bcbcbc": {"ru": "светло-серый", "en": "light gray"},
+    "161616": {"ru": "черный", "en": "black"}
+}
+
+TRANSLATIONS = {
+    'ru': {
+        'error_slot': "Неверный SLOT. Допустимые: 1-4",
+        'error_leveling': "Неверный LEVELING {}. Допустимые: 0-1",
+        'error_tool': "Неверный TOOL{}. Допустимые: 1-4",
+        'error_type': "Неверный TYPE {}. Допустимые: {}",
+        'error_no_filename': "Не указано имя файла (FILENAME).",
+        'error_color_or_type': "Не указан TYPE и HEX",
+        'no_response': "!! Нет ответа от принтера. Настройте принтер: \"Настройки\" -> \"WiFi\" -> \"Сетевой режим\" -> \"Только локальные сети\"\n{}",
+        'change_spool': "Меняю на катушку {}: {}/{}",
+        'prompt_material': "Загруженный материал",
+        'prompt_choose': "Выберите катушку для изменения",
+        'prompt_map_color': "Сопоставьте цвет из файла с катушкой",
+        'prompt_file': "Файл для печати: {}",
+        'prompt_leveling_off': "Печать без карты стола",
+        'prompt_leveling_on': "Печать с картой стола",
+        'cancel': "Отмена",
+        'reset_colors': "Сбросить цвета",
+        'send_print': "Отправить на печать",
+        'load_unload': "Загрузить/Выгрузить",
+        'change_color': "Сменить цвет",
+        'change_type': "Сменить тип пластика",
+        'select_color': "Укажите цвет",
+        'select_type': "Укажите тип пластика",
+        'printing_error': "!! Ошибка печати файла\n{}",
+        'config_error': "!! Ошибка смены цвета/типа\n{}",
+        'load_error': "!! Ошибка загрузки/выгружки\n{}",
+        'file_tool': "В файле",
+        'spool': "в катушке",
+        'error_leveling': "Неверный LEVELING: {}. Допустимо: 0 или 1",
+        'error_tool': "Неверный TOOL{}. Допустимо: 1-4",
+        'send_print': "Отправить на печать",
+        'select_action': "Выберите действие",
+        'spool_info': "Катушка {slot}: {type}/{color}",
+        'change_color': "Сменить цвет",
+        'change_type': "Сменить тип",
+        'load': "Загрузить",
+        'unload': "Выгрузить",
+        'error_slot': "Недопустимый слот (1-4)",
+        'error_color_or_type': "Укажите HEX или TYPE",
+        'error_type': "Неверный тип материала: {type}. Допустимо: {valid}",
+        'error_napr': "Недопустимое направление (0-1)",
+        'select_color': "Выберите цвет",
+        'select_type': "Выберите тип материала",
+        'spool_info': "Слот {slot}: {type}{color}",
+        'config_success': "Настройки сохранены",
+        'config_error': "Ошибка: {error}",
+        'load_success': "Загрузка начата",
+        'load_error': "Ошибка загрузки: {error}",
+        'unload_success': "Выгрузка начата",
+        'unload_error': "Ошибка выгрузки: {error}"
+    },
+    'en': {
+        'error_slot': "Invalid SLOT. Valid: 1-4",
+        'error_leveling': "Invalid LEVELING {}. Valid: 0-1",
+        'error_tool': "Invalid TOOL{}. Valid: 1-4",
+        'error_type': "Invalid TYPE {}. Valid: {}",
+        'error_no_filename': "Missing FILENAME parameter.",
+        'error_color_or_type': "TYPE or HEX not specified",
+        'no_response': "!! Printer not responding. Configure via: \"Settings\" -> \"WiFi\" -> \"Network Mode\" -> \"Local Only\"\n{}",
+        'change_spool': "Changing to spool {}: {}/{}",
+        'prompt_material': "Loaded material",
+        'prompt_choose': "Select a spool to modify",
+        'prompt_map_color': "Map file color to spool",
+        'prompt_file': "File to print: {}",
+        'prompt_leveling_off': "Print without bed leveling",
+        'prompt_leveling_on': "Print with bed leveling",
+        'cancel': "Cancel",
+        'reset_colors': "Reset colors",
+        'send_print': "Start print",
+        'load_unload': "Load/Unload",
+        'change_color': "Change color",
+        'change_type': "Change material type",
+        'select_color': "Select color",
+        'select_type': "Select material type",
+        'printing_error': "!! Printing failed\n{}",
+        'config_error': "!! Color/type change error\n{}",
+        'load_error': "!! Load/unload error\n{}",
+        'file_tool': "File tool",
+        'spool': "Spool",
+        'error_leveling': "Invalid LEVELING: {}. Valid: 0 or 1",
+        'error_tool': "Invalid TOOL{}. Valid: 1-4",
+        'send_print': "Start print",
+        'select_action': "Select action",
+        'spool_info': "Spool {slot}: {type}/{color}",
+        'change_color': "Change color",
+        'change_type': "Change type",
+        'load': "Load",
+        'unload': "Unload",
+        'error_slot': "Invalid slot (1-4)",
+        'error_color_or_type': "Specify HEX or TYPE",
+        'error_type': "Invalid material type: {type}. Valid: {valid}",
+        'error_napr': "Invalid direction (0-1)",
+        'select_color': "Select color",
+        'select_type': "Select material type",
+        'spool_info': "Slot {slot}: {type}{color}",
+        'config_success': "Settings saved",
+        'config_error': "Error: {error}",
+        'load_success': "Loading started",
+        'load_error': "Loading error: {error}",
+        'unload_success': "Unloading started",
+        'unload_error': "Unloading error: {error}"
+    }
 }
 
 class zmod_color:
     def __init__(self, config):
         self.printer = config.get_printer()
+        self.zmod = self.printer.lookup_object('zmod', None)
+        self.language = 'ru'
+        if self.zmod is not None:
+            self.language = self.zmod.get_lang()
         self.gcode = self.printer.lookup_object('gcode')
-        self.gcode.register_command(
-            'GET_T', self.cmd_GET_T,
-            desc=self.cmd_GET_T_help
-        )
-        self.gcode.register_command(
-            'GET_ZCOLOR', self.cmd_GET_ZCOLOR,
-            desc=self.cmd_GET_ZCOLOR_help
-        )
-        self.gcode.register_command(
-            'SET_ZCOLOR', self.cmd_SET_ZCOLOR,
-            desc=self.cmd_SET_ZCOLOR_help
-        )
-        self.gcode.register_command(
-            'PRINT_ZCOLOR', self.cmd_PRINT_ZCOLOR,
-            desc=self.cmd_PRINT_ZCOLOR_help
-        )
-        self.gcode.register_command(
-            'CHANCGE_TOOL_ZCOLOR', self.cmd_CHANCGE_TOOL_ZCOLOR,
-            desc=self.cmd_CHANCGE_TOOL_ZCOLOR_help
-        )
-        self.gcode.register_command(
-            'RUN_ZCOLOR', self.cmd_RUN_ZCOLOR,
-            desc=self.cmd_RUN_ZCOLOR_help
-        )
-        self.gcode.register_command(
-            'CHANGE_ZCOLOR', self.cmd_CHANGE_ZCOLOR,
-            desc=self.cmd_CHANGE_ZCOLOR_help
-        )
-        self.gcode.register_command(
-            'IN_ZCOLOR', self.cmd_IN_ZCOLOR,
-            desc=self.cmd_IN_ZCOLOR_help
-        )
+        self.gcode.register_command('GET_T', self.cmd_GET_T)
+        self.gcode.register_command('GET_ZCOLOR', self.cmd_GET_ZCOLOR)
+        self.gcode.register_command('SET_ZCOLOR', self.cmd_SET_ZCOLOR)
+        self.gcode.register_command('PRINT_ZCOLOR', self.cmd_PRINT_ZCOLOR)
+        self.gcode.register_command('CHANGE_TOOL_ZCOLOR', self.cmd_CHANGE_TOOL_ZCOLOR)
+        self.gcode.register_command('RUN_ZCOLOR', self.cmd_RUN_ZCOLOR)
+        self.gcode.register_command('CHANGE_ZCOLOR', self.cmd_CHANGE_ZCOLOR)
+        self.gcode.register_command('IN_ZCOLOR', self.cmd_IN_ZCOLOR)
         with open('/usr/data/config/Adventurer5M.json', 'r') as file:
             data = json.load(file)
-
             self.serialNumber = data['general']['printerSerialNumber']
             self.checkCode = data['general']['lanCode']
+
     def get_printer_ip(self):
         interfaces = ['wlan0', 'eth0']
         for iface in interfaces:
@@ -113,108 +198,159 @@ class zmod_color:
         except requests.exceptions.RequestException as e:
             return None, str(e)
 
+    def _t(self, key, **kwargs):
+        return TRANSLATIONS[self.language][key].format(**kwargs)
+
     def parse_printer_response(self, response_data):
         slots_info = []
         slots = response_data.get('detail', {}).get('matlStationInfo', {}).get('slotInfos', [])
         for slot in slots:
             if slot.get('hasFilament', True):
                 slot_id = slot.get('slotId', 'N/A')
-                material = slot.get('materialName', 'Неизвестный материал')
+                material = slot.get('materialName', 'N/A').upper()
                 hex_color = slot.get('materialColor', '161616').replace("#", "")
-
-                color_name = COLOR_MAPPING.get(hex_color.lower(), hex_color)
-
+                color_name = COLOR_MAPPING.get(hex_color.lower(), {}).get(self.language, hex_color)
                 slots_info.append({
                     'ID': slot_id,
-                    'Материал': material.upper(),
-                    'Цвет': color_name,
+                    'Material': material,
+                    'Color': color_name,
                     'HEX': hex_color.upper()
                 })
         return slots_info
-#############################################################################################
-    cmd_GET_T_help = "Вывести цвет"
+
     def cmd_GET_T(self, gcmd):
         zslot = gcmd.get_int('SLOT', 0)
         if zslot < 1 or zslot > 4:
-            raise gcmd.error("Неверный SLOT. Допустимые: 1-4")
+            raise gcmd.error(self._t('error_slot'))
         status_code, response_data = self.zsend_post_request("/detail")
         if status_code:
-#            gcmd.respond_raw(json.dumps(response_data, indent=2))
             result = self.parse_printer_response(response_data)
-
             for slot in result:
-                if zslot==slot['ID']:
-                    gcmd.respond_raw(f"Меняю на катушку {slot['ID']}: {slot['Материал']}/{slot['Цвет']}")
+                if zslot == int(slot['ID']):
+                    msg = self._t('change_spool', slot_id=slot['ID'], material=slot['Material'], color=slot['Color'])
+                    gcmd.respond_raw(msg)
         else:
-            gcmd.respond_raw(f"!! Нет ответа от принтера. Необходимо настроить принтер. На экране принтера: \"Настройки\" -> \"Иконка WiFi\" -> \"Сетевой режим\" -> включить ползунок \"Только локальные сети\"\n{response_data}")
+            gcmd.respond_raw(self._t('no_response', response_data))
 
-    cmd_GET_ZCOLOR_help = "Получить сохраненные цвета"
     def cmd_GET_ZCOLOR(self, gcmd):
         gcmd.respond_raw("// action:prompt_end")
         status_code, response_data = self.zsend_post_request("/detail")
         if status_code:
-#            gcmd.respond_raw(json.dumps(response_data, indent=2))
-            gcmd.respond_raw("// action:prompt_begin Загруженный материал")
-            gcmd.respond_raw("// action:prompt_text Выберите катушку, для изменения")
+            gcmd.respond_raw(f"// action:prompt_begin {self._t('prompt_material')}")
+            gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_choose')}")
             gcmd.respond_raw("// action:prompt_button_group_start")
             result = self.parse_printer_response(response_data)
-
             for slot in result:
-                gcmd.respond_raw(f"// action:prompt_button {slot['ID']}: {slot['Материал']}/{slot['Цвет']}|RUN_ZCOLOR SLOT={slot['ID']} HEX={slot['HEX']} TYPE={slot['Материал']}|primary")
-
+                btn_text = f"{slot['ID']}: {slot['Material']}/{slot['Color']}"
+                gcmd.respond_raw(f"// action:prompt_button {btn_text}|RUN_ZCOLOR SLOT={slot['ID']} HEX={slot['HEX']} TYPE={slot['Material']}|primary")
             gcmd.respond_raw("// action:prompt_button_group_end")
-            gcmd.respond_raw("// action:prompt_footer_button Отмена|RESPOND TYPE=command MSG=action:prompt_end")
-            gcmd.respond_raw("// action:prompt_footer_button Сбросить цвета|RESET_ZCOLOR")
+            gcmd.respond_raw(f"// action:prompt_footer_button {self._t('cancel')}|RESPOND TYPE=command MSG=action:prompt_end")
+            gcmd.respond_raw(f"// action:prompt_footer_button {self._t('reset_colors')}|RESET_ZCOLOR")
             gcmd.respond_raw("// action:prompt_show")
         else:
-            gcmd.respond_raw(f"!! Нет ответа от принтера. Необходимо настроить принтер. На экране принтера: \"Настройки\" -> \"Иконка WiFi\" -> \"Сетевой режим\" -> включить ползунок \"Только локальные сети\"\n{response_data}")
+            gcmd.respond_raw(self._t('no_response', response_data))
 
-    cmd_PRINT_ZCOLOR_help = "Печать файла с сопостовлением цветов"
+    def cmd_SET_ZCOLOR(self, gcmd):
+        gcmd.respond_raw("// action:prompt_end")
+        fname = gcmd.get('FILENAME', '')
+        if fname == '':
+            raise gcmd.error(self._t('error_no_filename'))
+
+        leveling = gcmd.get_int('LEVELING', 0)
+        if leveling not in (0, 1):
+            raise gcmd.error(self._t('error_leveling', leveling))
+
+        tools = [
+            gcmd.get_int('TOOL0', 1),
+            gcmd.get_int('TOOL1', 2),
+            gcmd.get_int('TOOL2', 3),
+            gcmd.get_int('TOOL3', 4)
+        ]
+
+        for i, tool in enumerate(tools):
+            if tool < 1 or tool > 4:
+                raise gcmd.error(self._t('error_tool', tool_num=i+1))
+
+        status_code, response_data = self.zsend_post_request("/detail")
+        if status_code:
+            result = self.parse_printer_response(response_data)
+
+            gcmd.respond_raw(f"// action:prompt_begin {self._t('prompt_material')}")
+            gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_map_color')}")
+            gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_file', fname=fname)}")
+
+            leveling_text = (
+                self._t('prompt_leveling_on')
+                if leveling
+                else self._t('prompt_leveling_off')
+            )
+            gcmd.respond_raw(f"// action:prompt_text {leveling_text}")
+
+            gcmd.respond_raw("// action:prompt_button_group_start")
+            for tool_idx, tool_val in enumerate(tools):
+                if 0 <= (tool_val - 1) < len(result):
+                    slot_info = result[tool_val - 1]
+                    btn_text = (
+                        f"{self._t('file_tool')} {tool_idx+1} → "
+                        f"{self._t('spool')} {slot_info['ID']}: "
+                        f"{slot_info['Material']}/{slot_info['Color']}"
+                    )
+                    params = (
+                        f"LEVELING={leveling} FILENAME={fname} "
+                        f"TOOL0={tools[0]} TOOL1={tools[1]} "
+                        f"TOOL2={tools[2]} TOOL3={tools[3]}"
+                    )
+                    gcmd.respond_raw(
+                        f"// action:prompt_button {btn_text}|"
+                        f"CHANGE_TOOL_ZCOLOR TOOL={tool_idx+1} {params}|primary"
+                    )
+            gcmd.respond_raw("// action:prompt_button_group_end")
+
+            gcmd.respond_raw(
+                f"// action:prompt_footer_button {self._t('send_print')}|"
+                f"PRINT_ZCOLOR LEVELING={leveling} FILENAME={fname} "
+                f"TOOL0={tools[0]} TOOL1={tools[1]} TOOL2={tools[2]} TOOL3={tools[3]}|red"
+            )
+            gcmd.respond_raw(f"// action:prompt_footer_button {self._t('cancel')}|RESPOND TYPE=command MSG=action:prompt_end")
+            gcmd.respond_raw("// action:prompt_show")
+        else:
+            gcmd.respond_raw(self._t('no_response', response_data=response_data))
+
     def cmd_PRINT_ZCOLOR(self, gcmd):
         gcmd.respond_raw("// action:prompt_end")
         fname = gcmd.get('FILENAME', '')
         if fname == '':
-            raise gcmd.error("Не указано имя файла (FILENAME).")
+            raise gcmd.error(self._t('error_no_filename'))
+
         leveling = gcmd.get_int('LEVELING', 0)
-        if leveling != 0 and leveling != 1:
-            raise gcmd.error(f"Неверный LEVELING {leveling}. Допустимые: 0-1")
-        ztool0 = gcmd.get_int('TOOL0', 1)
-        if ztool0 < 1 or ztool0 > 4:
-            raise gcmd.error("Неверный TOOL0. Допустимые: 1-4")
-        ztool1 = gcmd.get_int('TOOL1', 2)
-        if ztool1 < 1 or ztool1 > 4:
-            raise gcmd.error("Неверный TOOL1. Допустимые: 1-4")
-        ztool2 = gcmd.get_int('TOOL2', 3)
-        if ztool2 < 1 or ztool2 > 4:
-            raise gcmd.error("Неверный TOOL2. Допустимые: 1-4")
-        ztool3 = gcmd.get_int('TOOL3', 4)
-        if ztool3 < 1 or ztool3 > 4:
-            raise gcmd.error("Неверный TOOL3. Допустимые: 1-4")
+        if leveling not in (0, 1):
+            raise gcmd.error(self._t('error_leveling', leveling))
+
+        tools = [
+            gcmd.get_int('TOOL0', 1),
+            gcmd.get_int('TOOL1', 2),
+            gcmd.get_int('TOOL2', 3),
+            gcmd.get_int('TOOL3', 4)
+        ]
+
+        for i, tool in enumerate(tools):
+            if tool < 1 or tool > 4:
+                raise gcmd.error(self._t('error_tool', tool_num=i+1))
 
         status_code, response_data = self.zsend_post_request("/detail")
         if status_code:
-#            gcmd.respond_raw(json.dumps(response_data, indent=2))
             result = self.parse_printer_response(response_data)
-            tools = [
-                {"toolId": 0, "ztool": ztool0},
-                {"toolId": 1, "ztool": ztool1},
-                {"toolId": 2, "ztool": ztool2},
-                {"toolId": 3, "ztool": ztool3},
-            ]
-
             material_mappings = []
-            for tool in tools:
-                tool_id = tool["toolId"]
-                ztool = tool["ztool"]
-                zindex = ztool - 1
 
-                if 0 <= zindex < len(result):
+            for tool_idx, tool_val in enumerate(tools):
+                if 0 <= (tool_val - 1) < len(result):
+                    slot_info = result[tool_val - 1]
                     material_mappings.append({
-                        "toolId": tool_id,
-                        "slotId": result[zindex]['ID'],
-                        "materialName": result[zindex]['Материал'],
-                        "toolMaterialColor": f"#{result[zindex]['HEX']}",
-                        "slotMaterialColor": f"#{result[zindex]['HEX']}"
+                        "toolId": tool_idx,
+                        "slotId": slot_info['ID'],
+                        "materialName": slot_info['Material'],
+                        "toolMaterialColor": f"#{slot_info['HEX']}",
+                        "slotMaterialColor": f"#{slot_info['HEX']}"
                     })
 
             data = {
@@ -225,182 +361,127 @@ class zmod_color:
                 "gcodeToolCnt": len(material_mappings),
                 "materialMappings": material_mappings
             }
-            status_code2, response_data2 = self.zsend_post_request("/printGcode", None, data)
-            gcmd.respond_raw(f"{data}")
-            if status_code2:
-                gcmd.respond_raw(f"{response_data2}")
+
+            status_code2, response_data2 = self.zsend_post_request("/printGcode", send_data=data)
+            if status_code2 == 200:
+                gcmd.respond_raw(f"Status: {response_data2.get('msg', 'OK')}")
             else:
-                gcmd.respond_raw(f"!! Ошибка печати файла\n{response_data2}")
-
+                gcmd.respond_raw(self._t('printing_error', error=response_data2))
         else:
-            gcmd.respond_raw(f"!! Нет ответа от принтера. Необходимо настроить принтер. На экране принтера: \"Настройки\" -> \"Иконка WiFi\" -> \"Сетевой режим\" -> включить ползунок \"Только локальные сети\"\n{response_data}")
+            gcmd.respond_raw(self._t('no_response', response_data=response_data))
 
-    cmd_SET_ZCOLOR_help = "Сопоставить цвета файла с катушками принтера"
-    def cmd_SET_ZCOLOR(self, gcmd):
+    def cmd_CHANGE_TOOL_ZCOLOR(self, gcmd):
         gcmd.respond_raw("// action:prompt_end")
         fname = gcmd.get('FILENAME', '')
         if fname == '':
-            raise gcmd.error("Не указано имя файла (FILENAME).")
+            raise gcmd.error(self._t('error_no_filename'))
+
         leveling = gcmd.get_int('LEVELING', 0)
-        if leveling != 0 and leveling != 1:
-            raise gcmd.error(f"Неверный LEVELING {leveling}. Допустимые: 0-1")
-        ztool0 = gcmd.get_int('TOOL0', 1)
-        if ztool0 < 1 or ztool0 > 4:
-            raise gcmd.error("Неверный TOOL0. Допустимые: 1-4")
-        ztool1 = gcmd.get_int('TOOL1', 2)
-        if ztool1 < 1 or ztool1 > 4:
-            raise gcmd.error("Неверный TOOL1. Допустимые: 1-4")
-        ztool2 = gcmd.get_int('TOOL2', 3)
-        if ztool2 < 1 or ztool2 > 4:
-            raise gcmd.error("Неверный TOOL2. Допустимые: 1-4")
-        ztool3 = gcmd.get_int('TOOL3', 4)
-        if ztool3 < 1 or ztool3 > 4:
-            raise gcmd.error("Неверный TOOL3. Допустимые: 1-4")
+        if leveling not in (0, 1):
+            raise gcmd.error(self._t('error_leveling', leveling=leveling))
+
+        tool = gcmd.get_int('TOOL', 0)
+        if tool < 1 or tool > 4:
+            raise gcmd.error(self._t('error_tool', tool_num=tool))
+
+        tools = [
+            gcmd.get_int('TOOL0', 1),
+            gcmd.get_int('TOOL1', 2),
+            gcmd.get_int('TOOL2', 3),
+            gcmd.get_int('TOOL3', 4)
+        ]
 
         status_code, response_data = self.zsend_post_request("/detail")
         if status_code:
-#            gcmd.respond_raw(json.dumps(response_data, indent=2))
-            gcmd.respond_raw("// action:prompt_begin Загруженный материал")
-            gcmd.respond_raw("// action:prompt_text Сопоставьте номер цвета из файла с катушкой в принетре")
-            gcmd.respond_raw(f"// action:prompt_text Файл для печати: {fname}")
-            if leveling == 0:
-                gcmd.respond_raw(f"// action:prompt_text Печать без построения карты стола")
-            else:
-                gcmd.respond_raw(f"// action:prompt_text Печать с построением карты стола")
-            gcmd.respond_raw("// action:prompt_button_group_start")
             result = self.parse_printer_response(response_data)
+            gcmd.respond_raw(f"// action:prompt_begin {self._t('prompt_material')}")
+            gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_map_color')}")
+            gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_file', fname=fname)}")
 
-            if 0 <= (ztool0 - 1) < len(result):
-                gcmd.respond_raw(f"// action:prompt_button В файле: 1 => в катушке: {result[ztool0-1]['ID']}: {result[ztool0-1]['Материал']}/{result[ztool0-1]['Цвет']}|CHANCGE_TOOL_ZCOLOR LEVELING={leveling} FILENAME={fname} TOOL=1 TOOL0={ztool0} TOOL1={ztool1} TOOL2={ztool2} TOOL3={ztool3} |primary")
-            if 0 <= (ztool1 - 1) < len(result):
-                gcmd.respond_raw(f"// action:prompt_button В файле: 2 => в катушке: {result[ztool1-1]['ID']}: {result[ztool1-1]['Материал']}/{result[ztool1-1]['Цвет']}|CHANCGE_TOOL_ZCOLOR LEVELING={leveling} FILENAME={fname} TOOL=2 TOOL0={ztool0} TOOL1={ztool1} TOOL2={ztool2} TOOL3={ztool3} |primary")
-            if 0 <= (ztool2 - 1) < len(result):
-                gcmd.respond_raw(f"// action:prompt_button В файле: 3 => в катушке: {result[ztool2-1]['ID']}: {result[ztool2-1]['Материал']}/{result[ztool2-1]['Цвет']}|CHANCGE_TOOL_ZCOLOR LEVELING={leveling} FILENAME={fname} TOOL=3 TOOL0={ztool0} TOOL1={ztool1} TOOL2={ztool2} TOOL3={ztool3} |primary")
-            if 0 <= (ztool3 - 1) < len(result):
-                gcmd.respond_raw(f"// action:prompt_button В файле: 4 => в катушке: {result[ztool3-1]['ID']}: {result[ztool3-1]['Материал']}/{result[ztool3-1]['Цвет']}|CHANCGE_TOOL_ZCOLOR LEVELING={leveling} FILENAME={fname} TOOL=4 TOOL0={ztool0} TOOL1={ztool1} TOOL2={ztool2} TOOL3={ztool3} |primary")
+            gcmd.respond_raw("// action:prompt_button_group_start")
+            for idx, slot in enumerate(result):
+                btn_text = (
+                    f"{self._t('file_tool')} {tool} → "
+                    f"{self._t('spool')} {slot['ID']}: "
+                    f"{slot['Material']}/{slot['Color']}"
+                )
+                params = (
+                    f"LEVELING={leveling} FILENAME={fname} "
+                    f"TOOL0={tools[0]} TOOL1={tools[1]} "
+                    f"TOOL2={tools[2]} TOOL3={tools[3]}"
+                )
+                gcmd.respond_raw(
+                    f"// action:prompt_button {btn_text}|"
+                    f"SET_ZCOLOR TOOL{tool-1}={idx+1} {params}|primary"
+                )
             gcmd.respond_raw("// action:prompt_button_group_end")
-            gcmd.respond_raw(f"// action:prompt_footer_button Отправить на печать|PRINT_ZCOLOR LEVELING={leveling} FILENAME={fname} TOOL0={ztool0} TOOL1={ztool1} TOOL2={ztool2} TOOL3={ztool3} |red")
-            gcmd.respond_raw("// action:prompt_footer_button Отмена|RESPOND TYPE=command MSG=action:prompt_end")
+
+            gcmd.respond_raw(
+                f"// action:prompt_footer_button {self._t('cancel')}|"
+                f"SET_ZCOLOR TOOL{tool-1}={tools[tool-1]} {params}"
+            )
             gcmd.respond_raw("// action:prompt_show")
         else:
-            gcmd.respond_raw(f"!! Нет ответа от принтера. Необходимо настроить принтер. На экране принтера: \"Настройки\" -> \"Иконка WiFi\" -> \"Сетевой режим\" -> включить ползунок \"Только локальные сети\"\n{response_data}")
+            gcmd.respond_raw(self._t('no_response', response_data=response_data))
 
-    cmd_CHANCGE_TOOL_ZCOLOR_help = "Сопоставить цвета в файле с конкретной катушкой"
-    def cmd_CHANCGE_TOOL_ZCOLOR(self, gcmd):
-        gcmd.respond_raw("// action:prompt_end")
-        fname = gcmd.get('FILENAME', '')
-        if fname == '':
-            raise gcmd.error("Не указано имя файла (FILENAME).")
-        leveling = gcmd.get_int('LEVELING', 0)
-        if leveling != 0 and leveling != 1:
-            raise gcmd.error(f"Неверный LEVELING {leveling}. Допустимые: 0-1")
-        ztool = gcmd.get_int('TOOL', 0)
-        if ztool < 1 or ztool > 4:
-            raise gcmd.error("Неверный TOOL. Допустимые: 1-4")
-        ztool0 = gcmd.get_int('TOOL0', 1)
-        if ztool0 < 1 or ztool0 > 4:
-            raise gcmd.error("Неверный TOOL0. Допустимые: 1-4")
-        ztool1 = gcmd.get_int('TOOL1', 2)
-        if ztool1 < 1 or ztool1 > 4:
-            raise gcmd.error("Неверный TOOL1. Допустимые: 1-4")
-        ztool2 = gcmd.get_int('TOOL2', 3)
-        if ztool2 < 1 or ztool2 > 4:
-            raise gcmd.error("Неверный TOOL2. Допустимые: 1-4")
-        ztool3 = gcmd.get_int('TOOL3', 4)
-        if ztool3 < 1 or ztool3 > 4:
-            raise gcmd.error("Неверный TOOL3. Допустимые: 1-4")
-        if ztool == 1:
-            tool_id = ztool0
-            str_add=f"TOOL1={ztool1} TOOL2={ztool2} TOOL3={ztool3} FILENAME={fname} LEVELING={leveling} "
-        elif ztool == 2:
-            tool_id = ztool1
-            str_add=f"TOOL0={ztool0} TOOL2={ztool2} TOOL3={ztool3} FILENAME={fname} LEVELING={leveling} "
-        elif ztool == 3:
-            tool_id = ztool2
-            str_add=f"TOOL0={ztool0} TOOL1={ztool1} TOOL3={ztool3} FILENAME={fname} LEVELING={leveling} "
-        else:
-            tool_id = ztool3
-            str_add=f"TOOL0={ztool0} TOOL1={ztool1} TOOL2={ztool2} FILENAME={fname} LEVELING={leveling} "
-
-        status_code, response_data = self.zsend_post_request("/detail")
-        if status_code:
-#            gcmd.respond_raw(json.dumps(response_data, indent=2))
-            gcmd.respond_raw("// action:prompt_begin Загруженный материал")
-            gcmd.respond_raw("// action:prompt_text Сопоставьте номер цвета из файла с катушкой в принетре")
-            result = self.parse_printer_response(response_data)
-
-            gcmd.respond_raw(f"// action:prompt_text В файле: {ztool} => в катушке: {result[tool_id-1]['ID']}: {result[tool_id-1]['Материал']}/{result[tool_id-1]['Цвет']}")
-            gcmd.respond_raw(f"// action:prompt_text Файл для печати: {fname}")
-            gcmd.respond_raw("// action:prompt_button_group_start")
-
-            if 0 < len(result):
-                gcmd.respond_raw(f"// action:prompt_button В файле {ztool} => в катушке: {result[0]['ID']}: {result[0]['Материал']}/{result[0]['Цвет']}|SET_ZCOLOR TOOL{ztool-1}=1 {str_add} |primary")
-            if 1 < len(result):
-                gcmd.respond_raw(f"// action:prompt_button В файле {ztool} => в катушке: {result[1]['ID']}: {result[1]['Материал']}/{result[1]['Цвет']}|SET_ZCOLOR TOOL{ztool-1}=2 {str_add} |primary")
-            if 2 < len(result):
-                gcmd.respond_raw(f"// action:prompt_button В файле {ztool} => в катушке: {result[2]['ID']}: {result[2]['Материал']}/{result[2]['Цвет']}|SET_ZCOLOR TOOL{ztool-1}=3 {str_add} |primary")
-            if 3 < len(result):
-                gcmd.respond_raw(f"// action:prompt_button В файле {ztool} => в катушке: {result[3]['ID']}: {result[3]['Материал']}/{result[3]['Цвет']}|SET_ZCOLOR TOOL{ztool-1}=4 {str_add} |primary")
-
-            gcmd.respond_raw("// action:prompt_button_group_end")
-            gcmd.respond_raw(f"// action:prompt_footer_button Отмена|SET_ZCOLOR TOOL{ztool-1}={tool_id} {str_add}")
-            gcmd.respond_raw("// action:prompt_show")
-        else:
-            gcmd.respond_raw(f"!! Нет ответа от принтера. Необходимо настроить принтер. На экране принтера: \"Настройки\" -> \"Иконка WiFi\" -> \"Сетевой режим\" -> включить ползунок \"Только локальные сети\"\n{response_data}")
-
-    cmd_RUN_ZCOLOR_help = "Настроить катушку"
     def cmd_RUN_ZCOLOR(self, gcmd):
         gcmd.respond_raw("// action:prompt_end")
-
         zslot = gcmd.get_int('SLOT', 0)
         if zslot < 1 or zslot > 4:
-            raise gcmd.error("Неверный SLOT. Допустимые: 1-4")
+            raise gcmd.error(self._t('error_slot'))
+
         zhex = gcmd.get('HEX', '161616').upper()
-        color_name = COLOR_MAPPING.get(zhex.lower(), zhex)
         ztype = gcmd.get('TYPE', '').upper()
-        if zhex == '':
-            zhex='161616'
-        if ztype == '?':
-            ztype='PLA'
+        valid_types = ['PLA', 'ABS', 'PETG', 'TPU', 'PLA-CF', 'PETG-CF', 'SILK', '?']
 
-        valid_type = ['PLA', 'ABS', 'PETG', 'TPU', 'PLA-CF', 'PETG-CF', 'SILK', '?']
-        if ztype not in valid_type:
-            raise gcmd.error(f"Неверный TYPE {ztype}. Допустимые: %s" % ', '.join(valid_type))
+        color_name = COLOR_MAPPING.get(zhex.lower(), {}).get(self.language, zhex)
 
-        gcmd.respond_raw("// action:prompt_begin Что сделать?")
-        gcmd.respond_raw(f"// action:prompt_text Загружена катушка: {zslot}: {ztype}/{color_name}")
+        if ztype not in valid_types:
+            raise gcmd.error(self._t('error_type', type=ztype, valid=', '.join(valid_types[:-1])))
+
+        gcmd.respond_raw(f"// action:prompt_begin {self._t('select_action')}")
+        gcmd.respond_raw(f"// action:prompt_text {self._t('spool_info', slot=zslot, type=ztype, color=color_name)}")
 
         gcmd.respond_raw("// action:prompt_button_group_start")
-        gcmd.respond_raw(f"// action:prompt_button Сменить цвет|CHANGE_ZCOLOR SLOT={zslot} TYPE={ztype}|primary")
-        gcmd.respond_raw(f"// action:prompt_button Сменить тип пластика|CHANGE_ZCOLOR SLOT={zslot} HEX={zhex}|primary")
-        gcmd.respond_raw(f"// action:prompt_button Загрузить|IN_ZCOLOR SLOT={zslot} NAPR=0|primary")
-        gcmd.respond_raw(f"// action:prompt_button Выгрузить|IN_ZCOLOR SLOT={zslot} NAPR=1|primary")
+        gcmd.respond_raw(
+            f"// action:prompt_button {self._t('change_color')}|"
+            f"CHANGE_ZCOLOR SLOT={zslot} TYPE={ztype}|primary"
+        )
+        gcmd.respond_raw(
+            f"// action:prompt_button {self._t('change_type')}|"
+            f"CHANGE_ZCOLOR SLOT={zslot} HEX={zhex}|primary"
+        )
+        gcmd.respond_raw(
+            f"// action:prompt_button {self._t('load')}|"
+            f"IN_ZCOLOR SLOT={zslot} NAPR=0|primary"
+        )
+        gcmd.respond_raw(
+            f"// action:prompt_button {self._t('unload')}|"
+            f"IN_ZCOLOR SLOT={zslot} NAPR=1|primary"
+        )
         gcmd.respond_raw("// action:prompt_button_group_end")
 
-        gcmd.respond_raw("// action:prompt_footer_button Отмена|RESPOND TYPE=command MSG=action:prompt_end")
+        gcmd.respond_raw(f"// action:prompt_footer_button {self._t('cancel')}|RESPOND TYPE=command MSG=action:prompt_end")
         gcmd.respond_raw("// action:prompt_show")
 
-    cmd_CHANGE_ZCOLOR_help = "Сменить цвет на катушке"
     def cmd_CHANGE_ZCOLOR(self, gcmd):
         gcmd.respond_raw("// action:prompt_end")
-
         zslot = gcmd.get_int('SLOT', 0)
         if zslot < 1 or zslot > 4:
-            raise gcmd.error("Неверный SLOT. Допустимые: 1-4")
+            raise gcmd.error(self._t('error_slot'))
+
         zhex = gcmd.get('HEX', '').upper()
         ztype = gcmd.get('TYPE', '').upper()
-        valid_type = ['PLA', 'ABS', 'PETG', 'TPU', 'PLA-CF', 'PETG-CF', 'SILK', '?']
+        valid_types = ['PLA', 'ABS', 'PETG', 'TPU', 'PLA-CF', 'PETG-CF', 'SILK', '?']
 
-        if zhex == '' and ztype == '':
-            raise gcmd.error("Не указан TYPE и HEX")
+        if not zhex and not ztype:
+            raise gcmd.error(self._t('error_color_or_type'))
 
-        if zhex != '' and ztype!= '':
+        if zhex and ztype:
             if ztype == '?':
-                ztype='PLA'
-
-            valid_type = ['PLA', 'ABS', 'PETG', 'TPU', 'PLA-CF', 'PETG-CF', 'SILK', '?']
-            if ztype not in valid_type:
-                raise gcmd.error(f"Неверный TYPE {ztype}. Допустимые: %s" % ', '.join(valid_type))
+                ztype = 'PLA'
+            if ztype not in valid_types:
+                raise gcmd.error(self._t('error_type', type=ztype, valid=', '.join(valid_types[:-1])))
 
             payload = {
                 "cmd": "msConfig_cmd",
@@ -410,53 +491,58 @@ class zmod_color:
                     "rgb": f"#{zhex}"
                 }
             }
-
             status_code, response_data = self.zsend_post_request("/control", payload=payload)
-            if status_code:
+            if status_code == 200:
                 self.cmd_GET_ZCOLOR(gcmd)
-                gcmd.respond_raw(f"{response_data}")
+                gcmd.respond_raw(self._t('config_success'))
             else:
-                gcmd.respond_raw(f"!! Ошибка смены цвета или типа пластика\n{response_data}")
+                gcmd.respond_raw(self._t('config_error', error=response_data))
+            return
 
-        if zhex == '':
+        if ztype:
             if ztype == '?':
-                ztype='PLA'
+                ztype = 'PLA'
+            if ztype not in valid_types:
+                raise gcmd.error(self._t('error_type', type=ztype, valid=', '.join(valid_types[:-1])))
 
-            if ztype not in valid_type:
-                raise gcmd.error(f"Неверный TYPE {ztype}. Допустимые: %s" % ', '.join(valid_type))
-
-            gcmd.respond_raw("// action:prompt_begin Укажите цвет?")
-            gcmd.respond_raw(f"// action:prompt_text Загружена катушка: {zslot}: {ztype}")
-
+            gcmd.respond_raw(f"// action:prompt_begin {self._t('select_color')}")
+            gcmd.respond_raw(f"// action:prompt_text {self._t('spool_info', slot=zslot, type=ztype, color='')}")
             gcmd.respond_raw("// action:prompt_button_group_start")
-            for index,(hex_code, color_name) in enumerate(COLOR_MAPPING.items(), start=1):
-                gcmd.respond_raw(f"// action:prompt_button {color_name}|CHANGE_ZCOLOR SLOT={zslot} TYPE={ztype} HEX={hex_code}|primary")
+            for hex_code, color_data in COLOR_MAPPING.items():
+                color_name = color_data[self.language]
+                gcmd.respond_raw(
+                    f"// action:prompt_button {color_name}|"
+                    f"CHANGE_ZCOLOR SLOT={zslot} TYPE={ztype} HEX={hex_code}|primary"
+                )
             gcmd.respond_raw("// action:prompt_button_group_end")
-
-            gcmd.respond_raw("// action:prompt_footer_button Отмена|RESPOND TYPE=command MSG=action:prompt_end")
+            gcmd.respond_raw(f"// action:prompt_footer_button {self._t('cancel')}|RESPOND TYPE=command MSG=action:prompt_end")
             gcmd.respond_raw("// action:prompt_show")
-        if ztype == '':
-            color_name = COLOR_MAPPING.get(zhex.lower(), zhex)
-            gcmd.respond_raw("// action:prompt_begin Укажите тип пластика?")
-            gcmd.respond_raw(f"// action:prompt_text Загружена катушка: {zslot}: {color_name}")
 
+        if zhex:
+            color_name = COLOR_MAPPING.get(zhex.lower(), {}).get(self.language, zhex)
+            gcmd.respond_raw(f"// action:prompt_begin {self._t('select_type')}")
+            gcmd.respond_raw(f"// action:prompt_text {self._t('spool_info', slot=zslot, type='', color=color_name)}")
             gcmd.respond_raw("// action:prompt_button_group_start")
-            for item in valid_type[:-1]:
-                gcmd.respond_raw(f"// action:prompt_button {item}|CHANGE_ZCOLOR SLOT={zslot} TYPE={item} HEX={zhex}|primary")
+            for material in valid_types[:-1]:  # Исключаем '?'
+                gcmd.respond_raw(
+                    f"// action:prompt_button {material}|"
+                    f"CHANGE_ZCOLOR SLOT={zslot} TYPE={material} HEX={zhex}|primary"
+                )
             gcmd.respond_raw("// action:prompt_button_group_end")
-
-            gcmd.respond_raw("// action:prompt_footer_button Отмена|RESPOND TYPE=command MSG=action:prompt_end")
+            gcmd.respond_raw(f"// action:prompt_footer_button {self._t('cancel')}|RESPOND TYPE=command MSG=action:prompt_end")
             gcmd.respond_raw("// action:prompt_show")
-    cmd_IN_ZCOLOR_help = "Сменить цвет на катушке"
+
     def cmd_IN_ZCOLOR(self, gcmd):
         gcmd.respond_raw("// action:prompt_end")
-
         zslot = gcmd.get_int('SLOT', 0)
         if zslot < 1 or zslot > 4:
-            raise gcmd.error("Неверный SLOT. Допустимые: 1-4")
+            raise gcmd.error(self._t('error_slot'))
+
         napr = gcmd.get_int('NAPR', 0)
-        if napr != 0 and napr != 1:
-            raise gcmd.error("Неверное направление (NAPR) Допустимое: 0-1")
+        if napr not in (0, 1):
+            raise gcmd.error(self._t('error_napr'))
+
+        action = "load" if napr == 0 else "unload"
         payload = {
             "cmd": "ms_cmd",
             "args": {
@@ -464,12 +550,11 @@ class zmod_color:
                 "action": napr
             }
         }
-
         status_code, response_data = self.zsend_post_request("/control", payload=payload)
-        if status_code:
-            gcmd.respond_raw(f"{response_data}")
+        if status_code == 200:
+            gcmd.respond_raw(self._t(f'{action}_success'))
         else:
-            gcmd.respond_raw(f"!! Ошибка загрузки/выгрузки\n{response_data}")
+            gcmd.respond_raw(self._t(f'{action}_error', error=response_data))
 
 def load_config(config):
     return zmod_color(config)

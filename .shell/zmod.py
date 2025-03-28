@@ -1,11 +1,9 @@
 class zmod:
     def __init__(self, config):
         self.printer = config.get_printer()
+        self.language = config.get('language', 'ru')
         gcode = self.printer.lookup_object('gcode')
         gcode.register_command('SAVE_SHAPER', self.cmd_SAVE_SHAPER)
-        gcode.register_command('SET_ZMOD_LANG_EN', self.cmd_SET_ZMOD_LANG_EN)
-        gcode.register_command('SET_ZMOD_LANG_RU', self.cmd_SET_ZMOD_LANG_RU)
-        self.language = 'ru'
 
     def get_lang(self):
         return self.language
@@ -49,12 +47,6 @@ class zmod:
                 "Параметры для оси %s сохранены. Для применения выполните SAVE_CONFIG" %
                 shaper_axis.upper()
             )
-
-    def cmd_SET_ZMOD_LANG_EN(self, gcmd):
-        self.language = 'en'
-
-    def cmd_SET_ZMOD_LANG_RU(self, gcmd):
-        self.language = 'ru'
 
 def load_config(config):
     return zmod(config)
