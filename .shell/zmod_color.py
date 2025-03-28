@@ -102,7 +102,7 @@ TRANSLATIONS = {
         'spool': "in spool",
         'unload_error': "Unloading error: {error}",
         'unload_success': "Unloading started",
-        'unload': "Unload",
+        'unload': "Unload"
     }
 }
 
