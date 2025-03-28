@@ -154,14 +154,8 @@ fix_config()
     [ -f ${MOD_CONF}/mod_data/user.cfg ] || echo "" >${MOD_CONF}/mod_data/user.cfg
     [ -f ${MOD_CONF}/mod_data/variables.cfg ] || echo "[Variables]" >${MOD_CONF}/mod_data/variables.cfg
 
-    if [ grep -q "language: en" ${MOD_CONF}/mod_data/lang.cfg ]; then
-        LANG="ru"
-    else
-        LANG="en"
-    fi
-
     echo "[zmod]
-    language: ${LANG}" >${MOD_CONF}/mod_data/lang.cfg
+    language: ${ZLANG}" >${MOD_CONF}/mod_data/lang.cfg
 
     if ! [ -f ${MOD_CONF}/mod_data/user.moonraker.conf ]; then
         echo "#Enter user config here

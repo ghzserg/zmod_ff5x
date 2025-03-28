@@ -2,14 +2,14 @@
 
 source /opt/config/mod/.shell/0.sh
 
-if [ grep -q "language: en" ${MOD_CONF}/mod_data/lang.cfg ]; then
-    LANG="ru"
+if [ "${ZLANG}" == "en" ]; then
+    ZLANG="ru"
 else
-    LANG="en"
+    ZLANG="en"
 fi
 
 echo "[zmod]
-language: ${LANG}" >${MOD_CONF}/mod_data/lang.cfg
+language: ${ZLANG}" >${MOD_CONF}/mod_data/lang.cfg
 
 sync
 sleep 5

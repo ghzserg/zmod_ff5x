@@ -20,7 +20,8 @@ CLIENT=${CLIENT}" > /opt/config/mod_data/web.conf
 source /opt/config/mod_data/web.conf
 
 WEBROOT=/root/$CLIENT
-cp -f /opt/config/mod/.shell/root/config.json /root/mainsail/
+
+sed "s/    \"defaultLocale\": \"ru\",/    \"defaultLocale\": \"${ZLANG}\",/" /opt/config/mod/.shell/root/config.json >/root/mainsail/config.json
 
 start() {
     # start busybox httpd
