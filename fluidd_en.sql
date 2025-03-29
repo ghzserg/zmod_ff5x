@@ -843,6 +843,14 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "name": "color",
             "order": 14,
             "visible": true
+        },
+        {
+            "alias": "",
+            "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
+            "color": "#008800",
+            "disabledWhilePrinting": true,
+            "name": "lang",
+            "visible": true
         }
     ]
 }');
