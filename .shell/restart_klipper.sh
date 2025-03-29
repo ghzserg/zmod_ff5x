@@ -1,7 +1,9 @@
 #!/bin/sh
 
+source /opt/config/mod/.shell/0.sh
+
 if [ -f /ZMOD ]; then
-    echo "Рестарт KLIPPER не поддерживается"
+    [ ${ZLANG} == 'en' ] && echo "Restart klipper no working" || echo "Рестарт KLIPPER не поддерживается"
     exit
 fi
 

@@ -14,7 +14,7 @@ if ! [ -f /opt/config/mod_data/ssh.conf ]; then
     /opt/config/mod/.shell/zssh.sh STOP 127.0.0.1 22 user 8080 7125 NONE NOTRESTART
 fi
 
-echo "Версия zmod: $(cat /opt/config/mod/version.txt) $(cat /opt/config/mod_data/date.txt)"
+[ ${ZLANG} == 'en' ] && echo "Zmod version: $(cat /opt/config/mod/version.txt) $(cat /opt/config/mod_data/date.txt)" || echo "Версия zmod: $(cat /opt/config/mod/version.txt) $(cat /opt/config/mod_data/date.txt)"
 
 REMOTE_RUN="NONE"
 source /opt/config/mod_data/ssh.conf

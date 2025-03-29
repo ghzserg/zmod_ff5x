@@ -18,17 +18,17 @@ fi
 restore_file()
 {
     fname="$1"
-    /bin/echo -n "Восстанавливаю файл $fname: "
+    [ ${ZLANG} == 'en' ] && /bin/echo -n "Recovering file" || /bin/echo -n "Восстанавливаю файл $fname: "
     if ${CURL} --create-dirs -s -k -H 'Accept: application/vnd.github.v3.raw' -o "$fname" -L "https://api.github.com/repos/ghzserg/zmod/contents/${STOCK}${fname}"; then
         chmod 777 "$fname"
-        echo "Успешно"
+        [ ${ZLANG} == 'en' ] && echo "Ok" || echo "Успешно"
     else
-        echo "Ошибка восстановления"
+        [ ${ZLANG} == 'en' ] && echo "Recovery error" || echo "Ошибка восстановления"
     fi
 }
 
 if ! [ -f /ZMOD ]; then
-    echo "Началась проверка родной системы. Она может занять много времени..."
+    [ ${ZLANG} == 'en' ] && echo "Native system check started. It may take a long time" || echo "Началась проверка родной системы. Она может занять много времени..."
     find ${PROGRAM_DIR} -name md5sum.list | while read a;
     do
         b=$(pwd)
@@ -45,7 +45,7 @@ if ! [ -f /ZMOD ]; then
         cd "$b"
     done
 else
-    echo "Началась проверка ZMOD. Она может занять много времени..."
+    [ ${ZLANG} == 'en' ] && echo "ZMOD system check started. It may take a long time" || echo "Началась проверка ZMOD. Она может занять много времени..."
 fi
 
 echo "/"
@@ -63,12 +63,12 @@ fi
 cnt=$(cat /opt/config/mod_data/bad.list|grep ": FAILED$"| wc -l)
 if [ "$cnt" -ne 0 ]; then
     if [ -f /ZMOD ]; then
-        echo "Найдены повреждения ZMOD. Переустановите мод с флешки"
+        [ ${ZLANG} == 'en' ] && echo "Damage to ZMOD found. Reinstall the mod from a flash drive. ZFLASH" || echo "Найдены повреждения ZMOD. Переустановите мод с флешки. ZFLASH"
     else
         if [ "$1" == "restore" ]; then
             cat /opt/config/mod_data/bad.list|grep ": FAILED$"|sed 's|: FAILED||' | sed 's|^./|/|' | while read a; do restore_file "$a"; done
         else
-            echo "Найдены повреждения родной прошивки. Можно попробовать восстановить: CHECK_SYSTEM RESTORE=1"
+            [ ${ZLANG} == 'en' ] && echo "Found damage to the original firmware. You can try to restore: CHECK_SYSTEM RESTORE=1" || echo "Найдены повреждения родной прошивки. Можно попробовать восстановить: CHECK_SYSTEM RESTORE=1"
         fi
     fi
 fi
@@ -84,8 +84,8 @@ else
 fi
 
 if ! [ -f /ZMOD ]; then
-    echo "Оригиналы файлов можно найти по ссылке https://github.com/ghzserg/zmod/tree/main/${STOCK}"
-    echo "Проверка родной системы окончена"
+    [ ${ZLANG} == 'en' ] && echo "The original files can be found at https://github.com/ghzserg/zmod/tree/main/${STOCK}" || echo "Оригиналы файлов можно найти по ссылке https://github.com/ghzserg/zmod/tree/main/${STOCK}"
+    [ ${ZLANG} == 'en' ] && echo "Native system check completed" || echo "Проверка родной системы окончена"
     [ ${FF5X} -eq 0 ] && [ "$1" != "init" ] && umount ${UMOUNT_MOD}
     unset LD_PRELOAD
     chroot ${MOD} /opt/config/mod/.shell/zcheckmd5.sh
@@ -95,5 +95,5 @@ else
     git clean -f
     git restore .
     git status --porcelain
-    echo "Самопроверка ZMOD окончена"
+    [ ${ZLANG} == 'en' ] && echo "ZMOD self-test completed" || echo "Самопроверка ZMOD окончена"
 fi

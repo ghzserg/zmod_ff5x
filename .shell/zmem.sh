@@ -14,8 +14,10 @@ if [ ${FF5X} -eq 1 ]; then
     export LD_LIBRARY_PATH=/usr/prog/nim/lib:$LD_LIBRARY_PATH
     export LD_LIBRARY_PATH=/usr/prog/Python-3.8.2/lib:$LD_LIBRARY_PATH
 fi
+
 $PYTHON /opt/config/mod/.shell/ps_mem.py -S >/tmp/list.txt
-awk '{
+
+[ ${ZLANG} == 'en' ] cat /tmp/list.txt || awk '{
     gsub(/python3.7/, "Klipper");
     gsub(/python3.12/, "Moonraker");
     gsub(/firmwareExe/, "Экран");
@@ -31,4 +33,5 @@ awk '{
     print;
 }' /tmp/list.txt
 rm -f /tmp/list.txt
-free -m| sed 's/             total       used       free     shared    buffers     cached/Память       Всего     Занято   Свободно      Общая     Буферы        Кэш/'
+
+[ ${ZLANG} == 'en' ] free -m || free -m | sed 's/             total       used       free     shared    buffers     cached/Память       Всего     Занято   Свободно      Общая     Буферы        Кэш/'

@@ -1,7 +1,9 @@
 #!/bin/sh
 
+source /opt/config/mod/.shell/0.sh
+
 if [ -f /ZMOD ]; then
-    echo "Закрытие диалогов не поддерживается. Используйте быстрое закрытие диалогов"
+    [ ${ZLANG} == 'en' ] && echo "Close dialogs not working. Use FAST_CLOSE_DIALOGS" || echo "Закрытие диалогов не поддерживается. Используйте FAST_CLOSE_DIALOGS"
     exit
 fi
 
