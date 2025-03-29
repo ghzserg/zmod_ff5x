@@ -7,7 +7,7 @@
 import math, logging
 from . import bus
 
-# Zcontrol 1.8
+# Zcontrol 1.9
 
 ######################################################################
 # SensorBase
@@ -49,16 +49,27 @@ class SensorBase:
                               "thermocouple_result", oid)
         mcu.register_config_callback(self._build_config)
 
+    def get_lang(self):
+        if self.zmod is None:
+            self.language = 'ru'
+            self.zmod = self.printer.lookup_object('zmod', None)
+            if self.zmod is not None:
+                self.language = self.zmod.get_lang()
+
     def cmd_ZCONTROL_ON(self, gcmd):
+        self.getlang()
         self.zcontrol = 1
 
     def cmd_ZCONTROL_PAUSE(self, gcmd):
+        self.getlang()
         self.zcommand = 1
 
     def cmd_ZCONTROL_ABORT(self, gcmd):
+        self.getlang()
         self.zcommand = 0
 
     def cmd_ZCONTROL_STATUS(self, gcmd):
+        self.getlang()
         if self.max_temp == 2048:
             if self.language == 'en':
                 msg = "Weight control is not configured. // To configure: NOZZLE_CONTROL WEIGHT=1500"
@@ -91,6 +102,7 @@ class SensorBase:
             gcmd.respond_info(action_msg)
 
     def cmd_ZCONTROL_OFF(self, gcmd):
+        self.getlang()
         self.zcontrol = 0
 
     def setup_minmax(self, min_temp, max_temp):
