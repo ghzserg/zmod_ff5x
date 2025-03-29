@@ -12,7 +12,7 @@ clear_klipper()
     sync
     find ${KLIPPER_DIR}/ -name *.pyc -exec rm "{}" \; 2>/dev/null
     sync
-    echo "Klipper был изменен. Сейчас будет перезагрузка"
+    [ ${ZLANG} == 'en' ] && echo "Klipper changed. There will be a reboot now" || echo "Klipper был изменен. Сейчас будет перезагрузка"
     sleep 5
     reboot
 }

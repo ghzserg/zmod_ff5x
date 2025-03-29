@@ -58,7 +58,7 @@ MOON_PORT=$6
 REMOTE_RUN='$7'
 " >/opt/config/mod_data/ssh.conf
 
-echo "Поместите текст строчкой ниже в ~/.ssh/authorized_keys для пользователя $4 на ssh сервере $2"
+[ ${ZLANG} == 'en' ] && echo "Place the text line below in ~/.ssh/authorized_keys for user $4 on ssh server $2" || echo "Поместите текст строчкой ниже в ~/.ssh/authorized_keys для пользователя $4 на ssh сервере $2"
 echo "${SSH_PUB}"
 
 else

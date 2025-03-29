@@ -1,5 +1,7 @@
 #!/bin/sh
 
+source /opt/config/mod/.shell/0.sh
+
 VER_FF=$(cat /opt/config/mod/version.txt 2>/dev/null| cut  -d "." -f 1,2)
 VER_FF_FULL=$(cat /opt/config/mod/version.txt 2>/dev/null| cut  -d "." -f 1,2,3)
 
@@ -17,9 +19,16 @@ else if [ -f "/usr/data/.mod/.zmod/root/printer_data/version.txt" ]; then
 fi
 fi
 
-echo "Установлено с флешки: ${VER_MOD_FULL}. Обновление с Fluidd/Mainsaill: ${VER_FF_FULL}"
+[ ${ZLANG} == 'en' ] && echo "Installed from USB: ${VER_MOD_FULL}. Update from Fluidd/Mainsail: ${VER_FF_FULL}" || echo "Установлено с флешки: ${VER_MOD_FULL}. Обновление с Fluidd/Mainsaill: ${VER_FF_FULL}"
+
 if [ "${VER_FF}" != "${VER_MOD}" ] || [ "${VER_MOD_FULL}" == "1.4.0" ] || [ "${VER_MOD_FULL}" == "1.4.1" ] || [ "${VER_MOD_FULL}" == "1.4.2" ]; then
-    echo "RESPOND TYPE=error MSG=\"Обновите ZMOD с флешки, последняя версия ${VER_FF_FULL}, текущая версия ${VER_MOD_FULL}\"" >/tmp/printer
-    echo "Можно использовать макрос ZFLASH, для обновления с флешки по сети"
-    echo 'https://github.com/ghzserg/zmod/wiki/Setup'
+    if [ ${ZLANG} == 'en' ]; then
+        echo "RESPOND TYPE=error MSG=\"Update ZMOD from USB, latest version ${VER_FF_FULL}, current version ${VER_MOD_FULL}\"" >/tmp/printer
+        echo "You can use ZFLASH macro to update from USB over network"
+        echo 'https://github.com/ghzserg/zmod/wiki/Setup_en'
+    else
+        echo "RESPOND TYPE=error MSG=\"Обновите ZMOD с флешки, последняя версия ${VER_FF_FULL}, текущая версия ${VER_MOD_FULL}\"" >/tmp/printer
+        echo "Можно использовать макрос ZFLASH, для обновления с флешки по сети"
+        echo 'https://github.com/ghzserg/zmod/wiki/Setup'
+    fi
 fi

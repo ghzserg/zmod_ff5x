@@ -5,7 +5,7 @@ source /opt/config/mod/.shell/0.sh
 if [ $# -ne 1 ]; then echo "Используйте $0 FILE"; exit 1; fi
 
 if ! [ -f "${DATA_GCODES}/$1" ]; then
-    echo "RESPOND TYPE=error MSG=\"Файл $1 не найден.\"" >/tmp/printer
+    [ ${ZLANG} == 'en' ] && echo "RESPOND TYPE=error MSG=\"File $1 not found.\"" >/tmp/printer || echo "RESPOND TYPE=error MSG=\"Файл $1 не найден.\"" >/tmp/printer 
     echo "CANCEL_PRINT" >/tmp/printer
     exit 1
 fi

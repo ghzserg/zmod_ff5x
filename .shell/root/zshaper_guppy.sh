@@ -1,15 +1,17 @@
 #!/bin/sh
 
+source /opt/config/mod/.shell/0.sh
+
 SCV="5.0"
 if grep -q "fix_scv = 1" /opt/config/mod_data/variables.cfg; then
     if grep -q '^square_corner_velocity' /opt/config/mod_data/user.cfg; then
         SCV=$(grep '^square_corner_velocity' /opt/config/mod_data/user.cfg| cut -d ":" -f 2 | awk '{print $1}')
-        echo "Используется SCV (square_corner_velocity) = $SCV из mod_data/user.cfg"
+        [ ${ZLANG} == 'en' ] && echo "Using SCV (square_corner_velocity) = $SCV from mod_data/user.cfg" || echo "Используется SCV (square_corner_velocity) = $SCV из mod_data/user.cfg"
     else if grep -q '^square_corner_velocity' /opt/config/printer.base.cfg; then
         SCV=$(grep '^square_corner_velocity' /opt/config/printer.base.cfg| cut -d ":" -f 2 | awk '{print $1}')
-        echo "Используется SCV (square_corner_velocity) = $SCV из printer.base.cfg"
+        [ ${ZLANG} == 'en' ] && echo "Using SCV (square_corner_velocity) = $SCV from printer.base.cfg" || echo "Используется SCV (square_corner_velocity) = $SCV из printer.base.cfg"
     else
-        echo "Используется стандартный SCV (square_corner_velocity) = $SCV"
+        [ ${ZLANG} == 'en' ] && echo "Using default SCV (square_corner_velocity) = $SCV" || echo "Используется стандартный SCV (square_corner_velocity) = $SCV"
     fi
     fi
 fi
