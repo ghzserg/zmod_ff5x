@@ -67,9 +67,9 @@ fi
 prepare_chroot
 
 if grep -q display_off.cfg /opt/config/printer.cfg && grep -q "save_restore = 1" /opt/config/mod_data/variables.cfg; then
-    /opt/config/mod/.shell/root/console_log --save ${ZLANG}
+    /opt/config/mod/.shell/root/console_log --save --${ZLANG}
 else
-    /opt/config/mod/.shell/root/console_log --not-save ${ZLANG}
+    /opt/config/mod/.shell/root/console_log --not-save --${ZLANG}
 fi
 
 rm -f /root/guppyscreen/guppyconfig.json
