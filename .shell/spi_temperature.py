@@ -7,7 +7,7 @@
 import math, logging
 from . import bus
 
-# Zcontrol 1.10
+# Zcontrol 1.11
 
 ######################################################################
 # SensorBase
@@ -134,9 +134,9 @@ class SensorBase:
         # zmod
         if temp > self.max_temp and self.zcontrol == 1:
             if self.zcommand == 1:
-                msg = ("!! Nozzle hit bed or part detachment. PAUSE"
+                msg = (f"!! Nozzle hit bed or part detachment. Weight {temp}. PAUSE"
                        if self.language == 'en'
-                       else "!! Удар сопла о стол или отрыв детали. PAUSE")
+                       else f"!! Удар сопла о стол или отрыв детали. Вес {temp}. PAUSE")
                 self.gcode.respond_raw(msg)
 
                 reactor = self.printer.get_reactor()
@@ -150,9 +150,9 @@ class SensorBase:
                 reactor.register_callback(async_pause)
             else:
                 shutdown_msg = (
-                    "Nozzle hit bed or part detachment. FIRMWARE_RESTART"
+                    f"Nozzle hit bed or part detachment. Weight {temp}. FIRMWARE_RESTART"
                     if self.language == 'en'
-                    else "Удар сопла о стол или отрыв детали. FIRMWARE_RESTART"
+                    else f"Удар сопла о стол или отрыв детали. Вес {temp}. FIRMWARE_RESTART"
                 )
                 self.printer.invoke_async_shutdown(shutdown_msg)
             return
