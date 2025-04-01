@@ -217,9 +217,14 @@ cors_domains:
         echo "#!/bin/sh
 unset LD_PRELOAD
 
-#${CURL} -k https://mail.ru
-" >${MOD_CONF}/mod_data/power_off.sh
+#${CURL} -k https://mail.ru" >${MOD_CONF}/mod_data/power_off.sh
     chmod +x ${MOD_CONF}/mod_data/power_off.sh
+    fi
+
+    if ! [ -f ${MOD_CONF}/mod_data/power_on.sh ]; then
+        echo "#!/bin/sh
+#Enter Poweron code here" >${MOD_CONF}/mod_data/power_on.sh
+    chmod +x ${MOD_CONF}/mod_data/power_on.sh
     fi
 
     # Rem стукач

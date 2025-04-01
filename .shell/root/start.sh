@@ -152,4 +152,6 @@ for i in `seq 0 50`; do
     sleep 5
 done
 date
+echo "Start User power_on script"
+[ -f ${MOD_CONF}/mod_data/power_on.sh ] && ${MOD_CONF}/mod_data/power_on.sh
 echo "Start END"
