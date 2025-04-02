@@ -1,0 +1,71 @@
+{
+  "config_path": "/root/guppyscreen/guppyconfig.json",
+  "default_printer": "FF5MPro",
+  "display_brightness": 90,
+  "display_rotate": 0,
+  "display_sleep_sec": -1,
+  "guppy_init_script": "/etc/init.d/S80guppyscreen",
+  "log_path": "/opt/config/mod_data/log/guppyscreen.log",
+  "printers": {
+    "FF5MPro": {
+      "default_macros": {
+        "cooldown": "SET_HEATER_TEMPERATURE HEATER=extruder TARGET=0\nSET_HEATER_TEMPERATURE HEATER=heater_bed TARGET=0",
+        "load_filament": "LOAD_FILAMENT",
+        "unload_filament": "UNLOAD_FILAMENT"
+      },
+      "fans": [
+        {
+          "display_name": "Internal",
+          "id": "fan_generic internal_fan"
+        },
+        {
+          "display_name": "External",
+          "id": "fan_generic external_fan"
+        },
+        {
+          "display_name": "Chamber",
+          "id": "fan_generic chamber_fan"
+        },
+        {
+          "display_name": "M106",
+          "id": "fan_generic fanM106"
+        }
+      ],
+      "leds": null,
+      "log_level": "debug",
+      "monitored_sensors": [
+        {
+          "color": "red",
+          "controllable": true,
+          "display_name": "Extruder",
+          "id": "extruder"
+        },
+        {
+          "color": "purple",
+          "controllable": true,
+          "display_name": "Bed",
+          "id": "heater_bed"
+        },
+        {
+          "color": "blue",
+          "controllable": false,
+          "display_name": "TVOC",
+          "id": "temperature_sensor tvocValue"
+        },
+        {
+          "color": "orange",
+          "controllable": false,
+          "display_name": "Weight",
+          "id": "temperature_sensor weightValue"
+        }
+      ],
+      "moonraker_api_key": false,
+      "moonraker_host": "127.0.0.1",
+      "moonraker_port": 7125
+    }
+  },
+  "prompt_emergency_stop": true,
+  "thumbnail_path": "/data/thumbnails",
+  "touch_calibrated": false,
+  "wpa_supplicant": "/var/run/wpa_supplicant"
+}
