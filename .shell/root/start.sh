@@ -76,11 +76,11 @@ rm -f /root/guppyscreen/guppyconfig.json
 ln -s /opt/config/mod_data/guppyconfig.json /root/guppyscreen/guppyconfig.json
 
 if [ "$3" == "Adventurer5M" ]; then
-    [ -f /opt/config/mod_data/guppyconfig.json ] || cp /opt/config/mod/guppyconfig.json /opt/config/mod_data/guppyconfig.json
+    [ -f /opt/config/mod_data/guppyconfig.json ] || cp /opt/config/mod/guppyconfig_${ZLANG}.json /opt/config/mod_data/guppyconfig.json
 else if [ "$3" == "Adventurer5MPro" ]; then
-    [ -f /opt/config/mod_data/guppyconfig.json ] || cp /opt/config/mod/guppyconfig_pro.json /opt/config/mod_data/guppyconfig.json
+    [ -f /opt/config/mod_data/guppyconfig.json ] || cp /opt/config/mod/guppyconfig_${ZLANG}_pro.json /opt/config/mod_data/guppyconfig.json
 else if [ "$3" == "AD5X" ]; then
-    [ -f /opt/config/mod_data/guppyconfig.json ] || cp /opt/config/mod/guppyconfig_5x.json /opt/config/mod_data/guppyconfig.json
+    [ -f /opt/config/mod_data/guppyconfig.json ] || cp /opt/config/mod/guppyconfig_${ZLANG}_5x.json /opt/config/mod_data/guppyconfig.json
 fi
 fi
 fi
@@ -152,6 +152,4 @@ for i in `seq 0 50`; do
     sleep 5
 done
 date
-echo "Start User power_on script"
-[ -f ${MOD_CONF}/mod_data/power_on.sh ] && ${MOD_CONF}/mod_data/power_on.sh
 echo "Start END"
