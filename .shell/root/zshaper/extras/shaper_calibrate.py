@@ -322,7 +322,7 @@ class ShaperCalibrate:
     def find_best_shaper(self, calibration_data, shapers=None,
                          damping_ratio=None, scv=None, shaper_freqs=None,
                          max_smoothing=None, test_damping_ratios=None,
-                         max_freq=None, logger=None, resp_json=0.0):
+                         max_freq=None, logger=None, resp_json=0.0, current_language='en'):
         best_shaper = None
         all_shapers = []
         shapers = shapers or AUTOTUNE_SHAPERS
@@ -335,13 +335,22 @@ class ShaperCalibrate:
                 scv, max_smoothing, test_damping_ratios, max_freq))
             if logger is not None:
                 if resp_json == 0.0:
-                    logger("Шейпер '%s' частота = %.1f Hz "
-                           "(вибрации = %.1f%%, сглаживание ~= %.3f)" % (
-                           shaper.name, shaper.freq, shaper.vibrs * 100.,
-                           shaper.smoothing))
-                    logger("Чтобы избежать слишком сильного сглаживания с помощью '%s', предлагается "
-                           "max_accel <= %.0f мм/сек^2" % (
-                           shaper.name, round(shaper.max_accel / 100.) * 100.))
+                    if current_language == 'en':
+                        logger("Fitted shaper '%s' frequency = %.1f Hz "
+                               "(vibrations = %.1f%%, smoothing ~= %.3f)" % (
+                                   shaper.name, shaper.freq, shaper.vibrs * 100.,
+                                   shaper.smoothing))
+                        logger("To avoid too much smoothing with '%s', suggested "
+                               "max_accel <= %.0f mm/sec^2" % (
+                                   shaper.name, round(shaper.max_accel / 100.) * 100.))
+                    else:
+                        logger("Шейпер '%s' частота = %.1f Hz "
+                               "(вибрации = %.1f%%, сглаживание ~= %.3f)" % (
+                               shaper.name, shaper.freq, shaper.vibrs * 100.,
+                               shaper.smoothing))
+                        logger("Чтобы избежать слишком сильного сглаживания с помощью '%s', предлагается "
+                               "max_accel <= %.0f мм/сек^2" % (
+                               shaper.name, round(shaper.max_accel / 100.) * 100.))
                 else:
                     resp[shaper.name] = {
                         'freq': shaper.freq,
