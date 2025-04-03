@@ -16,6 +16,7 @@ import json
 shaper_calibrate = importlib.import_module('.shaper_calibrate', 'extras')
 
 MAX_TITLE_LENGTH=65
+current_language='en'
 
 def parse_log(logname):
     with open(logname) as f:
