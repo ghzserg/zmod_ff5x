@@ -312,8 +312,12 @@ def plot_compare_frequency(ax, lognames, signal1, signal2, max_freq):
         print(warning_msg)
 
     # Plot the two belts PSD signals
-    ax.plot(signal1.freqs, signal1.psd, label="Ремень " + signal1_belt, color=KLIPPAIN_COLORS['purple'])
-    ax.plot(signal2.freqs, signal2.psd, label="Ремень " + signal2_belt, color=KLIPPAIN_COLORS['orange'])
+    if current_language == 'en':
+        ax.plot(signal1.freqs, signal1.psd, label="Belt " + signal1_belt, color=KLIPPAIN_COLORS['purple'])
+        ax.plot(signal2.freqs, signal2.psd, label="Belt " + signal2_belt, color=KLIPPAIN_COLORS['orange'])
+    else:
+        ax.plot(signal1.freqs, signal1.psd, label="Ремень " + signal1_belt, color=KLIPPAIN_COLORS['purple'])
+        ax.plot(signal2.freqs, signal2.psd, label="Ремень " + signal2_belt, color=KLIPPAIN_COLORS['orange'])
 
     # Trace the "relax region" (also used as a threshold to filter and detect the peaks)
     psd_lowest_max = min(signal1.psd.max(), signal2.psd.max())
