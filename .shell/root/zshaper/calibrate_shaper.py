@@ -44,7 +44,7 @@ def parse_log(logname):
 # Find the best shaper parameters
 def calibrate_shaper(datas, csv_output, *, shapers, damping_ratio, scv,
                      shaper_freqs, max_smoothing, test_damping_ratios,
-                     max_freq, resp_json, send_klipper):
+                     max_freq, resp_json, current_language, send_klipper):
     helper = shaper_calibrate.ShaperCalibrate(printer=None)
     if isinstance(datas[0], shaper_calibrate.CalibrationData):
         calibration_data = datas[0]
@@ -62,16 +62,22 @@ def calibrate_shaper(datas, csv_output, *, shapers, damping_ratio, scv,
             calibration_data, shapers=shapers, damping_ratio=damping_ratio,
             scv=scv, shaper_freqs=shaper_freqs, max_smoothing=max_smoothing,
             test_damping_ratios=test_damping_ratios, max_freq=max_freq,
-            logger=print, resp_json=resp_json)
+            logger=print, resp_json=resp_json, current_language=current_language)
     if not shaper:
-        print("Нет рекомендуемых шейперов, возможно ошибочное значение для --shapers=%s" %
-              (','.join(shapers)))
+        if current_language == 'en':
+            print("No recommended shapers, possibly invalid --shapers=%s" % (','.join(shapers)))
+        else:
+            print("Нет рекомендуемых шейперов, возможно ошибочное значение для --shapers=%s" %
+                  (','.join(shapers)))
         return None, None, None
     if send_klipper == "X" or send_klipper == "Y":
         with open('/tmp/printer', 'a') as file:
             file.write("SAVE_SHAPER AXIS=%s NAME=%s FREQUENCY=%.1f\n" % (send_klipper, shaper.name, shaper.freq))
     if resp_json == 0.0:
-        print("Рекомендуемый шейпер %s @ %.1f Hz" % (shaper.name, shaper.freq))
+        if current_language == 'en':
+            print("Recommended shaper is %s @ %.1f Hz" % (shaper.name, shaper.freq))
+        else:
+            print("Рекомендуемый шейпер %s @ %.1f Hz" % (shaper.name, shaper.freq))
     if csv_output is not None:
         helper.save_calibration_data(
                 csv_output, calibration_data, all_shapers)
@@ -94,10 +100,14 @@ def plot_freq_response(lognames, calibration_data, shapers,
     fontP.set_size('x-small')
 
     fig, ax = matplotlib.pyplot.subplots()
-    xlabel = "Частота, Hz при SCV = %.1f" % (scv)
+    if current_language == 'en':
+        xlabel = "Frequency, Hz at SCV = %.1f" % (scv)
+        ax.set_ylabel('Power Spectral Density')
+    else:
+        xlabel = "Частота, Hz при SCV = %.1f" % (scv)
+        ax.set_ylabel('Спектральная плотность мощности')
     ax.set_xlabel(xlabel)
     ax.set_xlim([0, max_freq])
-    ax.set_ylabel('Спектральная плотность мощности')
 
     ax.plot(freqs, psd, label='X+Y+Z', color='purple')
     ax.plot(freqs, px, label='X', color='red')
@@ -106,7 +116,10 @@ def plot_freq_response(lognames, calibration_data, shapers,
 
     current_time = datetime.now()
     formatted_time = current_time.strftime("%d.%m.%y %H:%M")
-    title = "Шейперы %s (zmod) %s" % (', '.join(lognames), formatted_time)
+    if current_language == 'en':
+        title = "Shapers %s (zmod) %s" % (', '.join(lognames), formatted_time)
+    else:
+        title = "Шейперы %s (zmod) %s" % (', '.join(lognames), formatted_time)
     ax.set_title("\n".join(wrap(title, MAX_TITLE_LENGTH)))
     ax.xaxis.set_minor_locator(matplotlib.ticker.MultipleLocator(5))
     ax.yaxis.set_minor_locator(matplotlib.ticker.AutoMinorLocator())
@@ -115,24 +128,40 @@ def plot_freq_response(lognames, calibration_data, shapers,
     ax.grid(which='minor', color='lightgrey')
 
     ax2 = ax.twinx()
-    ax2.set_ylabel('Снижение вибрации шейпером (коэффициент)')
+    if current_language == 'en':
+        ax2.set_ylabel('Shaper vibration reduction (coefficient)')
+    else
+        ax2.set_ylabel('Снижение вибрации шейпером (коэффициент)')
     best_shaper_vals = None
     for shaper in shapers:
-        label = "%s (%.1f Hz, вибр=%.1f%%, сглаж~=%.2f, уск<=%.f)" % (
-                shaper.name.upper(), shaper.freq,
-                shaper.vibrs * 100., shaper.smoothing,
-                round(shaper.max_accel / 100.) * 100.)
+        if current_language == 'en':
+            label = "%s (%.1f Hz, vibr=%.1f%%, sm~=%.2f, accel<=%.f)" % (
+                    shaper.name.upper(), shaper.freq,
+                    shaper.vibrs * 100., shaper.smoothing,
+                    round(shaper.max_accel / 100.) * 100.)
+        else:
+            label = "%s (%.1f Hz, вибр=%.1f%%, сглаж~=%.2f, уск<=%.f)" % (
+                    shaper.name.upper(), shaper.freq,
+                    shaper.vibrs * 100., shaper.smoothing,
+                    round(shaper.max_accel / 100.) * 100.)
         linestyle = 'dotted'
         if shaper.name == selected_shaper:
             linestyle = 'dashdot'
             best_shaper_vals = shaper.vals
         ax2.plot(freqs, shaper.vals, label=label, linestyle=linestyle)
-    ax.plot(freqs, psd * best_shaper_vals,
-            label='После\nшейпера', color='cyan')
+    if current_language == 'en':
+        ax.plot(freqs, psd * best_shaper_vals,
+                label='After\nshaper', color='cyan')
+    else:
+        ax.plot(freqs, psd * best_shaper_vals,
+                label='После\nшейпера', color='cyan')
     # A hack to add a human-readable shaper recommendation to legend
-    ax2.plot([], [], ' ',
+    if current_language == 'en':
+        ax2.plot([], [], ' ',
              label="Рекомендуемый шейпер: %s" % (selected_shaper.upper()))
-
+    else
+        ax2.plot([], [], ' ',
+             label="Recommended shaper: %s" % (selected_shaper.upper()))
     ax.legend(loc='upper left', prop=fontP)
     ax2.legend(loc='upper right', prop=fontP)
 
@@ -155,6 +184,10 @@ def main():
     # Parse command-line arguments
     usage = "%prog [options] <logs>"
     opts = optparse.OptionParser(usage)
+    opts.add_option("--en", action="store_true", dest="en", default=False,
+                help="Set output language to English")
+    opts.add_option("--ru", action="store_true", dest="ru", default=False,
+                help="Установить русский язык вывода")
     opts.add_option("-o", "--output", type="string", dest="output",
                     default=None, help="filename of output graph")
     opts.add_option("-c", "--csv", type="string", dest="csv",
@@ -191,6 +224,10 @@ def main():
         opts.error("Incorrect number of arguments")
     if options.max_smoothing is not None and options.max_smoothing < 0.05:
         opts.error("Too small max_smoothing specified (must be at least 0.05)")
+
+    global current_language
+    if options.ru:
+        current_language = 'ru'
 
     max_freq = options.max_freq
     if options.shaper_freq is None:
@@ -247,7 +284,7 @@ def main():
             scv=options.scv, shaper_freqs=shaper_freqs,
             max_smoothing=options.max_smoothing,
             test_damping_ratios=test_damping_ratios,
-            max_freq=max_freq, resp_json=options.resp_json, send_klipper=options.send_klipper)
+            max_freq=max_freq, resp_json=options.resp_json, current_language=current_language, send_klipper=options.send_klipper)
     if selected_shaper is None:
         return
 
