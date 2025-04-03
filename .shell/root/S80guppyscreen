@@ -32,6 +32,16 @@ start() {
     export TSLIB_CALIBFILE=/etc/pointercal
     export TSLIB_FBDEVICE=/dev/fb0
 
+    if [ ${ZLANG} == "en" ]; then
+        sed -i 's/Экструдер/Extruder/' /opt/config/mod_data/guppyconfig.json
+        sed -i 's/Стол/Bed/' /opt/config/mod_data/guppyconfig.json
+        sed -i 's/Вес/Weight/' /opt/config/mod_data/guppyconfig.json
+    else
+        sed -i 's/Extruder/Экструдер/' /opt/config/mod_data/guppyconfig.json
+        sed -i 's/Bed/Стол/' /opt/config/mod_data/guppyconfig.json
+        sed -i 's/Weight/Вес/' /opt/config/mod_data/guppyconfig.json
+    fi
+
     mv /opt/config/mod_data/log/guppyscreen.4.log /opt/config/mod_data/log/guppyscreen.5.log
     mv /opt/config/mod_data/log/guppyscreen.3.log /opt/config/mod_data/log/guppyscreen.4.log
     mv /opt/config/mod_data/log/guppyscreen.2.log /opt/config/mod_data/log/guppyscreen.3.log
