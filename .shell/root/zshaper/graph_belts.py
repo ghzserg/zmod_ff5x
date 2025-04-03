@@ -45,6 +45,11 @@ KLIPPAIN_COLORS = {
     "red_pink": "#F2055C"
 }
 
+def set_language(lang):
+    global _
+    _ = lambda s: TRANSLATIONS[lang].get(s, s)
+
+current_language = 'en'
 
 # Set the best locale for time and date formating (generation of the titles)
 locale.setlocale(locale.LC_TIME, 'C')
@@ -272,17 +277,17 @@ def compute_mhi(combined_data, similarity_coefficient, num_unpaired_peaks):
 # LUT to transform the MHI into a textual value easy to understand for the users of the script
 def mhi_lut(mhi):
     if 0 <= mhi <= 30:
-        return "Отличное механическое состояние"
+        return "Отличное механическое состояние" if current_language == 'ru' else "Excellent mechanical condition"
     elif 30 < mhi <= 45:
-        return "Хорошее механическое состояние"
+        return "Хорошее механическое состояние" if current_language == 'ru' else "Good mechanical condition"
     elif 45 < mhi <= 55:
-        return "Приемлемое механическое состояние"
+        return "Приемлемое механическое состояние" if current_language == 'ru' else "Acceptable mechanical condition"
     elif 55 < mhi <= 70:
-        return "Возможные признаки механической неисправности"
+        return "Возможные признаки механической неисправности" if current_language == 'ru' else "Possible signs of mechanical issues"
     elif 70 < mhi <= 85:
-        return "Вероятно, механическая проблема"
-    elif 85 < mhi <= 100:
-        return "Обнаружена механическая проблема"
+        return "Вероятно, механическая проблема" if current_language == 'ru' else "Likely mechanical problem"
+    else:
+        return "Обнаружена механическая проблема" if current_language == 'ru' else "Mechanical problem detected"
 
 
 ######################################################################
@@ -301,7 +306,10 @@ def plot_compare_frequency(ax, lognames, signal1, signal2, max_freq):
         signal1_belt += " (axis 1, 1)"
         signal2_belt += " (axis 1,-1)"
     else:
-        print("Внимание: похоже, у belts неверные названия A и B (извлечено из filename.csv)")
+        warning_msg = ("Внимание: похоже, у belts неверные названия A и B (извлечено из filename.csv)"
+               if current_language == 'ru'
+               else "Warning: Belt names A and B seem incorrect (extracted from filename.csv)")
+        print(warning_msg)
 
     # Plot the two belts PSD signals
     ax.plot(signal1.freqs, signal1.psd, label="Ремень " + signal1_belt, color=KLIPPAIN_COLORS['purple'])
@@ -311,7 +319,10 @@ def plot_compare_frequency(ax, lognames, signal1, signal2, max_freq):
     psd_lowest_max = min(signal1.psd.max(), signal2.psd.max())
     peaks_warning_threshold = PEAKS_DETECTION_THRESHOLD * psd_lowest_max
     ax.axhline(y=peaks_warning_threshold, color='black', linestyle='--', linewidth=0.5)
-    ax.fill_between(signal1.freqs, 0, peaks_warning_threshold, color='green', alpha=0.15, label='Релакс-регион')
+    if current_language == 'en':
+        ax.fill_between(signal1.freqs, 0, peaks_warning_threshold, color='green', alpha=0.15, label='Relax region')
+    else:
+        ax.fill_between(signal1.freqs, 0, peaks_warning_threshold, color='green', alpha=0.15, label='Релакс-регион')
 
     # Trace and annotate the peaks on the graph
     paired_peak_count = 0
@@ -322,7 +333,10 @@ def plot_compare_frequency(ax, lognames, signal1, signal2, max_freq):
         label = ALPHABET[paired_peak_count]
         amplitude_offset = abs(((signal2.psd[peak2[0]] - signal1.psd[peak1[0]]) / max(signal1.psd[peak1[0]], signal2.psd[peak2[0]])) * 100)
         frequency_offset = abs(signal2.freqs[peak2[0]] - signal1.freqs[peak1[0]])
-        offsets_table_data.append([f"Пик {label}", f"{frequency_offset:.1f} Hz", f"{amplitude_offset:.1f} %"])
+        if current_language == 'en':
+            offsets_table_data.append([f"Peak {label}", f"{frequency_offset:.1f} Hz", f"{amplitude_offset:.1f} %"])
+        else:
+            offsets_table_data.append([f"Пик {label}", f"{frequency_offset:.1f} Hz", f"{amplitude_offset:.1f} %"])
         
         ax.plot(signal1.freqs[peak1[0]], signal1.psd[peak1[0]], "x", color='black')
         ax.plot(signal2.freqs[peak2[0]], signal2.psd[peak2[0]], "x", color='black')
@@ -354,14 +368,24 @@ def plot_compare_frequency(ax, lognames, signal1, signal2, max_freq):
     ax2 = ax.twinx() # To split the legends in two box
     ax2.yaxis.set_visible(False)
     similarity_factor = compute_curve_similarity_factor(signal1, signal2)
-    ax2.plot([], [], ' ', label=f'Предполагаемое сходство: {similarity_factor:.1f}%')
-    ax2.plot([], [], ' ', label=f'Количество непарных пиков: {unpaired_peak_count}')
-    print(f"Оценочное сходство ремней: {similarity_factor:.1f}%")
+    if current_language == 'en':
+        ax2.plot([], [], ' ', label=f'Estimated similarity: {similarity_factor:.1f}%')
+        ax2.plot([], [], ' ', label=f'Unpaired peaks count: {unpaired_peak_count}')
+        print(f"Estimated belt similarity: {similarity_factor:.1f}%")
+    else:
+        ax2.plot([], [], ' ', label=f'Предполагаемое сходство: {similarity_factor:.1f}%')
+        ax2.plot([], [], ' ', label=f'Количество непарных пиков: {unpaired_peak_count}')
+        print(f"Оценочное сходство ремней: {similarity_factor:.1f}%")
 
     # Setting axis parameters, grid and graph title
-    ax.set_xlabel('Частота (Hz)')
-    ax.set_xlim([0, max_freq])
-    ax.set_ylabel('Спектральная плотность мощности')
+    if current_language == 'en':
+        ax.set_xlabel('Frequency (Hz)')
+        ax.set_xlim([0, max_freq]) 
+        ax.set_ylabel('Power spectral density')
+    else:
+        ax.set_xlabel('Частота (Hz)')
+        ax.set_xlim([0, max_freq])
+        ax.set_ylabel('Спектральная плотность мощности')
     psd_highest_max = max(signal1.psd.max(), signal2.psd.max())
     ax.set_ylim([0, psd_highest_max + psd_highest_max * 0.05])
 
@@ -372,11 +396,17 @@ def plot_compare_frequency(ax, lognames, signal1, signal2, max_freq):
     ax.grid(which='minor', color='lightgrey')
     fontP = matplotlib.font_manager.FontProperties()
     fontP.set_size('small')
-    ax.set_title('Профили частот ремней (предполагаемое сходство: {:.1f}%)'.format(similarity_factor), fontsize=10, color=KLIPPAIN_COLORS['dark_orange'], weight='bold')
+    if current_language == 'en':
+        ax.set_title('Belt frequency profiles (estimated similarity: {:.1f}%)'.format(similarity_factor), fontsize=10, color=KLIPPAIN_COLORS['dark_orange'], weight='bold')
+    else:
+        ax.set_title('Профили частот ремней (предполагаемое сходство: {:.1f}%)'.format(similarity_factor), fontsize=10, color=KLIPPAIN_COLORS['dark_orange'], weight='bold')
 
     # Print the table of offsets ontop of the graph below the original legend (upper right)
     if len(offsets_table_data) > 0:
-        columns = ["", "D частоты", "D амплитуды", ]
+        if current_language == 'en':
+            columns = ["", "Freq diff", "Amp diff"]
+        else:
+            columns = ["", "D частоты", "D амплитуды", ]
         offset_table = ax.table(cellText=offsets_table_data, colLabels=columns, bbox=[0.66, 0.75, 0.33, 0.15], loc='upper right', cellLoc='center')
         offset_table.auto_set_font_size(False)
         offset_table.set_fontsize(8)
@@ -400,19 +430,28 @@ def plot_difference_spectrogram(ax, data1, data2, signal1, signal2, similarity_f
     # the similarity factor and the number or unpaired peaks from the belts frequency profile
     # Be careful, this value is highly opinionated and is pretty experimental!
     mhi, textual_mhi = compute_mhi(combined_sum, similarity_factor, len(signal1.unpaired_peaks) + len(signal2.unpaired_peaks))
-    print(f"[экспериментальный] Индикатор механического состояния: {textual_mhi.lower()} ({mhi:.1f}%)")
-    ax.set_title(f"Дифференциальная спектрограмма", fontsize=14, color=KLIPPAIN_COLORS['dark_orange'], weight='bold')
-    ax.plot([], [], ' ', label=f'{textual_mhi} (экспериментально)')
-    
+    if current_language == 'en':
+        print(f"[experimental] Mechanical health indicator: {textual_mhi.lower()} ({mhi:.1f}%)")
+        ax.set_title(f"Differential spectrogram", fontsize=14, color=KLIPPAIN_COLORS['dark_orange'], weight='bold')
+        ax.plot([], [], ' ', label=f'{textual_mhi} (experimental)')
+    else:
+        print(f"[экспериментальный] Индикатор механического состояния: {textual_mhi.lower()} ({mhi:.1f}%)")
+        ax.set_title(f"Дифференциальная спектрограмма", fontsize=14, color=KLIPPAIN_COLORS['dark_orange'], weight='bold')
+        ax.plot([], [], ' ', label=f'{textual_mhi} (экспериментально)')
     # Draw the differential spectrogram with a specific custom norm to get orange or purple values where there is signal or white near zeros
     colors = [KLIPPAIN_COLORS['dark_orange'], KLIPPAIN_COLORS['orange'], 'white', KLIPPAIN_COLORS['purple'], KLIPPAIN_COLORS['dark_purple']]  
     cm = matplotlib.colors.LinearSegmentedColormap.from_list('klippain_divergent', list(zip([0, 0.25, 0.5, 0.75, 1], colors)))
     norm = matplotlib.colors.TwoSlopeNorm(vmin=np.min(combined_divergent), vcenter=0, vmax=np.max(combined_divergent))
     ax.pcolormesh(t, bins, combined_divergent.T, cmap=cm, norm=norm, shading='gouraud')
 
-    ax.set_xlabel('Частота (hz)')
-    ax.set_xlim([0., max_freq])
-    ax.set_ylabel('Время (s)')
+    if current_language == 'en':
+        ax.set_xlabel('Frequency (Hz)')
+        ax.set_xlim([0., max_freq])
+        ax.set_ylabel('Time (s)')
+    else:
+        ax.set_xlabel('Частота (hz)')
+        ax.set_xlim([0., max_freq])
+        ax.set_ylabel('Время (s)')
     ax.set_ylim([0, bins[-1]])
 
     fontP = matplotlib.font_manager.FontProperties()
@@ -423,18 +462,28 @@ def plot_difference_spectrogram(ax, data1, data2, signal1, signal2, similarity_f
     unpaired_peak_count = 0
     for _, peak in enumerate(signal1.unpaired_peaks):
         ax.axvline(signal1.freqs[peak], color=KLIPPAIN_COLORS['red_pink'], linestyle='dotted', linewidth=1.5)
-        ax.annotate(f"Пик {unpaired_peak_count + 1}", (signal1.freqs[peak], t[-1]*0.05),
-                    textcoords="data", color=KLIPPAIN_COLORS['red_pink'], rotation=90, fontsize=10,
-                    verticalalignment='bottom', horizontalalignment='right')
+        if current_language == 'en':
+            ax.annotate(f"Peak {unpaired_peak_count + 1}", (signal1.freqs[peak], t[-1]*0.05),
+                        textcoords="data", color=KLIPPAIN_COLORS['red_pink'], rotation=90, fontsize=10,
+                        verticalalignment='bottom', horizontalalignment='right')
+        else:
+            ax.annotate(f"Пик {unpaired_peak_count + 1}", (signal1.freqs[peak], t[-1]*0.05),
+                        textcoords="data", color=KLIPPAIN_COLORS['red_pink'], rotation=90, fontsize=10,
+                        verticalalignment='bottom', horizontalalignment='right')
         unpaired_peak_count +=1
 
     for _, peak in enumerate(signal2.unpaired_peaks):
         ax.axvline(signal2.freqs[peak], color=KLIPPAIN_COLORS['red_pink'], linestyle='dotted', linewidth=1.5)
-        ax.annotate(f"Пик {unpaired_peak_count + 1}", (signal2.freqs[peak], t[-1]*0.05),
-                    textcoords="data", color=KLIPPAIN_COLORS['red_pink'], rotation=90, fontsize=10,
-                    verticalalignment='bottom', horizontalalignment='right')
+        if current_language == 'en':
+            ax.annotate(f"Peak {unpaired_peak_count + 1}", (signal2.freqs[peak], t[-1]*0.05),
+                        textcoords="data", color=KLIPPAIN_COLORS['red_pink'], rotation=90, fontsize=10,
+                        verticalalignment='bottom', horizontalalignment='right')
+        else:
+            ax.annotate(f"Пик {unpaired_peak_count + 1}", (signal2.freqs[peak], t[-1]*0.05),
+                        textcoords="data", color=KLIPPAIN_COLORS['red_pink'], rotation=90, fontsize=10,
+                        verticalalignment='bottom', horizontalalignment='right')
         unpaired_peak_count +=1
-    
+
     # Plot vertical lines and zones for paired peaks
     for idx, (peak1, peak2) in enumerate(signal1.paired_peaks):
         label = ALPHABET[idx]
@@ -443,10 +492,14 @@ def plot_difference_spectrogram(ax, data1, data2, signal1, signal2, similarity_f
         ax.axvline(x_min, color=KLIPPAIN_COLORS['dark_purple'], linestyle='dotted', linewidth=1.5)
         ax.axvline(x_max, color=KLIPPAIN_COLORS['dark_purple'], linestyle='dotted', linewidth=1.5)
         ax.fill_between([x_min, x_max], 0, np.max(combined_divergent), color=KLIPPAIN_COLORS['dark_purple'], alpha=0.3)
-        ax.annotate(f"Пики {label}", (x_min, t[-1]*0.05),
-                textcoords="data", color=KLIPPAIN_COLORS['dark_purple'], rotation=90, fontsize=10,
-                verticalalignment='bottom', horizontalalignment='right')
-
+        if current_language == 'en':
+            ax.annotate(f"Peaks {label}", (x_min, t[-1]*0.05),
+                    textcoords="data", color=KLIPPAIN_COLORS['dark_purple'], rotation=90, fontsize=10,
+                    verticalalignment='bottom', horizontalalignment='right')
+        else:
+            ax.annotate(f"Пики {label}", (x_min, t[-1]*0.05),
+                    textcoords="data", color=KLIPPAIN_COLORS['dark_purple'], rotation=90, fontsize=10,
+                    verticalalignment='bottom', horizontalalignment='right')
     return
 
 
@@ -541,6 +594,8 @@ def main():
     # Parse command-line arguments
     usage = "%prog [options] <raw logs>"
     opts = optparse.OptionParser(usage)
+    opts.add_option("--ru", action="store_true", dest="ru_lang", default=False, help="Use Russian output")
+    opts.add_option("--en", action="store_true", dest="en_lang", default=False, help="Use English output")
     opts.add_option("-o", "--output", type="string", dest="output",
                     default=None, help="filename of output graph")
     opts.add_option("-f", "--max_freq", type="float", default=200.,
@@ -553,8 +608,14 @@ def main():
                     default=8.3, help="width (inches) of the graph(s)")
     opts.add_option("-l", "--height", type="float", dest="height",
                     default=11.6, help="height (inches) of the graph(s)")
-    
+
     options, args = opts.parse_args()
+    global current_language
+    if options.ru_lang:
+        current_language = 'ru'
+    if options.en_lang:
+        current_language = 'en'
+
     if len(args) < 1:
         opts.error("Incorrect number of arguments")
     if options.output is None:
