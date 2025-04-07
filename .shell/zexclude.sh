@@ -10,6 +10,13 @@ if ! [ -f "${DATA_GCODES}/$1" ]; then
     exit 1
 fi
 
+if ! grep -q -e 'EXCLUDE_OBJECT_DEFINE' "${DATA_GCODES}/$1"; then
+    [ ${ZLANG} == 'en' ] && \
+        TXT="No objects detected! Check gcode and make sure it contains EXCLUDE_OBJECT_DEFINE. Using regular mesh. In Orca: 'Process Profile' -> 'Other' -> 'Exclude objects'." || \
+        TXT="Объекты не обнаружены! Проверьте gcode и убедитесь, что в нем есть EXCLUDE_OBJECT_DEFINE. Используется обычная сетка. В Orca: 'Профиль процесса' -> 'Прочее' -> 'Исключить модели'."
+    echo "RESPOND TYPE=error MSG=\"${TXT}\"" >/tmp/printer
+fi
+
 #head -1000 "${DATA_GCODES}/$1" | grep ^EXCLUDE_OBJECT_DEFINE >/root/printer.txt
 #cnt=$(cat /root/printer.txt| wc -l)
 
