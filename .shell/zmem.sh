@@ -17,7 +17,7 @@ fi
 
 $PYTHON /opt/config/mod/.shell/ps_mem.py -S >/tmp/list.txt
 
-[ ${ZLANG} == 'en' ] cat /tmp/list.txt || awk '{
+[ ${ZLANG} == 'en' ] && cat /tmp/list.txt || awk '{
     gsub(/python3.7/, "Klipper");
     gsub(/python3.12/, "Moonraker");
     gsub(/firmwareExe/, "Экран");
@@ -34,4 +34,4 @@ $PYTHON /opt/config/mod/.shell/ps_mem.py -S >/tmp/list.txt
 }' /tmp/list.txt
 rm -f /tmp/list.txt
 
-[ ${ZLANG} == 'en' ] free -m || free -m | sed 's/             total       used       free     shared    buffers     cached/Память       Всего     Занято   Свободно      Общая     Буферы        Кэш/'
+[ ${ZLANG} == 'en' ] && free -m || free -m | sed 's/             total       used       free     shared    buffers     cached/Память       Всего     Занято   Свободно      Общая     Буферы        Кэш/'
