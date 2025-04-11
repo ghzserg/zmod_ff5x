@@ -53,6 +53,8 @@ prepare_chroot()
     fi
 }
 
+${MOD_CONF}/mod/.shell/znice.sh
+
 if [ ${FF5X} -eq 0 ]; then
     SWAP="$1"
     echo "SWAP=$SWAP"

@@ -107,8 +107,6 @@ start_moon()
 
 start_prepare()
 {
-    ${MOD_CONF}/mod/.shell/znice.sh
-
     if [ ${FF5X} -eq 0 ] && ! [ -L /etc/init.d/S00fix ]; then ln -s ${MOD_CONF}/mod/.shell/fix_config.sh /etc/init.d/S00fix; fi
     echo "System start" >${MOD_CONF}/mod_data/log/ssh.log
 
