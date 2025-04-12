@@ -7,7 +7,7 @@
 import math, logging
 from . import bus
 
-# Zcontrol 1.12
+# Zcontrol 1.13
 
 ######################################################################
 # SensorBase
@@ -42,7 +42,7 @@ class SensorBase:
             self.gcode.register_command('ZCONTROL_STATUS', self.cmd_ZCONTROL_STATUS)
             self.gcode.register_command('ZCONTROL_OFF', self.cmd_ZCONTROL_OFF)
             self.zmod = self.printer.lookup_object('zmod', None)
-            self.language = 'ru'
+            self.language = 'en'
             if self.zmod is not None:
                 self.language = self.zmod.get_lang()
         mcu.register_response(self._handle_spi_response,
@@ -51,7 +51,7 @@ class SensorBase:
 
     def getlang(self):
         if self.zmod is None:
-            self.language = 'ru'
+            self.language = 'en'
             self.zmod = self.printer.lookup_object('zmod', None)
             if self.zmod is not None:
                 self.language = self.zmod.get_lang()

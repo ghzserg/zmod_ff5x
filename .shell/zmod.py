@@ -1,7 +1,7 @@
 class zmod:
     def __init__(self, config):
         self.printer = config.get_printer()
-        self.language = config.get('language', 'ru')
+        self.language = config.get('language', 'en')
         gcode = self.printer.lookup_object('gcode')
         gcode.register_command('SAVE_SHAPER', self.cmd_SAVE_SHAPER)
 
