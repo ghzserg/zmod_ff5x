@@ -160,7 +160,7 @@ fix_config()
     check_link ${MOD_CONF}/mod/base.cfg ${ZLANG}/base.cfg
     check_link ${MOD_CONF}/mod/client.cfg ${ZLANG}/client.cfg
     check_link ${MOD_CONF}/mod/display_off.cfg ${ZLANG}/display_off.cfg
-    check_link ${MOD_CONF}/mod/ff5.cfg ${ZLANG}/ff5.cfg
+    [ ${FF5X} -eq 0 ] && check_link ${MOD_CONF}/mod/ff5.cfg ${ZLANG}/ff5.cfg
     check_link ${MOD_CONF}/mod/mod.cfg ${ZLANG}/mod.cfg
     check_link ${MOD_CONF}/mod/motion_sensor.cfg ${ZLANG}/motion_sensor.cfg
     check_link ${MOD_CONF}/mod/switch_sensor_display_off.cfg ${ZLANG}/switch_sensor_display_off.cfg
