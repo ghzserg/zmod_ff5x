@@ -1,2 +1,10 @@
 *.pyc
 **/__pycache__/
+base
+./base.cfg
+./client.cfg
+./display_off.cfg
+./ff5.cfg
+./mod.cfg
+./motion_sensor.cfg
+./switch_sensor_display_off.cfg

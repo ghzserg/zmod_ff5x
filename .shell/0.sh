@@ -18,4 +18,15 @@ PYTHON_DIR="/usr/prog/Python-3.8.2/lib/python3.8"
 CURL="/usr/prog/curl-7.55.1-https/bin/curl"
 PROGRAM_DIR="/usr/prog/PROGRAM/"
 ZLANG="en"
-grep -q "language: ru" ${MOD_CONF}/mod_data/lang.cfg && ZLANG="ru"
+if grep -q "language: en" ${MOD_CONF}/mod_data/lang.cfg; then ZLANG="en";
+else if grep -q "language: ru" ${MOD_CONF}/mod_data/lang.cfg; then ZLANG="ru";
+else if grep -q "language: de" ${MOD_CONF}/mod_data/lang.cfg; then ZLANG="de";
+else if grep -q "language: fr" ${MOD_CONF}/mod_data/lang.cfg; then ZLANG="fr";
+else if grep -q "language: it" ${MOD_CONF}/mod_data/lang.cfg; then ZLANG="it";
+else if grep -q "language: es" ${MOD_CONF}/mod_data/lang.cfg; then ZLANG="es";
+fi
+fi
+fi
+fi
+fi
+fi

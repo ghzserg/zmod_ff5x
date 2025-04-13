@@ -7,7 +7,7 @@
 source /opt/config/mod/.shell/0.sh
 
 if [ $# -ne 2 ]; then
-    [ ${ZLANG} == 'en' ] && echo "Use $0 PRINT|CLOSE FILE" || echo "Используйте $0 PRINT|CLOSE FILE"
+    [ ${ZLANG} != 'ru' ] && echo "Use $0 PRINT|CLOSE FILE" || echo "Используйте $0 PRINT|CLOSE FILE"
     exit 1
 fi
 
@@ -42,7 +42,7 @@ if [ "$1" == "CLOSE" ]; then
         http://$ip:8898/control \
         -H 'Content-Type: application/json' \
         -d "{\"serialNumber\":\"$serialNumber\",\"checkCode\":\"$checkCode\",\"payload\":{\"cmd\":\"stateCtrl_cmd\",\"args\":{\"action\":\"setClearPlatform\"}}}" || \
-    if [ ${ZLANG} == 'en' ]; then
+    if [ ${ZLANG} != 'ru' ]; then
         echo "No response from printer at $ip. Printer setup required. On printer screen: 'Settings' -> 'WiFi icon' -> 'Network mode' -> toggle 'Local network only'"
     else
         echo "Нет ответа от принтера с IP $ip. Необходимо настроить принтер. На экране принтера: \"Настройки\" -> \"Иконка WiFi\" -> \"Сетевой режим\" -> включить ползунок \"Только локальные сети\""
@@ -50,7 +50,7 @@ if [ "$1" == "CLOSE" ]; then
 else
     if [ "$1" == "PRINT" ]; then
         if ! [ -f "${DATA_GCODES}/$2" ]; then
-            if [ ${ZLANG} == 'en' ]; then
+            if [ ${ZLANG} != 'ru' ]; then
                 echo "RESPOND TYPE=error MSG=\"File $2 not found.\"" >/tmp/printer
             else
                 echo "RESPOND TYPE=error MSG=\"Файл $2 не найден.\"" >/tmp/printer
@@ -63,13 +63,13 @@ else
             http://$ip:8898/printGcode \
             -H 'Content-Type: application/json' \
             -d "{\"serialNumber\":\"$serialNumber\",\"checkCode\":\"$checkCode\",\"fileName\":\"$2\",\"levelingBeforePrint\":true}'" || \
-        if [ ${ZLANG} == 'en' ]; then
+        if [ ${ZLANG} != 'ru' ]; then
             echo "No response from printer at $ip. Printer setup required. On printer screen: 'Settings' -> 'WiFi icon' -> 'Network mode' -> toggle 'Local network only'"
         else
             echo "Нет ответа от принтера с IP $ip. Необходимо настроить принтер. На экране принтера: \"Настройки\" -> \"Иконка WiFi\" -> \"Сетевой режим\" -> включить ползунок \"Только локальные сети\""
         fi
     else
-        [ ${ZLANG} == 'en' ] && echo "Use $0 PRINT|CLOSE FILE [PRECLEAR]" || echo "Используйте $0 PRINT|CLOSE FILE [PRECLEAR]"
+        [ ${ZLANG} != 'ru' ] && echo "Use $0 PRINT|CLOSE FILE [PRECLEAR]" || echo "Используйте $0 PRINT|CLOSE FILE [PRECLEAR]"
         exit 1
     fi
 fi

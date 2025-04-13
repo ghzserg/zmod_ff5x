@@ -335,7 +335,7 @@ class ShaperCalibrate:
                 scv, max_smoothing, test_damping_ratios, max_freq))
             if logger is not None:
                 if resp_json == 0.0:
-                    if current_language == 'en':
+                    if current_language != 'ru':
                         logger("Fitted shaper '%s' frequency = %.1f Hz "
                                "(vibrations = %.1f%%, smoothing ~= %.3f)" % (
                                    shaper.name, shaper.freq, shaper.vibrs * 100.,

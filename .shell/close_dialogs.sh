@@ -3,7 +3,7 @@
 source /opt/config/mod/.shell/0.sh
 
 if [ -f /ZMOD ]; then
-    [ ${ZLANG} == 'en' ] && echo "Close dialogs not working. Use FAST_CLOSE_DIALOGS" || echo "Закрытие диалогов не поддерживается. Используйте FAST_CLOSE_DIALOGS"
+    [ ${ZLANG} != 'ru' ] && echo "Close dialogs not working. Use FAST_CLOSE_DIALOGS" || echo "Закрытие диалогов не поддерживается. Используйте FAST_CLOSE_DIALOGS"
     exit
 fi
 

@@ -65,7 +65,7 @@ def calibrate_shaper(datas, csv_output, *, shapers, damping_ratio, scv,
             test_damping_ratios=test_damping_ratios, max_freq=max_freq,
             logger=print, resp_json=resp_json, current_language=current_language)
     if not shaper:
-        if current_language == 'en':
+        if current_language != 'ru':
             print("No recommended shapers, possibly invalid --shapers=%s" % (','.join(shapers)))
         else:
             print("Нет рекомендуемых шейперов, возможно ошибочное значение для --shapers=%s" %
@@ -75,7 +75,7 @@ def calibrate_shaper(datas, csv_output, *, shapers, damping_ratio, scv,
         with open('/tmp/printer', 'a') as file:
             file.write("SAVE_SHAPER AXIS=%s NAME=%s FREQUENCY=%.1f\n" % (send_klipper, shaper.name, shaper.freq))
     if resp_json == 0.0:
-        if current_language == 'en':
+        if current_language != 'ru':
             print("Recommended shaper is %s @ %.1f Hz" % (shaper.name, shaper.freq))
         else:
             print("Рекомендуемый шейпер %s @ %.1f Hz" % (shaper.name, shaper.freq))
@@ -101,7 +101,7 @@ def plot_freq_response(lognames, calibration_data, shapers,
     fontP.set_size('x-small')
 
     fig, ax = matplotlib.pyplot.subplots()
-    if current_language == 'en':
+    if current_language != 'ru':
         xlabel = "Frequency, Hz at SCV = %.1f" % (scv)
         ax.set_ylabel('Power Spectral Density')
     else:
@@ -117,7 +117,7 @@ def plot_freq_response(lognames, calibration_data, shapers,
 
     current_time = datetime.now()
     formatted_time = current_time.strftime("%d.%m.%y %H:%M")
-    if current_language == 'en':
+    if current_language != 'ru':
         title = "Shapers %s (zmod) %s" % (', '.join(lognames), formatted_time)
     else:
         title = "Шейперы %s (zmod) %s" % (', '.join(lognames), formatted_time)
@@ -129,13 +129,13 @@ def plot_freq_response(lognames, calibration_data, shapers,
     ax.grid(which='minor', color='lightgrey')
 
     ax2 = ax.twinx()
-    if current_language == 'en':
+    if current_language != 'ru':
         ax2.set_ylabel('Shaper vibration reduction (coefficient)')
     else:
         ax2.set_ylabel('Снижение вибрации шейпером (коэффициент)')
     best_shaper_vals = None
     for shaper in shapers:
-        if current_language == 'en':
+        if current_language != 'ru':
             label = "%s (%.1f Hz, vibr=%.1f%%, sm~=%.2f, accel<=%.f)" % (
                     shaper.name.upper(), shaper.freq,
                     shaper.vibrs * 100., shaper.smoothing,
@@ -150,14 +150,14 @@ def plot_freq_response(lognames, calibration_data, shapers,
             linestyle = 'dashdot'
             best_shaper_vals = shaper.vals
         ax2.plot(freqs, shaper.vals, label=label, linestyle=linestyle)
-    if current_language == 'en':
+    if current_language != 'ru':
         ax.plot(freqs, psd * best_shaper_vals,
                 label='After\nshaper', color='cyan')
     else:
         ax.plot(freqs, psd * best_shaper_vals,
                 label='После\nшейпера', color='cyan')
     # A hack to add a human-readable shaper recommendation to legend
-    if current_language == 'en':
+    if current_language != 'ru':
         ax2.plot([], [], ' ',
              label="Recommended shaper: %s" % (selected_shaper.upper()))
     else:
@@ -186,6 +186,14 @@ def main():
     usage = "%prog [options] <logs>"
     opts = optparse.OptionParser(usage)
     opts.add_option("--en", action="store_true", dest="en", default=False,
+                help="Set output language to English")
+    opts.add_option("--de", action="store_true", dest="en", default=False,
+                help="Set output language to English")
+    opts.add_option("--es", action="store_true", dest="en", default=False,
+                help="Set output language to English")
+    opts.add_option("--it", action="store_true", dest="en", default=False,
+                help="Set output language to English")
+    opts.add_option("--fr", action="store_true", dest="en", default=False,
                 help="Set output language to English")
     opts.add_option("--ru", action="store_true", dest="ru", default=False,
                 help="Установить русский язык вывода")

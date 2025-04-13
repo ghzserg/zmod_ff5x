@@ -21,7 +21,7 @@ fi
 if [ $# -eq 1 ]; then
     RET=$(${PYTHON} /opt/config/mod/.shell/zsend.py "$1" 2>&1)
     if [ $? -ne 0 ]; then
-        [ ${ZLANG} == 'en' ] && echo "Error sending message to native screen. Is it working?" || echo "Ошибка передачи сообщения на родной экран. Он у вас работает?"
+        [ ${ZLANG} != 'ru' ] && echo "Error sending message to native screen. Is it working?" || echo "Ошибка передачи сообщения на родной экран. Он у вас работает?"
     fi
     echo -e "$RET"
 fi
@@ -33,7 +33,7 @@ if [ $# -eq 2 ]; then
     [ "$M190" == "" ] && M190=$(head -1000 "${DATA_GCODES}/$2" | grep "^M140" | head -1 | sed 's|M140|M190|')
 
     if [ "$M190" == "" ] || [ "$M109" == "" ]; then
-        if [ ${ZLANG} == 'en' ]; then
+        if [ ${ZLANG} != 'ru' ]; then
             echo "RESPOND TYPE=error MSG=\"File $2 doesn't contain bed heating commands (M140/M190) or nozzle heating commands (M104/M109). They must be in first 1000 lines. G-code thumbnails 140x110/PNG\"" >/tmp/printer
         else
             echo "RESPOND TYPE=error MSG=\"В файле $2 не найдены команды нагрева стола(M140/M190) или сопла(M104/M109). Они должны быть в первой 1000 строк. Эскизы G-кода 140x110/PNG\"" >/tmp/printer
@@ -42,7 +42,7 @@ if [ $# -eq 2 ]; then
     else
         RET=$(${PYTHON} /opt/config/mod/.shell/zsend.py "M23" "$2" 2>&1)
         if [ $? -ne 0 ]; then
-            [ ${ZLANG} == 'en' ] && echo "Error sending message to native screen. Is it working?" || echo "Ошибка передачи сообщения на родной экран. Он у вас работает?"
+            [ ${ZLANG} != 'ru' ] && echo "Error sending message to native screen. Is it working?" || echo "Ошибка передачи сообщения на родной экран. Он у вас работает?"
         fi
         echo -e "$RET"
     fi

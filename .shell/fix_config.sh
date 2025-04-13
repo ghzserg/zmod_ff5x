@@ -157,6 +157,14 @@ fix_config()
     echo "[zmod]
     language: ${ZLANG}" >${MOD_CONF}/mod_data/lang.cfg
 
+    check_link ${MOD_CONF}/mod/base.cfg ${ZLANG}/base.cfg
+    check_link ${MOD_CONF}/mod/client.cfg ${ZLANG}/client.cfg
+    check_link ${MOD_CONF}/mod/display_off.cfg ${ZLANG}/display_off.cfg
+    check_link ${MOD_CONF}/mod/ff5.cfg ${ZLANG}/ff5.cfg
+    check_link ${MOD_CONF}/mod/mod.cfg ${ZLANG}/mod.cfg
+    check_link ${MOD_CONF}/mod/motion_sensor.cfg ${ZLANG}/motion_sensor.cfg
+    check_link ${MOD_CONF}/mod/switch_sensor_display_off.cfg ${ZLANG}/switch_sensor_display_off.cfg
+
     if ! [ -f ${MOD_CONF}/mod_data/user.moonraker.conf ]; then
         echo "#Enter user config here
 [authorization]
@@ -260,7 +268,7 @@ unset LD_PRELOAD
 
     grep -q "zmod 1.1" ${KLIPPER_DIR}/klippy/webhooks.py || cp ${MOD_CONF}/mod/.shell/webhooks.py ${KLIPPER_DIR}/klippy/webhooks.py
     grep -q ZLOAD_VARIABLE ${KLIPPER_DIR}/klippy/extras/save_variables.py || cp ${MOD_CONF}/mod/.shell/save_variables.py ${KLIPPER_DIR}/klippy/extras/save_variables.py
-    if [ ${FF5X} -eq 0 ] && ! grep -q "Zcontrol 1.13" ${KLIPPER_DIR}/klippy/extras/spi_temperature.py; then
+    if [ ${FF5X} -eq 0 ] && ! grep -q "Zcontrol 1.14" ${KLIPPER_DIR}/klippy/extras/spi_temperature.py; then
         cp ${MOD_CONF}/mod/.shell/spi_temperature.py ${KLIPPER_DIR}/klippy/extras/spi_temperature.py
     fi
     check_link ${KLIPPER_DIR}/klippy/extras/zmod.py ${MOD_CONF}/mod/.shell/zmod.py

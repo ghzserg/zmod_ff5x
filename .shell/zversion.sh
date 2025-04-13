@@ -19,10 +19,10 @@ else if [ -f "/usr/data/.mod/.zmod/root/printer_data/version.txt" ]; then
 fi
 fi
 
-[ ${ZLANG} == 'en' ] && echo "Installed from USB: ${VER_MOD_FULL}. Update from Fluidd/Mainsail: ${VER_FF_FULL}" || echo "Установлено с флешки: ${VER_MOD_FULL}. Обновление с Fluidd/Mainsaill: ${VER_FF_FULL}"
+[ ${ZLANG} != 'ru' ] && echo "Installed from USB: ${VER_MOD_FULL}. Update from Fluidd/Mainsail: ${VER_FF_FULL}" || echo "Установлено с флешки: ${VER_MOD_FULL}. Обновление с Fluidd/Mainsaill: ${VER_FF_FULL}"
 
 if [ "${VER_FF}" != "${VER_MOD}" ] || [ "${VER_MOD_FULL}" == "1.4.0" ] || [ "${VER_MOD_FULL}" == "1.4.1" ] || [ "${VER_MOD_FULL}" == "1.4.2" ]; then
-    if [ ${ZLANG} == 'en' ]; then
+    if [ ${ZLANG} != 'ru' ]; then
         echo "RESPOND TYPE=error MSG=\"Update ZMOD from USB, latest version ${VER_FF_FULL}, current version ${VER_MOD_FULL}\"" >/tmp/printer
         echo "You can use ZFLASH macro to update from USB over network"
         echo 'https://github.com/ghzserg/zmod/wiki/Setup_en'

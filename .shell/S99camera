@@ -45,9 +45,9 @@ up() {
                 [ ${FF5X} -eq 0 ] && [ "$1" != "init" ] && mount --bind ${REMOUNT_MOD} ${UMOUNT_MOD}
             fi
         fi
-        [ ${ZLANG} == 'en' ] && echo "Camera started" || echo "Запуск камеры завершен" 
+        [ ${ZLANG} != 'ru' ] && echo "Camera started" || echo "Запуск камеры завершен" 
     else
-        [ ${ZLANG} == 'en' ] && echo "Camera off" || echo "Камера отключена"
+        [ ${ZLANG} != 'ru' ] && echo "Camera off" || echo "Камера отключена"
     fi
 }
 

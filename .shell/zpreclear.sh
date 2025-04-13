@@ -3,12 +3,12 @@
 source /opt/config/mod/.shell/0.sh
 
 if [ $# -ne 2 ]; then
-    [ ${ZLANG} == 'en' ] && echo "Use $0 FILE NONE|TEST" || echo "Используйте $0 FILE NONE|TEST"
+    [ ${ZLANG} != 'ru' ] && echo "Use $0 FILE NONE|TEST" || echo "Используйте $0 FILE NONE|TEST"
     exit 1
 fi
 
 if ! [ -f "${DATA_GCODES}/$1" ]; then
-    [ ${ZLANG} == 'en' ] && echo "RESPOND TYPE=error MSG=\"File $1 not found.\"" >/tmp/printer || echo "RESPOND TYPE=error MSG=\"Файл $1 не найден.\"" >/tmp/printer
+    [ ${ZLANG} != 'ru' ] && echo "RESPOND TYPE=error MSG=\"File $1 not found.\"" >/tmp/printer || echo "RESPOND TYPE=error MSG=\"Файл $1 не найден.\"" >/tmp/printer
     echo "CANCEL_PRINT" >/tmp/printer
     exit 1
 fi
@@ -19,7 +19,7 @@ M190=$(head -1000 "${DATA_GCODES}/$1" | grep "^M190" | head -1)
 [ "$M190" == "" ] && M190=$(head -1000 "${DATA_GCODES}/$1" | grep "^M140" | head -1 | sed 's|M140|M190|')
 
 if [ "$M190" == "" ] || [ "$M109" == "" ]; then
-    if [ ${ZLANG} == 'en' ]; then
+    if [ ${ZLANG} != 'ru' ]; then
         echo "RESPOND TYPE=error MSG=\"File $1 does not contain bed heating commands (M140/M190) or nozzle heating commands (M104/M109). They must be in the first 1000 lines. G-code thumbnails 140x110/PNG\"" >/tmp/printer
     else
         echo "RESPOND TYPE=error MSG=\"В файле $1 не найдены команды нагрева стола(M140/M190) или сопла(M104/M109). Они должны быть в первой 1000 строк. Эскизы G-кода 140x110/PNG\"" >/tmp/printer

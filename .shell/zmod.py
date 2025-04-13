@@ -16,17 +16,17 @@ class zmod:
         # Валидация параметров
         valid_shapers = ['mzv', 'zv', 'zvd', 'ei', '2hump_ei', '3hump_ei']
         if shaper_name not in valid_shapers:
-            if self.language == 'en':
+            if self.language != 'ru':
                 raise gcmd.error("Invalid shaper. Allowed: %s" % ', '.join(valid_shapers))
             else:
                 raise gcmd.error("Неверный шейпер. Допустимые: %s" % ', '.join(valid_shapers))
         if frequency <= 0:
-            if self.language == 'en':
+            if self.language != 'ru':
                 raise gcmd.error("Frequency must be > 0")
             else:
                 raise gcmd.error("Частота должна быть > 0")
         if shaper_axis not in ['x', 'y']:
-            if self.language == 'en':
+            if self.language != 'ru':
                 raise gcmd.error("Axis must be X or Y")
             else:
                 raise gcmd.error("Ось должна быть X или Y")
@@ -37,7 +37,7 @@ class zmod:
         configfile.set('input_shaper', 'shaper_freq_%s' % shaper_axis, "%.1f" % frequency)
 
         # Информационное сообщение
-        if self.language == 'en':
+        if self.language != 'ru':
             gcmd.respond_info(
                 "Parameters for axis %s have been saved. Run SAVE_CONFIG to apply changes." %
                 shaper_axis.upper()

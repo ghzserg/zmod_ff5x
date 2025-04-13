@@ -8,7 +8,7 @@ cat << 'EOF' > list.link
 
 source /opt/config/mod/.shell/0.sh
 
-if [ ${ZLANG} == 'en' ]; then
+if [ ${ZLANG} != 'ru' ]; then
     A1="Incorrect access rights"
     FIXED_STR="Fixed"
     NOT_FIXED_STR="Error fix"

@@ -312,7 +312,7 @@ def plot_compare_frequency(ax, lognames, signal1, signal2, max_freq):
         print(warning_msg)
 
     # Plot the two belts PSD signals
-    if current_language == 'en':
+    if current_language != 'ru':
         ax.plot(signal1.freqs, signal1.psd, label="Belt " + signal1_belt, color=KLIPPAIN_COLORS['purple'])
         ax.plot(signal2.freqs, signal2.psd, label="Belt " + signal2_belt, color=KLIPPAIN_COLORS['orange'])
     else:
@@ -323,7 +323,7 @@ def plot_compare_frequency(ax, lognames, signal1, signal2, max_freq):
     psd_lowest_max = min(signal1.psd.max(), signal2.psd.max())
     peaks_warning_threshold = PEAKS_DETECTION_THRESHOLD * psd_lowest_max
     ax.axhline(y=peaks_warning_threshold, color='black', linestyle='--', linewidth=0.5)
-    if current_language == 'en':
+    if current_language != 'ru':
         ax.fill_between(signal1.freqs, 0, peaks_warning_threshold, color='green', alpha=0.15, label='Relax region')
     else:
         ax.fill_between(signal1.freqs, 0, peaks_warning_threshold, color='green', alpha=0.15, label='Релакс-регион')
@@ -337,7 +337,7 @@ def plot_compare_frequency(ax, lognames, signal1, signal2, max_freq):
         label = ALPHABET[paired_peak_count]
         amplitude_offset = abs(((signal2.psd[peak2[0]] - signal1.psd[peak1[0]]) / max(signal1.psd[peak1[0]], signal2.psd[peak2[0]])) * 100)
         frequency_offset = abs(signal2.freqs[peak2[0]] - signal1.freqs[peak1[0]])
-        if current_language == 'en':
+        if current_language != 'ru':
             offsets_table_data.append([f"Peak {label}", f"{frequency_offset:.1f} Hz", f"{amplitude_offset:.1f} %"])
         else:
             offsets_table_data.append([f"Пик {label}", f"{frequency_offset:.1f} Hz", f"{amplitude_offset:.1f} %"])
@@ -372,7 +372,7 @@ def plot_compare_frequency(ax, lognames, signal1, signal2, max_freq):
     ax2 = ax.twinx() # To split the legends in two box
     ax2.yaxis.set_visible(False)
     similarity_factor = compute_curve_similarity_factor(signal1, signal2)
-    if current_language == 'en':
+    if current_language != 'ru':
         ax2.plot([], [], ' ', label=f'Estimated similarity: {similarity_factor:.1f}%')
         ax2.plot([], [], ' ', label=f'Unpaired peaks count: {unpaired_peak_count}')
         print(f"Estimated belt similarity: {similarity_factor:.1f}%")
@@ -382,7 +382,7 @@ def plot_compare_frequency(ax, lognames, signal1, signal2, max_freq):
         print(f"Оценочное сходство ремней: {similarity_factor:.1f}%")
 
     # Setting axis parameters, grid and graph title
-    if current_language == 'en':
+    if current_language != 'ru':
         ax.set_xlabel('Frequency (Hz)')
         ax.set_xlim([0, max_freq]) 
         ax.set_ylabel('Power spectral density')
@@ -400,14 +400,14 @@ def plot_compare_frequency(ax, lognames, signal1, signal2, max_freq):
     ax.grid(which='minor', color='lightgrey')
     fontP = matplotlib.font_manager.FontProperties()
     fontP.set_size('small')
-    if current_language == 'en':
+    if current_language != 'ru':
         ax.set_title('Belt frequency profiles (estimated similarity: {:.1f}%)'.format(similarity_factor), fontsize=10, color=KLIPPAIN_COLORS['dark_orange'], weight='bold')
     else:
         ax.set_title('Профили частот ремней (предполагаемое сходство: {:.1f}%)'.format(similarity_factor), fontsize=10, color=KLIPPAIN_COLORS['dark_orange'], weight='bold')
 
     # Print the table of offsets ontop of the graph below the original legend (upper right)
     if len(offsets_table_data) > 0:
-        if current_language == 'en':
+        if current_language != 'ru':
             columns = ["", "Freq diff", "Amp diff"]
         else:
             columns = ["", "D частоты", "D амплитуды", ]
@@ -434,7 +434,7 @@ def plot_difference_spectrogram(ax, data1, data2, signal1, signal2, similarity_f
     # the similarity factor and the number or unpaired peaks from the belts frequency profile
     # Be careful, this value is highly opinionated and is pretty experimental!
     mhi, textual_mhi = compute_mhi(combined_sum, similarity_factor, len(signal1.unpaired_peaks) + len(signal2.unpaired_peaks))
-    if current_language == 'en':
+    if current_language != 'ru':
         print(f"[experimental] Mechanical health indicator: {textual_mhi.lower()} ({mhi:.1f}%)")
         ax.set_title(f"Differential spectrogram", fontsize=14, color=KLIPPAIN_COLORS['dark_orange'], weight='bold')
         ax.plot([], [], ' ', label=f'{textual_mhi} (experimental)')
@@ -448,7 +448,7 @@ def plot_difference_spectrogram(ax, data1, data2, signal1, signal2, similarity_f
     norm = matplotlib.colors.TwoSlopeNorm(vmin=np.min(combined_divergent), vcenter=0, vmax=np.max(combined_divergent))
     ax.pcolormesh(t, bins, combined_divergent.T, cmap=cm, norm=norm, shading='gouraud')
 
-    if current_language == 'en':
+    if current_language != 'ru':
         ax.set_xlabel('Frequency (Hz)')
         ax.set_xlim([0., max_freq])
         ax.set_ylabel('Time (s)')
@@ -466,7 +466,7 @@ def plot_difference_spectrogram(ax, data1, data2, signal1, signal2, similarity_f
     unpaired_peak_count = 0
     for _, peak in enumerate(signal1.unpaired_peaks):
         ax.axvline(signal1.freqs[peak], color=KLIPPAIN_COLORS['red_pink'], linestyle='dotted', linewidth=1.5)
-        if current_language == 'en':
+        if current_language != 'ru':
             ax.annotate(f"Peak {unpaired_peak_count + 1}", (signal1.freqs[peak], t[-1]*0.05),
                         textcoords="data", color=KLIPPAIN_COLORS['red_pink'], rotation=90, fontsize=10,
                         verticalalignment='bottom', horizontalalignment='right')
@@ -478,7 +478,7 @@ def plot_difference_spectrogram(ax, data1, data2, signal1, signal2, similarity_f
 
     for _, peak in enumerate(signal2.unpaired_peaks):
         ax.axvline(signal2.freqs[peak], color=KLIPPAIN_COLORS['red_pink'], linestyle='dotted', linewidth=1.5)
-        if current_language == 'en':
+        if current_language != 'ru':
             ax.annotate(f"Peak {unpaired_peak_count + 1}", (signal2.freqs[peak], t[-1]*0.05),
                         textcoords="data", color=KLIPPAIN_COLORS['red_pink'], rotation=90, fontsize=10,
                         verticalalignment='bottom', horizontalalignment='right')
@@ -496,7 +496,7 @@ def plot_difference_spectrogram(ax, data1, data2, signal1, signal2, similarity_f
         ax.axvline(x_min, color=KLIPPAIN_COLORS['dark_purple'], linestyle='dotted', linewidth=1.5)
         ax.axvline(x_max, color=KLIPPAIN_COLORS['dark_purple'], linestyle='dotted', linewidth=1.5)
         ax.fill_between([x_min, x_max], 0, np.max(combined_divergent), color=KLIPPAIN_COLORS['dark_purple'], alpha=0.3)
-        if current_language == 'en':
+        if current_language != 'ru':
             ax.annotate(f"Peaks {label}", (x_min, t[-1]*0.05),
                     textcoords="data", color=KLIPPAIN_COLORS['dark_purple'], rotation=90, fontsize=10,
                     verticalalignment='bottom', horizontalalignment='right')
@@ -600,6 +600,10 @@ def main():
     opts = optparse.OptionParser(usage)
     opts.add_option("--ru", action="store_true", dest="ru_lang", default=False, help="Use Russian output")
     opts.add_option("--en", action="store_true", dest="en_lang", default=False, help="Use English output")
+    opts.add_option("--de", action="store_true", dest="en_lang", default=False, help="Use English output")
+    opts.add_option("--fr", action="store_true", dest="en_lang", default=False, help="Use English output")
+    opts.add_option("--es", action="store_true", dest="en_lang", default=False, help="Use English output")
+    opts.add_option("--it", action="store_true", dest="en_lang", default=False, help="Use English output")
     opts.add_option("-o", "--output", type="string", dest="output",
                     default=None, help="filename of output graph")
     opts.add_option("-f", "--max_freq", type="float", default=200.,

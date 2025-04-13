@@ -5,7 +5,7 @@ source /opt/config/mod/.shell/0.sh
 unset LD_PRELOAD
 
 if [ "$1" == "test" ] && [ -f /opt/config/mod_data/klipper_data.json ]; then
-    if [ ${ZLANG} == 'en' ]; then
+    if [ ${ZLANG} != 'ru' ]; then
         echo "!! Found unfinished print, use ZRESTORE to recover !!"
         echo "To delete recovery data: ZRESTORE TEST=2"
     else
@@ -25,5 +25,5 @@ if [ -f /opt/config/mod_data/klipper_data.json ]; then
         /opt/config/mod/.shell/root/restore_gcode /opt/config/mod_data/klipper_data.json /tmp/uds ${DATA_GCODES} --${ZLANG}
     fi
 else
-    [ ${ZLANG} == 'en' ] && echo "Print recovery file not found" || echo "Файл восстановления печати не найден"
+    [ ${ZLANG} != 'ru' ] && echo "Print recovery file not found" || echo "Файл восстановления печати не найден"
 fi

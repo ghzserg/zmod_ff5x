@@ -12,7 +12,7 @@ PRINTER_DATA_TMP=/root/printer_data/tmp
 PID_FILE=/run/moonraker.pid
 
 FNAME="/opt/config/mod/fluidd.sql"
-[ ${ZLANG} == "en" ] && FNAME="/opt/config/mod/fluidd_en.sql"
+[ ${ZLANG} != 'ru' ] && FNAME="/opt/config/mod/fluidd_en.sql"
 
 start() {
     NEED="N"
