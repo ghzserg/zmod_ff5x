@@ -109,6 +109,7 @@ mkdir -p ${DATA_GCODES}/tmp
 /opt/config/mod/.shell/root/S70httpd start
 
 # Пробуем синхронизировать время
+ntpd -dd -n -q -p pool.ntp.org || \
 ntpd -dd -n -q -p ru.pool.ntp.org || \
 ntpd -dd -n -q -p ntp1.vniiftri.ru || \
 ntpd -dd -n -q -p ntp2.vniiftri.ru || \
@@ -142,6 +143,7 @@ echo "ZSSH_RELOAD" >/tmp/printer
 
 # 10 минут пробуем получить время
 for i in `seq 0 50`; do 
+    ntpd -dd -n -q -p pool.ntp.org && break
     ntpd -dd -n -q -p ru.pool.ntp.org && break
     ntpd -dd -n -q -p ntp1.vniiftri.ru && break
     ntpd -dd -n -q -p ntp2.vniiftri.ru && break

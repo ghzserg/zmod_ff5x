@@ -7,5 +7,4 @@ base
 ./ff5.cfg
 ./mod.cfg
 ./motion_sensor.cfg
-./switch_sensor.cfg
 ./switch_sensor_display_off.cfg

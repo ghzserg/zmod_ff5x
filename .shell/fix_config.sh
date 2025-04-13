@@ -157,14 +157,14 @@ fix_config()
     echo "[zmod]
     language: ${ZLANG}" >${MOD_CONF}/mod_data/lang.cfg
 
-    check_link ${MOD_CONF}/base.cfg ${MOD_CONF}/${LANG}/base.cfg
-    check_link ${MOD_CONF}/client.cfg ${MOD_CONF}/${LANG}/client.cfg
-    check_link ${MOD_CONF}/display_off.cfg ${MOD_CONF}/${LANG}/display_off.cfg
-    check_link ${MOD_CONF}/ff5.cfg ${MOD_CONF}/${LANG}/ff5.cfg
-    check_link ${MOD_CONF}/mod.cfg ${MOD_CONF}/${LANG}/mod.cfg
-    check_link ${MOD_CONF}/motion_sensor.cfg ${MOD_CONF}/${LANG}/motion_sensor.cfg
-    check_link ${MOD_CONF}/switch_sensor.cfg ${MOD_CONF}/${LANG}/switch_sensor.cfg
-    check_link ${MOD_CONF}/switch_sensor_display_off.cfg ${MOD_CONF}/${LANG}/switch_sensor_display_off.cfg
+    check_link ${MOD_CONF}/base.cfg ${ZLANG}/base.cfg
+    check_link ${MOD_CONF}/client.cfg ${ZLANG}/client.cfg
+    check_link ${MOD_CONF}/display_off.cfg ${ZLANG}/display_off.cfg
+    check_link ${MOD_CONF}/ff5.cfg ${ZLANG}/ff5.cfg
+    check_link ${MOD_CONF}/mod.cfg ${ZLANG}/mod.cfg
+    check_link ${MOD_CONF}/motion_sensor.cfg ${ZLANG}/motion_sensor.cfg
+    check_link ${MOD_CONF}/switch_sensor.cfg ${ZLANG}/switch_sensor.cfg
+    check_link ${MOD_CONF}/switch_sensor_display_off.cfg ${ZLANG}/switch_sensor_display_off.cfg
 
     if ! [ -f ${MOD_CONF}/mod_data/user.moonraker.conf ]; then
         echo "#Enter user config here
