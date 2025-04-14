@@ -199,7 +199,7 @@ TRANSLATIONS = {
         'unload_error': "Unloading error: {}",
         'unload_success': "Unloading started",
         'unload': "Unload"
-    }
+    },
     'de': {
         'cancel': "Abbrechen",
         'change_color': "Farbe ändern",
