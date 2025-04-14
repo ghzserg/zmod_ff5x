@@ -15,7 +15,17 @@ FNAME="/opt/config/mod/fluidd.sql"
 [ ${ZLANG} != 'ru' ] && FNAME="/opt/config/mod/fluidd_en.sql"
 
 start() {
-    grep -q Spoolman /root/printer_data/moonraker.asvc || echo "Spoolman" >/root/printer_data/moonraker.asvc
+    grep -q Spoolman /root/printer_data/moonraker.asvc || echo "Spoolman" >>/root/printer_data/moonraker.asvc
+    grep -q klipper_mcu /root/printer_data/moonraker.asvc || echo "klipper_mcu" >>/root/printer_data/moonraker.asvc
+    grep -q webcamd /root/printer_data/moonraker.asvc || echo "webcamd" >>/root/printer_data/moonraker.asvc
+    grep -q MoonCord /root/printer_data/moonraker.asvc || echo "MoonCord" >>/root/printer_data/moonraker.asvc
+    grep -q KlipperScreen /root/printer_data/moonraker.asvc || echo "KlipperScreen" >>/root/printer_data/moonraker.asvc
+    grep -q moonraker-telegram-bot /root/printer_data/moonraker.asvc || echo "moonraker-telegram-bot" >>/root/printer_data/moonraker.asvc
+    grep -q moonraker-obico /root/printer_data/moonraker.asvc || echo "moonraker-obico" >>/root/printer_data/moonraker.asvc
+    grep -q sonar /root/printer_data/moonraker.asvc || echo "sonar" >>/root/printer_data/moonraker.asvc
+    grep -q crowsnest /root/printer_data/moonraker.asvc || echo "crowsnest" >>/root/printer_data/moonraker.asvc
+    grep -q octoeverywhere /root/printer_data/moonraker.asvc || echo "octoeverywhere" >>/root/printer_data/moonraker.asvc
+    grep -q ratos-configurator /root/printer_data/moonraker.asvc || echo "ratos-configurator" >>/root/printer_data/moonraker.asvc
     NEED="N"
     if [ -f "/opt/config/mod_data/database/moonraker-sql.db" ]; then
         grep -q "save_moonraker = 1" /opt/config/mod_data/variables.cfg || sqlite3 /opt/config/mod_data/database/moonraker-sql.db <${FNAME}
