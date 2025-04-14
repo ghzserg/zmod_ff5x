@@ -8,8 +8,11 @@ else if [ "$1" == 'ru' ]; then ZLANG="ru"
 else if [ "$1" == 'fr' ]; then ZLANG="fr"
 else if [ "$1" == 'es' ]; then ZLANG="es"
 else if [ "$1" == 'it' ]; then ZLANG="it"
+else if [ "$1" == 'zh' ]; then ZLANG="zh"
+else if [ "$1" == 'ja' ]; then ZLANG="ja"
+else if [ "$1" == 'ko' ]; then ZLANG="ko"
 else ZLANG="en"
-fi; fi; fi; fi; fi; fi
+fi; fi; fi; fi; fi; fi; fi; fi; fi
 
 echo "[zmod]
 language: ${ZLANG}" >${MOD_CONF}/mod_data/lang.cfg

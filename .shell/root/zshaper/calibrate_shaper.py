@@ -195,6 +195,12 @@ def main():
                 help="Set output language to English")
     opts.add_option("--fr", action="store_true", dest="en", default=False,
                 help="Set output language to English")
+    opts.add_option("--zh", action="store_true", dest="en", default=False,
+                help="Set output language to English")
+    opts.add_option("--ja", action="store_true", dest="en", default=False,
+                help="Set output language to English")
+    opts.add_option("--ko", action="store_true", dest="en", default=False,
+                help="Set output language to English")
     opts.add_option("--ru", action="store_true", dest="ru", default=False,
                 help="Установить русский язык вывода")
     opts.add_option("-o", "--output", type="string", dest="output",

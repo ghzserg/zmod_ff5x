@@ -24,9 +24,7 @@ else if grep -q "language: de" ${MOD_CONF}/mod_data/lang.cfg; then ZLANG="de";
 else if grep -q "language: fr" ${MOD_CONF}/mod_data/lang.cfg; then ZLANG="fr";
 else if grep -q "language: it" ${MOD_CONF}/mod_data/lang.cfg; then ZLANG="it";
 else if grep -q "language: es" ${MOD_CONF}/mod_data/lang.cfg; then ZLANG="es";
-fi
-fi
-fi
-fi
-fi
-fi
+else if grep -q "language: zh" ${MOD_CONF}/mod_data/lang.cfg; then ZLANG="zh";
+else if grep -q "language: ja" ${MOD_CONF}/mod_data/lang.cfg; then ZLANG="ja";
+else if grep -q "language: ko" ${MOD_CONF}/mod_data/lang.cfg; then ZLANG="ko";
+fi; fi; fi; fi; fi; fi; fi; fi; fi
