@@ -15,6 +15,7 @@ FNAME="/opt/config/mod/fluidd.sql"
 [ ${ZLANG} != 'ru' ] && FNAME="/opt/config/mod/fluidd_en.sql"
 
 start() {
+    grep -q Spoolman /root/printer_data/moonraker.asvc || echo "Spoolman" >/root/printer_data/moonraker.asvc
     NEED="N"
     if [ -f "/opt/config/mod_data/database/moonraker-sql.db" ]; then
         grep -q "save_moonraker = 1" /opt/config/mod_data/variables.cfg || sqlite3 /opt/config/mod_data/database/moonraker-sql.db <${FNAME}
