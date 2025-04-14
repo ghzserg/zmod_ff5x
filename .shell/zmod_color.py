@@ -3,30 +3,126 @@ import requests
 import subprocess
 
 COLOR_MAPPING = {
-    "ffffff": {"ru": "белый", "en": "white"},
-    "fef043": {"ru": "ярко-желтый", "en": "bright yellow"},
-    "dcf478": {"ru": "светло-зеленый", "en": "light green"},
-    "0acc38": {"ru": "зеленый", "en": "green"},
-    "067749": {"ru": "темно-зеленый", "en": "dark green"},
-    "0c6283": {"ru": "сине-зеленый", "en": "cyan"},
-    "0de2a0": {"ru": "бирюзовый", "en": "turquoise"},
-    "75d9f3": {"ru": "голубой", "en": "light blue"},
-    "45a8f9": {"ru": "синий", "en": "blue"},
-    "2750e0": {"ru": "темно-синий", "en": "dark blue"},
-    "46328e": {"ru": "фиолетовый", "en": "purple"},
-    "a03cf7": {"ru": "ярко-фиолетовый", "en": "bright purple"},
-    "f330f9": {"ru": "пурпурный", "en": "magenta"},
-    "d4b0dc": {"ru": "сиреневый", "en": "lilac"},
-    "f95d73": {"ru": "розовый", "en": "pink"},
-    "f72224": {"ru": "красный", "en": "red"},
-    "7c4b00": {"ru": "коричневый", "en": "brown"},
-    "f98d33": {"ru": "оранжевый", "en": "orange"},
-    "fdebd5": {"ru": "бежевый", "en": "beige"},
-    "d3c4a3": {"ru": "светло-коричневый", "en": "light brown"},
-    "af7836": {"ru": "терракотовый", "en": "terracotta"},
-    "898989": {"ru": "серый", "en": "gray"},
-    "bcbcbc": {"ru": "светло-серый", "en": "light gray"},
-    "161616": {"ru": "черный", "en": "black"}
+    "ffffff": {
+        "ru": "белый", "en": "white",
+        "de": "weiß", "fr": "blanc", "it": "bianco", "es": "blanco",
+        "zh": "白色", "ja": "白", "ko": "흰색"
+    },
+    "fef043": {
+        "ru": "ярко-желтый", "en": "bright yellow",
+        "de": "knallgelb", "fr": "jaune vif", "it": "giallo brillante", "es": "amarillo brillante",
+        "zh": "亮黄色", "ja": "明るい黄色", "ko": "밝은 노란색"
+    },
+    "dcf478": {
+        "ru": "светло-зеленый", "en": "light green",
+        "de": "hellgrün", "fr": "vert clair", "it": "verde chiaro", "es": "verde claro",
+        "zh": "浅绿色", "ja": "薄緑", "ko": "연두색"
+    },
+    "0acc38": {
+        "ru": "зеленый", "en": "green",
+        "de": "grün", "fr": "vert", "it": "verde", "es": "verde",
+        "zh": "绿色", "ja": "緑", "ko": "초록색"
+    },
+    "067749": {
+        "ru": "темно-зеленый", "en": "dark green",
+        "de": "dunkelgrün", "fr": "vert foncé", "it": "verde scuro", "es": "verde oscuro",
+        "zh": "深绿色", "ja": "濃い緑", "ko": "진한 녹색"
+    },
+    "0c6283": {
+        "ru": "сине-зеленый", "en": "cyan",
+        "de": "türkis", "fr": "cyan", "it": "ciano", "es": "cian",
+        "zh": "青绿色", "ja": "シアン", "ko": "청록색"
+    },
+    "0de2a0": {
+        "ru": "бирюзовый", "en": "turquoise",
+        "de": "türkis", "fr": "turquoise", "it": "turchese", "es": "turquesa",
+        "zh": "绿松石色", "ja": "ターコイズ", "ko": "터키석색"
+    },
+    "75d9f3": {
+        "ru": "голубой", "en": "light blue",
+        "de": "hellblau", "fr": "bleu clair", "it": "azzurro", "es": "azul claro",
+        "zh": "天蓝色", "ja": "水色", "ko": "하늘색"
+    },
+    "45a8f9": {
+        "ru": "синий", "en": "blue",
+        "de": "blau", "fr": "bleu", "it": "blu", "es": "azul",
+        "zh": "蓝色", "ja": "青", "ko": "파란색"
+    },
+    "2750e0": {
+        "ru": "темно-синий", "en": "dark blue",
+        "de": "dunkelblau", "fr": "bleu foncé", "it": "blu scuro", "es": "azul oscuro",
+        "zh": "深蓝色", "ja": "濃い青", "ko": "진한 파란색"
+    },
+    "46328e": {
+        "ru": "фиолетовый", "en": "purple",
+        "de": "lila", "fr": "violet", "it": "viola", "es": "morado",
+        "zh": "紫色", "ja": "紫", "ko": "보라색"
+    },
+    "a03cf7": {
+        "ru": "ярко-фиолетовый", "en": "bright purple",
+        "de": "knalllila", "fr": "violet vif", "it": "viola brillante", "es": "morado brillante",
+        "zh": "亮紫色", "ja": "明るい紫", "ko": "밝은 보라색"
+    },
+    "f330f9": {
+        "ru": "пурпурный", "en": "magenta",
+        "de": "magenta", "fr": "magenta", "it": "magenta", "es": "magenta",
+        "zh": "品红色", "ja": "マゼンタ", "ko": "자홍색"
+    },
+    "d4b0dc": {
+        "ru": "сиреневый", "en": "lilac",
+        "de": "lilafarben", "fr": "lilas", "it": "lilla", "es": "lila",
+        "zh": "丁香色", "ja": "ライラック", "ko": "라일락색"
+    },
+    "f95d73": {
+        "ru": "розовый", "en": "pink",
+        "de": "rosa", "fr": "rose", "it": "rosa", "es": "rosa",
+        "zh": "粉色", "ja": "ピンク", "ko": "분홍색"
+    },
+    "f72224": {
+        "ru": "красный", "en": "red",
+        "de": "rot", "fr": "rouge", "it": "rosso", "es": "rojo",
+        "zh": "红色", "ja": "赤", "ko": "빨간색"
+    },
+    "7c4b00": {
+        "ru": "коричневый", "en": "brown",
+        "de": "braun", "fr": "marron", "it": "marrone", "es": "marrón",
+        "zh": "棕色", "ja": "茶色", "ko": "갈색"
+    },
+    "f98d33": {
+        "ru": "оранжевый", "en": "orange",
+        "de": "orange", "fr": "orange", "it": "arancione", "es": "naranja",
+        "zh": "橙色", "ja": "オレンジ", "ko": "주황색"
+    },
+    "fdebd5": {
+        "ru": "бежевый", "en": "beige",
+        "de": "beige", "fr": "beige", "it": "beige", "es": "beige",
+        "zh": "米色", "ja": "ベージュ", "ko": "베이지색"
+    },
+    "d3c4a3": {
+        "ru": "светло-коричневый", "en": "light brown",
+        "de": "hellbraun", "fr": "brun clair", "it": "marrone chiaro", "es": "marrón claro",
+        "zh": "浅棕色", "ja": "薄茶色", "ko": "연한 갈색"
+    },
+    "af7836": {
+        "ru": "терракотовый", "en": "terracotta",
+        "de": "terracotta", "fr": "terre cuite", "it": "terracotta", "es": "terracota",
+        "zh": "陶土色", "ja": "テラコッタ", "ko": "테라코타색"
+    },
+    "898989": {
+        "ru": "серый", "en": "gray",
+        "de": "grau", "fr": "gris", "it": "grigio", "es": "gris",
+        "zh": "灰色", "ja": "灰色", "ko": "회색"
+    },
+    "bcbcbc": {
+        "ru": "светло-серый", "en": "light gray",
+        "de": "hellgrau", "fr": "gris clair", "it": "grigio chiaro", "es": "gris claro",
+        "zh": "浅灰色", "ja": "薄灰色", "ko": "연한 회색"
+    },
+    "161616": {
+        "ru": "черный", "en": "black",
+        "de": "schwarz", "fr": "noir", "it": "nero", "es": "negro",
+        "zh": "黑色", "ja": "黒", "ko": "검은색"
+    }
 }
 
 TRANSLATIONS = {
@@ -104,13 +200,272 @@ TRANSLATIONS = {
         'unload_success': "Unloading started",
         'unload': "Unload"
     }
+    'de': {
+        'cancel': "Abbrechen",
+        'change_color': "Farbe ändern",
+        'change_spool': "Wechsle zu Spule {}: {}/{}",
+        'change_type': "Typ ändern",
+        'config_error': "!! Fehler beim Ändern von Farbe/Typ\n{}",
+        'config_success': "Einstellungen gespeichert",
+        'error_color_or_type': "Geben Sie HEX oder TYP an",
+        'error_leveling': "Ungültiges LEVELING: {}. Erlaubt: 0 oder 1",
+        'error_napr': "Ungültige Richtung (0-1)",
+        'error_no_filename': "Dateiname nicht angegeben (FILENAME)",
+        'error_slot': "Ungültiger SLOT. Erlaubt: 1-4",
+        'error_tool': "Ungültiges TOOL{}: {}. Erlaubt: 1-4",
+        'error_type': "Ungültiger Materialtyp: {}. Erlaubt: {}",
+        'file_tool': "In Datei",
+        'load_error': "!! Fehler beim Laden/Entladen\n{}",
+        'load_success': "Laden gestartet",
+        'load': "Laden",
+        'no_response': "!! Keine Antwort vom Drucker. Konfigurieren Sie: \"Einstellungen\" -> \"WLAN\" -> \"Netzwerkmodus\" -> \"Nur lokal\"\n{}",
+        'printing_error': "!! Fehler beim Drucken der Datei\n{}",
+        'prompt_choose': "Wählen Sie eine Spule zum Ändern",
+        'prompt_file': "Zu druckende Datei: {}",
+        'prompt_leveling_off': "Drucken ohne Bett-Nivellierung",
+        'prompt_leveling_on': "Drucken mit Bett-Nivellierung",
+        'prompt_map_color': "Farbe aus Datei einer Spule zuordnen",
+        'prompt_material': "Geladenes Material",
+        'reset_colors': "Farben zurücksetzen",
+        'select_action': "Aktion auswählen",
+        'select_color': "Farbe auswählen",
+        'select_type': "Materialtyp auswählen",
+        'send_print': "Druck starten",
+        'spool_info': "Spule {}: {}/{}",
+        'spool': "in Spule",
+        'unload_error': "Fehler beim Entladen: {}",
+        'unload_success': "Entladen gestartet",
+        'unload': "Entladen"
+    },
+    'fr': {
+        'cancel': "Annuler",
+        'change_color': "Changer la couleur",
+        'change_spool': "Changement vers la bobine {}: {}/{}",
+        'change_type': "Changer le type",
+        'config_error': "!! Erreur lors du changement de couleur/type\n{}",
+        'config_success': "Paramètres enregistrés",
+        'error_color_or_type': "Indiquez HEX ou TYPE",
+        'error_leveling': "LEVELING invalide: {}. Autorisé: 0 ou 1",
+        'error_napr': "Direction invalide (0-1)",
+        'error_no_filename': "Nom de fichier non spécifié (FILENAME)",
+        'error_slot': "Emplacement SLOT invalide. Autorisé: 1-4",
+        'error_tool': "Outil TOOL{} invalide: {}. Autorisé: 1-4",
+        'error_type': "Type de matériau invalide: {}. Autorisé: {}",
+        'file_tool': "Dans le fichier",
+        'load_error': "!! Erreur de chargement/déchargement\n{}",
+        'load_success': "Chargement commencé",
+        'load': "Charger",
+        'no_response': "!! Aucune réponse de l'imprimante. Configurez via : \"Paramètres\" -> \"WiFi\" -> \"Mode réseau\" -> \"Réseau local uniquement\"\n{}",
+        'printing_error': "!! Erreur d'impression du fichier\n{}",
+        'prompt_choose': "Sélectionnez une bobine à modifier",
+        'prompt_file': "Fichier à imprimer : {}",
+        'prompt_leveling_off': "Imprimer sans nivellement du lit",
+        'prompt_leveling_on': "Imprimer avec nivellement du lit",
+        'prompt_map_color': "Associer la couleur du fichier à une bobine",
+        'prompt_material': "Matériau chargé",
+        'reset_colors': "Réinitialiser les couleurs",
+        'select_action': "Sélectionner une action",
+        'select_color': "Sélectionner une couleur",
+        'select_type': "Sélectionner un type de matériau",
+        'send_print': "Démarrer l'impression",
+        'spool_info': "Bobine {}: {}/{}",
+        'spool': "dans la bobine",
+        'unload_error': "Erreur de déchargement : {}",
+        'unload_success': "Déchargement commencé",
+        'unload': "Décharger"
+    },
+    'it': {
+        'cancel': "Annulla",
+        'change_color': "Cambia colore",
+        'change_spool': "Cambio a bobina {}: {}/{}",
+        'change_type': "Cambia tipo",
+        'config_error': "!! Errore durante la modifica di colore/tipo\n{}",
+        'config_success': "Impostazioni salvate",
+        'error_color_or_type': "Specificare HEX o TYPE",
+        'error_leveling': "LEVELING non valido: {}. Consentiti: 0 o 1",
+        'error_napr': "Direzione non valida (0-1)",
+        'error_no_filename': "Nome file non specificato (FILENAME)",
+        'error_slot': "Slot non valido. Consentiti: 1-4",
+        'error_tool': "Strumento TOOL{} non valido: {}. Consentiti: 1-4",
+        'error_type': "Tipo di materiale non valido: {}. Consentiti: {}",
+        'file_tool': "Nel file",
+        'load_error': "!! Errore di caricamento/scaricamento\n{}",
+        'load_success': "Caricamento avviato",
+        'load': "Carica",
+        'no_response': "!! Nessuna risposta dalla stampante. Configura tramite: \"Impostazioni\" -> \"WiFi\" -> \"Modalità rete\" -> \"Solo locale\"\n{}",
+        'printing_error': "!! Errore di stampa del file\n{}",
+        'prompt_choose': "Seleziona una bobina da modificare",
+        'prompt_file': "File da stampare: {}",
+        'prompt_leveling_off': "Stampa senza livellamento del letto",
+        'prompt_leveling_on': "Stampa con livellamento del letto",
+        'prompt_map_color': "Associa il colore del file alla bobina",
+        'prompt_material': "Materiale caricato",
+        'reset_colors': "Reimposta colori",
+        'select_action': "Seleziona azione",
+        'select_color': "Seleziona colore",
+        'select_type': "Seleziona tipo di materiale",
+        'send_print': "Avvia stampa",
+        'spool_info': "Bobina {}: {}/{}",
+        'spool': "nella bobina",
+        'unload_error': "Errore di scaricamento: {}",
+        'unload_success': "Scaricamento avviato",
+        'unload': "Scarica"
+    },
+    'es': {
+        'cancel': "Cancelar",
+        'change_color': "Cambiar color",
+        'change_spool': "Cambiando a carrete {}: {}/{}",
+        'change_type': "Cambiar tipo",
+        'config_error': "!! Error al cambiar color/tipo\n{}",
+        'config_success': "Configuración guardada",
+        'error_color_or_type': "Especifique HEX o TYPE",
+        'error_leveling': "LEVELING inválido: {}. Permitido: 0 o 1",
+        'error_napr': "Dirección inválida (0-1)",
+        'error_no_filename': "Nombre de archivo no especificado (FILENAME)",
+        'error_slot': "Ranura SLOT inválida. Permitidas: 1-4",
+        'error_tool': "Herramienta TOOL{} inválida: {}. Permitidas: 1-4",
+        'error_type': "Tipo de material inválido: {}. Permitidos: {}",
+        'file_tool': "En el archivo",
+        'load_error': "!! Error de carga/descarga\n{}",
+        'load_success': "Carga iniciada",
+        'load': "Cargar",
+        'no_response': "!! Sin respuesta de la impresora. Configure en: \"Ajustes\" -> \"WiFi\" -> \"Modo de red\" -> \"Solo local\"\n{}",
+        'printing_error': "!! Error al imprimir el archivo\n{}",
+        'prompt_choose': "Seleccione un carrete para modificar",
+        'prompt_file': "Archivo para imprimir: {}",
+        'prompt_leveling_off': "Imprimir sin nivelación de cama",
+        'prompt_leveling_on': "Imprimir con nivelación de cama",
+        'prompt_map_color': "Mapear color del archivo al carrete",
+        'prompt_material': "Material cargado",
+        'reset_colors': "Restablecer colores",
+        'select_action': "Seleccionar acción",
+        'select_color': "Seleccionar color",
+        'select_type': "Seleccionar tipo de material",
+        'send_print': "Iniciar impresión",
+        'spool_info': "Carrete {}: {}/{}",
+        'spool': "en el carrete",
+        'unload_error': "Error de descarga: {}",
+        'unload_success': "Descarga iniciada",
+        'unload': "Descargar"
+    },
+    'zh': {
+        'cancel': "取消",
+        'change_color': "更改颜色",
+        'change_spool': "正在切换到线轴{}: {}/{}",
+        'change_type': "更改类型",
+        'config_error': "!! 颜色/类型更改错误\n{}",
+        'config_success': "设置已保存",
+        'error_color_or_type': "请指定HEX或TYPE",
+        'error_leveling': "无效的LEVELING: {}。允许值：0或1",
+        'error_napr': "方向无效（0-1）",
+        'error_no_filename': "未指定文件名（FILENAME）",
+        'error_slot': "无效的SLOT。允许值：1-4",
+        'error_tool': "无效的TOOL{}: {}。允许值：1-4",
+        'error_type': "无效的材料类型: {}。允许值：{}",
+        'file_tool': "文件中",
+        'load_error': "!! 加载/卸载错误\n{}",
+        'load_success': "开始加载",
+        'load': "加载",
+        'no_response': "!! 打印机无响应。请通过以下方式配置：\"设置\" -> \"WiFi\" -> \"网络模式\" -> \"仅本地网络\"\n{}",
+        'printing_error': "!! 文件打印错误\n{}",
+        'prompt_choose': "选择要修改的线轴",
+        'prompt_file': "要打印的文件：{}",
+        'prompt_leveling_off': "不使用调平打印",
+        'prompt_leveling_on': "使用调平打印",
+        'prompt_map_color': "将文件颜色映射到线轴",
+        'prompt_material': "已加载材料",
+        'reset_colors': "重置颜色",
+        'select_action': "选择操作",
+        'select_color': "选择颜色",
+        'select_type': "选择材料类型",
+        'send_print': "开始打印",
+        'spool_info': "线轴{}: {}/{}",
+        'spool': "在线轴中",
+        'unload_error': "卸载错误：{}",
+        'unload_success': "开始卸载",
+        'unload': "卸载"
+    },
+    'ja': {
+        'cancel': "キャンセル",
+        'change_color': "色を変更",
+        'change_spool': "スプール{}に変更中: {}/{}",
+        'change_type': "タイプを変更",
+        'config_error': "!! 色/タイプ変更エラー\n{}",
+        'config_success': "設定が保存されました",
+        'error_color_or_type': "HEXまたはTYPEを指定してください",
+        'error_leveling': "無効なLEVELING: {}。0または1のみ有効",
+        'error_napr': "方向が無効です（0-1）",
+        'error_no_filename': "ファイル名が指定されていません（FILENAME）",
+        'error_slot': "無効なSLOTです。1-4が有効",
+        'error_tool': "無効なTOOL{}: {}。1-4が有効",
+        'error_type': "無効な材料タイプ: {}。有効なタイプ：{}",
+        'file_tool': "ファイル内",
+        'load_error': "!! 読み込み/排出エラー\n{}",
+        'load_success': "読み込み開始",
+        'load': "読み込む",
+        'no_response': "!! プリンターから応答なし。設定方法：\"設定\" -> \"WiFi\" -> \"ネットワークモード\" -> \"ローカルのみ\"\n{}",
+        'printing_error': "!! ファイル印刷エラー\n{}",
+        'prompt_choose': "変更するスプールを選択",
+        'prompt_file': "印刷するファイル：{}",
+        'prompt_leveling_off': "ベッドレベリングなしで印刷",
+        'prompt_leveling_on': "ベッドレベリングを使用して印刷",
+        'prompt_map_color': "ファイルの色をスプールにマッピング",
+        'prompt_material': "読み込まれた材料",
+        'reset_colors': "色をリセット",
+        'select_action': "操作を選択",
+        'select_color': "色を選択",
+        'select_type': "材料タイプを選択",
+        'send_print': "印刷を開始",
+        'spool_info': "スプール{}: {}/{}",
+        'spool': "スプール内",
+        'unload_error': "排出エラー：{}",
+        'unload_success': "排出を開始",
+        'unload': "排出する"
+    },
+    'ko': {
+        'cancel': "취소",
+        'change_color': "색상 변경",
+        'change_spool': "스풀 {}로 교체 중: {}/{}",
+        'change_type': "유형 변경",
+        'config_error': "!! 색상/유형 변경 오류\n{}",
+        'config_success': "설정이 저장되었습니다",
+        'error_color_or_type': "HEX 또는 TYPE을 지정하세요",
+        'error_leveling': "잘못된 LEVELING: {}. 0 또는 1만 허용",
+        'error_napr': "방향이 잘못되었습니다 (0-1)",
+        'error_no_filename': "파일 이름이 지정되지 않음 (FILENAME)",
+        'error_slot': "잘못된 SLOT. 1-4만 허용",
+        'error_tool': "잘못된 TOOL{}: {}. 1-4만 허용",
+        'error_type': "잘못된 재료 유형: {}. 허용된 유형: {}",
+        'file_tool': "파일 내",
+        'load_error': "!! 로드/언로드 오류\n{}",
+        'load_success': "로드 시작",
+        'load': "로드",
+        'no_response': "!! 프린터 응답 없음. 설정 방법: \"설정\" -> \"WiFi\" -> \"네트워크 모드\" -> \"로컬 전용\"\n{}",
+        'printing_error': "!! 파일 인쇄 오류\n{}",
+        'prompt_choose': "수정할 스풀 선택",
+        'prompt_file': "인쇄할 파일: {}",
+        'prompt_leveling_off': "레벨링 없이 인쇄",
+        'prompt_leveling_on': "레벨링으로 인쇄",
+        'prompt_map_color': "파일 색상을 스풀에 매핑",
+        'prompt_material': "로드된 재료",
+        'reset_colors': "색상 초기화",
+        'select_action': "작업 선택",
+        'select_color': "색상 선택",
+        'select_type': "재료 유형 선택",
+        'send_print': "인쇄 시작",
+        'spool_info': "스풀 {}: {}/{}",
+        'spool': "스풀 내",
+        'unload_error': "언로드 오류: {}",
+        'unload_success': "언로드 시작",
+        'unload': "언로드"
+    }
 }
 
 class zmod_color:
     def __init__(self, config):
         self.printer = config.get_printer()
         self.zmod = self.printer.lookup_object('zmod', None)
-        self.language = 'ru'
+        self.language = 'en'
         if self.zmod is not None:
             self.language = self.zmod.get_lang()
         self.gcode = self.printer.lookup_object('gcode')
