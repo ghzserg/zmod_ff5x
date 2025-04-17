@@ -21,7 +21,7 @@ fi
 
 [ ${ZLANG} != 'ru' ] && echo "Installed from USB: ${VER_MOD_FULL}. Update from Fluidd/Mainsail: ${VER_FF_FULL}" || echo "Установлено с флешки: ${VER_MOD_FULL}. Обновление с Fluidd/Mainsaill: ${VER_FF_FULL}"
 
-if [ "${VER_FF}" != "${VER_MOD}" ] || [ "${VER_MOD_FULL}" == "1.4.0" ] || [ "${VER_MOD_FULL}" == "1.4.1" ] || [ "${VER_MOD_FULL}" == "1.4.2" ]; then
+if [ "${VER_FF}" != "${VER_MOD}" ]; then
     if [ ${ZLANG} != 'ru' ]; then
         echo "RESPOND TYPE=error MSG=\"Update ZMOD from USB, latest version ${VER_FF_FULL}, current version ${VER_MOD_FULL}\"" >/tmp/printer
         echo "You can use ZFLASH macro to update from USB over network"

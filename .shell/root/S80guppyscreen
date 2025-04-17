@@ -50,7 +50,14 @@ start() {
 
     killall guppyscreen
     [ ${FF5X} -eq 0 ] && backlight 60
-    start-stop-daemon -S -b -m -p $PID_FILE -N $NICENESS --exec $GUPPYSCREEN -- --${ZLANG}
+
+    if [ "${ZLANG}" == "ja" ] || [ "${ZLANG}" == "ko" ] || [ "${ZLANG}" == "zh" ]; then
+        export LANG="en_US.utf8"
+    else
+        export LANG=$(ls /usr/lib/locale | grep -i "^${ZLANG}" | head -n1)
+    fi
+
+    start-stop-daemon -S -b -m -p $PID_FILE -N $NICENESS --exec $GUPPYSCREEN
 }
 
 stop() {
