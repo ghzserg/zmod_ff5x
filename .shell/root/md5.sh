@@ -74,6 +74,7 @@ excludes=(
     -and -not -path "./etc/localtime"
     -and -not -path "./root/mainsail/*"
     -and -not -path "./root/fluidd/*"
+    -and -not -path "./root/printer_data/moonraker.asvc"
 )
 
 echo 'echo ${DIR_STR}'>>list.link
