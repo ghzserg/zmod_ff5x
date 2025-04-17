@@ -4970,7 +4970,6 @@ check_file './root/moonraker-env/lib/python3.12/site-packages/zipp/__pycache__/_
 check_file './root/moonraker-env/lib/python3.12/site-packages/zipp/__pycache__/glob.cpython-312.pyc' '644'
 check_file './root/moonraker-env/lib/python3.12/site-packages/zipp/__pycache__/__init__.cpython-312.pyc' '644'
 check_file './root/moonraker-env/pyvenv.cfg' '644'
-check_file './root/printer_data/moonraker.asvc' '644'
 check_file './share/man/man1/ttx.1' '644'
 check_file './share/man/man8/iotop.8' '644'
 check_file './usr/bin/aconnect' '755'
