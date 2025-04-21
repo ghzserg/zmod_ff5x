@@ -28,6 +28,16 @@ else
     STOCK="stock"
 fi
 
+check_link()
+{
+    a=$(readlink "$1" 2>/dev/null)
+    if [ "$a" != "$2" ]; then
+        echo -n "$1 - Incorrect link ($a!=$2): "
+        rm -f "$1" 2>/dev/null
+        ln -s "$2" "$1" 2>/dev/null && echo "Исправлено"  || echo "Ошибка исправления"
+    fi
+}
+
 restore_file()
 {
     fname="$1"
@@ -108,5 +118,15 @@ else
     git clean -f
     git restore .
     git status --porcelain
+
+    [ ${ZLANG} != 'ru' ] && echo "Restoring the correct ZMOD language" || echo "Восстановление правильного языка ZMOD"
+    check_link ${MOD_CONF}/mod/base.cfg ${ZLANG}/base.cfg
+    check_link ${MOD_CONF}/mod/client.cfg ${ZLANG}/client.cfg
+    check_link ${MOD_CONF}/mod/display_off.cfg ${ZLANG}/display_off.cfg
+    [ ${FF5X} -eq 0 ] && check_link ${MOD_CONF}/mod/ff5.cfg ${ZLANG}/ff5.cfg
+    check_link ${MOD_CONF}/mod/mod.cfg ${ZLANG}/mod.cfg
+    check_link ${MOD_CONF}/mod/motion_sensor.cfg ${ZLANG}/motion_sensor.cfg
+    check_link ${MOD_CONF}/mod/switch_sensor_display_off.cfg ${ZLANG}/switch_sensor_display_off.cfg
+
     [ ${ZLANG} != 'ru' ] && echo "ZMOD self-test completed" || echo "Самопроверка ZMOD окончена"
 fi
