@@ -286,8 +286,6 @@ class KlippyAPI(APITransport):
                 result.remove('fan_generic external_fan')
             if 'fan_generic internal_fan' in result:
                 result.remove('fan_generic internal_fan')
-            if 'fan_generic chamber_fan' in result:
-                result.remove('fan_generic chamber_fan')
             if 'temperature_sensor tvocValue' in result:
                 result.remove('temperature_sensor tvocValue')
         return {
