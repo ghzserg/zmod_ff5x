@@ -28,7 +28,7 @@ check_link()
 {
     a=$(readlink "$1" 2>/dev/null)
     if [ "$a" != "$2" ]; then
-        echo -n "$1 - Incorrect link ($a!=$2): "
+        /bin/echo -n "$1 - Incorrect link ($a!=$2): "
         rm -f "$1" 2>/dev/null
         ln -s "$2" "$1" 2>/dev/null && echo "Исправлено"  || echo "Ошибка исправления"
     fi
