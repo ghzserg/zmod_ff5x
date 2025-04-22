@@ -91,12 +91,13 @@ restore_base()
 
 
     # Возвращаем fan_generic pcb_fan
+    [ ${FF5X} -eq 1 ] && PIN="PA5" || PIN="PB7"
     if ! grep -q '^\[fan_generic pcb_fan' ${MOD_CONF}/printer.base.cfg
         then
-            echo '
+            echo "
 [fan_generic pcb_fan]
-pin:PB7
-' >>${MOD_CONF}/printer.base.cfg
+pin:${PIN}
+" >>${MOD_CONF}/printer.base.cfg
     fi
 
     # Возвращаем gcode_button check_level_pin
@@ -461,7 +462,7 @@ press_gcode:
     # Добавляем controller_fan driver_fan
     [ ${FF5X} -eq 1 ] && PIN="PA5" || PIN="PB7"
     if grep -q '^\[controller_fan driver_fan' ${PRINTER_BASE}; then
-        if ! grep -A1 '^\[controller_fan driver_fan' ${PRINTER_BASE} | grep -q "pin:$PIN"; then
+        if ! grep -A1 '^\[controller_fan driver_fan' ${PRINTER_BASE} | grep -q "pin:${PIN}"; then
             # Удаляем controller_fan driver_fan
             cd ${MOD_CONF}
             sed -e '/^\[controller_fan driver_fan/,/^\[/d' ${PRINTER_BASE} >printer.base.tmp
@@ -480,7 +481,7 @@ press_gcode:
 
         echo "
 [controller_fan driver_fan]
-pin:$PIN
+pin:${PIN}
 fan_speed: 1.0
 idle_timeout: 30
 stepper: stepper_x, stepper_y, stepper_z
