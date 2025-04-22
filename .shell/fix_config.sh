@@ -34,6 +34,22 @@ check_link()
     fi
 }
 
+rem_driver_fan()
+{
+    # Удаляем controller_fan driver_fan
+    if grep -q '^\[controller_fan driver_fan' ${MOD_CONF}/printer.base.cfg; then
+        cd ${MOD_CONF}
+        sed -e '/^\[controller_fan driver_fan/,/^\[/d' printer.base.cfg >printer.base.tmp
+        diff -u printer.base.cfg printer.base.tmp | grep -v "printer.base.cfg" |grep "^-" | cut -b 2- >heater_bed.txt
+        sed -i '$d' heater_bed.txt
+        num=$(wc -l heater_bed.txt|cut  -d " " -f1)
+        num=$(($num-1))
+        sed -e "/^\[controller_fan driver_fan/,+${num}d;" printer.base.cfg >printer.base.tmp
+        mv printer.base.tmp printer.base.cfg
+        rm -f heater_bed.txt
+    fi
+}
+
 restore_base()
 {
     grep -q '^\[include mod.user.cfg' ${MOD_CONF}/printer.cfg && sed -i '/include mod.user.cfg/d' ${MOD_CONF}/printer.cfg
@@ -76,19 +92,7 @@ restore_base()
         rm -f ${KLIPPER_DIR}/klippy/extras/load_cell_tare.py
     fi
 
-    # Удаляем controller_fan driver_fan
-    if grep -q '^\[controller_fan driver_fan' ${MOD_CONF}/printer.base.cfg
-        then
-            cd ${MOD_CONF}
-            sed -e '/^\[controller_fan driver_fan/,/^\[/d' printer.base.cfg >printer.base.tmp
-            diff -u printer.base.cfg printer.base.tmp | grep -v "printer.base.cfg" |grep "^-" | cut -b 2- >heater_bed.txt
-            sed -i '$d' heater_bed.txt
-            num=$(wc -l heater_bed.txt|cut  -d " " -f1)
-            num=$(($num-1))
-            sed -e "/^\[controller_fan driver_fan/,+${num}d;" printer.base.cfg >printer.base.tmp
-            mv printer.base.tmp printer.base.cfg
-            rm -f heater_bed.txt
-    fi
+    rem_driver_fan
 
     # Возвращаем fan_generic pcb_fan
     if ! grep -q '^\[fan_generic pcb_fan' ${MOD_CONF}/printer.base.cfg
@@ -459,18 +463,23 @@ press_gcode:
     fi
 
     # Добавляем controller_fan driver_fan
-    if ! grep -q '^\[controller_fan driver_fan' ${PRINTER_BASE}
-        then
-            NEED_REBOOT=1
-            cd ${MOD_CONF}
+    [ ${FF5X} -eq 0 ] && PIN="PA5" || PIN="PB7"
+    if grep -q '^\[controller_fan driver_fan' ${PRINTER_BASE}; then
+        if ! grep -A1 '^\[controller_fan driver_fan' ${PRINTER_BASE} | grep -q "pin:$PIN"; then
+            rem_driver_fan
+        fi
+    fi
+    if ! grep -q '^\[controller_fan driver_fan' ${PRINTER_BASE}; then
+        NEED_REBOOT=1
+        cd ${MOD_CONF}
 
-            echo '
+        echo "
 [controller_fan driver_fan]
-pin:PB7
+pin:$PIN
 fan_speed: 1.0
 idle_timeout: 30
 stepper: stepper_x, stepper_y, stepper_z
-' >>${PRINTER_BASE}
+" >>${PRINTER_BASE}
     fi
 
     # Klipper12 FIX
