@@ -34,22 +34,6 @@ check_link()
     fi
 }
 
-rem_driver_fan()
-{
-    # Удаляем controller_fan driver_fan
-    if grep -q '^\[controller_fan driver_fan' ${MOD_CONF}/printer.base.cfg; then
-        cd ${MOD_CONF}
-        sed -e '/^\[controller_fan driver_fan/,/^\[/d' printer.base.cfg >printer.base.tmp
-        diff -u printer.base.cfg printer.base.tmp | grep -v "printer.base.cfg" |grep "^-" | cut -b 2- >heater_bed.txt
-        sed -i '$d' heater_bed.txt
-        num=$(wc -l heater_bed.txt|cut  -d " " -f1)
-        num=$(($num-1))
-        sed -e "/^\[controller_fan driver_fan/,+${num}d;" printer.base.cfg >printer.base.tmp
-        mv printer.base.tmp printer.base.cfg
-        rm -f heater_bed.txt
-    fi
-}
-
 restore_base()
 {
     grep -q '^\[include mod.user.cfg' ${MOD_CONF}/printer.cfg && sed -i '/include mod.user.cfg/d' ${MOD_CONF}/printer.cfg
@@ -92,7 +76,19 @@ restore_base()
         rm -f ${KLIPPER_DIR}/klippy/extras/load_cell_tare.py
     fi
 
-    rem_driver_fan
+    # Удаляем controller_fan driver_fan
+    if grep -q '^\[controller_fan driver_fan' ${MOD_CONF}/printer.base.cfg; then
+        cd ${MOD_CONF}
+        sed -e '/^\[controller_fan driver_fan/,/^\[/d' printer.base.cfg >printer.base.tmp
+        diff -u printer.base.cfg printer.base.tmp | grep -v "printer.base.cfg" |grep "^-" | cut -b 2- >heater_bed.txt
+        sed -i '$d' heater_bed.txt
+        num=$(wc -l heater_bed.txt|cut  -d " " -f1)
+        num=$(($num-1))
+        sed -e "/^\[controller_fan driver_fan/,+${num}d;" printer.base.cfg >printer.base.tmp
+        mv printer.base.tmp printer.base.cfg
+        rm -f heater_bed.txt
+    fi
+
 
     # Возвращаем fan_generic pcb_fan
     if ! grep -q '^\[fan_generic pcb_fan' ${MOD_CONF}/printer.base.cfg
@@ -466,7 +462,16 @@ press_gcode:
     [ ${FF5X} -eq 1 ] && PIN="PA5" || PIN="PB7"
     if grep -q '^\[controller_fan driver_fan' ${PRINTER_BASE}; then
         if ! grep -A1 '^\[controller_fan driver_fan' ${PRINTER_BASE} | grep -q "pin:$PIN"; then
-            rem_driver_fan
+            # Удаляем controller_fan driver_fan
+            cd ${MOD_CONF}
+            sed -e '/^\[controller_fan driver_fan/,/^\[/d' ${PRINTER_BASE} >printer.base.tmp
+            diff -u printer.base.cfg printer.base.tmp | grep -v "printer.base.cfg" |grep "^-" | cut -b 2- >heater_bed.txt
+            sed -i '$d' heater_bed.txt
+            num=$(wc -l heater_bed.txt|cut  -d " " -f1)
+            num=$(($num-1))
+            sed -e "/^\[controller_fan driver_fan/,+${num}d;" ${PRINTER_BASE} >printer.base.tmp
+            cat printer.base.tmp >${PRINTER_BASE}
+            rm -f heater_bed.txt printer.base.tmp
         fi
     fi
     if ! grep -q '^\[controller_fan driver_fan' ${PRINTER_BASE}; then
