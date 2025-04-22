@@ -463,7 +463,7 @@ press_gcode:
     fi
 
     # Добавляем controller_fan driver_fan
-    [ ${FF5X} -eq 0 ] && PIN="PA5" || PIN="PB7"
+    [ ${FF5X} -eq 1 ] && PIN="PA5" || PIN="PB7"
     if grep -q '^\[controller_fan driver_fan' ${PRINTER_BASE}; then
         if ! grep -A1 '^\[controller_fan driver_fan' ${PRINTER_BASE} | grep -q "pin:$PIN"; then
             rem_driver_fan
