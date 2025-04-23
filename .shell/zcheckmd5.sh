@@ -60,10 +60,12 @@ if ! [ -f /ZMOD ]; then
         cd "$c"
         if echo $c | grep -q control; then
             touch Update
+            [ ${FF5X} -eq 1 ] && touch UpdateM
         fi
         md5sum -c md5sum.list 2>/dev/null | grep -v -e "OK$"
         if echo $c | grep -q control; then
             rm -f Update
+            [ ${FF5X} -eq 1 ] && rm -f UpdateM
         fi
         cd "$b"
     done
