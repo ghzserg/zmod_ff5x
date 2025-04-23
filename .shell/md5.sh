@@ -96,6 +96,8 @@ excludes=(
     -and -not -path "./usr/prog/nginx/logs/*"
     -and -not -path "./etc/hosts"
     -and -not -path "./usr/prog/moonraker/moonraker/*"
+    -and -not -path "./usr/data/FlashForge-TestModel-01.3mf"
+    -and -not -path "./usr/prog/klipper/start.sh"
 )
 
 find . \
