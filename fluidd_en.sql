@@ -138,9 +138,18 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "alias": "",
             "categoryId": "09a46273-5af4-4fc4-b232-442934c1e810",
             "color": "",
+            "disabledWhilePrinting": false,
+            "name": "restore_tar_config",
+            "order": 10,
+            "visible": true
+        },
+        {
+            "alias": "",
+            "categoryId": "09a46273-5af4-4fc4-b232-442934c1e810",
+            "color": "",
             "disabledWhilePrinting": true,
             "name": "zflash",
-            "order": 10,
+            "order": 11,
             "visible": true
         },
         {
@@ -1269,7 +1278,7 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
             },
             {
                "color" : "group",
-               "name" : "GET_ZMOD_DATA",
+               "name" : "RESTORE_TAR_CONFIG",
                "pos" : 14,
                "showInPause" : true,
                "showInPrinting" : true,
@@ -1277,7 +1286,7 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
             },
             {
                "color" : "group",
-               "name" : "SAVE_ZMOD_DATA",
+               "name" : "GET_ZMOD_DATA",
                "pos" : 15,
                "showInPause" : true,
                "showInPrinting" : true,
@@ -1285,7 +1294,7 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
             },
             {
                "color" : "group",
-               "name" : "START_ZMOD",
+               "name" : "SAVE_ZMOD_DATA",
                "pos" : 16,
                "showInPause" : true,
                "showInPrinting" : true,
@@ -1293,7 +1302,7 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
             },
             {
                "color" : "group",
-               "name" : "STOP_ZMOD",
+               "name" : "START_ZMOD",
                "pos" : 17,
                "showInPause" : true,
                "showInPrinting" : true,
@@ -1301,7 +1310,7 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
             },
             {
                "color" : "group",
-               "name" : "SKIP_ZMOD",
+               "name" : "STOP_ZMOD",
                "pos" : 18,
                "showInPause" : true,
                "showInPrinting" : true,
@@ -1309,7 +1318,7 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
             },
             {
                "color" : "group",
-               "name" : "REMOVE_ZMOD",
+               "name" : "SKIP_ZMOD",
                "pos" : 19,
                "showInPause" : true,
                "showInPrinting" : true,
@@ -1317,7 +1326,7 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
             },
             {
                "color" : "group",
-               "name" : "ZSSH_RESTART",
+               "name" : "REMOVE_ZMOD",
                "pos" : 20,
                "showInPause" : true,
                "showInPrinting" : true,
@@ -1325,7 +1334,7 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
             },
             {
                "color" : "group",
-               "name" : "TEST_EMMC",
+               "name" : "ZSSH_RESTART",
                "pos" : 21,
                "showInPause" : true,
                "showInPrinting" : true,
@@ -1333,7 +1342,7 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
             },
             {
                "color" : "group",
-               "name" : "CLEAR_EMMC",
+               "name" : "TEST_EMMC",
                "pos" : 22,
                "showInPause" : true,
                "showInPrinting" : true,
@@ -1341,7 +1350,7 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
             },
             {
                "color" : "group",
-               "name" : "ZSSH_ON",
+               "name" : "CLEAR_EMMC",
                "pos" : 23,
                "showInPause" : true,
                "showInPrinting" : true,
@@ -1349,7 +1358,7 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
             },
             {
                "color" : "group",
-               "name" : "ZSSH_OFF",
+               "name" : "ZSSH_ON",
                "pos" : 24,
                "showInPause" : true,
                "showInPrinting" : true,
@@ -1357,7 +1366,7 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
             },
             {
                "color" : "group",
-               "name" : "ZSSH_RELOAD",
+               "name" : "ZSSH_OFF",
                "pos" : 25,
                "showInPause" : true,
                "showInPrinting" : true,
@@ -1365,15 +1374,15 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
             },
             {
                "color" : "group",
-               "name" : "UPDATE_MCU",
+               "name" : "ZSSH_RELOAD",
                "pos" : 26,
-               "showInPause" : false,
-               "showInPrinting" : false,
+               "showInPause" : true,
+               "showInPrinting" : true,
                "showInStandby" : true
             },
             {
                "color" : "group",
-               "name" : "CHECK_SYSTEM",
+               "name" : "UPDATE_MCU",
                "pos" : 27,
                "showInPause" : false,
                "showInPrinting" : false,
@@ -1381,7 +1390,7 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
             },
             {
                "color" : "group",
-               "name" : "RESTART_GUPPY",
+               "name" : "CHECK_SYSTEM",
                "pos" : 28,
                "showInPause" : false,
                "showInPrinting" : false,
@@ -1389,8 +1398,16 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
             },
             {
                "color" : "group",
-               "name" : "ZFLASH",
+               "name" : "RESTART_GUPPY",
                "pos" : 29,
+               "showInPause" : false,
+               "showInPrinting" : false,
+               "showInStandby" : true
+            },
+            {
+               "color" : "group",
+               "name" : "ZFLASH",
+               "pos" : 30,
                "showInPause" : false,
                "showInPrinting" : false,
                "showInStandby" : true
@@ -1656,6 +1673,9 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('gupp
       "hidden": true
     },
     "TAR_CONFIG": {
+      "hidden": true
+    },
+    "RESTORE_TAR_CONFIG": {
       "hidden": true
     },
     "TEST_EMMC": {
