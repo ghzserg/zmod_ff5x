@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Run
-# bash <(wget --cache=off -q -O - https://github.com/ghzserg/ff5m/raw/refs/heads/main/telegram/telegram.sh)
+# bash <(wget --cache=off -q -O - https://github.com/ghzserg/zmod_ff5m/raw/refs/heads/1.5/telegram/telegram.sh)
 
 apt update 
 apt upgrade -y
