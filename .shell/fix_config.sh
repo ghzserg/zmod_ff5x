@@ -237,20 +237,7 @@ unset LD_PRELOAD
     fi
 
     # Rem стукач
-    if grep -q "china_cloud = 1" ${MOD_CONF}/mod_data/variables.cfg; then
-        if [ ${FF5X} -eq 0 ]; then
-            china_razbl api.cloud.flashforge.com
-            china_razbl api.fdmcloud.flashforge.com
-            china_razbl cloud.sz3dp.com
-            china_razbl hz.sz3dp.com
-            china_razbl printer2.polar3d.com
-            china_razbl qvs.qiniuapi.com
-            china_razbl update.cn.sz3dp.com
-            china_razbl update.sz3dp.com
-            china_razbl cloud.sz3dp.com
-            china_razbl polar3d.com
-        fi
-    else
+    if grep -q "china_cloud = 0" ${MOD_CONF}/mod_data/variables.cfg; then
         if [ ${FF5X} -eq 0 ]; then
             china_block api.cloud.flashforge.com
             china_block api.fdmcloud.flashforge.com
@@ -264,6 +251,19 @@ unset LD_PRELOAD
             china_block polar3d.com
         else
             mount --bind /usr/data/config/mod/.shell/hosts /etc/hosts
+        fi
+    else
+        if [ ${FF5X} -eq 0 ]; then
+            china_razbl api.cloud.flashforge.com
+            china_razbl api.fdmcloud.flashforge.com
+            china_razbl cloud.sz3dp.com
+            china_razbl hz.sz3dp.com
+            china_razbl printer2.polar3d.com
+            china_razbl qvs.qiniuapi.com
+            china_razbl update.cn.sz3dp.com
+            china_razbl update.sz3dp.com
+            china_razbl cloud.sz3dp.com
+            china_razbl polar3d.com
         fi
     fi
 
