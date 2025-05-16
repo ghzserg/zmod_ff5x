@@ -160,7 +160,7 @@ class KlippyAPI(APITransport):
               break
         # Если работаем в режиме без экрана
         if found:
-            script = f'SDCARD_PRINT_FILE FILENAME="{filename}"'
+            script = f'_ZSDCARD_PRINT_FILE FILENAME="{filename}"'
         else:
             found = False
             with open('/opt/config/mod_data/variables.cfg') as file:
