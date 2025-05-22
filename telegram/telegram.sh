@@ -5,7 +5,7 @@
 
 apt update 
 apt upgrade -y
-apt install docker.io docker-compose docker sudo -y
+apt install docker.io docker-compose docker sudo apparmor -y
 
 useradd -m -G docker tbot
 chsh tbot -s /bin/bash
