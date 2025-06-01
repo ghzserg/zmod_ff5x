@@ -7,7 +7,7 @@
 import math, logging
 from . import bus
 
-# Zcontrol 1.15
+# Zcontrol 1.16
 
 ######################################################################
 # SensorBase
@@ -57,15 +57,25 @@ class SensorBase:
                 self.language = self.zmod.get_lang()
 
     def cmd_ZCONTROL_ON(self, gcmd):
-        self.getlang()
+        if self.max_temp != 2048 and self.zcontrol == 0:
+            status_msg = f"// ZCONTROL_ON. {self.max_temp}. {'PAUSE' if self.zcommand == 1 else 'ABORT'}"
+            gcmd.respond_info(status_msg)
         self.zcontrol = 1
 
+    def cmd_ZCONTROL_OFF(self, gcmd):
+        if self.max_temp != 2048 and self.zcontrol == 1:
+            status_msg = "// ZCONTROL_OFF"
+            gcmd.respond_info(status_msg)
+        self.zcontrol = 0
+
     def cmd_ZCONTROL_PAUSE(self, gcmd):
-        self.getlang()
+        if self.max_temp != 2048 and self.zcommand == 0:
+            status_msg = f"{'// ZCONTROL_ON' if self.zcontrol == 1 else '// ZCONTROL_OFF'}. {self.max_temp}. PAUSE"
         self.zcommand = 1
 
     def cmd_ZCONTROL_ABORT(self, gcmd):
-        self.getlang()
+        if self.max_temp != 2048 and self.zcommand == 1:
+            status_msg = f"{'// ZCONTROL_ON' if self.zcontrol == 1 else '// ZCONTROL_OFF'}. {self.max_temp}. ABORT"
         self.zcommand = 0
 
     def cmd_ZCONTROL_STATUS(self, gcmd):
@@ -100,10 +110,6 @@ class SensorBase:
                 else:
                     action_msg = "При сработке отключается Klipper. // ZCONTROL_ABORT"
             gcmd.respond_info(action_msg)
-
-    def cmd_ZCONTROL_OFF(self, gcmd):
-        self.getlang()
-        self.zcontrol = 0
 
     def setup_minmax(self, min_temp, max_temp):
         adc_range = [self.calc_adc(min_temp), self.calc_adc(max_temp)]
