@@ -7,7 +7,7 @@
 import math, logging
 from . import bus
 
-# Zcontrol 1.16
+# Zcontrol 1.17
 
 ######################################################################
 # SensorBase
@@ -58,24 +58,24 @@ class SensorBase:
 
     def cmd_ZCONTROL_ON(self, gcmd):
         if self.max_temp != 2048 and self.zcontrol == 0:
-            status_msg = f"// ZCONTROL_ON. {self.max_temp}. {'PAUSE' if self.zcommand == 1 else 'ABORT'}"
+            status_msg = f"ZCONTROL_ON. {self.max_temp}. {'PAUSE' if self.zcommand == 1 else 'ABORT'}"
             gcmd.respond_info(status_msg)
         self.zcontrol = 1
 
     def cmd_ZCONTROL_OFF(self, gcmd):
         if self.max_temp != 2048 and self.zcontrol == 1:
-            status_msg = "// ZCONTROL_OFF"
+            status_msg = "ZCONTROL_OFF"
             gcmd.respond_info(status_msg)
         self.zcontrol = 0
 
     def cmd_ZCONTROL_PAUSE(self, gcmd):
         if self.max_temp != 2048 and self.zcommand == 0:
-            status_msg = f"{'// ZCONTROL_ON' if self.zcontrol == 1 else '// ZCONTROL_OFF'}. {self.max_temp}. PAUSE"
+            status_msg = f"{'ZCONTROL_ON' if self.zcontrol == 1 else 'ZCONTROL_OFF'}. {self.max_temp}. PAUSE"
         self.zcommand = 1
 
     def cmd_ZCONTROL_ABORT(self, gcmd):
         if self.max_temp != 2048 and self.zcommand == 1:
-            status_msg = f"{'// ZCONTROL_ON' if self.zcontrol == 1 else '// ZCONTROL_OFF'}. {self.max_temp}. ABORT"
+            status_msg = f"{'ZCONTROL_ON' if self.zcontrol == 1 else 'ZCONTROL_OFF'}. {self.max_temp}. ABORT"
         self.zcommand = 0
 
     def cmd_ZCONTROL_STATUS(self, gcmd):
