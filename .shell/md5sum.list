@@ -1141,7 +1141,6 @@ e2efc90f05e8497dbfc080d13c8e2dd9  ./opt/klipper/klippy/extras/tmc5160.py
 a4ff80155ed0c982e6b482f0903141af  ./opt/klipper/klippy/extras/tsl1401cl_filament_width_sensor.py
 14f4a56540626e8ebed20585cb16bd22  ./opt/klipper/klippy/extras/tuning_tower.py
 6d8cef9e8a0c5eb27a8d688ceec42b30  ./opt/klipper/klippy/extras/verify_heater.py
-025354a1c2b767f849e9262a37a786fd  ./opt/klipper/klippy/extras/virtual_sdcard.py
 5ab083031fb0b988c214560ccaf3c1c4  ./opt/klipper/klippy/extras/z_thermal_adjust.py
 6d09f41f6abadac3a79d4f07e59f5e4f  ./opt/klipper/klippy/extras/z_tilt.py
 4c369d4f3bfb877441f2cc2ac5a7da4b  ./opt/klipper/klippy/gcode.py
@@ -2385,7 +2384,6 @@ a875190f039557b9f12d23ba9796f857  ./opt/klipper/src/thermocouple.c
 63cfcef5a684c464ce9a8108addbda7e  ./opt/klipper/src/trsync.c
 a36b661efdc7964d9c13fbc02b511e15  ./opt/klipper/src/trsync.h
 875a9e8b193f659cc1a51043b70c5b3c  ./opt/klipper/start.kp.sh
-875a9e8b193f659cc1a51043b70c5b3c  ./opt/klipper/start.sh
 78e8d6b6871baa038e0d2caf81bd6987  ./opt/klipper/start.sh.test
 081d0340e2c3fd6286e3971de61b59bb  ./opt/klipper/test/configs/at90usb1286.config
 9e38e823481c0c35a8615de08c80f3a6  ./opt/klipper/test/configs/atmega1280.config
