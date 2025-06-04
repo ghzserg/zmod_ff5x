@@ -102,10 +102,16 @@ def plot_freq_response(lognames, calibration_data, shapers,
 
     fig, ax = matplotlib.pyplot.subplots()
     if current_language != 'ru':
-        xlabel = "Frequency, Hz at SCV = %.1f" % (scv)
+        if scv >= 11:
+            xlabel = "!SCV %.1f>11. Read: github.com/ghzserg/zmod/wiki/Global_en#fix_scv" % (scv)
+        else:
+            xlabel = "Frequency, Hz at SCV = %.1f" % (scv)
         ax.set_ylabel('Power Spectral Density')
     else:
-        xlabel = "Частота, Hz при SCV = %.1f" % (scv)
+        if scv >= 11:
+            xlabel = "!SCV %.1f>11. Прочтите: github.com/ghzserg/zmod/wiki/Global_ru#fix_scv" % (scv)
+        else:
+            xlabel = "Частота, Hz при SCV = %.1f" % (scv)
         ax.set_ylabel('Спектральная плотность мощности')
     ax.set_xlabel(xlabel)
     ax.set_xlim([0, max_freq])
