@@ -521,7 +521,14 @@ class zmod_color:
                 headers=headers,
                 timeout=60
             )
-            return response.status_code, response.json()
+            try:
+                response_json = response.json()
+            except ValueError:
+                return None, response.text
+            if response_json.get("code") == 0:
+                return response.status_code, response_json
+            else:
+                return None, response_json
         except requests.exceptions.RequestException as e:
             return None, str(e)
 
