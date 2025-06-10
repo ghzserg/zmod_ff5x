@@ -14,9 +14,9 @@ if ! [ -f "${DATA_GCODES}/$1" ]; then
 fi
 
 M109=$(head -$GLINES "${DATA_GCODES}/$1" | grep "^M109" | head -1)
-[ "$M109" == "" ] && M109=$(head -1000 "${DATA_GCODES}/$1" | grep "^M104" | head -1 | sed 's|M104|M109|')
+[ "$M109" == "" ] && M109=$(head -$GLINES "${DATA_GCODES}/$1" | grep "^M104" | head -1 | sed 's|M104|M109|')
 M190=$(head -$GLINES "${DATA_GCODES}/$1" | grep "^M190" | head -1)
-[ "$M190" == "" ] && M190=$(head -1000 "${DATA_GCODES}/$1" | grep "^M140" | head -1 | sed 's|M140|M190|')
+[ "$M190" == "" ] && M190=$(head -$GLINES "${DATA_GCODES}/$1" | grep "^M140" | head -1 | sed 's|M140|M190|')
 
 if [ "$M190" == "" ] || [ "$M109" == "" ]; then
     echo "RESPOND TYPE=command MSG=action:prompt_end" >/tmp/printer
