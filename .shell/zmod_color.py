@@ -528,6 +528,8 @@ class zmod_color:
             if response_json.get("code") == 0:
                 return response.status_code, response_json
             else:
+                response_json["send_data"] = data
+                response_json["send_url"] = url
                 return None, response_json
         except requests.exceptions.RequestException as e:
             return None, str(e)
