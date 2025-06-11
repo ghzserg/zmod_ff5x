@@ -169,6 +169,16 @@ fix_config()
     check_link ${MOD_CONF}/mod/motion_sensor.cfg ${ZLANG}/motion_sensor.cfg
     check_link ${MOD_CONF}/mod/switch_sensor_display_off.cfg ${ZLANG}/switch_sensor_display_off.cfg
 
+    if [ ${FF5X} -eq 1 ]; then
+        # В Версии 1.0.7 перенесли конфиг в /usr/prog/config/
+        [ -d /usr/prog/config/mod ] && rm -rf /usr/prog/config/mod
+        [ -d /usr/prog/config/mod_data ] && rm -rf /usr/prog/config/mod_data
+        [ -d /usr/prog/config/save ] && rm -rf /usr/prog/config/save
+        [ -f /usr/prog/config/Adventurer5M.json ] && check_link ${MOD_CONF}/Adventurer5M.json /usr/prog/config/Adventurer5M.json
+        [ -f /usr/prog/config/PowerOff ] && check_link ${MOD_CONF}/PowerOff /usr/prog/config/PowerOff
+        [ -f /usr/prog/config/fileSlotId.json ] && check_link ${MOD_CONF}/fileSlotId.json /usr/prog/config/fileSlotId.json
+    fi
+
     if ! [ -f ${MOD_CONF}/mod_data/user.moonraker.conf ]; then
         echo "#Enter user config here
 [authorization]
