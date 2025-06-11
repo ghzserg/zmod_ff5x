@@ -120,11 +120,11 @@ start_prepare()
     mount --bind ${MOD_CONF} ${MOD}/opt/config
 
     if [ ${FF5X} -eq 1 ]; then
-        mkdir -p ${MOD}${MOD_CONF} ${MOD}/prog/config
+        mkdir -p ${MOD}${MOD_CONF} ${MOD}/usr/prog/config
         mount --bind ${MOD_CONF} ${MOD}${MOD_CONF}
         mount --bind ${MOD}/opt/ /opt
         mount --bind ${MOD_CONF} /opt/config/
-        [ -d /usr/prog/config ] && mount --bind /usr/prog/config ${MOD}/prog/config
+        [ -d /usr/prog/config ] && mount --bind /usr/prog/config ${MOD}/usr/prog/config
 
         mkdir -p ${MOD}${LOG_FILES}
         mount --bind ${LOG_FILES}/ ${MOD}${LOG_FILES}/
