@@ -1,6 +1,11 @@
 #!/bin/sh
 
-source /opt/config/mod/.shell/0.sh
+if [ -f /opt/config/mod/.shell/0.sh ]; then
+    source /opt/config/mod/.shell/0.sh
+else if [ -f /usr/data/config/mod/.shell/0.sh ]; then
+    source /usr/data/config/mod/.shell/0.sh
+fi
+fi
 
 if [ ${FF5X} -eq 1 ]; then
     export LD_LIBRARY_PATH=/usr/prog/qt-4.8.6/lib:$LD_LIBRARY_PATH
