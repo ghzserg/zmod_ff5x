@@ -82,12 +82,19 @@ echo "/"
 cd /
 FF_VERSION="$(cat /root/version 2>/dev/null)"
 MIN_VERSION="3.1.3"
+MIN_VERSION_X="1.0.7"
 if [ ${FF5X} -eq 0 ] && ! [ -f /ZMOD ] && [ "${FF_VERSION//./}" -lt "${MIN_VERSION//./}" ]; then
     sed '/\/nim\//d' ${DIR}/md5sum.list >${DIR}/md5sum_nim.list
     md5sum -c ${DIR}/md5sum_nim.list 2>/dev/null | grep -v -e "OK$" | tee /opt/config/mod_data/bad.list
     rm -f ${DIR}/md5sum_nim.list
 else
-    md5sum -c ${DIR}/md5sum.list 2>/dev/null | grep -v -e "OK$" | tee /opt/config/mod_data/bad.list
+    if [ ${FF5X} -eq 1 ] && ! [ -f /ZMOD ] && [ "${FF_VERSION//./}" -ge "${MIN_VERSION_X//./}" ]; then
+        sed '/\/moonraker/d' ${DIR}/md5sum.list | sed '/\/mainsail\//d'| sed '/\/nginx\//d' >${DIR}/md5sum_5x.list
+        md5sum -c ${DIR}/md5sum_5x.list 2>/dev/null | grep -v -e "OK$" | tee /opt/config/mod_data/bad.list
+        rm -f ${DIR}/md5sum_5x.list
+    else
+        md5sum -c ${DIR}/md5sum.list 2>/dev/null | grep -v -e "OK$" | tee /opt/config/mod_data/bad.list
+    fi
 fi
 
 cnt=$(cat /opt/config/mod_data/bad.list|grep ": FAILED$"| wc -l)
@@ -110,7 +117,14 @@ if [ ${FF5X} -eq 0 ] && ! [ -f /ZMOD ] && [ "${FF_VERSION//./}" -lt "${MIN_VERSI
     ${DIR}/md5sum_nim.list 2>/dev/null
     rm -f ${DIR}/md5sum_nim.list
 else
-    ${DIR}/list.link 2>/dev/null
+    if [ ${FF5X} -eq 1 ] && ! [ -f /ZMOD ] && [ "${FF_VERSION//./}" -ge "${MIN_VERSION_X//./}" ]; then
+        sed '/\/moonraker/d' ${DIR}/list.link | sed '/\/mainsail\//d'| sed '/\/nginx\//d' >${DIR}/md5sum_5x.list
+        chmod +x ${DIR}/md5sum_5x.list
+        ${DIR}/md5sum_5x.list 2>/dev/null
+        rm -f ${DIR}/md5sum_5x.list
+    else
+        ${DIR}/list.link 2>/dev/null
+    fi
 fi
 
 if ! [ -f /ZMOD ]; then
