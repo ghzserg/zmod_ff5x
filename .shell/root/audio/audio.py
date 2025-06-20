@@ -9,6 +9,73 @@ DEBUG = False
 NOPWM = False
 pwm = None
 
+import subprocess
+from pathlib import Path
+
+class PWMAudio5X:
+    def __init__(self):
+        self.gpio = "pc12"
+        self.max_level = 300
+        self.base_freq = 50_000_000
+        self.prescale = 6
+        self.active_level = 1
+        self.enabled = False
+        self.DC = 1.6  # фиксированный duty cycle
+        self.init_pwm()
+
+    def init_pwm(self):
+        """Инициализация PWM через cmd_pwm"""
+        try:
+            # Настройка базовых параметров
+            subprocess.run(["/usr/data/conf/mod_data/cmd_pwm", "config", f"{self.gpio}",
+                    f"freq={self.base_freq}", f"max_level={self.max_level}",
+                    f"active_level={self.active_level}", "accuracy_priority=freq"])
+            # Установка предделителя
+            subprocess.run([
+                "/usr/data/conf/mod_data/cmd_pwm", "set_prescale", self.gpio, str(self.prescale)
+            ], check=True)
+            self.disable()
+        except subprocess.CalledProcessError as e:
+            print(f"Ошибка инициализации PWM: {e}")
+
+    def enable(self, enable=True):
+        """Включение/выключение канала PWM"""
+        if enable:
+            try:
+                subprocess.run(["/usr/data/conf/mod_data/cmd_pwm", "enable_channels", self.gpio], check=True)
+                self.enabled = True
+            except subprocess.CalledProcessError as e:
+                print(f"Ошибка включения PWM: {e}")
+        else:
+            self.disable()
+
+    def disable(self):
+        """Остановка PWM через установку уровня 0"""
+        try:
+            subprocess.run(["/usr/data/conf/mod_data/cmd_pwm", "disable_channels", self.gpio], check=True)
+            self.enabled = False
+        except subprocess.CalledProcessError as e:
+            print(f"Ошибка отключения PWM: {e}")
+
+    def set(self, frequency):
+        """Установка частоты через расчет high/low для set_wc"""
+        if frequency <= 0:
+            return
+        try:
+            # Рассчитываем период в наносекундах
+            period_ns = 1_000_000_000 / frequency
+            # Делим на 3 части: high=2 части, low=1 часть (duty cycle 66.6%)
+            part = period_ns / 3
+            # Округляем до базового шага (120 нс, зависит от prescale)
+            base_period = 120  # prescale=6, base_freq=50_000_000
+            high = round(2 * part / base_period) * base_period
+            low = round(part / base_period) * base_period
+            # Вызов set_wc
+            subprocess.run([
+                "/usr/data/conf/mod_data/cmd_pwm", "set_wc", self.gpio, str(int(high)), str(int(low))
+            ], check=True)
+        except subprocess.CalledProcessError as e:
+            print(f"Ошибка установки частоты: {e}")
 
 class PWMAudio:
     chip = 0
@@ -143,6 +210,7 @@ def main():
     parser.add_argument('-p', '--pwm', type=int, help="pwm device to use", default=6)
     parser.add_argument('-v', '--verbose', action="store_true", default=False, help="Be verbose (might slow down playback in case of heavy pitch changes)")
     parser.add_argument('-s', '--skip', action='store_true', default=False, help="Skip start rest")
+    parser.add_argument('-x', '--ad5x', action='store_true', default=False, help="Use in AD5X")
     parser.add_argument('--nopwm', action='store_true', default=False, help="Disable PWM driver, used for testing midi file reading")
 
     args = parser.parse_args()
@@ -155,7 +223,10 @@ def main():
     if not NOPWM:
         if DEBUG:
             print("Opening pwm ", args.pwm)
-        pwm = PWMAudio(0, args.pwm)
+        if args.ad5x:
+            pwm = PWMAudio5X()
+        else:
+            pwm = PWMAudio(0, args.pwm)
     else:
         if DEBUG:
             print("PWM driver disabled")

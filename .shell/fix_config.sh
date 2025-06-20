@@ -158,6 +158,11 @@ fix_config()
     [ -f ${MOD_CONF}/mod_data/user.cfg ] || echo "" >${MOD_CONF}/mod_data/user.cfg
     [ -f ${MOD_CONF}/mod_data/variables.cfg ] || echo "[Variables]" >${MOD_CONF}/mod_data/variables.cfg
 
+    if [ ${FF5X} -eq 1 ]; then
+        [ -f ${MOD_CONF}/mod_data/cmd_pwm ] || cp /usr/bin/cmd_pwm ${MOD_CONF}/mod_data/cmd_pwm
+        mount --bind /usr/bin/cmd_pwm /bin/echo
+    fi
+
     echo "[zmod]
     language: ${ZLANG}" >${MOD_CONF}/mod_data/lang.cfg
 
