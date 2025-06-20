@@ -80,7 +80,8 @@ fi
 
 echo "/"
 cd /
-FF_VERSION="$(cat /root/version 2>/dev/null)"
+[ ${FF5X} -eq 0 ] && FF_VERSION=$(cat /root/version 2>/dev/null)
+[ ${FF5X} -eq 1 ] && FF_VERSION=$(find /usr/prog/PROGRAM/software/ -type d | sed 's|/usr/prog/PROGRAM/software/||' | grep . 2>/dev/null)
 MIN_VERSION="3.1.3"
 MIN_VERSION_X="1.0.7"
 if [ ${FF5X} -eq 0 ] && ! [ -f /ZMOD ] && [ "${FF_VERSION//./}" -lt "${MIN_VERSION//./}" ]; then
