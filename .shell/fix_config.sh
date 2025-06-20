@@ -160,7 +160,7 @@ fix_config()
 
     if [ ${FF5X} -eq 1 ]; then
         [ -f ${MOD_CONF}/mod_data/cmd_pwm ] || cp /usr/bin/cmd_pwm ${MOD_CONF}/mod_data/cmd_pwm
-        mount --bind /usr/bin/cmd_pwm /bin/echo
+        mount --bind /bin/echo /usr/bin/cmd_pwm
     fi
 
     echo "[zmod]
