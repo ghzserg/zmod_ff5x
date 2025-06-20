@@ -399,7 +399,7 @@ max_temp: 130
             rm heater_bed.txt || echo "Not heater_bed.txt"
     fi
 
-    grep -q '^\[heater_bed' ${PRINTER_BASE}; then
+    if grep -q '^\[heater_bed' ${PRINTER_BASE}; then
             NEED_REBOOT=1
             cd ${MOD_CONF}
 
