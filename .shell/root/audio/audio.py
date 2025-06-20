@@ -17,10 +17,10 @@ class PWMAudio5X:
         self.gpio = "pc12"
         self.max_level = 300
         self.base_freq = 50_000_000
-        self.prescale = 6
+        self.prescale = 22
         self.active_level = 1
         self.enabled = False
-        self.DC = 1.6  # фиксированный duty cycle
+        self.DC = 0.5  # фиксированный duty cycle
         self.init_pwm()
 
     def init_pwm(self):
@@ -34,7 +34,10 @@ class PWMAudio5X:
             subprocess.run([
                 "/usr/data/config/mod_data/cmd_pwm", "set_prescale", self.gpio, str(self.prescale)
             ], check=True)
-            self.disable()
+            subprocess.run([
+                "/usr/data/config/mod_data/cmd_pwm", "set_level", self.gpio, "100"
+            ], check=True)
+#            self.disable()
         except subprocess.CalledProcessError as e:
             print(f"Ошибка инициализации PWM: {e}")
 
@@ -63,12 +66,12 @@ class PWMAudio5X:
             return
         try:
             # Рассчитываем период в наносекундах
-            period_ns = 1_000_000_000 / frequency
+            period_ns = 500_000_000 / frequency
             # Делим на 3 части: high=2 части, low=1 часть (duty cycle 66.6%)
-            part = period_ns / 3
+            part = period_ns / 2
             # Округляем до базового шага (120 нс, зависит от prescale)
             base_period = 120  # prescale=6, base_freq=50_000_000
-            high = round(2 * part / base_period) * base_period
+            high = round(part / base_period) * base_period
             low = round(part / base_period) * base_period
             # Вызов set_wc
             subprocess.run([
