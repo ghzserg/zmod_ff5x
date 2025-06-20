@@ -341,24 +341,23 @@ unset LD_PRELOAD
         grep -q '^\[include ./mod/display_off.cfg\]' ${PRINTER_CFG} && sed -i 's|\[include ./mod/display_off.cfg\]|\[include ./mod/mod.cfg\]|' ${PRINTER_CFG} && NEED_REBOOT=1
     fi
 
-    if [ ${FF5X} -eq 0 ] && ! grep -q '^\[heater_bed' ${PRINTER_CFG}
+    if ! grep -q '^\[heater_bed' ${PRINTER_CFG}
         then
             NEED_REBOOT=1
             cd ${MOD_CONF}
 
             # Copy and remove from printer.base.cfg
-            if grep -q '^\[heater_bed' ${PRINTER_BASE}
-                then
-                    sed -e '/^\[heater_bed/,/^\[/d' ${PRINTER_BASE} >printer.base.tmp
-                    diff -u ${PRINTER_BASE} printer.base.tmp | grep -v "printer.base.cfg" |grep "^-" | cut -b 2- >heater_bed.txt
-                    sed -i '$d' heater_bed.txt
-                    num=$(wc -l heater_bed.txt|cut  -d " " -f1)
-                    num=$(($num-1))
-                    sed -e "/^\[heater_bed/,+${num}d;" ${PRINTER_BASE} >printer.base.tmp
-                    cat printer.base.tmp >${PRINTER_BASE}
-                    rm -f printer.base.tmp
-                else
-                    echo "[heater_bed]
+            if grep -q '^\[heater_bed' ${PRINTER_BASE}; then
+                sed -e '/^\[heater_bed/,/^\[/d' ${PRINTER_BASE} >printer.base.tmp
+                diff -u ${PRINTER_BASE} printer.base.tmp | grep -v "printer.base.cfg" |grep "^-" | cut -b 2- >heater_bed.txt
+                sed -i '$d' heater_bed.txt
+                num=$(wc -l heater_bed.txt|cut  -d " " -f1)
+                num=$(($num-1))
+                sed -e "/^\[heater_bed/,+${num}d;" ${PRINTER_BASE} >printer.base.tmp
+                cat printer.base.tmp >${PRINTER_BASE}
+                rm -f printer.base.tmp
+            else
+                [ ${FF5X} -eq 0 ] && echo "[heater_bed]
 heater_pin: PB9
 sensor_type: Generic 3950
 sensor_pin: PC3
@@ -369,6 +368,21 @@ pid_Ki: 4.970
 pid_Kd: 54.118
 #control: watermark
 #max_power: 1.0
+min_temp: -100
+max_temp: 130
+
+" >heater_bed.txt
+            [ ${FF5X} -eq 1 ] && echo "[heater_bed]
+heater_pin: PB9
+sensor_type: Generic 3950
+sensor_pin: PA0
+pullup_resistor: 4700
+control: pid
+pid_Kp: 32.79
+pid_Ki: 4.970
+pid_Kd: 54.118
+#control: watermark
+max_power: 0.4
 min_temp: -100
 max_temp: 130
 
@@ -385,8 +399,7 @@ max_temp: 130
             rm heater_bed.txt || echo "Not heater_bed.txt"
     fi
 
-    if [ ${FF5X} -eq 0 ] && grep -q '^\[heater_bed' ${PRINTER_BASE}
-        then
+    grep -q '^\[heater_bed' ${PRINTER_BASE}; then
             NEED_REBOOT=1
             cd ${MOD_CONF}
 
