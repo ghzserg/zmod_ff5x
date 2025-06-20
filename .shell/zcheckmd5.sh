@@ -81,7 +81,7 @@ fi
 echo "/"
 cd /
 [ ${FF5X} -eq 0 ] && FF_VERSION=$(cat /root/version 2>/dev/null)
-[ ${FF5X} -eq 1 ] && FF_VERSION=$(find /usr/prog/PROGRAM/software/ -type d | sed 's|/usr/prog/PROGRAM/software/||' | grep . 2>/dev/null)
+[ ${FF5X} -eq 1 ] && FF_VERSION=$(find /usr/prog/PROGRAM/software/ -type d 2>/dev/null | sed 's|/usr/prog/PROGRAM/software/||' | grep . 2>/dev/null)
 MIN_VERSION="3.1.3"
 MIN_VERSION_X="1.0.7"
 if [ ${FF5X} -eq 0 ] && ! [ -f /ZMOD ] && [ "${FF_VERSION//./}" -lt "${MIN_VERSION//./}" ]; then
@@ -90,7 +90,7 @@ if [ ${FF5X} -eq 0 ] && ! [ -f /ZMOD ] && [ "${FF_VERSION//./}" -lt "${MIN_VERSI
     rm -f ${DIR}/md5sum_nim.list
 else
     if [ ${FF5X} -eq 1 ] && ! [ -f /ZMOD ] && [ "${FF_VERSION//./}" -ge "${MIN_VERSION_X//./}" ]; then
-        sed '/\/moonraker/d' ${DIR}/md5sum.list | sed '/\/mainsail\//d'| sed '/\/nginx\//d' >${DIR}/md5sum_5x.list
+        sed '/\/moonraker/d' ${DIR}/md5sum.list | sed '/\/mainsail\//d'| sed '/\/dhcpcd.conf/d'| sed '/\/S41dhcpcd/d'| sed '/\/nginx\//d' >${DIR}/md5sum_5x.list
         md5sum -c ${DIR}/md5sum_5x.list 2>/dev/null | grep -v -e "OK$" | tee /opt/config/mod_data/bad.list
         rm -f ${DIR}/md5sum_5x.list
     else
