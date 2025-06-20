@@ -245,14 +245,14 @@ cors_domains:
 unset LD_PRELOAD
 
 #${CURL} -k https://mail.ru" >${MOD_CONF}/mod_data/power_off.sh
-    chmod +x ${MOD_CONF}/mod_data/power_off.sh
     fi
+    chmod +x ${MOD_CONF}/mod_data/power_off.sh
 
     if ! [ -f ${MOD_CONF}/mod_data/power_on.sh ]; then
         echo "#!/bin/sh
 #Enter Poweron code here" >${MOD_CONF}/mod_data/power_on.sh
-    chmod +x ${MOD_CONF}/mod_data/power_on.sh
     fi
+    chmod +x ${MOD_CONF}/mod_data/power_on.sh
 
     # Rem стукач
     if grep -q "china_cloud = 0" ${MOD_CONF}/mod_data/variables.cfg; then
@@ -578,7 +578,7 @@ stepper: stepper_x, stepper_y, stepper_z
         then
             echo "Kill firmwareExe"
             sync
-            killall firmwareExe
+            [ ${FF5X} -eq 0 ] && killall firmwareExe
             sync
             sync
             diff -u ${PRINTER_BASE_ORIG} ${PRINTER_BASE}
