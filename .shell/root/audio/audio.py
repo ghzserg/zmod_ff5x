@@ -15,12 +15,17 @@ from pathlib import Path
 class PWMAudio5X:
     def __init__(self):
         self.gpio = "pc12"
-        self.max_level = 300
         self.base_freq = 50_000_000
-        self.prescale = 22
+        self.max_level = 300
         self.active_level = 1
+
+        self.prescale = 6
+        self.level = 100
+
+        self.period = 1_000_000_000
+        self.chast = 3
+
         self.enabled = False
-        self.DC = 0.5  # фиксированный duty cycle
         self.init_pwm()
 
     def init_pwm(self):
@@ -30,12 +35,12 @@ class PWMAudio5X:
             subprocess.run(["/usr/data/config/mod_data/cmd_pwm", "config", f"{self.gpio}",
                     f"freq={self.base_freq}", f"max_level={self.max_level}",
                     f"active_level={self.active_level}", "accuracy_priority=freq"])
+            subprocess.run([
+                "/usr/data/config/mod_data/cmd_pwm", "set_level", self.gpio, str(self.level)
+            ], check=True)
             # Установка предделителя
             subprocess.run([
                 "/usr/data/config/mod_data/cmd_pwm", "set_prescale", self.gpio, str(self.prescale)
-            ], check=True)
-            subprocess.run([
-                "/usr/data/config/mod_data/cmd_pwm", "set_level", self.gpio, "100"
             ], check=True)
 #            self.disable()
         except subprocess.CalledProcessError as e:
@@ -66,13 +71,12 @@ class PWMAudio5X:
             return
         try:
             # Рассчитываем период в наносекундах
-            period_ns = 500_000_000 / frequency
+            period_ns = self.period / frequency
             # Делим на 3 части: high=2 части, low=1 часть (duty cycle 66.6%)
-            part = period_ns / 2
-            # Округляем до базового шага (120 нс, зависит от prescale)
-            base_period = 120  # prescale=6, base_freq=50_000_000
-            high = round(part / base_period) * base_period
-            low = round(part / base_period) * base_period
+            # Делим на 2 части: high=1 часть, low=1 часть (duty cycle 50%)
+            part = period_ns / self.chast
+            high = round(part * (self.chast-1))
+            low = round(part)
             # Вызов set_wc
             subprocess.run([
                 "/usr/data/config/mod_data/cmd_pwm", "set_wc", self.gpio, str(int(high)), str(int(low))
@@ -112,7 +116,7 @@ class PWMAudio:
 
     def enable(self, enable=True):
         self.enabled = enable
-        
+
         if self.period == 0:  # period needs to be set otherwise errors will be thrown
             self.set(1000)
         with open(self.pwmdevice(self.ENABLE), "wb") as f:
