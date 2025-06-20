@@ -51,7 +51,7 @@ check_file()
 }
 echo ${DIR_STR}
 check_dir '.' '755'
-check_dir './dev' '755'
+check_dir './dev' '1755'
 check_dir './etc' '755'
 check_dir './etc/mc' '755'
 check_dir './etc/network' '755'

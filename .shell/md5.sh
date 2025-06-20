@@ -67,6 +67,7 @@ excludes=(
     -and -not -name "md5.sh"
     -and -not -name "link.sh"
     -and -not -name "list.link"
+    -and -not -path "./usr/bin/cmd_pwm"
     -and -not -path "./usr/data/config/*"
     -and -not -path "./usr/prog/PROGRAM/control/*"
     -and -not -path "./usr/prog/PROGRAM/kernel/*"

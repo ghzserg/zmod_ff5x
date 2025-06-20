@@ -210,7 +210,6 @@ a62feed40b15c2848b034cb4ead38839  ./usr/bin/ciptool
 71e177cfd5a0d121691d3aa586fd64c2  ./usr/bin/cmd_gpio
 40fbb54a301b2054ef9a3c50b4efca88  ./usr/bin/cmd_jpeg_display
 9cc1ccaa7d006c8cf60d6a9aacc17589  ./usr/bin/cmd_mcu
-bb0a72766632c11bd83ae68a8da94688  ./usr/bin/cmd_pwm
 73c4c9cb271a6f7d4f7fe452113ad56f  ./usr/bin/cmd_rmem_extra
 d70e925fe3f4df57688db4000b6bb704  ./usr/bin/cmd_uevent
 0a6cb7222677fb34d9a1e521588f85c4  ./usr/bin/cmd_usb_device_state
@@ -1462,7 +1461,7 @@ b89ab6a39bcec4738c980be9a62de39c  ./usr/prog/klipper/klippy/extras/ds18b20.py
 8b0dedd50060ab3cf06e10c03f1f93e2  ./usr/prog/klipper/klippy/extras/duplicate_pin_override.py
 8ae6ffa025ce24e9b89ae5ce4b165c1a  ./usr/prog/klipper/klippy/extras/endstop_phase.py
 cfc565b1fc7140cadd053330f6349a05  ./usr/prog/klipper/klippy/extras/error_mcu.py
-2e6c2abeb2f17777e11263aaa194dc42  ./usr/prog/klipper/klippy/extras/exclude_object.py
+167943e9cc2210bdd8c57835894ea546  ./usr/prog/klipper/klippy/extras/exclude_object.py
 be1a0d5c33cbddd3d405a00f99cd3fef  ./usr/prog/klipper/klippy/extras/extruder_stepper.py
 377f8419d12ae302d8e5fd39c5851981  ./usr/prog/klipper/klippy/extras/fan_generic.py
 d074854d88a005becf582d6e5562688f  ./usr/prog/klipper/klippy/extras/fan.py
@@ -1549,7 +1548,7 @@ d89b7fb98cd1e4e3f1199595ace67b1c  ./usr/prog/klipper/klippy/extras/tmc.py
 ba54c5a953fa31b5677ee8e88321a731  ./usr/prog/klipper/klippy/extras/tsl1401cl_filament_width_sensor.py
 14f4a56540626e8ebed20585cb16bd22  ./usr/prog/klipper/klippy/extras/tuning_tower.py
 6d8cef9e8a0c5eb27a8d688ceec42b30  ./usr/prog/klipper/klippy/extras/verify_heater.py
-4b7662702df42bba7d040d59caf34699  ./usr/prog/klipper/klippy/extras/virtual_sdcard.py
+b0b7f8360841d4509895beaeb154c717  ./usr/prog/klipper/klippy/extras/virtual_sdcard.py
 5ab083031fb0b988c214560ccaf3c1c4  ./usr/prog/klipper/klippy/extras/z_thermal_adjust.py
 f4cb3fde782342926d0ea52dd26d3013  ./usr/prog/klipper/klippy/extras/z_tilt.py
 05c1b7c10dd2f95e0eec35727f46f1db  ./usr/prog/klipper/klippy/gcode.py
