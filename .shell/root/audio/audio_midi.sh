@@ -20,7 +20,7 @@ if [ ${FF5X} -eq 1 ]; then
     export LD_LIBRARY_PATH=/usr/prog/openssl-1.0.2d/lib:$LD_LIBRARY_PATH
     export LD_LIBRARY_PATH=/usr/prog/libffi-3.4.4/lib:$LD_LIBRARY_PATH
 
-    /opt/config/mod/.shell/root/audio/audio -x midi -m "/opt/config/mod_data/midi/$1" &
+    python3.8 /opt/config/mod/.shell/root/audio/audio -x midi -m "/opt/config/mod_data/midi/$1" &
 else
     /opt/config/mod/.shell/root/audio/audio midi -m "/opt/config/mod_data/midi/$1" &
 fi

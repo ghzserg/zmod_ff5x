@@ -55,6 +55,8 @@ restore_base()
         china_razbl update.sz3dp.com
         china_razbl cloud.sz3dp.com
         china_razbl polar3d.com
+    else
+        sed -i '\|mount --bind /bin/echo /usr/bin/cmd_pwm|d' /usr/prog/app_startup.sh
     fi
 
     grep -q _output_callback_gcode ${KLIPPER_DIR}/klippy/webhooks.py && cp ${MOD_CONF}/mod/.shell/webhooks.py.orig ${KLIPPER_DIR}/klippy/webhooks.py
@@ -160,7 +162,7 @@ fix_config()
 
     if [ ${FF5X} -eq 1 ]; then
         [ -f ${MOD_CONF}/mod_data/cmd_pwm ] || cp /usr/bin/cmd_pwm ${MOD_CONF}/mod_data/cmd_pwm
-        mount --bind /bin/echo /usr/bin/cmd_pwm
+        grep -q "mount --bind /bin/echo /usr/bin/cmd_pwm" /usr/prog/app_startup.sh || sed -i '\#mount /usr/prog/etc /etc#a\mount --bind /bin/echo /usr/bin/cmd_pwm' /usr/prog/app_startup.sh
     fi
 
     echo "[zmod]
