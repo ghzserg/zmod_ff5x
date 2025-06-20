@@ -27,12 +27,12 @@ class PWMAudio5X:
         """Инициализация PWM через cmd_pwm"""
         try:
             # Настройка базовых параметров
-            subprocess.run(["/usr/data/conf/mod_data/cmd_pwm", "config", f"{self.gpio}",
+            subprocess.run(["/usr/data/config/mod_data/cmd_pwm", "config", f"{self.gpio}",
                     f"freq={self.base_freq}", f"max_level={self.max_level}",
                     f"active_level={self.active_level}", "accuracy_priority=freq"])
             # Установка предделителя
             subprocess.run([
-                "/usr/data/conf/mod_data/cmd_pwm", "set_prescale", self.gpio, str(self.prescale)
+                "/usr/data/config/mod_data/cmd_pwm", "set_prescale", self.gpio, str(self.prescale)
             ], check=True)
             self.disable()
         except subprocess.CalledProcessError as e:
@@ -42,7 +42,7 @@ class PWMAudio5X:
         """Включение/выключение канала PWM"""
         if enable:
             try:
-                subprocess.run(["/usr/data/conf/mod_data/cmd_pwm", "enable_channels", self.gpio], check=True)
+                subprocess.run(["/usr/data/config/mod_data/cmd_pwm", "enable_channels", self.gpio], check=True)
                 self.enabled = True
             except subprocess.CalledProcessError as e:
                 print(f"Ошибка включения PWM: {e}")
@@ -52,7 +52,7 @@ class PWMAudio5X:
     def disable(self):
         """Остановка PWM через установку уровня 0"""
         try:
-            subprocess.run(["/usr/data/conf/mod_data/cmd_pwm", "disable_channels", self.gpio], check=True)
+            subprocess.run(["/usr/data/config/mod_data/cmd_pwm", "disable_channels", self.gpio], check=True)
             self.enabled = False
         except subprocess.CalledProcessError as e:
             print(f"Ошибка отключения PWM: {e}")
@@ -72,7 +72,7 @@ class PWMAudio5X:
             low = round(part / base_period) * base_period
             # Вызов set_wc
             subprocess.run([
-                "/usr/data/conf/mod_data/cmd_pwm", "set_wc", self.gpio, str(int(high)), str(int(low))
+                "/usr/data/config/mod_data/cmd_pwm", "set_wc", self.gpio, str(int(high)), str(int(low))
             ], check=True)
         except subprocess.CalledProcessError as e:
             print(f"Ошибка установки частоты: {e}")
