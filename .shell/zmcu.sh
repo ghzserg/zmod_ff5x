@@ -3,7 +3,7 @@
 source /opt/config/mod/.shell/0.sh
 set -x
 
-for i in /opt/PROGRAM/control/*/; do 
+for i in ${PROGRAM_DIR}control/*/; do
     save_dir=$(pwd)
     echo "$i"
     if [ -d "$i" ]; then
