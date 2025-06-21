@@ -96,7 +96,7 @@ start_moon()
     sleep 10
     [ ${FF5X} -eq 0 ] && mount --bind ${REMOUNT_MOD} ${UMOUNT_MOD}
     mount
-    ps
+    ps w
     sleep 30
     echo "Start User power_on script"
     [ -f ${MOD_CONF}/mod_data/power_on.sh ] && ${MOD_CONF}/mod_data/power_on.sh
