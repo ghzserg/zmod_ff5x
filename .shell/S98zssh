@@ -23,21 +23,20 @@ PID_FILE=/run/zssh.pid
 LOG_FILE=/opt/config/mod_data/log/ssh.log
 
 start() {
-    if [ $START = "on" ]
-        then
-            if ! test_running
-                then
-                    nstr=$(cat $LOG_FILE 2>/dev/null| wc -l)
-                    date >> ${LOG_FILE}
-                    dbclient -i /opt/config/mod_data/ssh.key -p${SSH_PORT} -R ${VIDEO_PORT}:127.0.0.1:8080 -R ${MOON_PORT}:127.0.0.1:7125 ${SSH_USER}@${SSH_SERVER} -o ExitOnForwardFailure=yes -N -T -f -y >> ${LOG_FILE} 2>&1
-                    ps axf|grep '\-N \-T \-f \-y'| head -1| awk '{print $1}' >${PID_FILE}
-                    tail -n +$nstr ${LOG_FILE}
-                    [ "${REMOTE_RUN}" != "NONE" ] && \
-                        test_running && \
-                        dbclient -i /opt/config/mod_data/ssh.key -p${SSH_PORT} ${SSH_USER}@${SSH_SERVER} -T -f -y ${REMOTE_RUN} >> ${LOG_FILE} 2>&1
-            fi
-        else
-            echo "SSH отключен"
+    if [ $START = "on" ]; then
+        if ! test_running; then
+            nstr=$(cat $LOG_FILE 2>/dev/null| wc -l)
+            date >> ${LOG_FILE}
+            dbclient -i /opt/config/mod_data/ssh.key -p${SSH_PORT} -R ${VIDEO_PORT}:127.0.0.1:8080 -R ${MOON_PORT}:127.0.0.1:7125 ${SSH_USER}@${SSH_SERVER} -o ExitOnForwardFailure=yes -N -T -f -y >> ${LOG_FILE} 2>&1
+            [ ${FF5X} -eq 0 ] && CMD="axf"
+            ps ${CMD}|grep '\-N \-T \-f \-y'| head -1| awk '{print $1}' >${PID_FILE}
+            tail -n +$nstr ${LOG_FILE}
+            [ "${REMOTE_RUN}" != "NONE" ] && \
+                test_running && echo "${REMOTE_RUN}" >> ${LOG_FILE} \
+                dbclient -i /opt/config/mod_data/ssh.key -p${SSH_PORT} ${SSH_USER}@${SSH_SERVER} -T -f -y ${REMOTE_RUN} >> ${LOG_FILE} 2>&1
+        fi
+    else
+        echo "SSH отключен"
     fi
 }
 
@@ -54,18 +53,18 @@ restart() {
 
 test_running() {
     cnt=$(ps |grep -v grep |grep dbclient| wc -l)
-    if [ -f $PID_FILE ] && kill -0 $(cat $PID_FILE) 2>/dev/null && [ "$cnt" -ne 0 ]
-        then
-            return 0
-        else
-            return 1
+    if [ -f $PID_FILE ] && kill -0 $(cat $PID_FILE) 2>/dev/null && [ "$cnt" -ne 0 ]; then
+        return 0
+    else
+        return 1
     fi
 }
 
 reload() {
-    if [ $START = "on" ]
-        then
-            if ! test_running; then restart; fi
+    if [ $START = "on" ]; then
+        if ! test_running; then
+            restart; 
+        fi
     fi
 }
 
