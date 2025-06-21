@@ -32,7 +32,7 @@ start() {
             ps ${CMD}|grep '\-N \-T \-f \-y'| head -1| awk '{print $1}' >${PID_FILE}
             tail -n +$nstr ${LOG_FILE}
             [ "${REMOTE_RUN}" != "NONE" ] && \
-                test_running && echo "${REMOTE_RUN}" >> ${LOG_FILE} \
+                test_running && echo "${REMOTE_RUN}" >> ${LOG_FILE} && \
                 dbclient -i /opt/config/mod_data/ssh.key -p${SSH_PORT} ${SSH_USER}@${SSH_SERVER} -T -f -y ${REMOTE_RUN} >> ${LOG_FILE} 2>&1
         fi
     else
