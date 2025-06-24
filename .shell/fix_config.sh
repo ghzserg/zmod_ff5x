@@ -68,6 +68,7 @@ restore_base()
     grep -q receive_time ${KLIPPER_DIR}/klippy/extras/buttons.py && cp ${MOD_CONF}/mod/.shell/buttons.py.orig ${KLIPPER_DIR}/klippy/extras/buttons.py
     rm -f ${KLIPPER_DIR}/klippy/extras/zmod.py
     [ ${FF5X} -eq 1 ] && rm -f ${KLIPPER_DIR}/klippy/extras/zmod_color.py
+    [ ${FF5X} -eq 1 ] && rm -f ${KLIPPER_DIR}/klippy/extras/zmod_tenz.py
 
     rm -f /etc/profile.d/path.sh
 
@@ -299,6 +300,7 @@ unset LD_PRELOAD
     fi
     check_link ${KLIPPER_DIR}/klippy/extras/zmod.py ${MOD_CONF}/mod/.shell/zmod.py
     [ ${FF5X} -eq 1 ] && check_link ${KLIPPER_DIR}/klippy/extras/zmod_color.py ${MOD_CONF}/mod/.shell/zmod_color.py
+    [ ${FF5X} -eq 1 ] && check_link ${KLIPPER_DIR}/klippy/extras/zmod_tenz.py ${MOD_CONF}/mod/.shell/zmod_tenz.py
 
     if [ ${FF5X} -eq 0 ]; then
         # Fix possible ordering issue if a callback blocks in button handler#6440
