@@ -44,7 +44,7 @@ class zmod_tenz:
         self.gcode.register_command('H2', self.cmd_H2)
         self.gcode.register_command('H3', self.cmd_H3)
         self.gcode.register_command('H7', self.cmd_H7)
-        self.gcode.register_command('LOAD_CELL_TARE', self.cmd_LOAD_CELL_TARE)
+        self.gcode.register_command('_LOAD_CELL_TARE', self.cmd_LOAD_CELL_TARE)
 
         self.zmod = self.printer.lookup_object('zmod', None)
         self.language = 'en'
