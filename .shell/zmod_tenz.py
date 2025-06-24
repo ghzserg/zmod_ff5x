@@ -99,7 +99,7 @@ class zmod_tenz:
             self.cmd_H1(gcmd)  # Вызов команды H1 для сброса веса
             self.gcode.respond_info(f"N {attempt}. Weight: {self.temp}")
 
-            if abs(self.temp) < 150:
+            if abs(self.temp) < 200:
                 self.gcode.respond_info(f"Cell Tare: OK. Weight: {self.temp}")
                 return
 
