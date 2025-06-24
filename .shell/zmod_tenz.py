@@ -182,7 +182,7 @@ class zmod_tenz:
                     if command_id == -1:
                         message = response.split()
                         if len(message) >= 5:
-                            cur_temp = float(message[4])
+                            cur_temp = abs(float(message[4]))
                             measured_time = self.reactor.monotonic()
                             self.temp = cur_temp
                             self._callback(mcu.estimated_print_time(measured_time), cur_temp)
