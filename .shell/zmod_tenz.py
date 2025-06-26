@@ -1,11 +1,10 @@
-# (C 2025) ghzserg https://github.com/ghzserg/zmod/ 
-# (C 2025) @FishingSoulFT
-# (C 2024-2025) VoronKor https://github.com/VoronKor/tensistor_board_adm5
+# (C) 2025 ghzserg https://github.com/ghzserg/zmod/ 
+# (C) 2025 @FishingSoulFT
+# (C) 2024-2025 VoronKor https://github.com/VoronKor/tensistor_board_adm5
 import serial
 import time
 import threading
 import logging
-from functools import partial
 
 # Параметры порта
 port = '/dev/ttyS7'
@@ -24,6 +23,7 @@ class zmod_tenz:
         self.response_condition = threading.Condition()  # Условная переменная для ожидания ответов
         self.pending_responses = {}  # Хранение ожидаемых ответов {command_id: response}
         self.command_counter = 0  # Счетчик для уникальных ID команд
+        self.triggered = False  # Флаг предотвращения повторных срабатываний
 
         self.stop_thread = False  # Флаг для остановки потока
         self.sensor_thread = threading.Thread(target=self._sensor_reader)
@@ -51,6 +51,14 @@ class zmod_tenz:
         if self.zmod is not None:
             self.language = self.zmod.get_lang()
 
+    def _respond_info(self, msg):
+        self.reactor.register_async_callback(
+            lambda e: self.gcode.respond_info(msg))
+
+    def _respond_raw(self, msg):
+        self.reactor.register_async_callback(
+            lambda e: self.gcode.respond_raw(msg))
+
     def send_command_and_wait(self, command, timeout=5.0):
         """
         Отправляет команду и возвращает ответ.
@@ -62,12 +70,10 @@ class zmod_tenz:
             self.command_counter += 1
             command_id = self.command_counter  # Уникальный ID команды
 
-        # Сохранение ожидаемого ответа
         with self.response_condition:
             self.pending_responses[command_id] = None
             self.set_command(f"{command}#{command_id}")  # Добавление ID к команде
 
-        # Ожидание ответа
         with self.response_condition:
             waited = self.response_condition.wait(timeout)
             if not waited or self.pending_responses[command_id] is None:
@@ -81,12 +87,10 @@ class zmod_tenz:
             return response
 
     def get_command(self):
-        """Безопасное получение текущей команды"""
         with self.command_lock:
             return self._command
 
     def set_command(self, new_command):
-        """Безопасное изменение команды"""
         with self.command_lock:
             self._command = new_command
 
@@ -97,57 +101,48 @@ class zmod_tenz:
         while attempt < max_attempts:
             attempt += 1
             self.cmd_H1(gcmd)  # Вызов команды H1 для сброса веса
-            self.gcode.respond_info(f"N {attempt}. Weight: {self.temp}")
+            gcmd.respond_info(f"N {attempt}. Weight: {self.temp}")
 
             if abs(self.temp) < 100:
-                self.gcode.respond_info(f"Cell Tare: OK. Weight: {self.temp}")
+                gcmd.respond_info(f"Cell Tare: OK. Weight: {self.temp}")
                 return
 
-            time.sleep(0.5)  # Пауза между попытками
+            time.sleep(0.5)
 
-        # Вывод ошибки через action_raise_error
         error_msg = f"Cell Tare: Error. Weight: {self.temp} https://github.com/ghzserg/zmod/wiki/FAQ" 
-        raise self.gcode.error(error_msg)  # Прерывает выполнение макроса и выводит ошибку
+        raise gcmd.error(error_msg)
 
     def cmd_H1(self, gcmd):
         current_command = "H1"
-        message=self.send_command_and_wait(current_command)
-        self.gcode.respond_info(f"{current_command} > {message}")
+        message = self.send_command_and_wait(current_command)
+        gcmd.respond_info(f"{current_command} > {message}")
 
     def cmd_H2(self, gcmd):
         current_command = "H2 S500"
-        message=self.send_command_and_wait(current_command)
-        self.gcode.respond_info(f"{current_command} > {message}")
+        message = self.send_command_and_wait(current_command)
+        gcmd.respond_info(f"{current_command} > {message}")
 
     def cmd_H3(self, gcmd):
         current_command = "H3 S200"
-        message=self.send_command_and_wait(current_command)
-        self.gcode.respond_info(f"{current_command} > {message}")
+        message = self.send_command_and_wait(current_command)
+        gcmd.respond_info(f"{current_command} > {message}")
 
     def cmd_H7(self, gcmd):
         current_command = "H7"
-        message=self.send_command_and_wait(current_command)
-        self.gcode.respond_info(f"{current_command} > {message}")
+        message = self.send_command_and_wait(current_command)
+        gcmd.respond_info(f"{current_command} > {message}")
 
-    def _zcontrol(self, measured_time, cur_temp):
-        # Логика PAUSE
+    def _zcontrol(self, cur_temp):
+        if self.triggered:
+            return
+
+        self.triggered = True
+
         if self.zcommand == 1:
-            msg = (
-                f"!! Nozzle hit bed or part detachment. Weight {cur_temp}. PAUSE. https://github.com/ghzserg/zmod/wiki/Global_en#nozzle_control"
-                if self.language != 'ru'
-                else f"!! Удар сопла о стол или отрыв детали. Вес {cur_temp}. PAUSE. https://github.com/ghzserg/zmod/wiki/Global_ru#nozzle_control"
+            self.reactor.register_callback(
+                lambda e: self._async_zcontrol_action(cur_temp)
             )
-            self.gcode.respond_raw(msg)
-
-            pause_resume = self.printer.lookup_object('pause_resume')
-
-            def async_pause(eventtime):
-                pause_resume.send_pause_command()
-                self.gcode.run_script_from_command("PAUSE\nM400\n")
-                return measured_time + HOST_REPORT_TIME
-
-            self.reactor.register_callback(async_pause)
-        else: # SHUTDOWN
+        else:
             shutdown_msg = (
                 f"Nozzle hit bed or part detachment. Weight {cur_temp}. FIRMWARE_RESTART. https://github.com/ghzserg/zmod/wiki/Global_en#nozzle_control"
                 if self.language != 'ru'
@@ -156,9 +151,21 @@ class zmod_tenz:
             self.stop_thread = True
             self.printer.invoke_async_shutdown(shutdown_msg, shutdown_msg)
 
+    def _async_zcontrol_action(self, cur_temp):
+        msg = (
+            f"!! Nozzle hit bed or part detachment. Weight {cur_temp}. PAUSE. https://github.com/ghzserg/zmod/wiki/Global_en#nozzle_control"
+            if self.language != 'ru'
+            else f"!! Удар сопла о стол или отрыв детали. Вес {cur_temp}. PAUSE. https://github.com/ghzserg/zmod/wiki/Global_ru#nozzle_control"
+        )
+        self._respond_raw(msg)
+
+        pause_resume = self.printer.lookup_object('pause_resume')
+        pause_resume.send_pause_command()
+        self.gcode.run_script_from_command("PAUSE\nM400\n")
+
     def _sensor_reader(self):
-        """Поток для чтения данных с датчика"""
         mcu = self.printer.lookup_object('mcu')
+        ser = None
         while not self.stop_thread:
             try:
                 ser = serial.Serial(port, baudrate, timeout=1)
@@ -166,7 +173,6 @@ class zmod_tenz:
                     current_command = self.get_command()
 
                     command_id = -1
-                    # Проверка формата команды (например, "H1#123")
                     if '#' in current_command:
                         command, command_id = current_command.split('#', 1)
                         command_id = int(command_id)
@@ -176,7 +182,6 @@ class zmod_tenz:
                     ser.write(command.encode())
                     time.sleep(0.05)
 
-                    # Чтение ответа
                     response = ser.readline().decode('utf-8').rstrip()
 
                     if command_id == -1:
@@ -186,10 +191,12 @@ class zmod_tenz:
                             measured_time = self.reactor.monotonic()
                             self.temp = cur_temp
                             self._callback(mcu.estimated_print_time(measured_time), cur_temp)
-                            if self.max_temp != 2048 and self.zcontrol == 1 and cur_temp > self.max_temp:
-                                self._zcontrol(measured_time, cur_temp)
+                            if (self.max_temp != 2048 and
+                                self.zcontrol == 1 and
+                                cur_temp > self.max_temp and
+                                not self.triggered):
+                                self._zcontrol(cur_temp)
                     else:
-                        # Сохранение ответа для соответствующей команды
                         with self.response_condition:
                             self.pending_responses[command_id] = response
                             self.response_condition.notify_all()
@@ -197,17 +204,19 @@ class zmod_tenz:
 
                     time.sleep(HOST_REPORT_TIME)
             except Exception as e:
-                ser.close()
                 self.temp = -200
                 measured_time = self.reactor.monotonic()
                 self._callback(mcu.estimated_print_time(measured_time), -200)
                 logging.exception("temperature_load: Sensor thread error")
+                time.sleep(0.5)
             finally:
-                ser.close()
+                if ser and ser.is_open:
+                    ser.close()
 
     def setup_minmax(self, min_temp, max_temp):
         self.min_temp = min_temp
         self.max_temp = max_temp
+        self.triggered = False
 
     def get_report_time_delta(self):
         return HOST_REPORT_TIME
@@ -227,22 +236,28 @@ class zmod_tenz:
             status_msg = f"ZCONTROL_ON. {self.max_temp}. {'PAUSE' if self.zcommand == 1 else 'ABORT'}"
             gcmd.respond_info(status_msg)
         self.zcontrol = 1
+        self.triggered = False
 
     def cmd_ZCONTROL_OFF(self, gcmd):
         if self.max_temp != 2048 and self.zcontrol == 1:
             status_msg = "ZCONTROL_OFF"
             gcmd.respond_info(status_msg)
         self.zcontrol = 0
+        self.triggered = False
 
     def cmd_ZCONTROL_PAUSE(self, gcmd):
         if self.max_temp != 2048 and self.zcommand == 0:
             status_msg = f"{'ZCONTROL_ON' if self.zcontrol == 1 else 'ZCONTROL_OFF'}. {self.max_temp}. PAUSE"
+            gcmd.respond_info(status_msg)
         self.zcommand = 1
+        self.triggered = False
 
     def cmd_ZCONTROL_ABORT(self, gcmd):
         if self.max_temp != 2048 and self.zcommand == 1:
             status_msg = f"{'ZCONTROL_ON' if self.zcontrol == 1 else 'ZCONTROL_OFF'}. {self.max_temp}. ABORT"
+            gcmd.respond_info(status_msg)
         self.zcommand = 0
+        self.triggered = False
 
     def cmd_ZCONTROL_STATUS(self, gcmd):
         self.getlang()
@@ -280,11 +295,10 @@ class zmod_tenz:
     def __del__(self):
         self.stop_thread = True
         with self.response_condition:
-            self.response_condition.notify_all()  # Прерывание ожидания при завершении
+            self.response_condition.notify_all()
         if self.sensor_thread.is_alive():
             self.sensor_thread.join(timeout=1.0)
 
 def load_config(config):
-    # Register sensor
     pheaters = config.get_printer().load_object(config, "heaters")
     pheaters.add_sensor_factory("temperature_load", zmod_tenz)
