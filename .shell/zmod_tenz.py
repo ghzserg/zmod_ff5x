@@ -5,6 +5,7 @@ import serial
 import time
 import threading
 import logging
+import re
 
 # Параметры порта
 port = '/dev/ttyS7'
@@ -163,6 +164,20 @@ class zmod_tenz:
         pause_resume.send_pause_command()
         self.gcode.run_script_from_command("PAUSE\nM400\n")
 
+    def extract_last_value_before_g(self, response):
+        matches = re.findall(r'(-?\d+\.?\d*)\s+g', response, re.IGNORECASE)
+
+        if not matches:
+            logging.warning("No valid value found before 'g' in response: %s", response)
+            return -199.0
+
+        try:
+            last_value = float(matches[-1])  # Можно использовать int(matches[-1]), если нужны только целые
+            return last_value
+        except ValueError:
+            logging.error("Failed to convert value to float: %s", matches[-1])
+            return -200.0
+
     def _sensor_reader(self):
         mcu = self.printer.lookup_object('mcu')
         ser = None
@@ -170,6 +185,7 @@ class zmod_tenz:
             try:
                 ser = serial.Serial(port, baudrate, timeout=1)
                 while not self.stop_thread:
+                    ser.reset_input_buffer()
                     current_command = self.get_command()
 
                     command_id = -1
@@ -179,23 +195,21 @@ class zmod_tenz:
                     else:
                         command = current_command
 
-                    ser.write(command.encode())
+                    ser.write(command.encode() + b'\n')
                     time.sleep(0.05)
 
                     response = ser.readline().decode('utf-8').rstrip()
 
                     if command_id == -1:
-                        message = response.split()
-                        if len(message) >= 5:
-                            cur_temp = float(message[4])
-                            measured_time = self.reactor.monotonic()
-                            self.temp = cur_temp
-                            self._callback(mcu.estimated_print_time(measured_time), cur_temp)
-                            if (self.max_temp != 2048 and
-                                self.zcontrol == 1 and
-                                cur_temp > self.max_temp and
-                                not self.triggered):
-                                self._zcontrol(cur_temp)
+                        cur_temp = self.extract_last_value_before_g(response)
+                        measured_time = self.reactor.monotonic()
+                        self.temp = cur_temp
+                        self._callback(mcu.estimated_print_time(measured_time), cur_temp)
+                        if (self.max_temp != 2048 and
+                            self.zcontrol == 1 and
+                            cur_temp > self.max_temp and
+                            not self.triggered):
+                            self._zcontrol(cur_temp)
                     else:
                         with self.response_condition:
                             self.pending_responses[command_id] = response
