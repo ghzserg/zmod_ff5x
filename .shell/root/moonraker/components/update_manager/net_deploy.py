@@ -489,6 +489,7 @@ class NetDeploy(AppDeploy):
 
     def get_update_status(self) -> Dict[str, Any]:
         status = super().get_update_status()
+        anomalies = self.anomalies if self.report_anomalies else []
         status.update({
             'name': self.name,
             'repo_name': self.project_name,
@@ -498,6 +499,6 @@ class NetDeploy(AppDeploy):
             'rollback_version': self.rollback_version,
             'last_error': self.last_error,
             'warnings': self.warnings,
-            'anomalies': self.anomalies
+            'anomalies': anomalies
         })
         return status
