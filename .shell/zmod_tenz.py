@@ -166,7 +166,7 @@ class zmod_tenz:
             if self.language != 'ru'
             else f"!! Удар сопла о стол или отрыв детали. Вес {cur_temp}. PAUSE. https://github.com/ghzserg/zmod/wiki/Global_ru#nozzle_control"
         )
-        self._respond_raw(msg)
+        self.gcode.respond_raw(msg)
         pause_resume = self.printer.lookup_object('pause_resume')
         pause_resume.send_pause_command()
         self.gcode.run_script_from_command("PAUSE\nM400\n")
@@ -198,12 +198,16 @@ class zmod_tenz:
                         command_id = int(command_id)
                     else:
                         command = current_command
+
                     ser.write(command.encode() + b'\n')
                     time.sleep(0.05)
+
                     response = ser.readline().decode('utf-8', errors='ignore').strip()
                     if not response:
+                        self.set_command("H7")
                         logging.warning("Empty response from device. Possible disconnect.")
                         break
+
                     if command_id == -1:
                         cur_temp = self.extract_last_value_before_g(response)
                         measured_time = self.reactor.monotonic()
