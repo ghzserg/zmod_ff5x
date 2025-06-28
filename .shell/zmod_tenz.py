@@ -1,4 +1,4 @@
-# (C) 2025 ghzserg https://github.com/ghzserg/zmod/ 
+# (C) 2025 ghzserg https://github.com/ghzserg/zmod/
 # (C) 2025 @FishingSoulFT
 # (C) 2024-2025 VoronKor https://github.com/VoronKor/tensistor_board_adm5
 import serial
@@ -25,12 +25,10 @@ class zmod_tenz:
         self.pending_responses = {}  # Хранение ожидаемых ответов {command_id: response}
         self.command_counter = 0  # Счетчик для уникальных ID команд
         self.triggered = False  # Флаг предотвращения повторных срабатываний
-
         self.stop_thread = False  # Флаг для остановки потока
         self.sensor_thread = threading.Thread(target=self._sensor_reader)
         self.sensor_thread.daemon = True  # Поток завершится при выходе из программы
         self.sensor_thread.start()
-
         self.zcontrol = 0
         self.zcommand = 0
         self.printer.load_object(config, 'pause_resume')
@@ -40,17 +38,36 @@ class zmod_tenz:
         self.gcode.register_command('ZCONTROL_ABORT', self.cmd_ZCONTROL_ABORT)
         self.gcode.register_command('ZCONTROL_STATUS', self.cmd_ZCONTROL_STATUS)
         self.gcode.register_command('ZCONTROL_OFF', self.cmd_ZCONTROL_OFF)
-
         self.gcode.register_command('H1', self.cmd_H1)
         self.gcode.register_command('H2', self.cmd_H2)
         self.gcode.register_command('H3', self.cmd_H3)
         self.gcode.register_command('H7', self.cmd_H7)
         self.gcode.register_command('_LOAD_CELL_TARE', self.cmd_LOAD_CELL_TARE)
 
+        # Регистрация событий
+        self.printer.register_event_handler("klippy:disconnect", self.handle_disconnect)
+        self.printer.register_event_handler("klippy:shutdown", self.handle_shutdown)
+
         self.zmod = self.printer.lookup_object('zmod', None)
         self.language = 'en'
         if self.zmod is not None:
             self.language = self.zmod.get_lang()
+
+    def handle_disconnect(self):
+        logging.info("Printer disconnected. Stopping sensor thread.")
+        self.close()
+
+    def handle_shutdown(self):
+        logging.info("Printer shutdown. Stopping sensor thread.")
+        self.close()
+
+    def close(self):
+        self.stop_thread = True
+        with self.response_condition:
+            self.response_condition.notify_all()
+        time.sleep(0.1)  # Даем время сработать notify_all
+        if self.sensor_thread.is_alive():
+            self.sensor_thread.join(timeout=2.0)
 
     def _respond_info(self, msg):
         self.reactor.register_async_callback(
@@ -70,18 +87,15 @@ class zmod_tenz:
         with self.command_lock:
             self.command_counter += 1
             command_id = self.command_counter  # Уникальный ID команды
-
         with self.response_condition:
             self.pending_responses[command_id] = None
             self.set_command(f"{command}#{command_id}")  # Добавление ID к команде
-
         with self.response_condition:
             waited = self.response_condition.wait(timeout)
             if not waited or self.pending_responses[command_id] is None:
                 with self.command_lock:
                     del self.pending_responses[command_id]
                 return None
-
             response = self.pending_responses[command_id]
             with self.command_lock:
                 del self.pending_responses[command_id]
@@ -98,19 +112,15 @@ class zmod_tenz:
     def cmd_LOAD_CELL_TARE(self, gcmd):
         max_attempts = 10
         attempt = 0
-
         while attempt < max_attempts:
             attempt += 1
             self.cmd_H1(gcmd)  # Вызов команды H1 для сброса веса
             gcmd.respond_info(f"N {attempt}. Weight: {self.temp}")
-
             if abs(self.temp) < 100:
                 gcmd.respond_info(f"Cell Tare: OK. Weight: {self.temp}")
                 return
-
             time.sleep(0.5)
-
-        error_msg = f"Cell Tare: Error. Weight: {self.temp} https://github.com/ghzserg/zmod/wiki/FAQ" 
+        error_msg = f"Cell Tare: Error. Weight: {self.temp} https://github.com/ghzserg/zmod/wiki/FAQ"
         raise gcmd.error(error_msg)
 
     def cmd_H1(self, gcmd):
@@ -136,9 +146,7 @@ class zmod_tenz:
     def _zcontrol(self, cur_temp):
         if self.triggered:
             return
-
         self.triggered = True
-
         if self.zcommand == 1:
             self.reactor.register_callback(
                 lambda e: self._async_zcontrol_action(cur_temp)
@@ -159,18 +167,15 @@ class zmod_tenz:
             else f"!! Удар сопла о стол или отрыв детали. Вес {cur_temp}. PAUSE. https://github.com/ghzserg/zmod/wiki/Global_ru#nozzle_control"
         )
         self._respond_raw(msg)
-
         pause_resume = self.printer.lookup_object('pause_resume')
         pause_resume.send_pause_command()
         self.gcode.run_script_from_command("PAUSE\nM400\n")
 
     def extract_last_value_before_g(self, response):
         matches = re.findall(r'(-?\d+\.?\d*)\s+g', response, re.IGNORECASE)
-
         if not matches:
             logging.warning("No valid value found before 'g' in response: %s", response)
             return -199.0
-
         try:
             last_value = float(matches[-1])  # Можно использовать int(matches[-1]), если нужны только целые
             return last_value
@@ -187,19 +192,18 @@ class zmod_tenz:
                 while not self.stop_thread:
                     ser.reset_input_buffer()
                     current_command = self.get_command()
-
                     command_id = -1
                     if '#' in current_command:
                         command, command_id = current_command.split('#', 1)
                         command_id = int(command_id)
                     else:
                         command = current_command
-
                     ser.write(command.encode() + b'\n')
                     time.sleep(0.05)
-
-                    response = ser.readline().decode('utf-8').rstrip()
-
+                    response = ser.readline().decode('utf-8', errors='ignore').strip()
+                    if not response:
+                        logging.warning("Empty response from device. Possible disconnect.")
+                        break
                     if command_id == -1:
                         cur_temp = self.extract_last_value_before_g(response)
                         measured_time = self.reactor.monotonic()
@@ -215,17 +219,27 @@ class zmod_tenz:
                             self.pending_responses[command_id] = response
                             self.response_condition.notify_all()
                         self.set_command("H7")
-
                     time.sleep(HOST_REPORT_TIME)
-            except Exception as e:
+            except serial.SerialException as e:
+                logging.warning("Serial communication error: %s", e)
+                self._respond_info(f"cell_tare: Serial error: {str(e)}")
                 self.temp = -200
                 measured_time = self.reactor.monotonic()
                 self._callback(mcu.estimated_print_time(measured_time), -200)
-                logging.exception("temperature_load: Sensor thread error")
-                time.sleep(0.5)
+            except Exception as e:
+                logging.exception("Sensor thread error: %s", e)
+                self._respond_info(f"cell_tare: Error data")
+                self.temp = -200
+                measured_time = self.reactor.monotonic()
+                self._callback(mcu.estimated_print_time(measured_time), -200)
             finally:
-                if ser and ser.is_open:
-                    ser.close()
+                if ser is not None and ser.is_open:
+                    try:
+                        ser.close()
+                        logging.info(f"{port} closed")
+                    except Exception as e:
+                        logging.warning("Error closing serial port: %s", e)
+                time.sleep(0.5)
 
     def setup_minmax(self, min_temp, max_temp):
         self.min_temp = min_temp
@@ -293,7 +307,6 @@ class zmod_tenz:
                 else:
                     status_msg = "Вес: %d; Контроль настроен и не активен." % self.max_temp
             gcmd.respond_info(status_msg)
-
             if self.zcommand == 1:
                 if self.language != 'ru':
                     action_msg = "PAUSE is triggered when activated. // ZCONTROL_PAUSE"
@@ -312,6 +325,7 @@ class zmod_tenz:
             self.response_condition.notify_all()
         if self.sensor_thread.is_alive():
             self.sensor_thread.join(timeout=1.0)
+
 
 def load_config(config):
     pheaters = config.get_printer().load_object(config, "heaters")
