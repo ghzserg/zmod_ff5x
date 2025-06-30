@@ -35,7 +35,6 @@ class zmod_tenz:
         self.sensor_thread.daemon = True  # Поток завершится при выходе из программы
         self.sensor_thread.start()
 
-        self.triggered = False  # Флаг предотвращения повторных срабатываний
         self.zcontrol = 0
         self.zcommand = 0
         self.printer.load_object(config, 'pause_resume')
@@ -118,7 +117,7 @@ class zmod_tenz:
         while attempt < max_attempts:
             attempt += 1
             self.cmd_H1(gcmd)  # Вызов команды H1 для сброса веса
-            self.temp_lock:
+            with self.temp_lock:
                 cur_temp=self.temp
             gcmd.respond_info(f"N {attempt}. Weight: {cur_temp}")
             if abs(cur_temp) < 100:
@@ -149,9 +148,6 @@ class zmod_tenz:
         gcmd.respond_info(f"{current_command} > {message}")
 
     def _zcontrol(self, cur_temp):
-        if self.triggered:
-            return
-        self.triggered = True
         if self.zcommand == 1:
             self.reactor.register_callback(
                 lambda e: self._async_zcontrol_action(cur_temp)
@@ -209,8 +205,9 @@ class zmod_tenz:
 
                     response = ser.readline().decode('utf-8', errors='ignore').strip()
                     if not response and command_id == -1:
-                        self.temp_lock:
+                        with self.temp_lock:
                             self.temp = -200.0
+                        measured_time = self.reactor.monotonic()
                         self._callback(mcu.estimated_print_time(measured_time), -200.0)
                         continue
 
@@ -221,13 +218,12 @@ class zmod_tenz:
                     if command_id == -1:
                         cur_temp = self.extract_last_value_before_g(response)
                         measured_time = self.reactor.monotonic()
-                        self.temp_lock:
+                        with self.temp_lock:
                             self.temp = cur_temp
                         self._callback(mcu.estimated_print_time(measured_time), cur_temp)
                         if (self.max_temp != 2048 and
                             self.zcontrol == 1 and
-                            cur_temp > self.max_temp and
-                            not self.triggered):
+                            cur_temp > self.max_temp):
                             self._zcontrol(cur_temp)
                     else:
                         with self._ret_command_lock:
@@ -239,14 +235,14 @@ class zmod_tenz:
             except serial.SerialException as e:
                 logging.warning("Serial communication error: %s", e)
                 self._respond_info(f"cell_tare: Serial error: {str(e)}")
-                self.temp_lock:
+                with self.temp_lock:
                     self.temp = -200
                 measured_time = self.reactor.monotonic()
                 self._callback(mcu.estimated_print_time(measured_time), -200)
             except Exception as e:
                 logging.exception("Sensor thread error: %s", e)
                 self._respond_info(f"cell_tare: Error data")
-                self.temp_lock:
+                with self.temp_lock:
                     self.temp = -200
                 measured_time = self.reactor.monotonic()
                 self._callback(mcu.estimated_print_time(measured_time), -200)
@@ -262,7 +258,6 @@ class zmod_tenz:
     def setup_minmax(self, min_temp, max_temp):
         self.min_temp = min_temp
         self.max_temp = max_temp
-        self.triggered = False
 
     def get_report_time_delta(self):
         return HOST_REPORT_TIME
@@ -282,28 +277,24 @@ class zmod_tenz:
             status_msg = f"ZCONTROL_ON. {self.max_temp}. {'PAUSE' if self.zcommand == 1 else 'ABORT'}"
             gcmd.respond_info(status_msg)
         self.zcontrol = 1
-        self.triggered = False
 
     def cmd_ZCONTROL_OFF(self, gcmd):
         if self.max_temp != 2048 and self.zcontrol == 1:
             status_msg = "ZCONTROL_OFF"
             gcmd.respond_info(status_msg)
         self.zcontrol = 0
-        self.triggered = False
 
     def cmd_ZCONTROL_PAUSE(self, gcmd):
         if self.max_temp != 2048 and self.zcommand == 0:
             status_msg = f"{'ZCONTROL_ON' if self.zcontrol == 1 else 'ZCONTROL_OFF'}. {self.max_temp}. PAUSE"
             gcmd.respond_info(status_msg)
         self.zcommand = 1
-        self.triggered = False
 
     def cmd_ZCONTROL_ABORT(self, gcmd):
         if self.max_temp != 2048 and self.zcommand == 1:
             status_msg = f"{'ZCONTROL_ON' if self.zcontrol == 1 else 'ZCONTROL_OFF'}. {self.max_temp}. ABORT"
             gcmd.respond_info(status_msg)
         self.zcommand = 0
-        self.triggered = False
 
     def cmd_ZCONTROL_STATUS(self, gcmd):
         self.getlang()
