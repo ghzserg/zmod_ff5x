@@ -65,7 +65,7 @@ class zmod_tenz:
         self.stop_thread = True
         with self.response_condition:
             self.response_condition.notify_all()
-        time.sleep(0.1)  # Даем время сработать notify_all
+        self.reactor.pause(self.reactor.monotonic() + 0.1)  # Даем время сработать notify_all
         if self.sensor_thread.is_alive():
             self.sensor_thread.join(timeout=2.0)
 
@@ -119,7 +119,7 @@ class zmod_tenz:
             if abs(self.temp) < 100:
                 gcmd.respond_info(f"Cell Tare: OK. Weight: {self.temp}")
                 return
-            time.sleep(0.5)
+            self.reactor.pause(self.reactor.monotonic() + 0.5)
         error_msg = f"Cell Tare: Error. Weight: {self.temp} https://github.com/ghzserg/zmod/wiki/FAQ"
         raise gcmd.error(error_msg)
 
