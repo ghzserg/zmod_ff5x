@@ -28,6 +28,8 @@ class zmod_tenz:
         self._ret_command_id = 0
         self._ret_command_data = ""
 
+        self.temp_lock = threading.Lock()
+
         self.stop_thread = False  # Флаг для остановки потока
         self.sensor_thread = threading.Thread(target=self._sensor_reader)
         self.sensor_thread.daemon = True  # Поток завершится при выходе из программы
@@ -116,12 +118,14 @@ class zmod_tenz:
         while attempt < max_attempts:
             attempt += 1
             self.cmd_H1(gcmd)  # Вызов команды H1 для сброса веса
-            gcmd.respond_info(f"N {attempt}. Weight: {self.temp}")
-            if abs(self.temp) < 100:
-                gcmd.respond_info(f"Cell Tare: OK. Weight: {self.temp}")
+            self.temp_lock:
+                cur_temp=self.temp
+            gcmd.respond_info(f"N {attempt}. Weight: {cur_temp}")
+            if abs(cur_temp) < 100:
+                gcmd.respond_info(f"Cell Tare: OK. Weight: {cur_temp}")
                 return
             self.reactor.pause(self.reactor.monotonic() + 0.5)
-        error_msg = f"Cell Tare: Error. Weight: {self.temp} https://github.com/ghzserg/zmod/wiki/FAQ"
+        error_msg = f"Cell Tare: Error. Weight: {cur_temp} https://github.com/ghzserg/zmod/wiki/FAQ"
         raise gcmd.error(error_msg)
 
     def cmd_H1(self, gcmd):
@@ -178,7 +182,7 @@ class zmod_tenz:
             logging.warning("No valid value found before 'g' in response: %s", response)
             return -199.0
         try:
-            last_value = float(matches[-1])  # Можно использовать int(matches[-1]), если нужны только целые
+            last_value = float(matches[-1])
             return last_value
         except ValueError:
             logging.error("Failed to convert value to float: %s", matches[-1])
@@ -205,8 +209,9 @@ class zmod_tenz:
 
                     response = ser.readline().decode('utf-8', errors='ignore').strip()
                     if not response and command_id == -1:
-                        self.temp = -200.0
-                        self._callback(mcu.estimated_print_time(measured_time), self.temp)
+                        self.temp_lock:
+                            self.temp = -200.0
+                        self._callback(mcu.estimated_print_time(measured_time), -200.0)
                         continue
 
                     if not response:
@@ -216,7 +221,8 @@ class zmod_tenz:
                     if command_id == -1:
                         cur_temp = self.extract_last_value_before_g(response)
                         measured_time = self.reactor.monotonic()
-                        self.temp = cur_temp
+                        self.temp_lock:
+                            self.temp = cur_temp
                         self._callback(mcu.estimated_print_time(measured_time), cur_temp)
                         if (self.max_temp != 2048 and
                             self.zcontrol == 1 and
@@ -233,13 +239,15 @@ class zmod_tenz:
             except serial.SerialException as e:
                 logging.warning("Serial communication error: %s", e)
                 self._respond_info(f"cell_tare: Serial error: {str(e)}")
-                self.temp = -200
+                self.temp_lock:
+                    self.temp = -200
                 measured_time = self.reactor.monotonic()
                 self._callback(mcu.estimated_print_time(measured_time), -200)
             except Exception as e:
                 logging.exception("Sensor thread error: %s", e)
                 self._respond_info(f"cell_tare: Error data")
-                self.temp = -200
+                self.temp_lock:
+                    self.temp = -200
                 measured_time = self.reactor.monotonic()
                 self._callback(mcu.estimated_print_time(measured_time), -200)
             finally:
