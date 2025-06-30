@@ -19,16 +19,21 @@ class zmod_tenz:
         self.name = config.get_name().split()[-1]
         self.temp = self.min_temp = self.max_temp = 0.0
         self.printer.add_object("temperature_load " + self.name, self)
+
+        self._command_lock = threading.Lock()
         self._command = "H7"
-        self.command_lock = threading.Lock()
-        self.response_condition = threading.Condition()  # Условная переменная для ожидания ответов
-        self.pending_responses = {}  # Хранение ожидаемых ответов {command_id: response}
-        self.command_counter = 0  # Счетчик для уникальных ID команд
-        self.triggered = False  # Флаг предотвращения повторных срабатываний
+        self._command_id = 0  # Счетчик для уникальных ID команд
+
+        self._ret_command_lock = threading.Lock()
+        self._ret_command_id = 0
+        self._ret_command_data = ""
+
         self.stop_thread = False  # Флаг для остановки потока
         self.sensor_thread = threading.Thread(target=self._sensor_reader)
         self.sensor_thread.daemon = True  # Поток завершится при выходе из программы
         self.sensor_thread.start()
+
+        self.triggered = False  # Флаг предотвращения повторных срабатываний
         self.zcontrol = 0
         self.zcommand = 0
         self.printer.load_object(config, 'pause_resume')
@@ -63,9 +68,6 @@ class zmod_tenz:
 
     def close(self):
         self.stop_thread = True
-        with self.response_condition:
-            self.response_condition.notify_all()
-        self.reactor.pause(self.reactor.monotonic() + 0.1)  # Даем время сработать notify_all
         if self.sensor_thread.is_alive():
             self.sensor_thread.join(timeout=2.0)
 
@@ -84,29 +86,28 @@ class zmod_tenz:
         :param timeout: Таймаут ожидания ответа.
         :return: Ответ от датчика или None при таймауте.
         """
-        with self.command_lock:
-            self.command_counter += 1
-            command_id = self.command_counter  # Уникальный ID команды
-        with self.response_condition:
-            self.pending_responses[command_id] = None
-            self.set_command(f"{command}#{command_id}")  # Добавление ID к команде
-        with self.response_condition:
-            waited = self.response_condition.wait(timeout)
-            if not waited or self.pending_responses[command_id] is None:
-                with self.command_lock:
-                    del self.pending_responses[command_id]
+        with self._command_lock:
+            self._command_id += 1
+            command_id = self._command_id  # Уникальный ID команды
+            self._command = f"{command}#{command_id}"
+        start_time = eventtime = self.reactor.monotonic()
+
+        while not self.stop_thread:
+            eventtime = self.reactor.pause(eventtime + 0.2)
+            with self._ret_command_lock:
+                if command_id == self._ret_command_id:
+                    return self._ret_command_data
+            if eventtime - start_time > timeout:
+                logging.warning(f"Timeout waiting for command {command} N{command_id} response")
                 return None
-            response = self.pending_responses[command_id]
-            with self.command_lock:
-                del self.pending_responses[command_id]
-            return response
+        return None
 
     def get_command(self):
-        with self.command_lock:
+        with self._command_lock:
             return self._command
 
     def set_command(self, new_command):
-        with self.command_lock:
+        with self._command_lock:
             self._command = new_command
 
     def cmd_LOAD_CELL_TARE(self, gcmd):
@@ -203,8 +204,12 @@ class zmod_tenz:
                     time.sleep(0.05)
 
                     response = ser.readline().decode('utf-8', errors='ignore').strip()
+                    if not response and command_id == -1:
+                        self.temp = -200.0
+                        self._callback(mcu.estimated_print_time(measured_time), self.temp)
+                        continue
+
                     if not response:
-                        self.set_command("H7")
                         logging.warning("Empty response from device. Possible disconnect.")
                         break
 
@@ -219,10 +224,11 @@ class zmod_tenz:
                             not self.triggered):
                             self._zcontrol(cur_temp)
                     else:
-                        with self.response_condition:
-                            self.pending_responses[command_id] = response
-                            self.response_condition.notify_all()
-                        self.set_command("H7")
+                        with self._ret_command_lock:
+                            self._ret_command_id = command_id
+                            self._ret_command_data = response
+                        with self._command_lock:
+                            self._command = "H7"
                     time.sleep(HOST_REPORT_TIME)
             except serial.SerialException as e:
                 logging.warning("Serial communication error: %s", e)
@@ -322,14 +328,6 @@ class zmod_tenz:
                 else:
                     action_msg = "При сработке отключается Klipper. // ZCONTROL_ABORT"
             gcmd.respond_info(action_msg)
-
-    def __del__(self):
-        self.stop_thread = True
-        with self.response_condition:
-            self.response_condition.notify_all()
-        if self.sensor_thread.is_alive():
-            self.sensor_thread.join(timeout=1.0)
-
 
 def load_config(config):
     pheaters = config.get_printer().load_object(config, "heaters")
