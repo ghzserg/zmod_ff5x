@@ -19,6 +19,7 @@ $PYTHON /opt/config/mod/.shell/ps_mem.py -S >/tmp/list.txt
 
 [ ${ZLANG} != 'ru' ] && cat /tmp/list.txt || awk '{
     gsub(/python3.7/, "Klipper");
+    gsub(/python3.8/, "Klipper");
     gsub(/python3.12/, "Moonraker");
     gsub(/firmwareExe/, "Экран");
     gsub(/mjpg_streamer/, "Камера");
