@@ -7,6 +7,7 @@ if  [ "$1" == 1 ]
     then
         rm -rf ${LOG_FILES}/*
         rm -rf /opt/config/mod_data/log/*
+        rm -rf ${UPDATE_DIR}/*
         sync
 fi
 
