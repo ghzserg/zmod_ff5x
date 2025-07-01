@@ -215,6 +215,9 @@ class zmod_tenz:
                         logging.warning("Empty response from device. Possible disconnect.")
                         break
 
+                    with self._ret_command_lock:
+                        self._ret_command_id = command_id
+
                     if command_id == -1:
                         cur_temp = self.extract_last_value_before_g(response)
                         measured_time = self.reactor.monotonic()
@@ -227,7 +230,6 @@ class zmod_tenz:
                             self._zcontrol(cur_temp)
                     else:
                         with self._ret_command_lock:
-                            self._ret_command_id = command_id
                             self._ret_command_data = response
                         with self._command_lock:
                             self._command = "H7"
