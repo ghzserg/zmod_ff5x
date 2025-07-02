@@ -444,6 +444,7 @@ class zmod_ifs:
         ser = None
         while not self.stop_thread:
             try:
+                logging.info(f"IFS {PORT} opening")
                 ser = serial.Serial(
                     port=PORT,
                     baudrate=BAUDRATE,
