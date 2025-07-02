@@ -36,7 +36,7 @@
         {
           "color": "orange",
           "controllable": false,
-          "display_name": "Вес",
+          "display_name": "Weight",
           "id": "temperature_sensor weightValue"
         }
       ],
