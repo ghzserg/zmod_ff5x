@@ -482,11 +482,8 @@ class zmod_ifs:
                         if command_id == -1:
                             continue;
                         else:
-                            logging.warning(f"Empty response from device. Possible disconnect. {current_command}")
+                            logging.warning(f"Пустой ответ от устройства {current_command}")
                             break
-
-                    with self._ret_command_lock:
-                        self._ret_command_id = command_id
 
                     if command_id == -1:
                         self.ifs_data.update_from_string(response)
@@ -505,6 +502,7 @@ class zmod_ifs:
                         #self._respond_info(f"! {command} -> {response}")
                         with self._ret_command_lock:
                             self._ret_command_data = response
+                            self._ret_command_id = command_id
                         with self._command_lock:
                             self._command = "F13"
                     time.sleep(HOST_REPORT_TIME)
