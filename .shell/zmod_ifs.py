@@ -262,7 +262,7 @@ class zmod_ifs:
                  FFS_state=FFS_STATUS_ZAGRUZKA,
                  silk={'count': 3, 'status': False},
                  stall={'count': 3, 'status': False},
-                 extruder={'count': 1, 'status': },
+                 extruder={'count': 1, 'status': True},
                  timeout=120
             )
         else:
