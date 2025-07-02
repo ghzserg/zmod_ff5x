@@ -587,12 +587,13 @@ class zmod_color:
             gcmd.respond_raw(self._t('no_response', response_data))
 
     def cmd_SET_ZCOLOR(self, gcmd):
-        gcmd.respond_raw("// action:prompt_end")
+        silent = gcmd.get_int('SILENT', 0)
+        if silent == 0:
+            gcmd.respond_raw("// action:prompt_end")
+
         fname = gcmd.get('FILENAME', '')
         if fname == '':
             raise gcmd.error(self._t('error_no_filename'))
-
-        silent = gcmd.get_int('SILENT', 0)
 
         leveling = gcmd.get_int('LEVELING', 0)
         if leveling not in (0, 1):

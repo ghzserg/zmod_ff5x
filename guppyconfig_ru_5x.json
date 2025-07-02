@@ -32,6 +32,12 @@
           "controllable": true,
           "display_name": "Стол",
           "id": "heater_bed"
+        },
+        {
+          "color": "orange",
+          "controllable": false,
+          "display_name": "Вес",
+          "id": "temperature_sensor weightValue"
         }
       ],
       "moonraker_api_key": false,
