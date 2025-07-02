@@ -325,7 +325,7 @@ class zmod_ifs:
             if check==1:
                 success, ret_code, values = self.wait_for_state(
                     Port=prutok,
-                    FFS_state=FFS_STATUS_VIGRUZKA,
+                    FFS_state=FFS_STATUS_ZAGRUZKA,
                     silk={'count': 3, 'status': False},
                     stall={'count': 3, 'status': False},
                     extruder={'count': 1, 'status': True},
@@ -360,7 +360,7 @@ class zmod_ifs:
             if check==1:
                 success, ret_code, values = self.wait_for_state(
                     Port=prutok,
-                    FFS_state=FFS_STATUS_ZAGRUZKA,
+                    FFS_state=FFS_STATUS_VIGRUZKA,
                     silk={'count': 3, 'status': False},
                     stall={'count': 3, 'status': False},
                     extruder={'count': 1, 'status': True},
