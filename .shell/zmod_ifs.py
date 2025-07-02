@@ -151,6 +151,14 @@ class zmod_ifs:
         if self.sensor_thread.is_alive():
             self.sensor_thread.join(timeout=2.0)
 
+    def _respond_info(self, msg):
+        self.reactor.register_async_callback(
+            lambda e: self.gcode.respond_info(msg))
+
+    def _respond_raw(self, msg):
+        self.reactor.register_async_callback(
+            lambda e: self.gcode.respond_raw(msg))
+
     def info(self, msg):
         if self.debug:
             self.gcode.respond_info(msg)
@@ -440,8 +448,9 @@ class zmod_ifs:
             gcmd.respond_info("Пруток извлечен из экструдера")
 
     def _sensor_reader(self):
-        ser = None
         while not self.stop_thread:
+            ser = None
+            logging.info("IFS: Starting connection attempt...")
             try:
                 logging.info(f"IFS {PORT} opening")
                 ser = serial.Serial(
@@ -512,7 +521,7 @@ class zmod_ifs:
                         logging.info(f"IFS {PORT} closed")
                     except Exception as e:
                         logging.warning("Error closing IFS serial port: %s", e)
-                time.sleep(0.5)
+                time.sleep(1)
 
 class IfsData:
     def __init__(self):
