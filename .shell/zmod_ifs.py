@@ -129,7 +129,7 @@ class zmod_ifs:
                     else:
                         stall_count = 0
             if self.reactor.monotonic() - start_time > timeout:
-                raise self.gcode.error(f"Timeout waiting for IFS state {state}")
+                raise self.gcode.error(f"IFS: Вышло время для получения статуса {state}")
                 return False, RET_TIMEOUT, current_values
 
             self.reactor.pause(self.reactor.monotonic() + HOST_REPORT_TIME)
@@ -139,11 +139,11 @@ class zmod_ifs:
         self.sensor_thread.start()
 
     def _handle_disconnect(self):
-        logging.info("Printer disconnected. Stopping IFS thread.")
+        logging.info("IFS: Printer disconnected. Stopping IFS thread.")
         self._close()
 
     def _handle_shutdown(self):
-        logging.info("Printer shutdown. Stopping IFS thread.")
+        logging.info("IFS: Printer shutdown. Stopping IFS thread.")
         self._close()
 
     def _close(self):
@@ -466,7 +466,7 @@ class zmod_ifs:
             ser = None
             logging.info("IFS: Starting connection attempt...")
             try:
-                logging.info(f"IFS {PORT} opening")
+                logging.info(f"IFS: {PORT} opening")
                 ser = serial.Serial(
                     port=PORT,
                     baudrate=BAUDRATE,
@@ -475,7 +475,7 @@ class zmod_ifs:
                     bytesize=BYTESIZE,
                     timeout=TIMEOUT
                 )
-                logging.info(f"IFS {PORT} open")
+                logging.info(f"IFS: {PORT} open")
                 while not self.stop_thread:
                     current_command = self.get_command()
                     command_id = -1
@@ -521,18 +521,18 @@ class zmod_ifs:
                             self._command = "F13"
                     time.sleep(HOST_REPORT_TIME)
             except serial.SerialException as e:
-                logging.warning("IFS Serial communication error: %s", e)
-                self._respond_info(f"IFS sensor error: {str(e)}")
+                logging.warning("IFS: Serial communication error: %s", e)
+                self._respond_info(f"IFS: sensor error: {str(e)}")
             except Exception as e:
                 logging.exception("IFS: Error data")
-                self._error(f"IFS sensor error: {str(e)}")
+                self._error(f"IFS: sensor error: {str(e)}")
             finally:
                 if ser and hasattr(ser, 'is_open') and ser.is_open:
                     try:
                         ser.close()
-                        logging.info(f"IFS {PORT} closed")
+                        logging.info(f"IFS: {PORT} closed")
                     except Exception as e:
-                        logging.warning("Error closing IFS serial port: %s", e)
+                        logging.warning("IFS: Error closing IFS serial port: %s", e)
                 time.sleep(1)
 
 class IfsData:
