@@ -426,7 +426,7 @@ class zmod_ifs:
         else:
             raise self.gcode.error("Пруток ОТСУСТВУЕТ в экструдере")
 
-    def cmd__IFS_REMOVE_PRUTOK(self, prutok, gcmd):
+    def cmd__IFS_REMOVE_PRUTOK(self, gcmd, prutok):
         if not self.get_extruder_sensor() or prutok == 0:
             return
 
@@ -451,15 +451,15 @@ class zmod_ifs:
 
         values = self.ifs_data.get_values()
         prutok=values['Chan']
-        self.cmd__IFS_REMOVE_PRUTOK(prutok)
+        self.cmd__IFS_REMOVE_PRUTOK(gcmd, prutok)
         if values['Port1']:
-            self.cmd__IFS_REMOVE_PRUTOK(1)
+            self.cmd__IFS_REMOVE_PRUTOK(gcmd, 1)
         if values['Port2']:
-            self.cmd__IFS_REMOVE_PRUTOK(2)
+            self.cmd__IFS_REMOVE_PRUTOK(gcmd, 2)
         if values['Port3']:
-            self.cmd__IFS_REMOVE_PRUTOK(3)
+            self.cmd__IFS_REMOVE_PRUTOK(gcmd, 3)
         if values['Port4']:
-            self.cmd__IFS_REMOVE_PRUTOK(4)
+            self.cmd__IFS_REMOVE_PRUTOK(gcmd, 4)
 
     def _sensor_reader(self):
         while not self.stop_thread:
