@@ -65,12 +65,15 @@ class zmod_ifs:
         # Регистрация команд G-кода
         self.gcode.register_command('IFS_AUTOINSERT', self.cmd_IFS_AUTOINSERT, desc=self.cmd_IFS_AUTOINSERT_help)
         self.gcode.register_command('IFS_STATUS', self.cmd_IFS_STATUS, desc=self.cmd_IFS_STATUS_help)
-        self.gcode.register_command('IFS_SENSOR', self.cmd_IFS_SENSOR, desc=self.cmd_IFS_SENSOR_help)
+        self.gcode.register_command('IFS_EXTRUDER_SENSOR', self.cmd_IFS_EXTRUDER_SENSOR)
+        self.gcode.register_command('IFS_REMOVE_CURRENT_PRUTOK', self.cmd_IFS_REMOVE_CURRENT_PRUTOK)
+
+
         self.gcode.register_command('IFS_F10', self.cmd_IFS_F10)        # Вставить пруток
         self.gcode.register_command('IFS_F11', self.cmd_IFS_F11)        # Извлечь пруток
-        self.gcode.register_command('IFS_F23', self.cmd_IFS_F23)        # Отжим филамента
+        self.gcode.register_command('IFS_F23', self.cmd_IFS_F23)        # Помечаем пруток как вставленный
         self.gcode.register_command('IFS_F24', self.cmd_IFS_F24)        # Прижим филамента
-        self.gcode.register_command('IFS_F39', self.cmd_IFS_F39)        # Помечаем пруток как вставленный
+        self.gcode.register_command('IFS_F39', self.cmd_IFS_F39)        # Отжим филамента
         self.gcode.register_command('IFS_F112', self.cmd_IFS_F112)      # Прекращаем подачу прутка
 
     # self.wait_for_state(
@@ -250,36 +253,40 @@ class zmod_ifs:
         gcmd = self.gcode.create_gcode_command("IFS_F24", "IFS_F24", {'PRUTOK': prutok})
         self.cmd_IFS_F24(gcmd)
 
-        # Проверяем надо ли втягивать
-        rewind=self.get_extruder_sensor()
-
         # Затягиваем пруток
         response = self._cmd_IFS_F10(prutok, leng=600, speed=1200)
-        success, ret_code, values = self.wait_for_state(
-             Port=prutok,
-             FFS_state=FFS_STATUS_ZAGRUZKA,
-             silk={'count': 3, 'status': False},
-             stall={'count': 3, 'status': False},
-             extruder={'count': 1, 'status': True},
-             timeout=120
-        )
+        # Проверяем надо ли втягивать
+        if self.get_extruder_sensor():
+            success, ret_code, values = self.wait_for_state(
+                 Port=prutok,
+                 FFS_state=FFS_STATUS_ZAGRUZKA,
+                 silk={'count': 3, 'status': False},
+                 stall={'count': 3, 'status': False},
+                 extruder={'count': 1, 'status': },
+                 timeout=120
+            )
+        else:
+            success, ret_code, values = self.wait_for_state(
+                 Port=prutok,
+                 FFS_state=FFS_STATUS_ZAGRUZKA,
+                 silk={'count': 3, 'status': False},
+                 stall={'count': 3, 'status': False},
+                 timeout=120
+            )
         if not success:
             gcmd = self.gcode.create_gcode_command("IFS_F112", "IFS_F112", {})
             self.cmd_IFS_F112(gcmd)
             self.print_result(ret_code, values)
             if ret_code == RET_EXTRUDER:
-                rewind = True
+                # Втягиваем пруток
+                gcmd = self.gcode.create_gcode_command("IFS_F11", "IFS_F11", {'PRUTOK': prutok, 'LEN': 90, 'SPEED': 1200})
+                self.cmd_IFS_F11(gcmd)
 
-        if rewind:
-            # Втягиваем пруток
-            gcmd = self.gcode.create_gcode_command("IFS_F11", "IFS_F11", {'PRUTOK': prutok, 'LEN': 90, 'SPEED': 1200})
-            self.cmd_IFS_F11(gcmd)
-
-        # Отжимаем пруток
+        # Помечаем как вставленный
         gcmd = self.gcode.create_gcode_command("IFS_F23", "IFS_F23", {'PRUTOK': prutok})
         self.cmd_IFS_F23(gcmd)
 
-        # Помечаем как не вставленный
+        # Отжимаем пруток
         gcmd = self.gcode.create_gcode_command("IFS_F39", "IFS_F39", {'PRUTOK': prutok})
         self.cmd_IFS_F39(gcmd)
 
@@ -289,14 +296,57 @@ class zmod_ifs:
         self.info(f"F10 C{prutok} L{leng} S{speed} > {response}")
         return response
 
+    # Загрузить пруток
     def cmd_IFS_F10(self, gcmd):
+        prutok = gcmd.get_int('PRUTOK', 1)
+        leng = gcmd.get_int('LEN', 90)
+        speed = gcmd.get_int('SPEED', 1200)
+        if speed==0:
+            self.print_str("Скорость не может быть = 0", False)
+        wait = gcmd.get_int('WAIT', 1)
+        check = gcmd.get_int('CHECK', 0)
+        sleep = gcmd.get_int('SLEEP', 0)
+
+        response = self._cmd_IFS_F10(prutok, leng, speed)
+        if sleep==1:
+            # Ждем пока треть прутка пройдет
+            self.reactor.pause(self.reactor.monotonic() + (leng * 20) // speed + 1)
+            return
+        if wait==1:
+            if check==1:
+                success, ret_code, values = self.wait_for_state(
+                    Port=prutok,
+                    FFS_state=FFS_STATUS_VIGRUZKA,
+                    silk={'count': 3, 'status': False},
+                    stall={'count': 3, 'status': False},
+                    extruder={'count': 1, 'status': True},
+                    timeout=120
+                )
+                if not success:
+                    gcmd = self.gcode.create_gcode_command("IFS_F112", "IFS_F112", {})
+                    self.cmd_IFS_F112(gcmd)
+                if ret_code == RET_EXTRUDER:
+                    self.print_result(ret_code, values)
+                else:
+                    self.print_result(ret_code, values, info=False)
+            else:
+                self.wait_for_state(timeout=120)
+
+    def _cmd_IFS_F11(self, prutok, leng, speed):
+        self.gcode.respond_info(f"Извлечь пруток {prutok} длинной {leng} со скоростью {speed}")
+        response = self.send_command_and_wait(f"F11 C{prutok} L{leng} S{speed}", result=f"F11 ok. FFS channel {prutok} exiting.")
+        self.info(f"F11 C{prutok} L{leng} S{speed} > {response}")
+        return response
+
+    # Выгрузить пруток
+    def cmd_IFS_F11(self, gcmd):
         prutok = gcmd.get_int('PRUTOK', 1)
         leng = gcmd.get_int('LEN', 90)
         speed = gcmd.get_int('SPEED', 1200)
         wait = gcmd.get_int('WAIT', 1)
         check = gcmd.get_int('CHECK', 0)
 
-        response = self._cmd_IFS_F10(prutok, leng, speed)
+        response = self._cmd_IFS_F11(prutok, leng, speed)
         if wait==1:
             if check==1:
                 success, ret_code, values = self.wait_for_state(
@@ -307,35 +357,24 @@ class zmod_ifs:
                     extruder={'count': 1, 'status': True},
                     timeout=120
                 )
+                gcmd = self.gcode.create_gcode_command("IFS_F112", "IFS_F112", {})
+                self.cmd_IFS_F112(gcmd)
             else:
                 self.wait_for_state(timeout=120)
 
-    def _cmd_IFS_F11(self, prutok, leng, speed):
-        self.gcode.respond_info(f"Извлечь пруток {prutok} длинной {leng} со скоростью {speed}")
-        response = self.send_command_and_wait(f"F11 C{prutok} L{leng} S{speed}", result=f"F11 ok. FFS channel {prutok} exiting.")
-        self.info(f"F11 C{prutok} L{leng} S{speed} > {response}")
-        return response
-
-    def cmd_IFS_F11(self, gcmd):
-        prutok = gcmd.get_int('PRUTOK', 1)
-        leng = gcmd.get_int('LEN', 90)
-        speed = gcmd.get_int('SPEED', 1200)
-        wait = gcmd.get_int('WAIT', 1)
-
-        response = self._cmd_IFS_F11(prutok, leng, speed)
-        if wait==1:
-            self.wait_for_state(timeout=120)
-
+    # Пометить пруток как вставленный
     def cmd_IFS_F23(self, gcmd):
         prutok = gcmd.get_int('PRUTOK', 1)
         wait = gcmd.get_int('WAIT', 1)
 
-        self.gcode.respond_info(f"Разблокировка прутка {prutok}")
+        self.gcode.respond_info(f"Помечаем пруток {prutok}")
+
         response = self.send_command_and_wait(f"F23 C{prutok}", result=f"F23 ok. chan {prutok}.")
         self.info(f"F23 C{prutok} > {response}")
         if wait==1:
             self.wait_for_state()
 
+    # Заблокировать пруток
     def cmd_IFS_F24(self, gcmd):
         prutok = gcmd.get_int('PRUTOK', 1)
         wait = gcmd.get_int('WAIT', 1)
@@ -346,16 +385,18 @@ class zmod_ifs:
         if wait==1:
             self.wait_for_state()
 
+    # Разблокировать пруток
     def cmd_IFS_F39(self, gcmd):
         prutok = gcmd.get_int('PRUTOK', 1)
         wait = gcmd.get_int('WAIT', 1)
 
-        self.gcode.respond_info(f"Снятие статуса нового прутка {prutok}")
+        self.gcode.respond_info(f"Разблокировка прутка {prutok}")
         response = self.send_command_and_wait(f"F39 C{prutok}", result=f"F39 ok. FFS channel {prutok} release.")
         self.info(f"F39 C{prutok} > {response}")
         if wait==1:
             self.wait_for_state()
 
+    # Остановить движение
     def cmd_IFS_F112(self, gcmd):
         wait = gcmd.get_int('WAIT', 0)
 
@@ -370,9 +411,32 @@ class zmod_ifs:
         values = self.ifs_data.get_values()
         gcmd.respond_info(json.dumps(values))
 
-    cmd_IFS_SENSOR_help = "Get current IFS SENSOR"
-    def cmd_IFS_SENSOR(self, gcmd):
-        gcmd.respond_info(str(self.get_ifs_sensor()))
+    def cmd_IFS_EXTRUDER_SENSOR(self, gcmd):
+        if self.get_extruder_sensor():
+            gcmd.respond_info("Пруток в экструдере")
+        else:
+            raise self.gcode.error("Пруток ОТСУСТВУЕТ в экструдере")
+
+    def cmd_IFS_REMOVE_CURRENT_PRUTOK(self, gcmd):
+        if not self.get_extruder_sensor():
+            return
+
+        values = self.ifs_data.get_values()
+        prutok=values['Chan']
+
+        self.gcode.run_script_from_command("_REZGEM_PRUTOK")
+        self.gcode.run_script_from_command("_GOTO_KAKASHNIK")
+        self.gcode.run_script_from_command(f"IFS_F24 PRUTOK={prutok}")
+
+        self.gcode.run_script_from_command("G92 E0")
+        self.gcode.run_script_from_command("G1 E-60 F600")
+        self.gcode.run_script_from_command(f"IFS_F11 PRUTOK={prutok} LEN=100 SPEED=1200 WAIT=0")
+        self.gcode.run_script_from_command("M400")
+
+        if self.get_extruder_sensor():
+            raise self.gcode.error("Не удалось извлечь пруток из экструдера")
+        else:
+            gcmd.respond_info("Пруток извлечен из экструдера")
 
     def _sensor_reader(self):
         ser = None
