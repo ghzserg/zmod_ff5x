@@ -426,7 +426,7 @@ class zmod_ifs:
         else:
             raise self.gcode.error("Пруток ОТСУСТВУЕТ в экструдере")
 
-    def cmd__IFS_REMOVE_PRUTOK(self, prutok):
+    def cmd__IFS_REMOVE_PRUTOK(self, prutok, gcmd):
         if not self.get_extruder_sensor() or prutok == 0:
             return
 
