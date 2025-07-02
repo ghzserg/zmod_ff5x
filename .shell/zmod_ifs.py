@@ -257,20 +257,22 @@ class zmod_ifs:
         response = self._cmd_IFS_F10(prutok, leng=600, speed=1200)
         # Проверяем надо ли втягивать
         if self.get_extruder_sensor():
+            self.gcode.respond_info("В экструдере нет прутка")
+            success, ret_code, values = self.wait_for_state(
+                 Port=prutok,
+                 FFS_state=FFS_STATUS_ZAGRUZKA,
+                 silk={'count': 3, 'status': False},
+                 stall={'count': 3, 'status': False},
+                 timeout=120
+            )
+        else:
+            self.gcode.respond_info("В экструдере есть пруток")
             success, ret_code, values = self.wait_for_state(
                  Port=prutok,
                  FFS_state=FFS_STATUS_ZAGRUZKA,
                  silk={'count': 3, 'status': False},
                  stall={'count': 3, 'status': False},
                  extruder={'count': 1, 'status': True},
-                 timeout=120
-            )
-        else:
-            success, ret_code, values = self.wait_for_state(
-                 Port=prutok,
-                 FFS_state=FFS_STATUS_ZAGRUZKA,
-                 silk={'count': 3, 'status': False},
-                 stall={'count': 3, 'status': False},
                  timeout=120
             )
         if not success:
