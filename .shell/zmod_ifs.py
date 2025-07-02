@@ -201,7 +201,7 @@ class zmod_ifs:
                 else:
                     return self._ret_command_data
             if eventtime - start_time > timeout:
-                logging.warning(f"Timeout waiting for command {command} N{command_id} response")
+                raise self.gcode.error(f"Таймаут ожидания ответа от команды {command}#{command_id}")
                 return None
         return None
 
@@ -450,6 +450,7 @@ class zmod_ifs:
                     bytesize=BYTESIZE,
                     timeout=TIMEOUT
                 )
+                logging.info(f"IFS {PORT} open")
                 while not self.stop_thread:
                     current_command = self.get_command()
                     command_id = -1
@@ -526,6 +527,9 @@ class IfsData:
         self.NeedInsert = False # Нужно ли вставлять пруток
 
     def update_from_string(self, data_str):
+        if data_str is None:
+            return;
+
         silk_state = 0
         silk = 0
         chan = 0
