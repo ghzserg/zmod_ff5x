@@ -293,9 +293,22 @@ class zmod_ifs:
         prutok = gcmd.get_int('PRUTOK', 1)
         leng = gcmd.get_int('LEN', 90)
         speed = gcmd.get_int('SPEED', 1200)
+        wait = gcmd.get_int('WAIT', 1)
+        check = gcmd.get_int('CHECK', 0)
 
         response = self._cmd_IFS_F10(prutok, leng, speed)
-        self.wait_for_state(timeout=120)
+        if wait==1:
+            if check==1:
+                success, ret_code, values = self.wait_for_state(
+                    Port=prutok,
+                    FFS_state=FFS_STATUS_ZAGRUZKA,
+                    silk={'count': 3, 'status': False},
+                    stall={'count': 3, 'status': False},
+                    extruder={'count': 1, 'status': True},
+                    timeout=120
+                )
+            else:
+                self.wait_for_state(timeout=120)
 
     def _cmd_IFS_F11(self, prutok, leng, speed):
         self.gcode.respond_info(f"Извлечь пруток {prutok} длинной {leng} со скоростью {speed}")
@@ -307,35 +320,50 @@ class zmod_ifs:
         prutok = gcmd.get_int('PRUTOK', 1)
         leng = gcmd.get_int('LEN', 90)
         speed = gcmd.get_int('SPEED', 1200)
+        wait = gcmd.get_int('WAIT', 1)
 
         response = self._cmd_IFS_F11(prutok, leng, speed)
-        self.wait_for_state(timeout=120)
+        if wait==1:
+            self.wait_for_state(timeout=120)
 
     def cmd_IFS_F23(self, gcmd):
         prutok = gcmd.get_int('PRUTOK', 1)
+        wait = gcmd.get_int('WAIT', 1)
+
         self.gcode.respond_info(f"Разблокировка прутка {prutok}")
         response = self.send_command_and_wait(f"F23 C{prutok}", result=f"F23 ok. chan {prutok}.")
         self.info(f"F23 C{prutok} > {response}")
-        self.wait_for_state()
+        if wait==1:
+            self.wait_for_state()
 
     def cmd_IFS_F24(self, gcmd):
         prutok = gcmd.get_int('PRUTOK', 1)
+        wait = gcmd.get_int('WAIT', 1)
+
         self.gcode.respond_info(f"Блокировка прутка {prutok}")
         response = self.send_command_and_wait(f"F24 C{prutok}", result=f"F24 ok. chan {prutok}.")
         self.info(f"F24 C{prutok} > {response}")
-        self.wait_for_state()
+        if wait==1:
+            self.wait_for_state()
 
     def cmd_IFS_F39(self, gcmd):
         prutok = gcmd.get_int('PRUTOK', 1)
+        wait = gcmd.get_int('WAIT', 1)
+
         self.gcode.respond_info(f"Снятие статуса нового прутка {prutok}")
         response = self.send_command_and_wait(f"F39 C{prutok}", result=f"F39 ok. FFS channel {prutok} release.")
         self.info(f"F39 C{prutok} > {response}")
-        self.wait_for_state()
+        if wait==1:
+            self.wait_for_state()
 
     def cmd_IFS_F112(self, gcmd):
+        wait = gcmd.get_int('WAIT', 0)
+
         response = self.send_command_and_wait(f"F112", result="F112 ok.")
         self.gcode.respond_info(f"Остановка движения прутка")
         self.info(f"F112 > {response}")
+        if wait==1:
+            self.wait_for_state()
 
     cmd_IFS_STATUS_help = "Get current IFS status"
     def cmd_IFS_STATUS(self, gcmd):

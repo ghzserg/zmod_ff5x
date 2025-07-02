@@ -592,6 +592,8 @@ class zmod_color:
         if fname == '':
             raise gcmd.error(self._t('error_no_filename'))
 
+        silent = gcmd.get_int('SILENT', 0)
+
         leveling = gcmd.get_int('LEVELING', 0)
         if leveling not in (0, 1):
             raise gcmd.error(self._t('error_leveling', leveling))
@@ -611,44 +613,76 @@ class zmod_color:
         if status_code:
             result = self.parse_printer_response(response_data)
 
-            gcmd.respond_raw(f"// action:prompt_begin {self._t('prompt_material')}")
-            gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_map_color')}")
-            gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_file', fname)}")
-
             leveling_text = (
                 self._t('prompt_leveling_on')
                 if leveling
                 else self._t('prompt_leveling_off')
             )
-            gcmd.respond_raw(f"// action:prompt_text {leveling_text}")
 
-            gcmd.respond_raw("// action:prompt_button_group_start")
-            for tool_idx, tool_val in enumerate(tools):
-                if 0 <= (tool_val - 1) < len(result):
-                    slot_info = result[tool_val - 1]
-                    btn_text = (
-                        f"{self._t('file_tool')} {tool_idx+1} → "
-                        f"{self._t('spool')} {slot_info['ID']}: "
-                        f"{slot_info['Material']}/{slot_info['Color']}"
-                    )
-                    params = (
-                        f"LEVELING={leveling} FILENAME=\"{fname}\" "
-                        f"TOOL0={tools[0]} TOOL1={tools[1]} "
+            if silent == 0:
+                gcmd.respond_raw(f"// action:prompt_begin {self._t('prompt_material')}")
+                gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_map_color')}")
+                gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_file', fname)}")
+
+                gcmd.respond_raw(f"// action:prompt_text {leveling_text}")
+
+                gcmd.respond_raw("// action:prompt_button_group_start")
+                for tool_idx, tool_val in enumerate(tools):
+                    if 0 <= (tool_val - 1) < len(result):
+                        slot_info = result[tool_val - 1]
+                        btn_text = (
+                            f"{self._t('file_tool')} {tool_idx+1} → "
+                            f"{self._t('spool')} {slot_info['ID']}: "
+                            f"{slot_info['Material']}/{slot_info['Color']}"
+                        )
+                        params = (
+                            f"LEVELING={leveling} FILENAME=\"{fname}\" "
+                            f"TOOL0={tools[0]} TOOL1={tools[1]} "
                             f"TOOL2={tools[2]} TOOL3={tools[3]}"
-                    )
-                    gcmd.respond_raw(
-                        f"// action:prompt_button {btn_text}|"
-                        f"CHANGE_TOOL_ZCOLOR TOOL={tool_idx+1} {params}|primary"
-                    )
-            gcmd.respond_raw("// action:prompt_button_group_end")
+                        )
+                        gcmd.respond_raw(
+                            f"// action:prompt_button {btn_text}|"
+                            f"CHANGE_TOOL_ZCOLOR TOOL={tool_idx+1} {params}|primary"
+                        )
+                gcmd.respond_raw("// action:prompt_button_group_end")
 
-            gcmd.respond_raw(
-                f"// action:prompt_footer_button {self._t('send_print')}|"
-                f"PRINT_ZCOLOR LEVELING={leveling} FILENAME=\"{fname}\" "
-                f"TOOL0={tools[0]} TOOL1={tools[1]} TOOL2={tools[2]} TOOL3={tools[3]}|red"
-            )
-            gcmd.respond_raw(f"// action:prompt_footer_button {self._t('cancel')}|RESPOND TYPE=command MSG=action:prompt_end")
-            gcmd.respond_raw("// action:prompt_show")
+                gcmd.respond_raw(
+                    f"// action:prompt_footer_button {self._t('send_print')}|"
+                    f"PRINT_ZCOLOR LEVELING={leveling} FILENAME=\"{fname}\" "
+                    f"TOOL0={tools[0]} TOOL1={tools[1]} TOOL2={tools[2]} TOOL3={tools[3]}|red"
+                )
+                gcmd.respond_raw(f"// action:prompt_footer_button {self._t('cancel')}|RESPOND TYPE=command MSG=action:prompt_end")
+                gcmd.respond_raw("// action:prompt_show")
+            elif silent == 1:
+                gcmd.respond_raw(f"// {leveling_text}")
+                gcmd.respond_raw(f"// IFS ON")
+                for tool_idx, tool_val in enumerate(tools):
+                    if 0 <= (tool_val - 1) < len(result):
+                        slot_info = result[tool_val - 1]
+                        gcmd.respond_raw(
+                            f"{self._t('file_tool')} {tool_idx+1} → "
+                            f"{self._t('spool')} {slot_info['ID']}: "
+                            f"{slot_info['Material']}/{slot_info['Color']}"
+                        )
+                gcmd2 = self.gcode.create_gcode_command("PRINT_ZCOLOR", "PRINT_ZCOLOR", {
+                        'LEVELING': leveling, 'FILENAME': fname,
+                        'TOOL0': tools[0], 'TOOL1': tools[1], 'TOOL2': tools[2], 'TOOL3': tools[3]
+                        })
+                self.cmd_PRINT_ZCOLOR(gcmd2)
+            elif silent == 2:
+                gcmd.respond_raw(f"// {leveling_text}")
+                gcmd.respond_raw(f"// IFS OFF")
+                data = {
+                    "fileName": fname,
+                    "levelingBeforePrint": bool(leveling),
+                    "flowCalibration": True,
+                    "useMatlStation": False
+                }
+                status_code2, response_data2 = self.zsend_post_request("/printGcode", send_data=data)
+                if status_code2 == 200:
+                    gcmd.respond_raw(f"Status: {response_data2.get('msg', 'OK')}")
+                else:
+                    gcmd.respond_raw(self._t('printing_error', response_data2))
         else:
             gcmd.respond_raw(self._t('no_response', response_data))
 
