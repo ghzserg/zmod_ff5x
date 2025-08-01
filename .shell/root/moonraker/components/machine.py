@@ -853,7 +853,7 @@ class Machine:
             if resp.etag is not None:
                 usb_id_req_info["etag"] = resp.etag
             if resp.last_modified is not None:
-                usb_id_req_info["last_modifed"] = resp.last_modified
+                usb_id_req_info["last_modified"] = resp.last_modified
             await db.insert_item("moonraker", "usb_id_req_info", usb_id_req_info)
             # Write file
             logging.info("Writing usb.ids file...")
@@ -1195,7 +1195,7 @@ class SystemdDbusProvider(BaseProvider):
                 "sessions are open."
             )
         try:
-            # Get the login manaager interface
+            # Get the login manager interface
             self.login_mgr = await self.dbus_mgr.get_interface(
                 "org.freedesktop.login1",
                 "/org/freedesktop/login1",
