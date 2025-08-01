@@ -535,6 +535,7 @@ class SimplyPrint(APITransport):
         query = await self.klippy_apis.query_objects({"heaters": None}, None)
         sub_objs = {
             "display_status": ["progress"],
+            "virtual_sdcard": ["file_position", "progress"],
             "bed_mesh": ["mesh_matrix", "mesh_min", "mesh_max"],
             "toolhead": ["extruder"],
             "gcode_move": ["gcode_position"]
@@ -667,7 +668,7 @@ class SimplyPrint(APITransport):
         new_stats: Dict[str, Any],
         need_start_event: bool = True
     ) -> None:
-        # inlcludes started and resumed events
+        # includes started and resumed events
         self._update_state("printing")
         filename = new_stats["filename"]
         job_info: Dict[str, Any] = {"filename": filename}
@@ -850,11 +851,31 @@ class SimplyPrint(APITransport):
                 time_left != last_time_left
             ):
                 job_info["time"] = time_left
+
+        progress = None
+
         if "display_status" in self.printer_status:
-            progress = self.printer_status["display_status"]["progress"]
+            if "progress" in self.printer_status["display_status"]:
+                if self.printer_status["display_status"]["progress"]:
+                    progress = self.printer_status["display_status"]["progress"]
+
+        if not progress and "virtual_sdcard" in self.printer_status:
+            if "file_position" in self.printer_status["virtual_sdcard"]:
+                file_position = self.printer_status["virtual_sdcard"]["file_position"]
+                gcode_start_byte = self.cache.metadata.get('gcode_start_byte', 0)
+                gcode_end_byte = self.cache.metadata.get('gcode_end_byte', 0)
+                gcode_length = gcode_end_byte - gcode_start_byte
+                if gcode_start_byte and gcode_end_byte and gcode_length > 0:
+                    progress = (file_position - gcode_start_byte) / gcode_length
+                    progress = max(0, min(progress, 1))
+            if not progress and "progress" in self.printer_status["virtual_sdcard"]:
+                progress = self.printer_status["virtual_sdcard"]["progress"]
+
+        if progress:
             pct_prog = int(progress * 100 + .5)
             if pct_prog != self.cache.job_info.get("progress", 0):
-                job_info["progress"] = int(progress * 100 + .5)
+                job_info["progress"] = pct_prog
+
         layer: Optional[int] = last_stats.get("info", {}).get("current_layer")
         if layer is None:
             layer = self.layer_detect.layer
@@ -1341,7 +1362,7 @@ class WebcamStream:
         try:
             url = await cam.get_snapshot_url(True)
         except Exception:
-            logging.exception("Failed to retrive webcam url")
+            logging.exception("Failed to retrieve webcam url")
             return
         self.cam = cam
         logging.info(f"SimplyPrint Webcam URL assigned: {url}")
@@ -1460,7 +1481,7 @@ class PrintHandler:
         filename = pathlib.PurePath(tmp_path.name)
         fpath = gc_path.joinpath(filename.name)
         if self.cache.job_info.get("filename", "") == str(fpath):
-            # This is an attempt to overwite a print in progress, make a copy
+            # This is an attempt to overwrite a print in progress, make a copy
             count = 0
             while fpath.exists():
                 name = f"{filename.stem}_copy_{count}.{filename.suffix}"

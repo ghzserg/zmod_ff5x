@@ -15,7 +15,7 @@ def _get_distro_info() -> Dict[str, Any]:
     try:
         # try importing the distro module first.  It can detect
         # old/obscure releases that do not have the standard
-        # os-release fle.
+        # os-release file.
         import distro
     except ModuleNotFoundError:
         pass
@@ -61,6 +61,9 @@ class SysDepsParser:
         version = distro_info.get("distro_version")
         if version:
             self.distro_version = _convert_version(version)
+        self.vendor: str = ""
+        if pathlib.Path("/etc/rpi-issue").is_file():
+            self.vendor = "raspberry-pi"
 
     def _parse_spec(self, full_spec: str) -> str | None:
         parts = full_spec.split(";", maxsplit=1)
@@ -96,7 +99,7 @@ class SysDepsParser:
                 continue
             elif last_logical_op is None:
                 logging.info(
-                    f"Requirement specifier contains two seqential expressions "
+                    f"Requirement specifier contains two sequential expressions "
                     f"without a logical operator: {full_spec}")
                 return None
             dep_parts = re.split(r"(==|!=|<=|>=|<|>)", exp.strip())
@@ -106,6 +109,9 @@ class SysDepsParser:
                 return None
             elif req_var == "distro_id":
                 left_op: str | Tuple[int | str, ...] = self.distro_id
+                right_op = dep_parts[2].strip().strip("\"'")
+            elif req_var == "vendor":
+                left_op = self.vendor
                 right_op = dep_parts[2].strip().strip("\"'")
             elif req_var == "distro_version":
                 if not self.distro_version:
