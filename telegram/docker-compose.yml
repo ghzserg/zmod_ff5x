@@ -38,3 +38,30 @@ services:
     volumes:
       - ./timelapse:/home/moonraker-telegram-bot/moonraker-telegram-bot-timelapse
       - ./timelapse_finished:/home/moonraker-telegram-bot/timelapse_finished
+
+# Закоментируйте или удалите Spoolman если он вам не нужен
+#
+# 1. Откройте порт в фаерволе если он у вас используется
+# iptables -I INPUT -p tcp --dport 7912 -j ACCEPT
+#
+# 2. Создайте папку spoolman
+# mkdir spoolman
+# chmod 777 spoolman
+#
+# 3. На принтере пропишите в mod_data/user.moonraker.conf
+#
+# [spoolman]
+# server: http://external_IP:7912
+# sync_rate: 5
+#
+# external_IP - внешний ИП сервера на котором стоит docker
+# У принтера ДОЛЖЕН быть доступ к этому IP
+  spoolman:
+    image: ghcr.io/donkie/spoolman:latest
+    restart: unless-stopped
+    volumes:
+      - ./spoolman:/home/app/.local/share/spoolman
+    ports:
+      - "7912:8000"
+    environment:
+      - TZ=Asia/Yekaterinburg
