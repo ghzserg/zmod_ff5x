@@ -66,6 +66,7 @@ class zmod_ifs:
         self.gcode.register_command('IFS_AUTOINSERT', self.cmd_IFS_AUTOINSERT, desc=self.cmd_IFS_AUTOINSERT_help)
         self.gcode.register_command('IFS_STATUS', self.cmd_IFS_STATUS, desc=self.cmd_IFS_STATUS_help)
         self.gcode.register_command('IFS_EXTRUDER_SENSOR', self.cmd_IFS_EXTRUDER_SENSOR)
+        self.gcode.register_command('IFS_REMOVE_PRUTOK', self.cmd_IFS_REMOVE_PRUTOK)
         self.gcode.register_command('IFS_REMOVE_CURRENT_PRUTOK', self.cmd_IFS_REMOVE_CURRENT_PRUTOK)
 
         self.gcode.register_command('IFS_F10', self.cmd_IFS_F10)        # Вставить пруток
@@ -426,8 +427,8 @@ class zmod_ifs:
         else:
             raise self.gcode.error("Пруток ОТСУСТВУЕТ в экструдере")
 
-    def cmd__IFS_REMOVE_PRUTOK(self, gcmd, prutok):
-        if not self.get_extruder_sensor() or prutok == 0:
+    def cmd__IFS_REMOVE_PRUTOK(self, gcmd, prutok, force):
+        if (not self.get_extruder_sensor() and force == 0) or prutok == 0:
             return
 
         gcmd.respond_info(f"Извлекаю пруток {prutok} из экструдера")
@@ -445,21 +446,26 @@ class zmod_ifs:
         else:
             gcmd.respond_info("Пруток извлечен из экструдера")
 
+    def cmd_IFS_REMOVE_PRUTOK(self, gcmd):
+        prutok = gcmd.get_int('PRUTOK', 0)
+        force = gcmd.get_int('FORCE', 1)
+        self.cmd__IFS_REMOVE_PRUTOK(gcmd, prutok, force)
+
     def cmd_IFS_REMOVE_CURRENT_PRUTOK(self, gcmd):
         if not self.get_extruder_sensor():
             return
 
         values = self.ifs_data.get_values()
         prutok=values['Chan']
-        self.cmd__IFS_REMOVE_PRUTOK(gcmd, prutok)
+        self.cmd__IFS_REMOVE_PRUTOK(gcmd, prutok, 0)
         if values['Port1']:
-            self.cmd__IFS_REMOVE_PRUTOK(gcmd, 1)
+            self.cmd__IFS_REMOVE_PRUTOK(gcmd, 1, 0)
         if values['Port2']:
-            self.cmd__IFS_REMOVE_PRUTOK(gcmd, 2)
+            self.cmd__IFS_REMOVE_PRUTOK(gcmd, 2, 0)
         if values['Port3']:
-            self.cmd__IFS_REMOVE_PRUTOK(gcmd, 3)
+            self.cmd__IFS_REMOVE_PRUTOK(gcmd, 3, 0)
         if values['Port4']:
-            self.cmd__IFS_REMOVE_PRUTOK(gcmd, 4)
+            self.cmd__IFS_REMOVE_PRUTOK(gcmd, 4, 0)
 
     def _sensor_reader(self):
         while not self.stop_thread:
