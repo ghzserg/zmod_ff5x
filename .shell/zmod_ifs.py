@@ -422,10 +422,12 @@ class zmod_ifs:
         gcmd.respond_info(json.dumps(values))
 
     def cmd_IFS_EXTRUDER_SENSOR(self, gcmd):
+        info = gcmd.get_int('INFO', 0)
+
         if self.get_extruder_sensor():
-            gcmd.respond_info("Пруток в экструдере")
+            self.print_str("Пруток в экструдере")
         else:
-            raise self.gcode.error("Пруток ОТСУСТВУЕТ в экструдере")
+            self.print_str("Пруток ОТСУСТВУЕТ в экструдере", info == 1)
 
     def cmd__IFS_REMOVE_PRUTOK(self, gcmd, prutok, force):
         if (not self.get_extruder_sensor() and force == 0) or prutok == 0:
