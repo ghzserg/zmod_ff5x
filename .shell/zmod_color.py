@@ -531,6 +531,24 @@ class zmod_color:
 
         return 200,response_data
 
+    def set_printer_data_detail(self, zslot, ztype, zcolor):
+        if not (0 <= zslot <= 4):
+            return 500, "slot must be between 0 and 4"
+
+        if not zcolor.startswith('#'):
+            return 500, "Bed color"
+
+        with open('/usr/data/config/Adventurer5M.json', 'r') as file:
+            config = json.load(file)
+
+            config["FFMInfo"][f"ffmColor{zslot}"] = zcolor
+            config["FFMInfo"][f"ffmType{zslot}"] = ztype
+
+            with open('/usr/data/config/Adventurer5M.json', 'w') as file:
+                return 200, json.dump(config, file, indent=2)
+
+        return 500, "Error"
+
     def zsend_post_request(self, api, payload=None, send_data=None):
         base_ip = self.get_printer_ip()
         url = f"http://{base_ip}:8898{api}"
@@ -921,7 +939,10 @@ class zmod_color:
                     "rgb": f"#{zhex}"
                 }
             }
-            status_code, response_data = self.zsend_post_request("/control", payload=payload)
+            if self.display:
+                status_code, response_data = self.zsend_post_request("/control", payload=payload)
+            else:
+                status_code, response_data = self.set_printer_data_detail(zslot, ztype, f"#{zhex}")
             if status_code == 200:
                 self.cmd_GET_ZCOLOR(gcmd)
                 gcmd.respond_raw(self._t('config_success'))
