@@ -464,10 +464,9 @@ TRANSLATIONS = {
 class zmod_color:
     def __init__(self, config):
         self.printer = config.get_printer()
-        self.zmod = self.printer.lookup_object('zmod', None)
+
+        self.display = config.getboolean('display', True)
         self.language = 'en'
-        if self.zmod is not None:
-            self.language = self.zmod.get_lang()
         self.gcode = self.printer.lookup_object('gcode')
         self.gcode.register_command('GET_T', self.cmd_GET_T)
         self.gcode.register_command('GET_ZCOLOR', self.cmd_GET_ZCOLOR)
@@ -477,10 +476,18 @@ class zmod_color:
         self.gcode.register_command('RUN_ZCOLOR', self.cmd_RUN_ZCOLOR)
         self.gcode.register_command('CHANGE_ZCOLOR', self.cmd_CHANGE_ZCOLOR)
         self.gcode.register_command('IN_ZCOLOR', self.cmd_IN_ZCOLOR)
+        self.printer.register_event_handler("klippy:ready", self._handle_ready)
+
         with open('/usr/data/config/Adventurer5M.json', 'r') as file:
             data = json.load(file)
             self.serialNumber = data['general']['printerSerialNumber']
             self.checkCode = data['general']['lanCode']
+
+    def _handle_ready(self):
+        self.zmod = self.printer.lookup_object('zmod', None)
+        if self.zmod is not None:
+            self.language = self.zmod.get_lang()
+        self.zmod_ifs = self.printer.lookup_object('zmod_ifs', None)
 
     def get_printer_ip(self):
         interfaces = ['wlan0', 'eth0']
@@ -495,6 +502,34 @@ class zmod_color:
             except:
                 pass
         return "Not found"
+
+    def get_printer_data(self):
+        response_data = {
+            "detail": {
+                "matlStationInfo": {
+                    "slotInfos": []
+                }
+            }
+        }
+
+        with open('/usr/data/config/Adventurer5M.json', 'r') as file:
+            config = json.load(file)
+
+            ffm_info = config["FFMInfo"]
+            for i in range(0, 5):
+                color_key = f"ffmColor{i}"
+                type_key = f"ffmType{i}"
+
+                if color_key in ffm_info:
+                    slot = {
+                        "slotId": str(i),
+                        "materialName": ffm_info.get(type_key, "N/A"),
+                        "materialColor": ffm_info[color_key],
+                        "hasFilament": self.zmod_ifs.get_port(i)
+                    }
+                    response_data["detail"]["matlStationInfo"]["slotInfos"].append(slot)
+
+        return 200,response_data
 
     def zsend_post_request(self, api, payload=None, send_data=None):
         base_ip = self.get_printer_ip()
@@ -558,7 +593,10 @@ class zmod_color:
         zslot = gcmd.get_int('SLOT', 0)
         if zslot < 1 or zslot > 4:
             raise gcmd.error(self._t('error_slot'))
-        status_code, response_data = self.zsend_post_request("/detail")
+        if self.display:
+            status_code, response_data = self.zsend_post_request("/detail")
+        else:
+            status_code, response_data = self.get_printer_data()
         if status_code:
             result = self.parse_printer_response(response_data)
             for slot in result:

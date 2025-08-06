@@ -221,6 +221,9 @@ class zmod_ifs:
         with self._command_lock:
             self._command = f"{new_command}"
 
+    def get_port(self, port=0):
+        return self.ifs_data.get_port(port)
+
     def print_str(self, string, info=True):
         if info:
             self.gcode.respond_info(string)
@@ -608,6 +611,18 @@ class IfsData:
     def get_stall(self):
         with self.lock:
             return self.Stall != 0
+
+    def get_port(self, port):
+        with self.lock:
+            if port==1:
+                return self.Port1
+            if port==2:
+                return self.Port2
+            if port==3:
+                return self.Port3
+            if port==4:
+                return self.Port4
+            return False
 
     def get_values(self):
         with self.lock:
