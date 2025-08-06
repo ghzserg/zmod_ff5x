@@ -503,7 +503,7 @@ class zmod_color:
                 pass
         return "Not found"
 
-    def get_printer_data(self):
+    def get_printer_data_detail(self):
         response_data = {
             "detail": {
                 "matlStationInfo": {
@@ -596,7 +596,7 @@ class zmod_color:
         if self.display:
             status_code, response_data = self.zsend_post_request("/detail")
         else:
-            status_code, response_data = self.get_printer_data()
+            status_code, response_data = self.get_printer_data_detail()
         if status_code:
             result = self.parse_printer_response(response_data)
             for slot in result:
@@ -608,7 +608,10 @@ class zmod_color:
 
     def cmd_GET_ZCOLOR(self, gcmd):
         gcmd.respond_raw("// action:prompt_end")
-        status_code, response_data = self.zsend_post_request("/detail")
+        if self.display:
+            status_code, response_data = self.zsend_post_request("/detail")
+        else:
+            status_code, response_data = self.get_printer_data_detail()
         if status_code:
             gcmd.respond_raw(f"// action:prompt_begin {self._t('prompt_material')}")
             gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_choose')}")
@@ -648,7 +651,10 @@ class zmod_color:
             if tool < 1 or tool > 4:
                 raise gcmd.error(self._t('error_tool', i, tool))
 
-        status_code, response_data = self.zsend_post_request("/detail")
+        if self.display:
+            status_code, response_data = self.zsend_post_request("/detail")
+        else:
+            status_code, response_data = self.get_printer_data_detail()
         if status_code:
             result = self.parse_printer_response(response_data)
 
@@ -746,7 +752,10 @@ class zmod_color:
             if tool < 1 or tool > 4:
                 raise gcmd.error(self._t('error_tool', i, tool))
 
-        status_code, response_data = self.zsend_post_request("/detail")
+        if self.display:
+            status_code, response_data = self.zsend_post_request("/detail")
+        else:
+            status_code, response_data = self.get_printer_data_detail()
         if status_code:
             result = self.parse_printer_response(response_data)
             material_mappings = []
@@ -813,7 +822,10 @@ class zmod_color:
         else:
             params=f"TOOL0={tools[0]} TOOL1={tools[0]} TOOL2={tools[2]} FILENAME=\"{fname}\" LEVELING={leveling} "
 
-        status_code, response_data = self.zsend_post_request("/detail")
+        if self.display:
+            status_code, response_data = self.zsend_post_request("/detail")
+        else:
+            status_code, response_data = self.get_printer_data_detail()
         if status_code:
 #            gcmd.respond_raw(json.dumps(response_data, indent=2))
             result = self.parse_printer_response(response_data)
