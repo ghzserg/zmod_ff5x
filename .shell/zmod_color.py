@@ -994,19 +994,25 @@ class zmod_color:
         if napr not in (0, 1):
             raise gcmd.error(self._t('error_napr'))
 
-        action = "load" if napr == 0 else "unload"
-        payload = {
-            "cmd": "ms_cmd",
-            "args": {
-                "slot": zslot,
-                "action": napr
+        if self.display:
+            action = "load" if napr == 0 else "unload"
+            payload = {
+                "cmd": "ms_cmd",
+                "args": {
+                    "slot": zslot,
+                    "action": napr
+                }
             }
-        }
-        status_code, response_data = self.zsend_post_request("/control", payload=payload)
-        if status_code == 200:
-            gcmd.respond_raw(self._t(f'{action}_success'))
+            status_code, response_data = self.zsend_post_request("/control", payload=payload)
+            if status_code == 200:
+                gcmd.respond_raw(self._t(f'{action}_success'))
+            else:
+                gcmd.respond_raw(self._t(f'{action}_error', response_data))
         else:
-            gcmd.respond_raw(self._t(f'{action}_error', response_data))
+            if napr == 0:
+                self.gcode.run_script_from_command(f"_INSERT_PRUTOK_IFS PRUTOK={zslot}")
+            else:
+                self.gcode.run_script_from_command(f"_REMOVE_PRUTOK_IFS PRUTOK={zslot}")
 
 def load_config(config):
     return zmod_color(config)
