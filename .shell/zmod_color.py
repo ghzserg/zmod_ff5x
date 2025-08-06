@@ -618,7 +618,7 @@ class zmod_color:
             with open('/usr/data/config/Adventurer5M.json', 'r') as file:
                 config = json.load(file)
 
-                config["FFMInfo"][channel] = zslot
+                config["FFMInfo"]["channel"] = zslot
 
                 with open('/usr/data/config/Adventurer5M.json', 'w') as file:
                     json.dump(config, file, indent=2)
