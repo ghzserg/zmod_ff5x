@@ -471,6 +471,7 @@ class zmod_color:
         self.gcode.register_command('GET_T', self.cmd_GET_T)
         self.gcode.register_command('GET_ZCOLOR', self.cmd_GET_ZCOLOR)
         self.gcode.register_command('SET_ZCOLOR', self.cmd_SET_ZCOLOR)
+        self.gcode.register_command('SET_EXTRUDER_SLOT', self.cmd_SET_EXTRUDER_SLOT)
         self.gcode.register_command('PRINT_ZCOLOR', self.cmd_PRINT_ZCOLOR)
         self.gcode.register_command('CHANGE_TOOL_ZCOLOR', self.cmd_CHANGE_TOOL_ZCOLOR)
         self.gcode.register_command('RUN_ZCOLOR', self.cmd_RUN_ZCOLOR)
@@ -606,6 +607,21 @@ class zmod_color:
                     'HEX': hex_color.upper()
                 })
         return slots_info
+
+    def cmd_SET_EXTRUDER_SLOT(self, gcmd):
+        zslot = gcmd.get_int('SLOT', 0)
+        if zslot < 1 or zslot > 4:
+            raise gcmd.error(self._t('error_slot'))
+        if self.display:
+            raise gcmd.error("Error: Display on")
+        else:
+            with open('/usr/data/config/Adventurer5M.json', 'r') as file:
+                config = json.load(file)
+
+                config["FFMInfo"][channel] = zslot
+
+                with open('/usr/data/config/Adventurer5M.json', 'w') as file:
+                    json.dump(config, file, indent=2)
 
     def cmd_GET_T(self, gcmd):
         zslot = gcmd.get_int('SLOT', 0)
