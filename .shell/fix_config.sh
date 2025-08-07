@@ -312,6 +312,7 @@ unset LD_PRELOAD
     [ ${FF5X} -eq 1 ] && check_link ${KLIPPER_DIR}/klippy/extras/zmod_ifs.py ${MOD_CONF}/mod/.shell/zmod_ifs.py
     [ ${FF5X} -eq 1 ] && check_link ${KLIPPER_DIR}/klippy/extras/zmod_ifs_switch_sensor.py ${MOD_CONF}/mod/.shell/zmod_ifs_switch_sensor.py
     [ ${FF5X} -eq 1 ] && check_link ${KLIPPER_DIR}/klippy/extras/zmod_ifs_motion_sensor.py ${MOD_CONF}/mod/.shell/zmod_ifs_motion_sensor.py
+    [ ${FF5X} -eq 1 ] && check_link /opt/config/rw /usr/prog/config/
 
     if [ ${FF5X} -eq 0 ]; then
         # Fix possible ordering issue if a callback blocks in button handler#6440
