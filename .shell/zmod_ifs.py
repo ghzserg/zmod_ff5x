@@ -465,7 +465,7 @@ class zmod_ifs:
 
         with open('/usr/data/config/Adventurer5M.json', 'r') as file:
             config = json.load(file)
-            prutok = config["FFMInfo"]["channel"]
+            prutok = config["FFMInfo"].get("channel", 0)
 
         self.cmd__IFS_REMOVE_PRUTOK(gcmd, prutok, 0)
         if values['Port1']:

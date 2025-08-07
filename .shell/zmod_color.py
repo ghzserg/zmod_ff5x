@@ -504,6 +504,12 @@ class zmod_color:
                 pass
         return "Not found"
 
+    def get_current_channel(self):
+        with open('/usr/data/config/Adventurer5M.json', 'r') as file:
+            config = json.load(file)
+            return config["FFMInfo"].get("channel", 0)
+        return 0
+
     def get_printer_data_detail(self):
         response_data = {
             "detail": {
@@ -648,9 +654,20 @@ class zmod_color:
             status_code, response_data = self.get_printer_data_detail()
         if status_code:
             gcmd.respond_raw(f"// action:prompt_begin {self._t('prompt_material')}")
+
+            result = self.parse_printer_response(response_data)
+
+            prompt_text = f"Extruder: None"
+            if self.zmod_ifs.get_extruder_sensor():
+                for slot in result:
+                    if self.get_current_channel() == slot['ID']:
+                        prompt_text = f"Extruder: {slot['ID']}: {slot['Material']}/{slot['Color']}"
+                        break
+
+            gcmd.respond_raw(f"// action:prompt_text {prompt_text}")
+
             gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_choose')}")
             gcmd.respond_raw("// action:prompt_button_group_start")
-            result = self.parse_printer_response(response_data)
             for slot in result:
                 btn_text = f"{slot['ID']}: {slot['Material']}/{slot['Color']}"
                 gcmd.respond_raw(f"// action:prompt_button {btn_text}|RUN_ZCOLOR SLOT={slot['ID']} HEX={slot['HEX']} TYPE={slot['Material']}|primary")
