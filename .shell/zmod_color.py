@@ -468,6 +468,7 @@ class zmod_color:
         self.display = config.getboolean('display', True)
         self.language = 'en'
         self.gcode = self.printer.lookup_object('gcode')
+        self.query_adc = self.printer.lookup_object('query_adc')
         self.gcode.register_command('GET_T', self.cmd_GET_T)
         self.gcode.register_command('GET_ZCOLOR', self.cmd_GET_ZCOLOR)
         self.gcode.register_command('SET_ZCOLOR', self.cmd_SET_ZCOLOR)
@@ -509,6 +510,13 @@ class zmod_color:
             config = json.load(file)
             return config["FFMInfo"].get("channel", 0)
         return 0
+
+    def get_extruder_sensor(self):
+        value, timestamp = self.query_adc.adc["temperature_sensor filamentValue"].get_last_value()
+        result = True
+        if value > 0.3:
+            result = (value >= 0.72)
+        return result
 
     def get_printer_data_detail(self):
         response_data = {
@@ -658,7 +666,7 @@ class zmod_color:
             result = self.parse_printer_response(response_data)
 
             prompt_text = f"Extruder: None"
-            if self.zmod_ifs.get_extruder_sensor():
+            if self.get_extruder_sensor():
                 for slot in result:
                     if self.get_current_channel() == slot['ID']:
                         prompt_text = f"Extruder: {slot['ID']}: {slot['Material']}/{slot['Color']}"
