@@ -367,7 +367,8 @@ class LoadCellSensor:
         return self.sample_interval
 
     def setup_minmax(self, min_temp, max_temp):
-        self.max_temp = max_temp
+        if max_temp != 99999999:
+            self.max_temp = max_temp
 
     def get_temp(self, eventtime):
         return self.loadcell.last_weight_grams, 0
