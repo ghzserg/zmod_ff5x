@@ -20,4 +20,4 @@ echo "Use lang: ${ZLANG}"
 sync
 sleep 5
 sync
-reboot
+/opt/config/mod/.shell/zremote.sh reboot

@@ -22,6 +22,10 @@ fi
 
 if [ -f /ZMOD ]; then
     DIR="/opt/config/mod/.shell/root"
+    if [ "$2" == "1" ]; then
+        /opt/config/mod/.shell/zremote.sh "/opt/config/mod/.shell/zcheckmd5.sh $1"
+        exit 0
+    fi
 else
     DIR="/opt/config/mod/.shell"
 fi
@@ -148,6 +152,8 @@ else
         check_link ${MOD_CONF}/mod/display_off.cfg ${ZLANG}/display_off.cfg
         check_link ${MOD_CONF}/mod/ff5.cfg ${ZLANG}/ff5.cfg
         check_link ${MOD_CONF}/mod/mod.cfg ${ZLANG}/mod.cfg
+        check_link ${MOD_CONF}/mod/klipper13.cfg ${ZLANG}/klipper13.cfg
+        check_link ${MOD_CONF}/mod/klipper11.cfg ${ZLANG}/klipper11.cfg
     else
         check_link ${MOD_CONF}/mod/base_display_off.cfg ${ZLANG}/display_off.cfg
         check_link ${MOD_CONF}/mod/base_mod.cfg ${ZLANG}/mod.cfg

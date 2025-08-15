@@ -7,7 +7,7 @@ unset LD_PRELOAD
 up()
 {
     if [ -f /ZMOD ]; then
-        /etc/init.d/S80guppyscreen up
+        /etc/init.d/S80guppyscreen start
     else
         [ ${FF5X} -eq 0 ] && umount ${UMOUNT_MOD}
         chroot ${MOD} /etc/init.d/S80guppyscreen start &

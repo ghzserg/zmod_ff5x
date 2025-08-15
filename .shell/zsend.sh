@@ -23,7 +23,7 @@ if [ $# -eq 1 ]; then
     if [ $? -ne 0 ]; then
         [ ${ZLANG} != 'ru' ] && echo "Error sending message to native screen. Is it working?" || echo "Ошибка передачи сообщения на родной экран. Он у вас работает?"
     fi
-    echo -e "$RET"
+    /bin/echo -e "$RET"
 fi
 
 if [ $# -eq 2 ]; then
@@ -44,6 +44,6 @@ if [ $# -eq 2 ]; then
         if [ $? -ne 0 ]; then
             [ ${ZLANG} != 'ru' ] && echo "Error sending message to native screen. Is it working?" || echo "Ошибка передачи сообщения на родной экран. Он у вас работает?"
         fi
-        echo -e "$RET"
+        /bin/echo -e "$RET"
     fi
 fi
