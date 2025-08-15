@@ -30,6 +30,7 @@ source /opt/config/mod_data/ssh.conf
 
 PID_FILE=/run/zssh.pid
 LOG_FILE=/opt/config/mod_data/log/ssh.log
+export HOME='/root'
 
 start() {
     if [ $START = "on" ]; then
