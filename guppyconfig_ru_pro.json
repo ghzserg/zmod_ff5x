@@ -47,10 +47,10 @@
           "id": "heater_bed"
         },
         {
-          "color": "blue",
+          "color": "white",
           "controllable": false,
-          "display_name": "TVOC",
-          "id": "temperature_sensor tvocValue"
+          "display_name": "Голова",
+          "id": "temperature_sensor head"
         },
         {
           "color": "orange",
