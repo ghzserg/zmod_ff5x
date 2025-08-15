@@ -100,6 +100,23 @@ restore_base()
         rm -f heater_bed.txt
     fi
 
+    # Возвращаем fan_generic internal_fan
+    if [ ${FF5X} -eq 0 ] && ! grep -q '^\[fan_generic internal_fan' ${MOD_CONF}/printer.base.cfg
+        then
+            echo "
+[fan_generic internal_fan]
+pin:PB8
+" >>${MOD_CONF}/printer.base.cfg
+    fi
+
+    # Возвращаем fan_generic external_fan
+    if [ ${FF5X} -eq 0 ] && ! grep -q '^\[fan_generic external_fan' ${MOD_CONF}/printer.base.cfg
+        then
+            echo "
+[fan_generic external_fan]
+pin:PB6
+" >>${MOD_CONF}/printer.base.cfg
+    fi
 
     # Возвращаем fan_generic pcb_fan
     [ ${FF5X} -eq 1 ] && PIN="PA5" || PIN="PB7"
@@ -514,6 +531,36 @@ max_temp: 130
         num=$(wc -l heater_bed.txt|cut  -d " " -f1)
         num=$(($num-1))
         sed -e "/^\[fan_generic pcb_fan/,+${num}d;" ${PRINTER_BASE} >printer.base.tmp
+        cat printer.base.tmp >${PRINTER_BASE}
+        rm -f heater_bed.txt printer.base.tmp
+    fi
+
+    # Удаляем fan_generic external_fan
+    if grep -q '^\[fan_generic external_fan' ${PRINTER_BASE}; then
+        NEED_REBOOT=1
+        cd ${MOD_CONF}
+
+        sed -e '/^\[fan_generic external_fan/,/^\[/d' ${PRINTER_BASE} >printer.base.tmp
+        diff -u ${PRINTER_BASE} printer.base.tmp | grep -v "printer.base.cfg" |grep "^-" | cut -b 2- >heater_bed.txt
+        sed -i '$d' heater_bed.txt
+        num=$(wc -l heater_bed.txt|cut  -d " " -f1)
+        num=$(($num-1))
+        sed -e "/^\[fan_generic external_fan/,+${num}d;" ${PRINTER_BASE} >printer.base.tmp
+        cat printer.base.tmp >${PRINTER_BASE}
+        rm -f heater_bed.txt printer.base.tmp
+    fi
+
+    # Удаляем fan_generic internal_fan
+    if grep -q '^\[fan_generic internal_fan' ${PRINTER_BASE}; then
+        NEED_REBOOT=1
+        cd ${MOD_CONF}
+
+        sed -e '/^\[fan_generic internal_fan/,/^\[/d' ${PRINTER_BASE} >printer.base.tmp
+        diff -u ${PRINTER_BASE} printer.base.tmp | grep -v "printer.base.cfg" |grep "^-" | cut -b 2- >heater_bed.txt
+        sed -i '$d' heater_bed.txt
+        num=$(wc -l heater_bed.txt|cut  -d " " -f1)
+        num=$(($num-1))
+        sed -e "/^\[fan_generic internal_fan/,+${num}d;" ${PRINTER_BASE} >printer.base.tmp
         cat printer.base.tmp >${PRINTER_BASE}
         rm -f heater_bed.txt printer.base.tmp
     fi
