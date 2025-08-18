@@ -776,17 +776,20 @@ class zmod_color:
             elif silent == 2:
                 gcmd.respond_raw(f"// {leveling_text}")
                 gcmd.respond_raw(f"// IFS OFF")
-                data = {
-                    "fileName": fname,
-                    "levelingBeforePrint": bool(leveling),
-                    "flowCalibration": True,
-                    "useMatlStation": False
-                }
-                status_code2, response_data2 = self.zsend_post_request("/printGcode", send_data=data)
-                if status_code2 == 200:
-                    gcmd.respond_raw(f"Status: {response_data2.get('msg', 'OK')}")
+                if self.display:
+                    data = {
+                        "fileName": fname,
+                        "levelingBeforePrint": bool(leveling),
+                        "flowCalibration": True,
+                        "useMatlStation": False
+                    }
+                    status_code2, response_data2 = self.zsend_post_request("/printGcode", send_data=data)
+                    if status_code2 == 200:
+                        gcmd.respond_raw(f"Status: {response_data2.get('msg', 'OK')}")
+                    else:
+                        gcmd.respond_raw(self._t('printing_error', response_data2))
                 else:
-                    gcmd.respond_raw(self._t('printing_error', response_data2))
+                    self.gcode.run_script_from_command(f"SDCARD_PRINT_FILE FILENAME={fname}")
         else:
             gcmd.respond_raw(self._t('no_response', response_data))
 
@@ -830,20 +833,25 @@ class zmod_color:
                         "slotMaterialColor": f"#{slot_info['HEX']}"
                     })
 
-            data = {
-                "fileName": fname,
-                "levelingBeforePrint": bool(leveling),
-                "flowCalibration": True,
-                "useMatlStation": True,
-                "gcodeToolCnt": len(material_mappings),
-                "materialMappings": material_mappings
-            }
+            if self.display:
+                data = {
+                    "fileName": fname,
+                    "levelingBeforePrint": bool(leveling),
+                    "flowCalibration": True,
+                    "useMatlStation": True,
+                    "gcodeToolCnt": len(material_mappings),
+                    "materialMappings": material_mappings
+                }
 
-            status_code2, response_data2 = self.zsend_post_request("/printGcode", send_data=data)
-            if status_code2 == 200:
-                gcmd.respond_raw(f"Status: {response_data2.get('msg', 'OK')}")
+                status_code2, response_data2 = self.zsend_post_request("/printGcode", send_data=data)
+                if status_code2 == 200:
+                    gcmd.respond_raw(f"Status: {response_data2.get('msg', 'OK')}")
+                else:
+                    gcmd.respond_raw(self._t('printing_error', response_data2))
             else:
-                gcmd.respond_raw(self._t('printing_error', response_data2))
+                with open('/usr/data/config/mod_data/file.json', 'w') as file:
+                    json.dump(tools, file, indent=2)
+                self.gcode.run_script_from_command(f"SDCARD_PRINT_FILE FILENAME={fname}")
         else:
             gcmd.respond_raw(self._t('no_response', response_data))
 
