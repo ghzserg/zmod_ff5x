@@ -1,5 +1,6 @@
 # (C) 2025 ghzserg https://github.com/ghzserg/zmod/
 import json
+import os
 import serial
 import re
 import time
@@ -14,6 +15,8 @@ STOPBITS = 1
 BYTESIZE = 8
 TIMEOUT = 0.2
 HOST_REPORT_TIME = 0.2
+FFCONFIG='/usr/data/config/Adventurer5M.json'
+TYPECONFIG='/usr/data/config/mod_data/filament.json'
 
 FFS_STATUS_DELTA    = 11 # дельта от первой катушки
 FFS_STATUS_OPROS    = 3  # Опрос катушек
@@ -63,6 +66,11 @@ class zmod_ifs:
         self.printer.register_event_handler("klippy:shutdown", self._handle_shutdown)
 
         # Регистрация команд G-кода
+        # Внешние команды
+        self.gcode.register_command('REMOVE_PRUTOK_IFS', self.cmd_REMOVE_PRUTOK_IFS)    # Удаляет пруток по номеру прутка
+        self.gcode.register_command('INSERT_PRUTOK_IFS', self.cmd_INSERT_PRUTOK_IFS)    # Вставить пруток в IFS по номеру прутка
+
+        # Внутренние конманды начинаются с IFS
         self.gcode.register_command('IFS_AUTOINSERT', self.cmd_IFS_AUTOINSERT, desc=self.cmd_IFS_AUTOINSERT_help)
         self.gcode.register_command('IFS_STATUS', self.cmd_IFS_STATUS, desc=self.cmd_IFS_STATUS_help)
         self.gcode.register_command('IFS_EXTRUDER_SENSOR', self.cmd_IFS_EXTRUDER_SENSOR)
@@ -229,6 +237,126 @@ class zmod_ifs:
             self.gcode.respond_info(string)
         else:
             raise self.gcode.error(string)
+
+    # Получить текущий активный пруток из конфига
+    def get_current_channel_from_config(self):
+        with open(FFCONFIG, 'r') as file:
+            config = json.load(file)
+            return config["FFMInfo"].get("channel", 0)
+        return 0
+
+    # Получить тип прутка из конфига
+    def get_prutok_type_from_config(self, prutok):
+        ret="PLA"
+        with open(FFCONFIG, 'r') as file:
+            config = json.load(file)
+            ret=config["FFMInfo"].get(f"ffmType{prutok}", "PLA")
+        valid_types = ['PLA', 'ABS', 'PETG', 'TPU', 'PLA-CF', 'PETG-CF', 'SILK']
+        if ret not in valid_types:
+            ret="PLA"
+
+    # Получить конфиг прутка по номеру прутка
+    def get_prutok_config(self, prutok):
+        if prutok < 1 or prutok > 4:
+            self.print_str(f"Некорректный номер прутка {prutok}", False)
+        filament=self.get_prutok_type_from_config(prutok)
+
+        base_default = {
+            "filament_unload_before_cutting": 0,    # На сколько поднимать филамент перед тем как отрезать
+            "filament_unload_after_cutting": 5,     # На сколько поднимать филамент после того как отрезали
+            "filament_unload_after_drop": 3,        # Ретракт после сброса филамента
+
+            "filament_load_speed": 300,             # Скорость загрузки филамента
+            "filament_unload_speed": 600,           # Скорость подъема филамента
+
+            "filament_tube_length": 1000,           # Длина полной загрузки/выгрузки филамента
+            "filament_drop_length": 90,             # Длина сброса в какашник
+
+            "filament_fan_speed": 102,              # Скорость работы вентилятора при сброс через какашник
+            "nozzle_cleaning_length": 60            # Длина прочистки сопла
+        }
+
+        temp_defaults = {
+            "PLA-CF": 220,
+            "SILK": 230,
+            "TPU": 230,
+            "ABS": 250,
+            "PETG": 250,
+            "PETG-CF": 250
+        }
+
+        required_fields = ['temp'] + list(base_default.keys())
+
+        try:
+            with open(TYPECONFIG, 'r') as f:
+                data = json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError):
+            data = {}
+
+        changed = False
+
+        for filament_name, temp_default in temp_defaults.items():
+            if filament_name in data:
+                existing = data[filament_name]
+                normalized = {}
+                normalized['temp'] = existing.get('temp', temp_default)
+                for key, default_val in base_default.items():
+                    normalized[key] = existing.get(key, default_val)
+
+                if existing != normalized:
+                    data[filament_name] = normalized
+                    changed = True
+            else:
+                new_config = base_default.copy()
+                new_config['temp'] = temp_default
+                data[filament_name] = new_config
+                changed = True
+
+        if changed:
+            with open(TYPECONFIG, 'w') as f:
+                json.dump(data, f, indent=4)
+
+        config = data.get(filament, {})
+        config['filament_type'] = filament
+        return config
+
+    # Извлечь пруток из IFS
+    def cmd_REMOVE_PRUTOK_IFS(self, gcmd):
+        prutok = gcmd.get_int('PRUTOK', 1)
+        config=self.get_prutok_config(prutok)
+        self.gcode.run_script_from_command(
+            f"_REMOVE_PRUTOK_IFS "
+            f"PRUTOK={prutok} "
+            f"TEMP={config['temp']} "
+            f"filament_type={config['filament_type']} "
+            f"filament_unload_speed={config['filament_unload_speed']} "
+            f"filament_load_speed={config['filament_load_speed']} "
+            f"filament_unload_before_cutting={config['filament_unload_before_cutting']} "
+            f"filament_unload_after_cutting={config['filament_unload_after_cutting']} "
+            f"filament_unload_after_drop={config['filament_unload_after_drop']} "
+            f"filament_tube_length={config['filament_tube_length']} "
+            f"filament_drop_length={config['filament_drop_length']} "
+            f"filament_fan_speed={config['filament_fan_speed']} "
+        )
+
+    # Вставить пруток в IFS
+    def cmd_INSERT_PRUTOK_IFS(self, gcmd):
+        prutok = gcmd.get_int('PRUTOK', 1)
+        config=self.get_prutok_config(prutok)
+        self.gcode.run_script_from_command(
+            f"_INSERT_PRUTOK_IFS "
+            f"PRUTOK={prutok} "
+            f"TEMP={config['temp']} "
+            f"filament_type={config['filament_type']} "
+            f"filament_unload_speed={config['filament_unload_speed']} "
+            f"filament_load_speed={config['filament_load_speed']} "
+            f"filament_unload_before_cutting={config['filament_unload_before_cutting']} "
+            f"filament_unload_after_cutting={config['filament_unload_after_cutting']} "
+            f"filament_unload_after_drop={config['filament_unload_after_drop']} "
+            f"filament_tube_length={config['filament_tube_length']} "
+            f"filament_drop_length={config['filament_drop_length']} "
+            f"filament_fan_speed={config['filament_fan_speed']} "
+        )
 
     def print_result(self, ret_code, values, info=True):
         if ret_code == RET_OK:
@@ -432,18 +560,22 @@ class zmod_ifs:
         else:
             self.print_str("Пруток ОТСУСТВУЕТ в экструдере", info == 1)
 
-    def cmd__IFS_REMOVE_PRUTOK(self, gcmd, prutok, force):
+    def cmd__IFS_REMOVE_PRUTOK(self, gcmd, prutok, force, config):
         if (not self.get_extruder_sensor() and force == 0) or prutok == 0:
             return
 
-        gcmd.respond_info(f"Извлекаю пруток {prutok} из экструдера")
-        self.gcode.run_script_from_command("_REZGEM_PRUTOK")
+        gcmd.respond_info(f"Извлекаю пруток {prutok} {config['filament_type']} из экструдера")
+        self.gcode.run_script_from_command(
+            f"_REZGEM_PRUTOK "
+            f"filament_unload_speed={config['filament_unload_speed']} "
+            f"filament_unload_before_cutting={config['filament_unload_before_cutting']} "
+            f"filament_unload_after_cutting={config['filament_unload_after_cutting']} "
         self.gcode.run_script_from_command("_GOTO_KAKASHNIK")
         self.gcode.run_script_from_command(f"IFS_F24 PRUTOK={prutok}")
 
         self.gcode.run_script_from_command("G92 E0")
-        self.gcode.run_script_from_command("G1 E-60 F600")
-        self.gcode.run_script_from_command(f"IFS_F11 PRUTOK={prutok} LEN=100 SPEED=1200 WAIT=0")
+        self.gcode.run_script_from_command(f"G1 E-{config['nozzle_cleaning_length']} F{config['filament_unload_speed]}")
+        self.gcode.run_script_from_command(f"IFS_F11 PRUTOK={prutok} LEN={round(config['nozzle_cleaning_length']*1.67)} SPEED={config['filament_unload_speed]*2} WAIT=0")
         self.gcode.run_script_from_command("M400")
 
         if self.get_extruder_sensor():
@@ -454,28 +586,18 @@ class zmod_ifs:
     def cmd_IFS_REMOVE_PRUTOK(self, gcmd):
         prutok = gcmd.get_int('PRUTOK', 0)
         force = gcmd.get_int('FORCE', 1)
-        self.cmd__IFS_REMOVE_PRUTOK(gcmd, prutok, force)
+
+        config=self.get_prutok_config(prutok)
+        self.cmd__IFS_REMOVE_PRUTOK(gcmd, prutok, force, config)
 
     def cmd_IFS_REMOVE_CURRENT_PRUTOK(self, gcmd):
         if not self.get_extruder_sensor():
             return
 
-        values = self.ifs_data.get_values()
-        prutok = values['Chan']
-
-        with open('/usr/data/config/Adventurer5M.json', 'r') as file:
-            config = json.load(file)
-            prutok = config["FFMInfo"].get("channel", 0)
-
-        self.cmd__IFS_REMOVE_PRUTOK(gcmd, prutok, 0)
-        if values['Port1']:
-            self.cmd__IFS_REMOVE_PRUTOK(gcmd, 1, 0)
-        if values['Port2']:
-            self.cmd__IFS_REMOVE_PRUTOK(gcmd, 2, 0)
-        if values['Port3']:
-            self.cmd__IFS_REMOVE_PRUTOK(gcmd, 3, 0)
-        if values['Port4']:
-            self.cmd__IFS_REMOVE_PRUTOK(gcmd, 4, 0)
+        prutok = self.get_current_channel_from_config()
+        config=self.get_prutok_config(prutok)
+        self.gcode.run_script_from_command(f"TEMPERATURE_WAIT SENSOR=extruder MINIMUM={config['temp']-2} MAXIMUM={config['temp']+4}")
+        self.gcode.run_script_from_command(f"IFS_REMOVE_PRUTOK PRUTOK={prutok} FORCE=0")
 
     def _sensor_reader(self):
         while not self.stop_thread:
@@ -647,3 +769,4 @@ class IfsData:
 
 def load_config(config):
     return zmod_ifs(config)
+

@@ -1051,9 +1051,9 @@ class zmod_color:
                 gcmd.respond_raw(self._t(f'{action}_error', response_data))
         else:
             if napr == 0:
-                self.gcode.run_script_from_command(f"_INSERT_PRUTOK_IFS PRUTOK={zslot}")
+                self.gcode.run_script_from_command(f"INSERT_PRUTOK_IFS PRUTOK={zslot}")
             else:
-                self.gcode.run_script_from_command(f"_REMOVE_PRUTOK_IFS PRUTOK={zslot}")
+                self.gcode.run_script_from_command(f"REMOVE_PRUTOK_IFS PRUTOK={zslot}")
 
 def load_config(config):
     return zmod_color(config)
