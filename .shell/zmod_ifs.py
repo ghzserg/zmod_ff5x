@@ -279,6 +279,7 @@ class zmod_ifs:
         }
 
         temp_defaults = {
+            "PLA": 220,
             "PLA-CF": 220,
             "SILK": 230,
             "TPU": 230,
