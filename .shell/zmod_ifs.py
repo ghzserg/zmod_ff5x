@@ -145,6 +145,7 @@ class zmod_ifs:
         return False, RET_EXIT, None
 
     def _handle_ready(self):
+        self.get_prutok_config(1)
         self.sensor_thread.start()
 
     def _handle_disconnect(self):
@@ -207,9 +208,9 @@ class zmod_ifs:
             with self._ret_command_lock:
                 ret_command_data=self._ret_command_data
                 ret_command_id=self._ret_command_id
-            if command_id ==ret_command_id:
+            if command_id == ret_command_id:
                 if result is not None:
-                    if result==ret_command_data:
+                    if result == ret_command_data:
                         return ret_command_data
                     else:
                         raise self.gcode.error(f"{command}#{command_id} ret {ret_command_data} != {result}")
@@ -443,19 +444,19 @@ class zmod_ifs:
         prutok = gcmd.get_int('PRUTOK', 1)
         leng = gcmd.get_int('LEN', 90)
         speed = gcmd.get_int('SPEED', 1200)
-        if speed==0:
+        if speed == 0:
             self.print_str("Скорость не может быть = 0", False)
         wait = gcmd.get_int('WAIT', 1)
         check = gcmd.get_int('CHECK', 0)
         sleep = gcmd.get_int('SLEEP', 0)
 
         response = self._cmd_IFS_F10(prutok, leng, speed)
-        if sleep==1:
+        if sleep == 1:
             # Ждем пока треть прутка пройдет
             self.reactor.pause(self.reactor.monotonic() + (leng * 20) // speed + 1)
             return
-        if wait==1:
-            if check==1:
+        if wait == 1:
+            if check == 1:
                 success, ret_code, values = self.wait_for_state(
                     Port=prutok,
                     FFS_state=FFS_STATUS_ZAGRUZKA,
@@ -489,8 +490,8 @@ class zmod_ifs:
         check = gcmd.get_int('CHECK', 0)
 
         response = self._cmd_IFS_F11(prutok, leng, speed)
-        if wait==1:
-            if check==1:
+        if wait == 1:
+            if check == 1:
                 success, ret_code, values = self.wait_for_state(
                     Port=prutok,
                     FFS_state=FFS_STATUS_VIGRUZKA,
@@ -513,7 +514,7 @@ class zmod_ifs:
 
         response = self.send_command_and_wait(f"F23 C{prutok}", result=f"F23 ok. chan {prutok}.")
         self.info(f"F23 C{prutok} > {response}")
-        if wait==1:
+        if wait == 1:
             self.wait_for_state()
 
     # Заблокировать пруток
@@ -524,7 +525,7 @@ class zmod_ifs:
         self.gcode.respond_info(f"Блокировка прутка {prutok}")
         response = self.send_command_and_wait(f"F24 C{prutok}", result=f"F24 ok. chan {prutok}.")
         self.info(f"F24 C{prutok} > {response}")
-        if wait==1:
+        if wait == 1:
             self.wait_for_state()
 
     # Разблокировать пруток
@@ -535,7 +536,7 @@ class zmod_ifs:
         self.gcode.respond_info(f"Разблокировка прутка {prutok}")
         response = self.send_command_and_wait(f"F39 C{prutok}", result=f"F39 ok. FFS channel {prutok} release.")
         self.info(f"F39 C{prutok} > {response}")
-        if wait==1:
+        if wait == 1:
             self.wait_for_state()
 
     # Остановить движение
@@ -545,7 +546,7 @@ class zmod_ifs:
         response = self.send_command_and_wait(f"F112", result="F112 ok.")
         self.gcode.respond_info(f"Остановка движения прутка")
         self.info(f"F112 > {response}")
-        if wait==1:
+        if wait == 1:
             self.wait_for_state()
 
     cmd_IFS_STATUS_help = "Get current IFS status"
@@ -743,13 +744,13 @@ class IfsData:
 
     def get_port(self, port):
         with self.lock:
-            if port==1:
+            if port == 1:
                 return self.Port1
-            if port==2:
+            if port == 2:
                 return self.Port2
-            if port==3:
+            if port == 3:
                 return self.Port3
-            if port==4:
+            if port == 4:
                 return self.Port4
             return False
 

@@ -668,7 +668,7 @@ class zmod_color:
             prompt_text = f"Extruder: None"
             if self.get_extruder_sensor():
                 for slot in result:
-                    if self.get_current_channel() == slot['ID']:
+                    if self.get_current_channel() == int(slot['ID']):
                         prompt_text = f"Extruder: {slot['ID']}: {slot['Material']}/{slot['Color']}"
                         break
 
