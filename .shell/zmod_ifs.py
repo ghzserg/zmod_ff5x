@@ -570,6 +570,7 @@ class zmod_ifs:
             f"filament_unload_speed={config['filament_unload_speed']} "
             f"filament_unload_before_cutting={config['filament_unload_before_cutting']} "
             f"filament_unload_after_cutting={config['filament_unload_after_cutting']} "
+        )
         self.gcode.run_script_from_command("_GOTO_KAKASHNIK")
         self.gcode.run_script_from_command(f"IFS_F24 PRUTOK={prutok}")
 
