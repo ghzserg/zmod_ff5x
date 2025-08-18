@@ -254,6 +254,7 @@ class zmod_ifs:
         valid_types = ['PLA', 'ABS', 'PETG', 'TPU', 'PLA-CF', 'PETG-CF', 'SILK']
         if ret not in valid_types:
             ret="PLA"
+        return ret
 
     # Получить конфиг прутка по номеру прутка
     def get_prutok_config(self, prutok):
@@ -575,8 +576,8 @@ class zmod_ifs:
         self.gcode.run_script_from_command(f"IFS_F24 PRUTOK={prutok}")
 
         self.gcode.run_script_from_command("G92 E0")
-        self.gcode.run_script_from_command(f"G1 E-{config['nozzle_cleaning_length']} F{config['filament_unload_speed]}")
-        self.gcode.run_script_from_command(f"IFS_F11 PRUTOK={prutok} LEN={round(config['nozzle_cleaning_length']*1.67)} SPEED={config['filament_unload_speed]*2} WAIT=0")
+        self.gcode.run_script_from_command(f"G1 E-{config['nozzle_cleaning_length']} F{config['filament_unload_speed']}")
+        self.gcode.run_script_from_command(f"IFS_F11 PRUTOK={prutok} LEN={round(config['nozzle_cleaning_length']*1.67)} SPEED={config['filament_unload_speed']*2} WAIT=0")
         self.gcode.run_script_from_command("M400")
 
         if self.get_extruder_sensor():
