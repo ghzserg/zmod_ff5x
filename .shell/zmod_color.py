@@ -881,13 +881,13 @@ class zmod_color:
                 raise gcmd.error(self._t('error_tool', i, tool))
 
         if ztool == 1:
-            params=f"TOOL1={tools[1]} TOOL2={tools[2]} TOOL3={tools[3]} FILENAME=\"{fname}\" LEVELING={leveling} "
+            params=f"                 TOOL1={tools[1]} TOOL2={tools[2]} TOOL3={tools[3]} FILENAME=\"{fname}\" LEVELING={leveling} "
         elif ztool == 2:
-            params=f"TOOL0={tools[0]} TOOL2={tools[2]} TOOL3={tools[3]} FILENAME=\"{fname}\" LEVELING={leveling} "
+            params=f"TOOL0={tools[0]}                  TOOL2={tools[2]} TOOL3={tools[3]} FILENAME=\"{fname}\" LEVELING={leveling} "
         elif ztool == 3:
-            params=f"TOOL0={tools[0]} TOOL1={tools[1]} TOOL3={tools[3]} FILENAME=\"{fname}\" LEVELING={leveling} "
+            params=f"TOOL0={tools[0]} TOOL1={tools[1]}                  TOOL3={tools[3]} FILENAME=\"{fname}\" LEVELING={leveling} "
         else:
-            params=f"TOOL0={tools[0]} TOOL1={tools[0]} TOOL2={tools[2]} FILENAME=\"{fname}\" LEVELING={leveling} "
+            params=f"TOOL0={tools[0]} TOOL1={tools[1]} TOOL2={tools[2]}                  FILENAME=\"{fname}\" LEVELING={leveling} "
 
         if self.display:
             status_code, response_data = self.zsend_post_request("/detail")
