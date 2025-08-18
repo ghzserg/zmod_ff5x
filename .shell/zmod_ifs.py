@@ -273,9 +273,9 @@ class zmod_ifs:
 
             "filament_tube_length": 1000,           # Длина полной загрузки/выгрузки филамента
             "filament_drop_length": 90,             # Длина сброса в какашник
+            "nozzle_cleaning_length": 60            # Длина прочистки сопла
 
             "filament_fan_speed": 102,              # Скорость работы вентилятора при сброс через какашник
-            "nozzle_cleaning_length": 60            # Длина прочистки сопла
         }
 
         temp_defaults = {
