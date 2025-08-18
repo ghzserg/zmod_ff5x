@@ -468,7 +468,6 @@ class zmod_color:
         self.display = config.getboolean('display', True)
         self.language = 'en'
         self.gcode = self.printer.lookup_object('gcode')
-        self.query_adc = self.printer.lookup_object('query_adc')
         self.gcode.register_command('GET_T', self.cmd_GET_T)
         self.gcode.register_command('GET_ZCOLOR', self.cmd_GET_ZCOLOR)
         self.gcode.register_command('SET_ZCOLOR', self.cmd_SET_ZCOLOR)
@@ -490,6 +489,7 @@ class zmod_color:
         if self.zmod is not None:
             self.language = self.zmod.get_lang()
         self.zmod_ifs = self.printer.lookup_object('zmod_ifs', None)
+        self.query_adc = self.printer.lookup_object('query_adc')
 
     def get_printer_ip(self):
         interfaces = ['wlan0', 'eth0']
