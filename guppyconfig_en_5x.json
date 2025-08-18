@@ -34,6 +34,12 @@
           "id": "heater_bed"
         },
         {
+          "color": "white",
+          "controllable": false,
+          "display_name": "Head",
+          "id": "temperature_sensor head"
+        },
+        {
           "color": "orange",
           "controllable": false,
           "display_name": "Weight",
