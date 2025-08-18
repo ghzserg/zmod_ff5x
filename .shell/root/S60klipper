@@ -1,0 +1,51 @@
+#!/bin/sh
+#
+# Start klipper
+#
+
+PYTHON=/root/klipper-env/bin/python3
+KLIPPER=/root/klipper-env/klippy/klippy.py
+KLIPPER_CONF=/opt/config/printer.cfg
+KLIPPER_LOG=/data/logFiles/printer.log
+KLIPPER_UDS=/tmp/uds
+PID_FILE=/run/klipper.pid
+
+NICE=20
+grep -q "^nice = " /opt/config/mod_data/variables.cfg && NICE=$(grep "^nice = " /opt/config/mod_data/variables.cfg | cut -d "=" -f2| awk '{print $1}')
+NICE=$((20-$NICE))
+[ $NICE -ge 20 ]  && NICE=19
+[ $NICE -lt -20 ] && NICE=-20
+KLIPPER_NICENESS=$NICE
+
+start() {
+    mkdir -p $(dirname $KLIPPER_LOG) # make sure the log directory exists
+#    /opt/config/mod/.shell/root/mcu/boot_eboard_mcu
+    start-stop-daemon -S -b -m -p $PID_FILE -N $KLIPPER_NICENESS --exec $PYTHON -- $KLIPPER $KLIPPER_CONF -l $KLIPPER_LOG -a $KLIPPER_UDS
+}
+
+stop() {
+    start-stop-daemon -K -q -p $PID_FILE
+}
+
+restart() {
+    stop
+    sleep 2
+    start
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart|reload)
+        restart
+        ;;
+  *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+esac
+
+exit $?

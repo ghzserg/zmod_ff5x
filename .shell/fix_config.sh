@@ -38,6 +38,8 @@ restore_base()
 {
     grep -q '^\[include mod.user.cfg' ${MOD_CONF}/printer.cfg && sed -i '/include mod.user.cfg/d' ${MOD_CONF}/printer.cfg
     grep -q '^\[include ./mod/mod.cfg' ${MOD_CONF}/printer.cfg && sed -i '/mod.cfg/d' ${MOD_CONF}/printer.cfg
+    grep -q '^\[include ./mod/klipper11.cfg' ${MOD_CONF}/printer.cfg && sed -i '/klipper11.cfg/d' ${MOD_CONF}/printer.cfg
+    grep -q '^\[include ./mod/klipper13.cfg' ${MOD_CONF}/printer.cfg && sed -i '/klipper13.cfg/d' ${MOD_CONF}/printer.cfg
     grep -q '^\[include ./mod_data/user.cfg' ${MOD_CONF}/printer.cfg && sed -i '/user.cfg/d' ${MOD_CONF}/printer.cfg
     grep -q '^\[include ./mod/switch_sensor.cfg' ${MOD_CONF}/printer.cfg && sed -i '/switch_sensor.cfg/d' ${MOD_CONF}/printer.cfg
     grep -q '^\[include ./mod/motion_sensor.cfg' ${MOD_CONF}/printer.cfg && sed -i '/motion_sensor.cfg/d' ${MOD_CONF}/printer.cfg
@@ -98,6 +100,23 @@ restore_base()
         rm -f heater_bed.txt
     fi
 
+    # Возвращаем fan_generic internal_fan
+    if [ ${FF5X} -eq 0 ] && ! grep -q '^\[fan_generic internal_fan' ${MOD_CONF}/printer.base.cfg
+        then
+            echo "
+[fan_generic internal_fan]
+pin:PB8
+" >>${MOD_CONF}/printer.base.cfg
+    fi
+
+    # Возвращаем fan_generic external_fan
+    if [ ${FF5X} -eq 0 ] && ! grep -q '^\[fan_generic external_fan' ${MOD_CONF}/printer.base.cfg
+        then
+            echo "
+[fan_generic external_fan]
+pin:PB6
+" >>${MOD_CONF}/printer.base.cfg
+    fi
 
     # Возвращаем fan_generic pcb_fan
     [ ${FF5X} -eq 1 ] && PIN="PA5" || PIN="PB7"
@@ -148,6 +167,41 @@ event_delay: 1.0
         fi
     fi
 
+    # Возвращаем weightValue
+    if [ ${FF5X} -eq 0 ] && ! grep -q '\[temperature_sensor weightValue' ${MOD_CONF}/printer.base.cfg; then
+        echo '[temperature_sensor weightValue]
+sensor_type: MAX31856
+sensor_pin: PD5
+#spi_bus: spi4
+spi_speed: 1000000
+spi_software_sclk_pin: PD6
+spi_software_mosi_pin: PD7
+spi_software_miso_pin: PD8
+min_temp: 0
+max_temp: 2048
+gcode_id: W
+
+' >>${MOD_CONF}/printer.base.cfg
+    fi
+
+    # Возвращаем tvocValue
+    if [ ${FF5X} -eq 0 ] && ! grep -q '\[temperature_sensor tvocValue' ${MOD_CONF}/printer.base.cfg; then
+        echo '[temperature_sensor tvocValue]
+sensor_type: MAX31865
+sensor_pin: PD4
+#spi_bus: spi4
+#cs_pin: PD0
+spi_speed: 500000
+spi_software_sclk_pin: PE3
+spi_software_mosi_pin: PE4
+spi_software_miso_pin: PE5
+min_temp: 0
+max_temp: 2048
+gcode_id: V
+
+' >>${MOD_CONF}/printer.base.cfg
+    fi
+
     grep -q '^minimum_cruise_ratio' ${MOD_CONF}/printer.base.cfg && sed -i 's|^minimum_cruise_ratio.*|max_accel_to_decel:5000|' ${MOD_CONF}/printer.base.cfg
 }
 
@@ -178,7 +232,10 @@ fix_config()
         check_link ${MOD_CONF}/mod/display_off.cfg ${ZLANG}/display_off.cfg
         check_link ${MOD_CONF}/mod/ff5.cfg ${ZLANG}/ff5.cfg
         check_link ${MOD_CONF}/mod/mod.cfg ${ZLANG}/mod.cfg
+        check_link ${MOD_CONF}/mod/klipper13.cfg ${ZLANG}/klipper13.cfg
+        check_link ${MOD_CONF}/mod/klipper11.cfg ${ZLANG}/klipper11.cfg
     else
+        check_link ${MOD_CONF}/mod/ad5x.cfg ${ZLANG}/ad5x.cfg
         check_link ${MOD_CONF}/mod/base_display_off.cfg ${ZLANG}/display_off.cfg
         check_link ${MOD_CONF}/mod/base_mod.cfg ${ZLANG}/mod.cfg
     fi
@@ -299,7 +356,7 @@ unset LD_PRELOAD
     grep -q "zmod 1.1" ${KLIPPER_DIR}/klippy/webhooks.py || cp ${MOD_CONF}/mod/.shell/webhooks.py ${KLIPPER_DIR}/klippy/webhooks.py
     grep -q ZLOAD_VARIABLE ${KLIPPER_DIR}/klippy/extras/save_variables.py || cp ${MOD_CONF}/mod/.shell/save_variables.py ${KLIPPER_DIR}/klippy/extras/save_variables.py
     if [ ${FF5X} -eq 0 ]; then
-        if ! grep -q "Zcontrol 1.17" ${KLIPPER_DIR}/klippy/extras/spi_temperature.py; then
+        if ! grep -q "Zcontrol 1.18" ${KLIPPER_DIR}/klippy/extras/spi_temperature.py; then
             cp ${MOD_CONF}/mod/.shell/spi_temperature.py ${KLIPPER_DIR}/klippy/extras/spi_temperature.py
         fi
         if ! grep -q "zmod 1.0" /opt/klipper/start.sh; then
@@ -339,6 +396,12 @@ unset LD_PRELOAD
 
     cnt=$(grep '^\[include ./mod/mod.cfg\]' ${PRINTER_CFG} |wc -l)
     [ "$cnt" -gt 1 ] && sed -i '/^\[include .\/mod\/mod.cfg\]/d' ${PRINTER_CFG} && NEED_REBOOT=1
+
+    cnt=$(grep '^\[include ./mod/klipper13.cfg\]' ${PRINTER_CFG} |wc -l)
+    [ "$cnt" -gt 1 ] && sed -i '/^\[include .\/mod\/klipper13.cfg\]/d' ${PRINTER_CFG} && NEED_REBOOT=1
+
+    cnt=$(grep '^\[include ./mod/klipper11.cfg\]' ${PRINTER_CFG} |wc -l)
+    [ "$cnt" -gt 1 ] && sed -i '/^\[include .\/mod\/klipper11.cfg\]/d' ${PRINTER_CFG} && NEED_REBOOT=1
 
     ! grep -q '^\[include ./mod/mod.cfg\]' ${PRINTER_CFG} && ! grep -q '^\[include ./mod/display_off.cfg\]' ${PRINTER_CFG} && sed -i '2 i\[include ./mod/mod.cfg]' ${PRINTER_CFG} && NEED_REBOOT=1
 
@@ -414,49 +477,107 @@ max_temp: 130
     fi
 
     if grep -q '^\[heater_bed' ${PRINTER_BASE}; then
-            NEED_REBOOT=1
-            cd ${MOD_CONF}
+        NEED_REBOOT=1
+        cd ${MOD_CONF}
 
-            sed -e '/^\[heater_bed/,/^\[/d' ${PRINTER_BASE} >printer.base.tmp
-            diff -u ${PRINTER_BASE} printer.base.tmp | grep -v "printer.base.cfg" |grep "^-" | cut -b 2- >heater_bed.txt
-            sed -i '$d' heater_bed.txt
-            num=$(wc -l heater_bed.txt|cut  -d " " -f1)
-            num=$(($num-1))
-            sed -e "/^\[heater_bed/,+${num}d;" ${PRINTER_BASE} >printer.base.tmp
-            cat printer.base.tmp >${PRINTER_BASE}
-            rm -f heater_bed.txt printer.base.tmp
+        sed -e '/^\[heater_bed/,/^\[/d' ${PRINTER_BASE} >printer.base.tmp
+        diff -u ${PRINTER_BASE} printer.base.tmp | grep -v "printer.base.cfg" |grep "^-" | cut -b 2- >heater_bed.txt
+        sed -i '$d' heater_bed.txt
+        num=$(wc -l heater_bed.txt|cut  -d " " -f1)
+        num=$(($num-1))
+        sed -e "/^\[heater_bed/,+${num}d;" ${PRINTER_BASE} >printer.base.tmp
+        cat printer.base.tmp >${PRINTER_BASE}
+        rm -f heater_bed.txt printer.base.tmp
+    fi
+
+    # Удаляем temperature_sensor weightValue
+    if grep -q '^\[temperature_sensor weightValue' ${PRINTER_BASE}; then
+        NEED_REBOOT=1
+        cd ${MOD_CONF}
+
+        sed -e '/^\[temperature_sensor weightValue/,/^\[/d' ${PRINTER_BASE} >printer.base.tmp
+        diff -u ${PRINTER_BASE} printer.base.tmp | grep -v "printer.base.cfg" |grep "^-" | cut -b 2- >heater_bed.txt
+        sed -i '$d' heater_bed.txt
+        num=$(wc -l heater_bed.txt|cut  -d " " -f1)
+        num=$(($num-1))
+        sed -e "/^\[temperature_sensor weightValue/,+${num}d;" ${PRINTER_BASE} >printer.base.tmp
+        cat printer.base.tmp >${PRINTER_BASE}
+        rm -f heater_bed.txt printer.base.tmp
+    fi
+
+    # Удаляем temperature_sensor tvocValue
+    if grep -q '^\[temperature_sensor tvocValue' ${PRINTER_BASE}; then
+        NEED_REBOOT=1
+        cd ${MOD_CONF}
+
+        sed -e '/^\[temperature_sensor tvocValue/,/^\[/d' ${PRINTER_BASE} >printer.base.tmp
+        diff -u ${PRINTER_BASE} printer.base.tmp | grep -v "printer.base.cfg" |grep "^-" | cut -b 2- >heater_bed.txt
+        sed -i '$d' heater_bed.txt
+        num=$(wc -l heater_bed.txt|cut  -d " " -f1)
+        num=$(($num-1))
+        sed -e "/^\[temperature_sensor tvocValue/,+${num}d;" ${PRINTER_BASE} >printer.base.tmp
+        cat printer.base.tmp >${PRINTER_BASE}
+        rm -f heater_bed.txt printer.base.tmp
     fi
 
     # Удаляем fan_generic pcb_fan
-    if grep -q '^\[fan_generic pcb_fan' ${PRINTER_BASE}
-        then
-            NEED_REBOOT=1
-            cd ${MOD_CONF}
+    if grep -q '^\[fan_generic pcb_fan' ${PRINTER_BASE}; then
+        NEED_REBOOT=1
+        cd ${MOD_CONF}
 
-            sed -e '/^\[fan_generic pcb_fan/,/^\[/d' ${PRINTER_BASE} >printer.base.tmp
-            diff -u ${PRINTER_BASE} printer.base.tmp | grep -v "printer.base.cfg" |grep "^-" | cut -b 2- >heater_bed.txt
-            sed -i '$d' heater_bed.txt
-            num=$(wc -l heater_bed.txt|cut  -d " " -f1)
-            num=$(($num-1))
-            sed -e "/^\[fan_generic pcb_fan/,+${num}d;" ${PRINTER_BASE} >printer.base.tmp
-            cat printer.base.tmp >${PRINTER_BASE}
-            rm -f heater_bed.txt printer.base.tmp
+        sed -e '/^\[fan_generic pcb_fan/,/^\[/d' ${PRINTER_BASE} >printer.base.tmp
+        diff -u ${PRINTER_BASE} printer.base.tmp | grep -v "printer.base.cfg" |grep "^-" | cut -b 2- >heater_bed.txt
+        sed -i '$d' heater_bed.txt
+        num=$(wc -l heater_bed.txt|cut  -d " " -f1)
+        num=$(($num-1))
+        sed -e "/^\[fan_generic pcb_fan/,+${num}d;" ${PRINTER_BASE} >printer.base.tmp
+        cat printer.base.tmp >${PRINTER_BASE}
+        rm -f heater_bed.txt printer.base.tmp
+    fi
+
+    # Удаляем fan_generic external_fan
+    if grep -q '^\[fan_generic external_fan' ${PRINTER_BASE}; then
+        NEED_REBOOT=1
+        cd ${MOD_CONF}
+
+        sed -e '/^\[fan_generic external_fan/,/^\[/d' ${PRINTER_BASE} >printer.base.tmp
+        diff -u ${PRINTER_BASE} printer.base.tmp | grep -v "printer.base.cfg" |grep "^-" | cut -b 2- >heater_bed.txt
+        sed -i '$d' heater_bed.txt
+        num=$(wc -l heater_bed.txt|cut  -d " " -f1)
+        num=$(($num-1))
+        sed -e "/^\[fan_generic external_fan/,+${num}d;" ${PRINTER_BASE} >printer.base.tmp
+        cat printer.base.tmp >${PRINTER_BASE}
+        rm -f heater_bed.txt printer.base.tmp
+    fi
+
+    # Удаляем fan_generic internal_fan
+    if grep -q '^\[fan_generic internal_fan' ${PRINTER_BASE}; then
+        NEED_REBOOT=1
+        cd ${MOD_CONF}
+
+        sed -e '/^\[fan_generic internal_fan/,/^\[/d' ${PRINTER_BASE} >printer.base.tmp
+        diff -u ${PRINTER_BASE} printer.base.tmp | grep -v "printer.base.cfg" |grep "^-" | cut -b 2- >heater_bed.txt
+        sed -i '$d' heater_bed.txt
+        num=$(wc -l heater_bed.txt|cut  -d " " -f1)
+        num=$(($num-1))
+        sed -e "/^\[fan_generic internal_fan/,+${num}d;" ${PRINTER_BASE} >printer.base.tmp
+        cat printer.base.tmp >${PRINTER_BASE}
+        rm -f heater_bed.txt printer.base.tmp
     fi
 
     # Удаляем controller_fan pcb_fan
-    if grep -q '^\[controller_fan pcb_fan' ${PRINTER_BASE}
-        then
-            NEED_REBOOT=1
-            cd ${MOD_CONF}
+    if grep -q '^\[controller_fan pcb_fan' ${PRINTER_BASE}; then
+        NEED_REBOOT=1
+        cd ${MOD_CONF}
 
-            sed -e '/^\[controller_fan pcb_fan/,/^\[/d' ${PRINTER_BASE} >printer.base.tmp
-            diff -u ${PRINTER_BASE} printer.base.tmp | grep -v "printer.base.cfg" |grep "^-" | cut -b 2- >heater_bed.txt
-            sed -i '$d' heater_bed.txt
-            num=$(wc -l heater_bed.txt|cut  -d " " -f1)
-            num=$(($num-1))
-            sed -e "/^\[controller_fan pcb_fan/,+${num}d;" ${PRINTER_BASE} >printer.base.tmp
-            cat printer.base.tmp >${PRINTER_BASE}
-            rm -f heater_bed.txt printer.base.tmp
+        sed -e '/^\[controller_fan pcb_fan/,/^\[/d' ${PRINTER_BASE} >printer.base.tmp
+        diff -u ${PRINTER_BASE} printer.base.tmp | grep -v "printer.base.cfg" |grep "^-" | cut -b 2- >heater_bed.txt
+        sed -i '$d' heater_bed.txt
+        num=$(wc -l heater_bed.txt|cut  -d " " -f1)
+        num=$(($num-1))
+        sed -e "/^\[controller_fan pcb_fan/,+${num}d;" ${PRINTER_BASE} >printer.base.tmp
+        cat printer.base.tmp >${PRINTER_BASE}
+        rm -f heater_bed.txt printer.base.tmp
     fi
 
     # Возвращаем gcode_button check_level_pin
@@ -540,8 +661,8 @@ stepper: stepper_x, stepper_y, stepper_z
 " >>${PRINTER_BASE}
     fi
 
-    # Klipper12 FIX
-    if grep -q "klipper12 = 1" ${MOD_CONF}/mod_data/variables.cfg || [ ${FF5X} -eq 1 ]; then
+    # klipper13 FIX
+    if grep -q "klipper13 = 1" ${MOD_CONF}/mod_data/variables.cfg || [ ${FF5X} -eq 1 ]; then
         if grep -q '^max_accel_to_decel' ${PRINTER_BASE}; then
             NEED_REBOOT=1
             sed -i 's|^max_accel_to_decel.*|minimum_cruise_ratio: 0.5|' ${PRINTER_BASE}
@@ -554,6 +675,19 @@ stepper: stepper_x, stepper_y, stepper_z
     fi
 
     if [ ${FF5X} -eq 0 ]; then
+        if ! { head -n 2 ${PRINTER_CFG} | tail -n 1 | grep -qE '^\[include \.\/mod\/klipper1[13]\.cfg\]$'; }; then
+            sed -i '\|\[include \./mod/klipper11\.cfg\]|d' "${PRINTER_CFG}"
+            sed -i '\|\[include \./mod/klipper13\.cfg\]|d' "${PRINTER_CFG}"
+            NEED_REBOOT=1
+        fi
+        if grep -q "klipper13 = 1" ${MOD_CONF}/mod_data/variables.cfg; then
+            grep -q '^\[include ./mod/klipper13.cfg\]' ${PRINTER_CFG} || sed -i '/\[include printer\.base\.cfg\]/a [include ./mod/klipper13.cfg]' ${PRINTER_CFG} && NEED_REBOOT=1
+            grep -q '^\[include ./mod/klipper11.cfg\]' ${PRINTER_CFG} && sed -i '/^\[include \.\/mod\/klipper11\.cfg\]$/d' ${PRINTER_CFG} && NEED_REBOOT=1
+        else
+            grep -q '^\[include ./mod/klipper11.cfg\]' ${PRINTER_CFG} || sed -i '/\[include printer\.base\.cfg\]/a [include ./mod/klipper11.cfg]' ${PRINTER_CFG} && NEED_REBOOT=1
+            grep -q '^\[include ./mod/klipper13.cfg\]' ${PRINTER_CFG} && sed -i '/^\[include \.\/mod\/klipper13\.cfg\]$/d' ${PRINTER_CFG} && NEED_REBOOT=1
+        fi
+
         ! grep -q "motion_sensor" ${MOD_CONF}/mod_data/variables.cfg && sed -i '2 i\motion_sensor = 0' ${MOD_CONF}/mod_data/variables.cfg
 
         # Режим с экраном
@@ -622,24 +756,24 @@ stepper: stepper_x, stepper_y, stepper_z
     fi
     echo "END fix_config"
 
-#    if [ "$1" == "start" ] && [ ${FF5X} -eq 0 ]; then
-#        if grep -q "klipper12 = 1" ${MOD_CONF}/mod_data/variables.cfg; then
-#            cnt=$(find /opt/PROGRAM/control/ -name Update|wc -l)
-#            if [ "$cnt" -ne 0 ]; then
-#                # Если обновляем MCU
-#                find /opt/PROGRAM/control/ -name Update| sed 's/Update//'| while read a; do
-#                    mount -o bind ${MOD_CONF}/mod/.shell/update_mcu.sh ${a}run.sh
-#                done
-#            else
-#                # Если обновлений нет
-#                mount -o bind ${MOD_CONF}/mod/.shell/klipper12.sh ${KLIPPER_DIR}/start.sh
-#                sync
-#            fi
+    if [ "$1" == "start" ] && [ ${FF5X} -eq 0 ]; then
+        if grep -q "klipper13 = 1" ${MOD_CONF}/mod_data/variables.cfg; then
+            cnt=$(find /opt/PROGRAM/control/ -name Update|wc -l)
+            if [ "$cnt" -ne 0 ]; then
+                # Если обновляем MCU
+                find /opt/PROGRAM/control/ -name Update| sed 's/Update//'| while read a; do
+                    mount -o bind ${MOD_CONF}/mod/.shell/update_mcu.sh ${a}run.sh
+                done
+            else
+                # Если обновлений нет
+                mount -o bind ${MOD_CONF}/mod/.shell/klipper13.sh ${KLIPPER_DIR}/start.sh
+                sync
+            fi
 #        else
 #            A=$(find /opt/PROGRAM/control/ -name NationsCommand |head -1)
 #            $A -r || $A -r
-#        fi
-#    fi
+        fi
+    fi
     sync
 }
 

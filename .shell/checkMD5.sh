@@ -35,11 +35,7 @@ if [ "_${LOCAL_MD5}" = "_${ORIG_MD5}" ]; then
         if grep -q -e 'G2 ' -e 'G3 ' "${FILE_NAME}"; then
             send_klipper 4
         else
-            if grep -q -e 'G17 ' -e 'G18 ' -e 'G19 ' "${FILE_NAME}"; then
-                send_klipper 8
-            else
-                send_klipper 5
-            fi
+            send_klipper 5
         fi
     fi
 else

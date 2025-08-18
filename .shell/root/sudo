@@ -1,0 +1,4 @@
+#!/bin/sh
+
+[ $1 == "systemctl" ] && [ $2 == "reboot" ] && echo "REBOOT" >/tmp/printer
+[ $1 == "systemctl" ] && [ $2 == "poweroff" ] && echo "SHUTDOWN" >/tmp/printer

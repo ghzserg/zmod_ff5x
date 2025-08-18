@@ -45,6 +45,7 @@ update_mcu_eboard()
 }
 
 killall python3.7 firmwareExe
+kill $(ps|grep klippy.py| grep -v grep| awk '{print $1}')
 
 mkdir -p /opt/config/mod_data/log/
 

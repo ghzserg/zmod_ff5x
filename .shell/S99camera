@@ -58,7 +58,7 @@ stop() {
 restart() {
     stop
     sleep 2
-    up
+    up &>/opt/config/mod_data/log/camera.log
 }
 
 case "$1" in

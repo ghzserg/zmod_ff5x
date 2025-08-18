@@ -337,6 +337,15 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "visible": true
         },
         {
+            "alias": "Сбросить пароль",
+            "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
+            "color": "#00ff00",
+            "disabledWhilePrinting": false,
+            "name": "reset_passwd",
+            "order": 15,
+            "visible": true
+        },
+        {
             "alias": "",
             "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
             "color": "#ff0000",

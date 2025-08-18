@@ -468,7 +468,6 @@ class zmod_color:
         self.display = config.getboolean('display', True)
         self.language = 'en'
         self.gcode = self.printer.lookup_object('gcode')
-        self.query_adc = self.printer.lookup_object('query_adc')
         self.gcode.register_command('GET_T', self.cmd_GET_T)
         self.gcode.register_command('GET_ZCOLOR', self.cmd_GET_ZCOLOR)
         self.gcode.register_command('SET_ZCOLOR', self.cmd_SET_ZCOLOR)
@@ -490,6 +489,7 @@ class zmod_color:
         if self.zmod is not None:
             self.language = self.zmod.get_lang()
         self.zmod_ifs = self.printer.lookup_object('zmod_ifs', None)
+        self.query_adc = self.printer.lookup_object('query_adc')
 
     def get_printer_ip(self):
         interfaces = ['wlan0', 'eth0']
@@ -668,7 +668,7 @@ class zmod_color:
             prompt_text = f"Extruder: None"
             if self.get_extruder_sensor():
                 for slot in result:
-                    if self.get_current_channel() == slot['ID']:
+                    if self.get_current_channel() == int(slot['ID']):
                         prompt_text = f"Extruder: {slot['ID']}: {slot['Material']}/{slot['Color']}"
                         break
 
@@ -776,17 +776,20 @@ class zmod_color:
             elif silent == 2:
                 gcmd.respond_raw(f"// {leveling_text}")
                 gcmd.respond_raw(f"// IFS OFF")
-                data = {
-                    "fileName": fname,
-                    "levelingBeforePrint": bool(leveling),
-                    "flowCalibration": True,
-                    "useMatlStation": False
-                }
-                status_code2, response_data2 = self.zsend_post_request("/printGcode", send_data=data)
-                if status_code2 == 200:
-                    gcmd.respond_raw(f"Status: {response_data2.get('msg', 'OK')}")
+                if self.display:
+                    data = {
+                        "fileName": fname,
+                        "levelingBeforePrint": bool(leveling),
+                        "flowCalibration": True,
+                        "useMatlStation": False
+                    }
+                    status_code2, response_data2 = self.zsend_post_request("/printGcode", send_data=data)
+                    if status_code2 == 200:
+                        gcmd.respond_raw(f"Status: {response_data2.get('msg', 'OK')}")
+                    else:
+                        gcmd.respond_raw(self._t('printing_error', response_data2))
                 else:
-                    gcmd.respond_raw(self._t('printing_error', response_data2))
+                    self.gcode.run_script_from_command(f"SDCARD_PRINT_FILE FILENAME={fname}")
         else:
             gcmd.respond_raw(self._t('no_response', response_data))
 
@@ -830,20 +833,25 @@ class zmod_color:
                         "slotMaterialColor": f"#{slot_info['HEX']}"
                     })
 
-            data = {
-                "fileName": fname,
-                "levelingBeforePrint": bool(leveling),
-                "flowCalibration": True,
-                "useMatlStation": True,
-                "gcodeToolCnt": len(material_mappings),
-                "materialMappings": material_mappings
-            }
+            if self.display:
+                data = {
+                    "fileName": fname,
+                    "levelingBeforePrint": bool(leveling),
+                    "flowCalibration": True,
+                    "useMatlStation": True,
+                    "gcodeToolCnt": len(material_mappings),
+                    "materialMappings": material_mappings
+                }
 
-            status_code2, response_data2 = self.zsend_post_request("/printGcode", send_data=data)
-            if status_code2 == 200:
-                gcmd.respond_raw(f"Status: {response_data2.get('msg', 'OK')}")
+                status_code2, response_data2 = self.zsend_post_request("/printGcode", send_data=data)
+                if status_code2 == 200:
+                    gcmd.respond_raw(f"Status: {response_data2.get('msg', 'OK')}")
+                else:
+                    gcmd.respond_raw(self._t('printing_error', response_data2))
             else:
-                gcmd.respond_raw(self._t('printing_error', response_data2))
+                with open('/usr/data/config/mod_data/file.json', 'w') as file:
+                    json.dump(tools, file, indent=2)
+                self.gcode.run_script_from_command(f"SDCARD_PRINT_FILE FILENAME={fname}")
         else:
             gcmd.respond_raw(self._t('no_response', response_data))
 
@@ -873,13 +881,13 @@ class zmod_color:
                 raise gcmd.error(self._t('error_tool', i, tool))
 
         if ztool == 1:
-            params=f"TOOL1={tools[1]} TOOL2={tools[2]} TOOL3={tools[3]} FILENAME=\"{fname}\" LEVELING={leveling} "
+            params=f"                 TOOL1={tools[1]} TOOL2={tools[2]} TOOL3={tools[3]} FILENAME=\"{fname}\" LEVELING={leveling} "
         elif ztool == 2:
-            params=f"TOOL0={tools[0]} TOOL2={tools[2]} TOOL3={tools[3]} FILENAME=\"{fname}\" LEVELING={leveling} "
+            params=f"TOOL0={tools[0]}                  TOOL2={tools[2]} TOOL3={tools[3]} FILENAME=\"{fname}\" LEVELING={leveling} "
         elif ztool == 3:
-            params=f"TOOL0={tools[0]} TOOL1={tools[1]} TOOL3={tools[3]} FILENAME=\"{fname}\" LEVELING={leveling} "
+            params=f"TOOL0={tools[0]} TOOL1={tools[1]}                  TOOL3={tools[3]} FILENAME=\"{fname}\" LEVELING={leveling} "
         else:
-            params=f"TOOL0={tools[0]} TOOL1={tools[0]} TOOL2={tools[2]} FILENAME=\"{fname}\" LEVELING={leveling} "
+            params=f"TOOL0={tools[0]} TOOL1={tools[1]} TOOL2={tools[2]}                  FILENAME=\"{fname}\" LEVELING={leveling} "
 
         if self.display:
             status_code, response_data = self.zsend_post_request("/detail")
@@ -1051,9 +1059,9 @@ class zmod_color:
                 gcmd.respond_raw(self._t(f'{action}_error', response_data))
         else:
             if napr == 0:
-                self.gcode.run_script_from_command(f"_INSERT_PRUTOK_IFS PRUTOK={zslot}")
+                self.gcode.run_script_from_command(f"INSERT_PRUTOK_IFS PRUTOK={zslot}")
             else:
-                self.gcode.run_script_from_command(f"_REMOVE_PRUTOK_IFS PRUTOK={zslot}")
+                self.gcode.run_script_from_command(f"REMOVE_PRUTOK_IFS PRUTOK={zslot}")
 
 def load_config(config):
     return zmod_color(config)

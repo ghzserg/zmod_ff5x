@@ -35,4 +35,4 @@ $PYTHON /opt/config/mod/.shell/ps_mem.py -S >/tmp/list.txt
 }' /tmp/list.txt
 rm -f /tmp/list.txt
 
-[ ${ZLANG} != 'ru' ] && free -m || free -m | sed 's/             total       used       free     shared    buffers     cached/Память       Всего     Занято   Свободно      Общая     Буферы        Кэш/'
+[ ${ZLANG} != 'ru' ] && free -m || free -m | awk 'NR==1{print "Память       Всего     Занято   Свободно      Общая     Буферы        Кэш"} NR>=2{print}'

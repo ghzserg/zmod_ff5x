@@ -125,6 +125,8 @@ start_prepare()
         mount --bind ${MOD}/opt/ /opt
         mount --bind ${MOD_CONF} /opt/config/
         [ -d /usr/prog/config ] && mount --bind /usr/prog/config ${MOD}/usr/prog/config
+        mkdir -p ${MOD_CONF}/mod_data/
+        mount --bind ${MOD_CONF}/mod_data/ /root
 
         mkdir -p ${MOD}${LOG_FILES}
         mount --bind ${LOG_FILES}/ ${MOD}${LOG_FILES}/
