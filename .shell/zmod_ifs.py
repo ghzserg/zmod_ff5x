@@ -264,18 +264,21 @@ class zmod_ifs:
         filament=self.get_prutok_type_from_config(prutok)
 
         base_default = {
-            "filament_unload_before_cutting": 0,    # На сколько поднимать филамент перед тем как отрезать
-            "filament_unload_after_cutting": 5,     # На сколько поднимать филамент после того как отрезали
-            "filament_unload_after_drop": 3,        # Ретракт после сброса филамента
-
-            "filament_load_speed": 300,             # Скорость загрузки филамента
-            "filament_unload_speed": 600,           # Скорость подъема филамента
-
-            "filament_tube_length": 1000,           # Длина полной загрузки/выгрузки филамента
-            "filament_drop_length": 90,             # Длина сброса в какашник
-            "nozzle_cleaning_length": 60,           # Длина прочистки сопла
-
-            "filament_fan_speed": 102               # Скорость работы вентилятора при сброс через какашник
+            "filament_unload_before_cutting": 0,    # На сколько поднимать филамент ПЕРЕД тем  как отрезать (по умолчанию 0)
+            "filament_unload_after_cutting": 5,     # На сколько поднимать филамент ПОСЛЕ того как отрезали (по умолчанию 5)
+            "filament_unload_after_drop": 3,        # Ретракт после сброса филамента (немного вытащить пруток из сопла, для предотвращения протечки,
+                                                    #   когда смена прутка уже прошла и сопло едет дальше печатать)
+            "filament_load_speed": 300,             # Скорость загрузки филамента (скорость вращения экструдера, 300 мм/м = 5 мм/c)
+            "filament_unload_speed": 600,           # Скорость подъема  филамента (скорость вращения экструдера, 600 мм/м = 10 мм/c)
+                                                    #   IFS работает на скорости 2*filament_unload_speed
+            "filament_tube_length": 1000,           # Длина полной загрузки/выгрузки филамента (длинна тефлоновой трубки от IFS до головы, полезно дял тех у кого не стоковые трубки)
+            "filament_drop_length": 90,             # Длина сброса в какашник (дистанция прутка который будет выдавлен в какашник, то есть дистанция прочистки сопла
+                                                    #   от преведущего филамената и смешения цветов, полезно когда не используется башня для сброса смешанных цветов)
+            "filament_drop_length_add": 90,         # Дополнительная длина сброса в какашник при смене типа филамента (смена разных материаалов, к примеру PETG на композитный PETG)
+            "nozzle_cleaning_length": 60,           # Длина прочистки сопла (дистанция на сколько вытаскивать пруток из экструдера
+                                                    #   (то есть на сколько милиметров доставать пруток из фидера, когда текущая катушка больше не используется)
+            "filament_fan_speed": 102               # Скорость работы вентилятора при сбросе через какашник (то есть сдувает подтеки из сопла, когда происходит очистка)
+            #"temp": 230                            # Температура до которой необхоидмо разогреть сопло для смены филамента
         }
 
         temp_defaults = {
@@ -339,6 +342,7 @@ class zmod_ifs:
             f"filament_unload_after_drop={config['filament_unload_after_drop']} "
             f"filament_tube_length={config['filament_tube_length']} "
             f"filament_drop_length={config['filament_drop_length']} "
+            f"filament_drop_length_add={config['filament_drop_length_add']} "
             f"filament_fan_speed={config['filament_fan_speed']} "
         )
 
@@ -358,6 +362,7 @@ class zmod_ifs:
             f"filament_unload_after_drop={config['filament_unload_after_drop']} "
             f"filament_tube_length={config['filament_tube_length']} "
             f"filament_drop_length={config['filament_drop_length']} "
+            f"filament_drop_length_add={config['filament_drop_length_add']} "
             f"filament_fan_speed={config['filament_fan_speed']} "
         )
 
