@@ -50,7 +50,7 @@ fi
 fi
 
 [ ${ZLANG} != 'ru' ] && echo "Preparing $1-axis image. Please wait..." || echo "Подготовка изображения оси $1. Ждите..."
-sed 's/psd_x/psd_Y/' /tmp/resonances_${b_low}_${b_low}.csv | sed 's/psd_y/psd_x/' | sed 's/psd_Y/psd_y/' | awk -F ',' '{print $1","$3","$2","$4","$5}' >$1
+sed 's/psd_x/psd_Y/' "/tmp/resonances_${b_low}_$1.csv" | sed 's/psd_y/psd_x/' | sed 's/psd_Y/psd_y/' | awk -F ',' '{print $1","$3","$2","$4","$5}' >$1
 python3 /opt/config/mod/.shell/root/zshaper/calibrate_shaper.py $1 --scv=$SCV -o resonances_$1.png -w 8 -l 4.8 --send $1 --${ZLANG} ${ADD}
 mv $1 shapers/$1_$DT.csv
 if ! $json_present; then
