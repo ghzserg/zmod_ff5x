@@ -334,15 +334,15 @@ class zmod_ifs:
             f"_REMOVE_PRUTOK_IFS "
             f"PRUTOK={prutok} "
             f"TEMP={config['temp']} "
-            f"filament_type={config['filament_type']} "
-            f"filament_unload_speed={config['filament_unload_speed']} "
-            f"filament_load_speed={config['filament_load_speed']} "
-            f"filament_unload_before_cutting={config['filament_unload_before_cutting']} "
-            f"filament_unload_after_cutting={config['filament_unload_after_cutting']} "
-            f"filament_unload_after_drop={config['filament_unload_after_drop']} "
-            f"filament_tube_length={config['filament_tube_length']} "
-            f"filament_drop_length={config['filament_drop_length']} "
-            f"filament_fan_speed={config['filament_fan_speed']} "
+            f"FILAMENT_TYPE={config['filament_type']} "
+            f"FILAMENT_UNLOAD_SPEED={config['filament_unload_speed']} "
+            f"FILAMENT_LOAD_SPEED={config['filament_load_speed']} "
+            f"FILAMENT_UNLOAD_BEFORE_CUTTING={config['filament_unload_before_cutting']} "
+            f"FILAMENT_UNLOAD_AFTER_CUTTING={config['filament_unload_after_cutting']} "
+            f"FILAMENT_UNLOAD_AFTER_DROP={config['filament_unload_after_drop']} "
+            f"FILAMENT_TUBE_LENGTH={config['filament_tube_length']} "
+            f"FILAMENT_DROP_LENGTH={config['filament_drop_length']} "
+            f"FILAMENT_FAN_SPEED={config['filament_fan_speed']} "
         )
 
     # Вставить пруток в IFS
@@ -361,16 +361,16 @@ class zmod_ifs:
             f"_INSERT_PRUTOK_IFS "
             f"PRUTOK={prutok} "
             f"TEMP={config['temp']} "
-            f"filament_type={config['filament_type']} "
-            f"filament_unload_speed={config['filament_unload_speed']} "
-            f"filament_load_speed={config['filament_load_speed']} "
-            f"filament_unload_before_cutting={config['filament_unload_before_cutting']} "
-            f"filament_unload_after_cutting={config['filament_unload_after_cutting']} "
-            f"filament_unload_after_drop={config['filament_unload_after_drop']} "
-            f"filament_tube_length={config['filament_tube_length']} "
-            f"filament_drop_length={config['filament_drop_length']} "
-            f"filament_drop_length_add={filament_drop_length_add} "
-            f"filament_fan_speed={config['filament_fan_speed']} "
+            f"FILAMENT_TYPE={config['filament_type']} "
+            f"FILAMENT_UNLOAD_SPEED={config['filament_unload_speed']} "
+            f"FILAMENT_LOAD_SPEED={config['filament_load_speed']} "
+            f"FILAMENT_UNLOAD_BEFORE_CUTTING={config['filament_unload_before_cutting']} "
+            f"FILAMENT_UNLOAD_AFTER_CUTTING={config['filament_unload_after_cutting']} "
+            f"FILAMENT_UNLOAD_AFTER_DROP={config['filament_unload_after_drop']} "
+            f"FILAMENT_TUBE_LENGTH={config['filament_tube_length']} "
+            f"FILAMENT_DROP_LENGTH={config['filament_drop_length']} "
+            f"FILAMENT_DROP_LENGTH_ADD={filament_drop_length_add} "
+            f"FILAMENT_FAN_SPEED={config['filament_fan_speed']} "
         )
 
     def print_result(self, ret_code, values, info=True):
@@ -582,9 +582,9 @@ class zmod_ifs:
         gcmd.respond_info(f"Извлекаю пруток {prutok} {config['filament_type']} из экструдера")
         self.gcode.run_script_from_command(
             f"_REZGEM_PRUTOK "
-            f"filament_unload_speed={config['filament_unload_speed']} "
-            f"filament_unload_before_cutting={config['filament_unload_before_cutting']} "
-            f"filament_unload_after_cutting={config['filament_unload_after_cutting']} "
+            f"FILAMENT_UNLOAD_SPEED={config['filament_unload_speed']} "
+            f"FILAMENT_UNLOAD_BEFORE_CUTTING={config['filament_unload_before_cutting']} "
+            f"FILAMENT_UNLOAD_AFTER_CUTTING={config['filament_unload_after_cutting']} "
         )
         self.gcode.run_script_from_command("_GOTO_KAKASHNIK")
         self.gcode.run_script_from_command(f"IFS_F24 PRUTOK={prutok}")
