@@ -387,9 +387,6 @@ def main():
                     'logfile': args[0]
                 }, f)
 
-            if options.resp_json != 0:
-                print(json.dumps(resp))
-
             # При использовании --json завершаем работу без построения графика
             return
 
@@ -407,6 +404,9 @@ def main():
                 fig.set_size_inches(options.width, options.height)
                 fig.savefig(options.output)
                 resp['png'] = options.output
+
+        if options.resp_json != 0:
+            print(json.dumps(resp))
 
 if __name__ == '__main__':
     main()
