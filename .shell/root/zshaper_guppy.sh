@@ -30,11 +30,11 @@ if grep -q "fix_scv = 1" /opt/config/mod_data/variables.cfg; then
     fi
 fi
 
-if [ "$1"  == "/tmp/resonances_x_x.csv" ] && ! json_in_present; then
+if [ "$1"  == "/tmp/resonances_x_x.csv" ] && ! $json_in_present; then
     sed 's/psd_x/psd_Y/' /tmp/resonances_x_x.csv | sed 's/psd_y/psd_x/' | sed 's/psd_Y/psd_y/' | awk -F ',' '{print $1","$3","$2","$4","$5}' >X
     mv X /tmp/resonances_x_x.csv
 fi
-if [ "$1"  == "/tmp/resonances_y_y.csv" ] && ! json_in_present; then
+if [ "$1"  == "/tmp/resonances_y_y.csv" ] && ! $json_in_present; then
     sed 's/psd_x/psd_Y/' /tmp/resonances_y_y.csv | sed 's/psd_y/psd_x/' | sed 's/psd_Y/psd_y/' | awk -F ',' '{print $1","$3","$2","$4","$5}' >Y
     mv Y /tmp/resonances_y_y.csv
 fi
