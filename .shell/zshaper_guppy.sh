@@ -21,4 +21,5 @@ else
         unset LD_LIBRARY_PATH
         export PATH='/bin:/sbin:/usr/bin:/usr/sbin'
         chroot ${MOD} /opt/config/mod/.shell/root/zshaper_guppy.sh $@ --json-in
+    fi
 fi
