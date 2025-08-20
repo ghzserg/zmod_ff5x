@@ -179,7 +179,7 @@ class zmod_tenz:
             return -199.0
         try:
             last_value = float(matches[-1])
-            return last_value
+            return abs(last_value)
         except ValueError:
             logging.error("Failed to convert value to float: %s", matches[-1])
             return -200.0

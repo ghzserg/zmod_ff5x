@@ -5,7 +5,8 @@
 # This file may be distributed under the terms of the GNU GPLv3 license.
 import os, sys, logging, io
 
-VALID_GCODE_EXTS = ['gcode', 'g', 'gco']
+VALID_GCODE_EXTS = ['gcode', 'g', 'gco','gx']
+VALID_GCODE_T = ['T0', 'T1', 'T2', 'T3','T4', 'T5', 'T6', 'T7','T8', 'T9', 'T10', 'T11','T12', 'T13', 'T14', 'T15']
 
 DEFAULT_ERROR_GCODE = """
 {% if 'heaters' in printer %}
@@ -30,6 +31,10 @@ class VirtualSD:
         self.must_pause_work = self.cmd_from_sd = False
         self.next_file_position = 0
         self.work_timer = None
+        self.load_channel = 0
+        self.print_channel = 0
+        self.change_filament = False
+        self.enable_ffm = False
         # Error handling
         gcode_macro = self.printer.load_object(config, 'gcode_macro')
         self.on_error_gcode = gcode_macro.load_template(
@@ -46,6 +51,15 @@ class VirtualSD:
         self.gcode.register_command(
             "SDCARD_PRINT_FILE", self.cmd_SDCARD_PRINT_FILE,
             desc=self.cmd_SDCARD_PRINT_FILE_help)
+        self.gcode.register_command(
+            "SDCARD_CLEAR_REFUELLING", self.cmd_SDCARD_CLEAR_REFUELLING,
+            desc=self.cmd_SDCARD_CLEAR_REFUELLING_help)
+        self.gcode.register_command(
+            "SDCARD_SET_CHANNEL", self.cmd_SDCARD_SET_CHANNEL,
+            desc=self.cmd_SDCARD_SET_CHANNEL_help)
+        self.gcode.register_command(
+            "SDCARD_ENABLE_FFM", self.cmd_SDCARD_ENABLE_FFM,
+            desc=self.cmd_SDCARD_ENABLE_FFM_help)   
     def handle_shutdown(self):
         if self.work_timer is not None:
             self.must_pause_work = True
@@ -96,6 +110,8 @@ class VirtualSD:
             'is_active': self.is_active(),
             'file_position': self.file_position,
             'file_size': self.file_size,
+            'channel': self.print_channel,
+            'refuelling': self.change_filament,
         }
     def file_path(self):
         if self.current_file:
@@ -124,6 +140,7 @@ class VirtualSD:
             self.do_pause()
             self.current_file.close()
             self.current_file = None
+            self.change_filament = False
             self.print_stats.note_cancel()
         self.file_position = self.file_size = 0
     # G-Code commands
@@ -155,6 +172,20 @@ class VirtualSD:
             filename = filename[1:]
         self._load_file(gcmd, filename, check_subdirs=True)
         self.do_resume()
+    cmd_SDCARD_CLEAR_REFUELLING_help = "get printing pause line gcode "
+    def cmd_SDCARD_CLEAR_REFUELLING(self, gcmd):
+        self.change_filament = False
+    cmd_SDCARD_SET_CHANNEL_help = "set load channel "
+    def cmd_SDCARD_SET_CHANNEL(self, gcmd):
+        chanel = gcmd.get_int('CHANNEL')
+        self.load_channel = chanel
+        self.print_channel = chanel
+    cmd_SDCARD_ENABLE_FFM_help = "enable ffm "
+    def cmd_SDCARD_ENABLE_FFM(self, gcmd):
+        enable = gcmd.get_int('ENABLE')
+        self.enable_ffm = False
+        if enable == 1:
+            self.enable_ffm = True
     def cmd_M20(self, gcmd):
         # List SD card
         files = self.get_file_list()
@@ -170,6 +201,9 @@ class VirtualSD:
         if self.work_timer is not None:
             raise gcmd.error("SD busy")
         self._reset_file()
+        self.print_channel = 0
+        self.change_filament = False
+        self.enable_ffm = False
         filename = gcmd.get_raw_command_parameters().strip()
         if filename.startswith('/'):
             filename = filename[1:]
@@ -181,7 +215,7 @@ class VirtualSD:
         fname = filename
         try:
             #if fname not in flist:
-                #fname = files_by_lower[fname.lower()]
+            #    fname = files_by_lower[fname.lower()]
             fname = os.path.join(self.sdcard_dirname, fname)
             f = io.open(fname, 'r', newline='')
             f.seek(0, os.SEEK_END)
@@ -269,6 +303,21 @@ class VirtualSD:
             else:
                 next_file_position = self.file_position + len(line) + 1
             self.next_file_position = next_file_position
+            #logging.info("Starting SD card print (line %s)", line)   
+            if line in VALID_GCODE_T and self.enable_ffm and line.startswith("T"):
+                self.print_channel = int(line[line.rfind('T')+1:])
+                if self.print_channel != self.load_channel:
+                    self.gcode.run_script("M400")
+                    self.change_filament = True
+                    while True:
+                        if not self.change_filament:
+                            break 
+                        if self.must_pause_work or self.work_timer is None:
+                            break
+                        self.reactor.pause(self.reactor.monotonic() + 0.5)
+                self.load_channel = self.print_channel
+                self.change_filament = False                    
+                continue         
             try:
                 self.gcode.run_script(line)
             except self.gcode.error as e:
