@@ -354,8 +354,8 @@ class zmod_ifs:
         if self.get_extruder_sensor():
             cur_prutok = self.get_current_channel_from_config()
             cur_config=self.get_prutok_config(cur_prutok)
-            if config['filament_type'] != cur_config['filament_type']
-            filament_drop_length_add = config['filament_drop_length_add']:
+            if config['filament_type'] != cur_config['filament_type']:
+                filament_drop_length_add = config['filament_drop_length_add']
 
         self.gcode.run_script_from_command(
             f"_INSERT_PRUTOK_IFS "
