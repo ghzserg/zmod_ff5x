@@ -329,7 +329,7 @@ class zmod_ifs:
     # Извлечь пруток из IFS
     def cmd_REMOVE_PRUTOK_IFS(self, gcmd):
         prutok = gcmd.get_int('PRUTOK', 1)
-        config=self.get_prutok_config(prutok)
+        config = self.get_prutok_config(prutok)
         self.gcode.run_script_from_command(
             f"_REMOVE_PRUTOK_IFS "
             f"PRUTOK={prutok} "
@@ -342,14 +342,21 @@ class zmod_ifs:
             f"filament_unload_after_drop={config['filament_unload_after_drop']} "
             f"filament_tube_length={config['filament_tube_length']} "
             f"filament_drop_length={config['filament_drop_length']} "
-            f"filament_drop_length_add={config['filament_drop_length_add']} "
             f"filament_fan_speed={config['filament_fan_speed']} "
         )
 
     # Вставить пруток в IFS
     def cmd_INSERT_PRUTOK_IFS(self, gcmd):
         prutok = gcmd.get_int('PRUTOK', 1)
-        config=self.get_prutok_config(prutok)
+        config = self.get_prutok_config(prutok)
+
+        filament_drop_length_add = 0
+        if self.get_extruder_sensor():
+            cur_prutok = self.get_current_channel_from_config()
+            cur_config=self.get_prutok_config(cur_prutok)
+            if config['filament_type'] != cur_config['filament_type']
+            filament_drop_length_add = config['filament_drop_length_add']:
+
         self.gcode.run_script_from_command(
             f"_INSERT_PRUTOK_IFS "
             f"PRUTOK={prutok} "
@@ -362,7 +369,7 @@ class zmod_ifs:
             f"filament_unload_after_drop={config['filament_unload_after_drop']} "
             f"filament_tube_length={config['filament_tube_length']} "
             f"filament_drop_length={config['filament_drop_length']} "
-            f"filament_drop_length_add={config['filament_drop_length_add']} "
+            f"filament_drop_length_add={filament_drop_length_add} "
             f"filament_fan_speed={config['filament_fan_speed']} "
         )
 

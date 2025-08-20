@@ -209,6 +209,10 @@ def main():
                 help="Set output language to English")
     opts.add_option("--ru", action="store_true", dest="ru", default=False,
                 help="Установить русский язык вывода")
+    opts.add_option("--json", action="store_true", dest="save_json", default=False,
+                    help="Save calculated shapers to /tmp/data.json and skip graph plotting")
+    opts.add_option("--json-in", action="store_true", dest="load_json", default=False,
+                    help="Load shapers from /tmp/data.json and plot graph without recalculating")
     opts.add_option("-o", "--output", type="string", dest="output",
                     default=None, help="filename of output graph")
     opts.add_option("-c", "--csv", type="string", dest="csv",
@@ -241,7 +245,9 @@ def main():
                     default="", help="Send to Klipper [X|Y]")
 
     options, args = opts.parse_args()
-    if len(args) < 1:
+    if options.save_json and options.load_json:
+        opts.error("Cannot use --json and --json-in together")
+    if len(args) < 1 and not options.load_json:
         opts.error("Incorrect number of arguments")
     if options.max_smoothing is not None and options.max_smoothing < 0.05:
         opts.error("Too small max_smoothing specified (must be at least 0.05)")
@@ -296,38 +302,111 @@ def main():
         shapers = options.shapers.lower().split(',')
 
     # Parse data
-    datas = [parse_log(fn) for fn in args]
+    if options.load_json:
+        # Загружаем данные из JSON
+        try:
+            with open('/tmp/data.json', 'r') as f:
+                saved_data = json.load(f)
 
-    # Calibrate shaper and generate outputs
-    selected_shaper, shapers, calibration_data, resp = calibrate_shaper(
-            datas, options.csv, shapers=shapers,
-            damping_ratio=options.damping_ratio,
-            scv=options.scv, shaper_freqs=shaper_freqs,
-            max_smoothing=options.max_smoothing,
-            test_damping_ratios=test_damping_ratios,
-            max_freq=max_freq, resp_json=options.resp_json, send_klipper=options.send_klipper)
-    if selected_shaper is None:
-        return
+            # Восстановление calibration_data
+            freq_bins = np.array(saved_data['calibration_data']['freq_bins'])
+            psd_sum = np.array(saved_data['calibration_data']['psd_sum'])
+            psd_x = np.array(saved_data['calibration_data']['psd_x'])
+            psd_y = np.array(saved_data['calibration_data']['psd_y'])
+            psd_z = np.array(saved_data['calibration_data']['psd_z'])
 
-    resp['logfile'] = args[0]
+            calibration_data = shaper_calibrate.CalibrationData(
+                freq_bins=freq_bins, psd_sum=psd_sum,
+                psd_x=psd_x, psd_y=psd_y, psd_z=psd_z
+            )
+            calibration_data.set_numpy(np)
 
-    if not options.csv or options.output:
-        # Draw graph
-        setup_matplotlib(options.output is not None)
+            # Восстановление shapers
+            shapers = []
+            for shaper_data in saved_data['shapers']:
+                shaper = type('Shaper', (), {})()
+                shaper.name = shaper_data['name']
+                shaper.freq = shaper_data['freq']
+                shaper.vibrs = shaper_data['vibrs']
+                shaper.smoothing = shaper_data['smoothing']
+                shaper.max_accel = shaper_data['max_accel']
+                shaper.vals = np.array(shaper_data['vals'])
+                shapers.append(shaper)
 
-        fig = plot_freq_response(args, calibration_data, shapers,
-                                 selected_shaper, max_freq, options.scv)
+            selected_shaper = saved_data['selected_shaper']
+            resp = saved_data.get('resp', {})
+            # Восстанавливаем logfile для использования в заголовке графика
+            if 'logfile' in saved_data:
+                logfile = saved_data['logfile']
+                args = [logfile]
+        except Exception as e:
+            opts.error("Failed to load data from /tmp/data.json: %s" % str(e))
+    else:
+        datas = [parse_log(fn) for fn in args]
+        # Calibrate shaper and generate outputs
+        selected_shaper, shapers, calibration_data, resp = calibrate_shaper(
+                datas, options.csv, shapers=shapers,
+                damping_ratio=options.damping_ratio,
+                scv=options.scv, shaper_freqs=shaper_freqs,
+                max_smoothing=options.max_smoothing,
+                test_damping_ratios=test_damping_ratios,
+                max_freq=max_freq, resp_json=options.resp_json, send_klipper=options.send_klipper)
+        if selected_shaper is None:
+            return
 
-        # Show graph
-        if options.output is None:
-            matplotlib.pyplot.show()
-        else:
-            fig.set_size_inches(options.width, options.height)
-            fig.savefig(options.output)
-            resp['png'] = options.output
+        # Если указано сохранить в JSON, сохраняем и выходим
+        if options.save_json:
+            # Подготовка данных для сериализации
+            calibration_data_serializable = {
+                'freq_bins': calibration_data.freq_bins.tolist(),
+                'psd_sum': calibration_data.psd_sum.tolist(),
+                'psd_x': calibration_data.psd_x.tolist(),
+                'psd_y': calibration_data.psd_y.tolist(),
+                'psd_z': calibration_data.psd_z.tolist()
+            }
 
-    if options.resp_json != 0:
-        print(json.dumps(resp))
+            shapers_serializable = []
+            for shaper in shapers:
+                shapers_serializable.append({
+                    'name': shaper.name,
+                    'freq': shaper.freq,
+                    'vibrs': shaper.vibrs,
+                    'smoothing': shaper.smoothing,
+                    'max_accel': shaper.max_accel,
+                    'vals': shaper.vals.tolist()
+                })
+
+            with open('/tmp/data.json', 'w') as f:
+                json.dump({
+                    'selected_shaper': selected_shaper,
+                    'shapers': shapers_serializable,
+                    'calibration_data': calibration_data_serializable,
+                    'resp': resp,
+                    'logfile': args[0]
+                }, f)
+
+            # При использовании --json завершаем работу без построения графика
+            return
+
+    # Если не сохраняем в JSON, рисуем график
+    if not options.save_json:
+        if not options.load_json:
+            resp['logfile'] = args[0]
+
+        if not options.csv or options.output:
+            # Draw graph
+            setup_matplotlib(options.output is not None)
+            fig = plot_freq_response(args, calibration_data, shapers,
+                                     selected_shaper, max_freq, options.scv)
+            # Show graph
+            if options.output is None:
+                matplotlib.pyplot.show()
+            else:
+                fig.set_size_inches(options.width, options.height)
+                fig.savefig(options.output)
+                resp['png'] = options.output
+        if options.resp_json != 0:
+            print(json.dumps(resp))
 
 if __name__ == '__main__':
     main()
