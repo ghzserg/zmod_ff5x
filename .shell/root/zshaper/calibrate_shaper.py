@@ -240,7 +240,7 @@ def main():
     opts.add_option("-l", "--height", type="float", dest="height",
                     default=6, help="height (inches) of the graph(s)")
     opts.add_option("-r", "--resp", type="float", dest="resp_json",
-                    default=0, help="rep json")
+                    default=0, help="resp json")
     opts.add_option("--send", type="string", dest="send_klipper",
                     default="", help="Send to Klipper [X|Y]")
 
@@ -354,6 +354,8 @@ def main():
         if selected_shaper is None:
             return
 
+        resp['logfile'] = args[0]
+
         # Если указано сохранить в JSON, сохраняем и выходим
         if options.save_json:
             # Подготовка данных для сериализации
@@ -385,14 +387,14 @@ def main():
                     'logfile': args[0]
                 }, f)
 
+            if options.resp_json != 0:
+                print(json.dumps(resp))
+
             # При использовании --json завершаем работу без построения графика
             return
 
     # Если не сохраняем в JSON, рисуем график
     if not options.save_json:
-        if not options.load_json:
-            resp['logfile'] = args[0]
-
         if not options.csv or options.output:
             # Draw graph
             setup_matplotlib(options.output is not None)
@@ -405,8 +407,6 @@ def main():
                 fig.set_size_inches(options.width, options.height)
                 fig.savefig(options.output)
                 resp['png'] = options.output
-        if options.resp_json != 0:
-            print(json.dumps(resp))
 
 if __name__ == '__main__':
     main()
