@@ -869,9 +869,6 @@ class zmod_color:
             return
 
         try:
-            if not os.path.exists(FILE_CONFIG):
-                raise Exception(f"File not found: {self.mapping_file}")
-
             with open(self.mapping_file, 'r') as f:
                 mapping = json.load(f)
 
