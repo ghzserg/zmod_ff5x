@@ -17,6 +17,7 @@ TIMEOUT = 0.2
 HOST_REPORT_TIME = 0.2
 FFCONFIG='/usr/data/config/Adventurer5M.json'
 TYPECONFIG='/usr/data/config/mod_data/filament.json'
+FILE_CONFIG='/usr/data/config/mod_data/file.json'
 
 FFS_STATUS_DELTA    = 11 # дельта от первой катушки
 FFS_STATUS_OPROS    = 3  # Опрос катушек
@@ -329,18 +330,24 @@ class zmod_ifs:
 
     # Указать текущий пруток
     def cmd_SET_CURRENT_PRUTOK(self, gcmd):
+        cur_prutok = 99
+
         # Проверяем что пруток в экструдере
         if self.get_extruder_sensor():
-            # узнаем из конфига последний активный пруток
-            cur_prutok = self.get_current_channel_from_config()
-            # Проверяем что в IFS есть пруток
-            if not self.get_port(cur_prutok):
-                cur_prutok = 1
-        else:
-            cur_prutok = 1
+            n_prutok = self.get_current_channel_from_config()
+            if self.get_port(n_prutok):
+                try:
+                    with open(FILE_CONFIG, 'r') as f:
+                    mapping = json.load(f)
 
-        self.print_str(f"Указываю активный пруток {cur_prutok}")
-        self.gcode.run_script_from_command(f"SDCARD_SET_CHANNEL CHANNEL={cur_prutok-1}")
+                    for zindex, value in enumerate(mapping):
+                        if value == n_prutok:
+                        cur_prutok = zindex
+                except Exception as e:
+                    cur_prutok = 98
+
+        self.print_str(f"Указываю активный пруток T{cur_prutok}")
+        self.gcode.run_script_from_command(f"SDCARD_SET_CHANNEL CHANNEL={cur_prutok}")
         self.print_str(f"Включаю IFS")
         self.gcode.run_script_from_command(f"SDCARD_ENABLE_FFM ENABLE=1")
 
