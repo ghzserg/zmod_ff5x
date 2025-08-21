@@ -338,11 +338,11 @@ class zmod_ifs:
             if self.get_port(n_prutok):
                 try:
                     with open(FILE_CONFIG, 'r') as f:
-                    mapping = json.load(f)
+                        mapping = json.load(f)
 
-                    for zindex, value in enumerate(mapping):
-                        if value == n_prutok:
-                        cur_prutok = zindex
+                        for zindex, value in enumerate(mapping):
+                            if value == n_prutok:
+                                cur_prutok = zindex
                 except Exception as e:
                     cur_prutok = 98
 
