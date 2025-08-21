@@ -869,7 +869,7 @@ class zmod_color:
             return
 
         try:
-            with open(self.mapping_file, 'r') as f:
+            with open(FILE_CONFIG, 'r') as f:
                 mapping = json.load(f)
 
             if channel >= len(mapping):
