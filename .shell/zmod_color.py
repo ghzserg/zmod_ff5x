@@ -878,7 +878,7 @@ class zmod_color:
 
             spool_number = mapping[channel]
 
-            self.gcode.run_script_from_command(f"INSERT_PRUTOK_IFS PRUTOK={spool_number}")
+            self.gcode.run_script_from_command(f"INSERT_PRUTOK_IFS PRUTOK={spool_number} NEED_STOP=0")
             self.gcode.run_script_from_command("SDCARD_CLEAR_REFUELLING")
 
         except Exception as e:

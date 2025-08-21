@@ -347,11 +347,14 @@ class zmod_ifs:
     # Извлечь пруток из IFS
     def cmd_REMOVE_PRUTOK_IFS(self, gcmd):
         prutok = gcmd.get_int('PRUTOK', 1)
+        need_stop = gcmd.get_int('NEED_STOP', 1)
         config = self.get_prutok_config(prutok)
+
         self.gcode.run_script_from_command(
             f"_REMOVE_PRUTOK_IFS "
             f"PRUTOK={prutok} "
             f"TEMP={config['temp']} "
+            f"NEED_STOP={need_stop} "
             f"FILAMENT_TYPE={config['filament_type']} "
             f"FILAMENT_UNLOAD_SPEED={config['filament_unload_speed']} "
             f"FILAMENT_LOAD_SPEED={config['filament_load_speed']} "
@@ -366,6 +369,7 @@ class zmod_ifs:
     # Вставить пруток в IFS
     def cmd_INSERT_PRUTOK_IFS(self, gcmd):
         prutok = gcmd.get_int('PRUTOK', 1)
+        need_stop = gcmd.get_int('NEED_STOP', 1)
         config = self.get_prutok_config(prutok)
 
         filament_drop_length_add = 0
@@ -379,6 +383,7 @@ class zmod_ifs:
             f"_INSERT_PRUTOK_IFS "
             f"PRUTOK={prutok} "
             f"TEMP={config['temp']} "
+            f"NEED_STOP={need_stop} "
             f"FILAMENT_TYPE={config['filament_type']} "
             f"FILAMENT_UNLOAD_SPEED={config['filament_unload_speed']} "
             f"FILAMENT_LOAD_SPEED={config['filament_load_speed']} "
