@@ -156,6 +156,7 @@ else
         check_link ${MOD_CONF}/mod/klipper11.cfg ${ZLANG}/klipper11.cfg
     else
         check_link ${MOD_CONF}/mod/base_display_off.cfg ${ZLANG}/display_off.cfg
+        check_link ${MOD_CONF}/mod/ad5x.cfg ${ZLANG}/ad5x.cfg
         check_link ${MOD_CONF}/mod/base_mod.cfg ${ZLANG}/mod.cfg
     fi
     check_link ${MOD_CONF}/mod/motion_sensor.cfg ${ZLANG}/motion_sensor.cfg
