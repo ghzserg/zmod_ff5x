@@ -334,7 +334,7 @@ class zmod_ifs:
             # узнаем из конфига последний активный пруток
             cur_prutok = self.get_current_channel_from_config()
             # Проверяем что в IFS есть пруток
-            if ! self.get_port(cur_prutok):
+            if not self.get_port(cur_prutok):
                 cur_prutok = 1
         else:
             cur_prutok = 1
