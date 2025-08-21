@@ -39,4 +39,4 @@ if [ "$1"  == "/tmp/resonances_y_y.csv" ] && ! $json_in_present; then
     mv Y /tmp/resonances_y_y.csv
 fi
 
-python3 /opt/config/mod/.shell/root/zshaper/calibrate_shaper.py $@ --scv=$SCV -r 1 --${ZLANG} "$ADD"
+python3 /opt/config/mod/.shell/root/zshaper/calibrate_shaper.py $@ --scv=$SCV -r 1 --${ZLANG} ${ADD}

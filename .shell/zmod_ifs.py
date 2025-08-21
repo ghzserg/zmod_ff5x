@@ -17,6 +17,7 @@ TIMEOUT = 0.2
 HOST_REPORT_TIME = 0.2
 FFCONFIG='/usr/data/config/Adventurer5M.json'
 TYPECONFIG='/usr/data/config/mod_data/filament.json'
+FILE_CONFIG='/usr/data/config/mod_data/file.json'
 
 FFS_STATUS_DELTA    = 11 # дельта от первой катушки
 FFS_STATUS_OPROS    = 3  # Опрос катушек
@@ -69,6 +70,7 @@ class zmod_ifs:
         # Внешние команды
         self.gcode.register_command('REMOVE_PRUTOK_IFS', self.cmd_REMOVE_PRUTOK_IFS)    # Удаляет пруток по номеру прутка
         self.gcode.register_command('INSERT_PRUTOK_IFS', self.cmd_INSERT_PRUTOK_IFS)    # Вставить пруток в IFS по номеру прутка
+        self.gcode.register_command('SET_CURRENT_PRUTOK', self.cmd_SET_CURRENT_PRUTOK)  # Указать klipper какой пруток сейчас активен
 
         # Внутренние конманды начинаются с IFS
         self.gcode.register_command('IFS_AUTOINSERT', self.cmd_IFS_AUTOINSERT, desc=self.cmd_IFS_AUTOINSERT_help)
@@ -243,7 +245,7 @@ class zmod_ifs:
     def get_current_channel_from_config(self):
         with open(FFCONFIG, 'r') as file:
             config = json.load(file)
-            return config["FFMInfo"].get("channel", 0)
+            return int(config["FFMInfo"].get("channel", 0))
         return 0
 
     # Получить тип прутка из конфига
@@ -326,14 +328,40 @@ class zmod_ifs:
         config['filament_type'] = filament
         return config
 
+    # Указать текущий пруток
+    def cmd_SET_CURRENT_PRUTOK(self, gcmd):
+        cur_prutok = 99
+
+        # Проверяем что пруток в экструдере
+        if self.get_extruder_sensor():
+            n_prutok = self.get_current_channel_from_config()
+            if self.get_port(n_prutok):
+                try:
+                    with open(FILE_CONFIG, 'r') as f:
+                        mapping = json.load(f)
+
+                        for zindex, value in enumerate(mapping):
+                            if value == n_prutok:
+                                cur_prutok = zindex
+                except Exception as e:
+                    cur_prutok = 98
+
+        self.print_str(f"Указываю активный пруток T{cur_prutok}")
+        self.gcode.run_script_from_command(f"SDCARD_SET_CHANNEL CHANNEL={cur_prutok}")
+        self.print_str(f"Включаю IFS")
+        self.gcode.run_script_from_command(f"SDCARD_ENABLE_FFM ENABLE=1")
+
     # Извлечь пруток из IFS
     def cmd_REMOVE_PRUTOK_IFS(self, gcmd):
         prutok = gcmd.get_int('PRUTOK', 1)
+        need_stop = gcmd.get_int('NEED_STOP', 1)
         config = self.get_prutok_config(prutok)
+
         self.gcode.run_script_from_command(
             f"_REMOVE_PRUTOK_IFS "
             f"PRUTOK={prutok} "
             f"TEMP={config['temp']} "
+            f"NEED_STOP={need_stop} "
             f"FILAMENT_TYPE={config['filament_type']} "
             f"FILAMENT_UNLOAD_SPEED={config['filament_unload_speed']} "
             f"FILAMENT_LOAD_SPEED={config['filament_load_speed']} "
@@ -348,6 +376,7 @@ class zmod_ifs:
     # Вставить пруток в IFS
     def cmd_INSERT_PRUTOK_IFS(self, gcmd):
         prutok = gcmd.get_int('PRUTOK', 1)
+        need_stop = gcmd.get_int('NEED_STOP', 1)
         config = self.get_prutok_config(prutok)
 
         filament_drop_length_add = 0
@@ -361,6 +390,7 @@ class zmod_ifs:
             f"_INSERT_PRUTOK_IFS "
             f"PRUTOK={prutok} "
             f"TEMP={config['temp']} "
+            f"NEED_STOP={need_stop} "
             f"FILAMENT_TYPE={config['filament_type']} "
             f"FILAMENT_UNLOAD_SPEED={config['filament_unload_speed']} "
             f"FILAMENT_LOAD_SPEED={config['filament_load_speed']} "
@@ -755,6 +785,7 @@ class IfsData:
         with self.lock:
             return self.Stall != 0
 
+    # Возвращает статус конкретного порта
     def get_port(self, port):
         with self.lock:
             if port == 1:

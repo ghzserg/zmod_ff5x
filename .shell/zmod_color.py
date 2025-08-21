@@ -2,6 +2,9 @@ import json
 import requests
 import subprocess
 
+FFCONFIG='/usr/data/config/Adventurer5M.json'
+FILE_CONFIG='/usr/data/config/mod_data/file.json'
+
 COLOR_MAPPING = {
     "ffffff": {
         "ru": "белый", "en": "white",
@@ -474,12 +477,13 @@ class zmod_color:
         self.gcode.register_command('SET_EXTRUDER_SLOT', self.cmd_SET_EXTRUDER_SLOT)
         self.gcode.register_command('PRINT_ZCOLOR', self.cmd_PRINT_ZCOLOR)
         self.gcode.register_command('CHANGE_TOOL_ZCOLOR', self.cmd_CHANGE_TOOL_ZCOLOR)
+        self.gcode.register_command('_CHANGE_FILAMENT', self.cmd_CHANGE_FILAMENT)
         self.gcode.register_command('RUN_ZCOLOR', self.cmd_RUN_ZCOLOR)
         self.gcode.register_command('CHANGE_ZCOLOR', self.cmd_CHANGE_ZCOLOR)
         self.gcode.register_command('IN_ZCOLOR', self.cmd_IN_ZCOLOR)
         self.printer.register_event_handler("klippy:ready", self._handle_ready)
 
-        with open('/usr/data/config/Adventurer5M.json', 'r') as file:
+        with open(FFCONFIG, 'r') as file:
             data = json.load(file)
             self.serialNumber = data['general']['printerSerialNumber']
             self.checkCode = data['general']['lanCode']
@@ -506,9 +510,9 @@ class zmod_color:
         return "Not found"
 
     def get_current_channel(self):
-        with open('/usr/data/config/Adventurer5M.json', 'r') as file:
+        with open(FFCONFIG, 'r') as file:
             config = json.load(file)
-            return config["FFMInfo"].get("channel", 0)
+            return int(config["FFMInfo"].get("channel", 0))
         return 0
 
     def get_extruder_sensor(self):
@@ -527,7 +531,7 @@ class zmod_color:
             }
         }
 
-        with open('/usr/data/config/Adventurer5M.json', 'r') as file:
+        with open(FFCONFIG, 'r') as file:
             config = json.load(file)
 
             ffm_info = config["FFMInfo"]
@@ -553,13 +557,13 @@ class zmod_color:
         if not zcolor.startswith('#'):
             return 500, "Bed color"
 
-        with open('/usr/data/config/Adventurer5M.json', 'r') as file:
+        with open(FFCONFIG, 'r') as file:
             config = json.load(file)
 
             config["FFMInfo"][f"ffmColor{zslot}"] = zcolor
             config["FFMInfo"][f"ffmType{zslot}"] = ztype
 
-            with open('/usr/data/config/Adventurer5M.json', 'w') as file:
+            with open(FFCONFIG, 'w') as file:
                 return 200, json.dump(config, file, indent=2)
 
         return 500, "Error"
@@ -629,12 +633,12 @@ class zmod_color:
         if self.display:
             raise gcmd.error("Error: Display on")
         else:
-            with open('/usr/data/config/Adventurer5M.json', 'r') as file:
+            with open(FFCONFIG, 'r') as file:
                 config = json.load(file)
 
                 config["FFMInfo"]["channel"] = zslot
 
-                with open('/usr/data/config/Adventurer5M.json', 'w') as file:
+                with open(FFCONFIG, 'w') as file:
                     json.dump(config, file, indent=2)
 
     def cmd_GET_T(self, gcmd):
@@ -789,6 +793,8 @@ class zmod_color:
                     else:
                         gcmd.respond_raw(self._t('printing_error', response_data2))
                 else:
+                    gcmd.respond_raw(f"Выключаю IFS")
+                    self.gcode.run_script_from_command(f"SDCARD_ENABLE_FFM ENABLE=0")
                     self.gcode.run_script_from_command(f"SDCARD_PRINT_FILE FILENAME={fname}")
         else:
             gcmd.respond_raw(self._t('no_response', response_data))
@@ -849,11 +855,35 @@ class zmod_color:
                 else:
                     gcmd.respond_raw(self._t('printing_error', response_data2))
             else:
-                with open('/usr/data/config/mod_data/file.json', 'w') as file:
+                with open(FILE_CONFIG, 'w') as file:
                     json.dump(tools, file, indent=2)
+                self.gcode.run_script_from_command(f"SET_CURRENT_PRUTOK")
                 self.gcode.run_script_from_command(f"SDCARD_PRINT_FILE FILENAME={fname}")
         else:
             gcmd.respond_raw(self._t('no_response', response_data))
+
+    def cmd_CHANGE_FILAMENT(self, gcmd):
+        channel = gcmd.get_int('CHANNEL', None)
+        if channel is None:
+            gcmd.respond_info("Error: CHANNEL parameter is required")
+            return
+
+        try:
+            with open(FILE_CONFIG, 'r') as f:
+                mapping = json.load(f)
+
+            if channel >= len(mapping):
+                gcmd.respond_info(f"Error: CHANNEL {channel} is out of range (max {len(mapping)-1})")
+                return
+
+            spool_number = mapping[channel]
+
+            self.gcode.run_script_from_command(f"INSERT_PRUTOK_IFS PRUTOK={spool_number} NEED_STOP=0")
+            self.gcode.run_script_from_command("SDCARD_CLEAR_REFUELLING")
+
+        except Exception as e:
+            gcmd.respond_info(f"Error processing filament change: {str(e)}")
+            logging.exception("filament mapping error")
 
     def cmd_CHANGE_TOOL_ZCOLOR(self, gcmd):
         gcmd.respond_raw("// action:prompt_end")
