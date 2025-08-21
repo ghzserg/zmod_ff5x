@@ -143,7 +143,7 @@ TRANSLATIONS = {
         'error_slot': "Неверный SLOT. Допустимые: 1-4",
         'error_tool': "Неверный TOOL{}: {}. Допустимо: 1-4",
         'error_type': "Неверный тип материала: {}. Допустимо: {}",
-        'file_tool': "В файле",
+        'file_tool': "Файл",
         'load_error': "!! Ошибка загрузки / выгружки\n{}",
         'load_success': "Загрузка началась",
         'load': "Загрузить",
@@ -161,7 +161,7 @@ TRANSLATIONS = {
         'select_type': "Выберите тип материала",
         'send_print': "Отправить на печать",
         'spool_info': "Катушка {}: {}/{}",
-        'spool': "в катушке",
+        'spool': "Катушка",
         'unload_error': "Ошибка выгрузки: {}",
         'unload_success': "Выгрузка начата",
         'unload': "Выгрузить"
@@ -684,7 +684,7 @@ class zmod_color:
                 btn_text = f"{slot['ID']}: {slot['Material']}/{slot['Color']}"
                 gcmd.respond_raw(f"// action:prompt_button {btn_text}|RUN_ZCOLOR SLOT={slot['ID']} HEX={slot['HEX']} TYPE={slot['Material']}|primary")
             gcmd.respond_raw("// action:prompt_button_group_end")
-            gcmd.respond_raw(f"// action:prompt_footer_button {self._t('cancel')}|RESPOND TYPE=command MSG=action:prompt_end")
+            gcmd.respond_raw(f"// action:prompt_footer_button Ok|RESPOND TYPE=command MSG=action:prompt_end")
             gcmd.respond_raw(f"// action:prompt_footer_button {self._t('reset_colors')}|RESET_ZCOLOR")
             gcmd.respond_raw("// action:prompt_show")
         else:
@@ -739,7 +739,7 @@ class zmod_color:
                     if 0 <= (tool_val - 1) < len(result):
                         slot_info = result[tool_val - 1]
                         btn_text = (
-                            f"{self._t('file_tool')} {tool_idx+1} → "
+                            f"{self._t('file_tool')} {tool_idx+1} -> "
                             f"{self._t('spool')} {slot_info['ID']}: "
                             f"{slot_info['Material']}/{slot_info['Color']}"
                         )
@@ -768,7 +768,7 @@ class zmod_color:
                     if 0 <= (tool_val - 1) < len(result):
                         slot_info = result[tool_val - 1]
                         gcmd.respond_raw(
-                            f"{self._t('file_tool')} {tool_idx+1} → "
+                            f"{self._t('file_tool')} {tool_idx+1} -> "
                             f"{self._t('spool')} {slot_info['ID']}: "
                             f"{slot_info['Material']}/{slot_info['Color']}"
                         )
@@ -929,11 +929,11 @@ class zmod_color:
             gcmd.respond_raw(f"// action:prompt_begin {self._t('prompt_material')}")
             gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_map_color')}")
             gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_file', fname)}")
+            gcmd.respond_raw(f"// action:prompt_text {self._t('file_tool')} {ztool}:")
 
             gcmd.respond_raw("// action:prompt_button_group_start")
             for idx, slot in enumerate(result):
                 btn_text = (
-                    f"{self._t('file_tool')} {ztool} → "
                     f"{self._t('spool')} {slot['ID']}: "
                     f"{slot['Material']}/{slot['Color']}"
                 )
