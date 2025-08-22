@@ -803,14 +803,17 @@ class zmod_color:
             gcmd.respond_raw(self._t('no_response', response_data))
 
     def find_t_code(self, filename):
-        pattern = re.compile(r'^T[0-9]$')
+        pattern = re.compile(r'^T([0-9])$')
 
         with open(f"{self.virtual_sd.sdcard_dirname}/{filename}", 'r', encoding='utf-8') as file:
             for line in file:
                 stripped_line = line.strip()
-                if pattern.match(stripped_line):
-                    self.gcode.run_script_from_command(stripped_line)
-                    break
+                match = pattern.match(stripped_line)
+                if match:
+                    channel_num = match.group(1)
+                    self.gcode.run_script_from_command(f"SET_CURRENT_PRUTOK CHANNEL={channel_num}")
+                    return
+        self.gcode.run_script_from_command(f"SET_CURRENT_PRUTOK")
 
     def cmd_PRINT_ZCOLOR(self, gcmd):
         gcmd.respond_raw("// action:prompt_end")
@@ -870,7 +873,6 @@ class zmod_color:
             else:
                 with open(FILE_CONFIG, 'w') as file:
                     json.dump(tools, file, indent=2)
-                self.gcode.run_script_from_command(f"SET_CURRENT_PRUTOK")
                 self.find_t_code(fname)
                 self.gcode.run_script_from_command("_ENABLE_SENSOR")
                 self.gcode.run_script_from_command(f"SDCARD_PRINT_FILE FILENAME={fname}")
@@ -894,7 +896,6 @@ class zmod_color:
             spool_number = mapping[channel]
 
             self.gcode.run_script_from_command(f"INSERT_PRUTOK_IFS PRUTOK={spool_number} NEED_STOP=0")
-            self.gcode.run_script_from_command("SDCARD_CLEAR_REFUELLING")
 
         except Exception as e:
             gcmd.respond_info(f"Error processing filament change: {str(e)}")
