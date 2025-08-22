@@ -1,3 +1,4 @@
+import re
 import json
 import requests
 import subprocess
@@ -494,6 +495,7 @@ class zmod_color:
             self.language = self.zmod.get_lang()
         self.zmod_ifs = self.printer.lookup_object('zmod_ifs', None)
         self.query_adc = self.printer.lookup_object('query_adc')
+        self.virtual_sd = self.printer.lookup_object('virtual_sdcard')
 
     def get_printer_ip(self):
         interfaces = ['wlan0', 'eth0']
@@ -799,6 +801,16 @@ class zmod_color:
         else:
             gcmd.respond_raw(self._t('no_response', response_data))
 
+    def find_t_code(self, filename)
+        pattern = re.compile(r'^T[0-9]$')
+
+        with open(f"{virtual_sd.path}/{filename}", 'r', encoding='utf-8') as file:
+            for line in file:
+                stripped_line = line.strip()
+                if pattern.match(stripped_line):
+                    self.gcode.run_script_from_command(stripped_line)
+                    break
+
     def cmd_PRINT_ZCOLOR(self, gcmd):
         gcmd.respond_raw("// action:prompt_end")
         fname = gcmd.get('FILENAME', '')
@@ -858,6 +870,7 @@ class zmod_color:
                 with open(FILE_CONFIG, 'w') as file:
                     json.dump(tools, file, indent=2)
                 self.gcode.run_script_from_command(f"SET_CURRENT_PRUTOK")
+                self.find_t_code(fname)
                 self.gcode.run_script_from_command(f"SDCARD_PRINT_FILE FILENAME={fname}")
         else:
             gcmd.respond_raw(self._t('no_response', response_data))
