@@ -798,7 +798,6 @@ class zmod_color:
                 else:
                     gcmd.respond_raw(f"Выключаю IFS")
                     self.gcode.run_script_from_command(f"SDCARD_ENABLE_FFM ENABLE=0")
-                    self.gcode.run_script_from_command("_ENABLE_SENSOR")
                     self.gcode.run_script_from_command(f"SDCARD_PRINT_FILE FILENAME={fname}")
         else:
             gcmd.respond_raw(self._t('no_response', response_data))
@@ -875,7 +874,6 @@ class zmod_color:
                 with open(FILE_CONFIG, 'w') as file:
                     json.dump(tools, file, indent=2)
                 self.find_t_code(fname)
-                self.gcode.run_script_from_command("_ENABLE_SENSOR")
                 self.gcode.run_script_from_command(f"SDCARD_PRINT_FILE FILENAME={fname}")
         else:
             gcmd.respond_raw(self._t('no_response', response_data))
