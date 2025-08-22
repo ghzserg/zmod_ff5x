@@ -10,6 +10,7 @@ CHECK_RUNOUT_TIMEOUT = .250
 
 class ZmodIfsMotionSensor:
     def __init__(self, config):
+        self.name = config.get_name().split()[-1]
         # Read config
         self.printer = config.get_printer()
         self.extruder_name = config.get('extruder', 'extruder')
