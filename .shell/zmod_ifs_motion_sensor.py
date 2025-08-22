@@ -33,6 +33,8 @@ class ZmodIfsMotionSensor:
                 self._handle_not_printing)
         self.printer.register_event_handler('idle_timeout:idle',
                 self._handle_not_printing)
+        # Регистрация объекта
+        self.printer.add_object(f"filament_motion_sensor {self.name}", self)
     def _update_filament_runout_pos(self, eventtime=None):
         if eventtime is None:
             eventtime = self.reactor.monotonic()
