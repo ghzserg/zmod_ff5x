@@ -1,6 +1,7 @@
 import re
 import json
 import requests
+import logging
 import subprocess
 
 FFCONFIG='/usr/data/config/Adventurer5M.json'
