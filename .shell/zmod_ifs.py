@@ -346,8 +346,12 @@ class zmod_ifs:
                 except Exception as e:
                     cur_prutok = 98
 
-        self.print_str(f"Указываю активный пруток T{cur_prutok}")
-        self.gcode.run_script_from_command(f"SDCARD_SET_CHANNEL CHANNEL={cur_prutok}")
+        channel = gcmd.get_int('CHANNEL', cur_prutok)
+        if channel != cur_prutok:
+            self.gcode.run_script_from_command(f"CHANGE_FILAMENT CHANNEL={channel}")
+        else:
+            self.print_str(f"Указываю активный пруток T{cur_prutok}")
+            self.gcode.run_script_from_command(f"SDCARD_SET_CHANNEL CHANNEL={cur_prutok}")
         self.print_str(f"Включаю IFS")
         self.gcode.run_script_from_command(f"SDCARD_ENABLE_FFM ENABLE=1")
 
