@@ -40,7 +40,7 @@ class ZmodIfsMotionSensor:
                 self.detection_length)
     def _handle_ready(self):
         self.ifs = self.printer.lookup_object('zmod_ifs')
-        self.runout_helper.note_filament_present(self.reactor.NOW, True)
+        self.runout_helper.note_filament_present(True)
         self.extruder = self.printer.lookup_object(self.extruder_name)
         self.estimated_print_time = (
                 self.printer.lookup_object('mcu').estimated_print_time)
@@ -64,11 +64,11 @@ class ZmodIfsMotionSensor:
             self._update_filament_runout_pos(eventtime)
             # Check for filament insertion
             # Filament is always assumed to be present on an encoder event
-            self.runout_helper.note_filament_present(eventtime, True)
+            self.runout_helper.note_filament_present(True)
         else:
             extruder_pos = self._get_extruder_pos(eventtime)
             # Check for filament runout
-            self.runout_helper.note_filament_present(eventtime,
+            self.runout_helper.note_filament_present(
                     extruder_pos < self.filament_runout_pos)
         return eventtime + CHECK_RUNOUT_TIMEOUT
 
