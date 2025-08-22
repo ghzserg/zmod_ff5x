@@ -669,19 +669,16 @@ class zmod_ifs:
                     else:
                         command = current_command
 
-                    ser.write(command.encode())
-                    ser.write(b'\r\n')
+                    ser.write((command + "\r\n").encode())
                     time.sleep(0.2)
                     ser.write(b'\xFF')
 
                     response = ser.readline().decode('utf-8', errors='ignore').strip()
                     #self._respond_info(f"IN: {response}")
                     if not response:
-                        if command_id == -1:
-                            continue;
-                        else:
-                            logging.warning(f"Пустой ответ от устройства {current_command}")
-                            break
+                        logging.warning(f"Пустой ответ от устройства {current_command}")
+                        self._respond_info(f"Пустой ответ от устройства {current_command}")
+                        break
 
                     if command_id == -1:
                         self.ifs_data.update_from_string(response)
