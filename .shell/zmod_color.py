@@ -801,7 +801,7 @@ class zmod_color:
         else:
             gcmd.respond_raw(self._t('no_response', response_data))
 
-    def find_t_code(self, filename)
+    def find_t_code(self, filename):
         pattern = re.compile(r'^T[0-9]$')
 
         with open(f"{virtual_sd.path}/{filename}", 'r', encoding='utf-8') as file:
