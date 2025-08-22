@@ -36,12 +36,12 @@ class FlashforgeTVOC:
         self.mcu = mcu.get_printer_mcu(self.printer, config.get('mcu'))
         self.mcu.register_response(self._handle_tvoc_response, MCU_TVOC_RESPONSE)
         self.logger = logging.getLogger('klippy')
-        
+
         self.last_tvoc_value = 0
         self.last_co2_value = 0
         self.last_hcho_value = 0
         self.last_status = 'unknown'
-        
+
         self.gcode.register_command(
             "FLASHFORGE_GET_TVOC",
             self.cmd_GET_TVOC,
@@ -55,12 +55,12 @@ class FlashforgeTVOC:
                          f"CO2: {response.co2} ppm, "
                          f"HCHO: {response.hcho} µg/m³, "
                          f"Status: {response.status}")
-        
+
         self.last_tvoc_value = response.tvoc
         self.last_co2_value = response.co2
         self.last_hcho_value = response.hcho
         self.last_status = response.status
-           
+
     def cmd_GET_TVOC(self, gcmd):
         gcmd.respond_info(
             f"{self.name}:1"
@@ -98,7 +98,7 @@ class TVOCSensor:
     def _sample(self, eventtime):
         measured_time = self.reactor.monotonic()
         if self._callback:
-            self._callback(self.tvoc.mcu.estimated_print_time(measured_time), self.tvoc.last_tvoc_value)
+            self._callback(self.tvoc.mcu.estimated_print_time(measured_time), round(self.tvoc.last_tvoc_value / 10))
         return measured_time + 0.5
 
     def setup_callback(self, cb):
@@ -119,11 +119,11 @@ class TVOCSensor:
 
 def load_config(config):
     tvoc = FlashforgeTVOC(config)
-    
+
     pheaters = config.get_printer().load_object(config, "heaters")
     pheaters.add_sensor_factory(
         "flashforge_tvoc",
         lambda cfg: TVOCSensor(cfg, tvoc)
     )
-    
+
     return tvoc

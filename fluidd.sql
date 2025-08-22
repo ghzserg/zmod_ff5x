@@ -59,6 +59,14 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "categoryId": "e004b7a8-256d-4070-8d81-90a2ccef470b",
             "color": "",
             "disabledWhilePrinting": false,
+            "name": "flashforge_get_tvoc",
+            "visible": true
+        },
+        {
+            "alias": "",
+            "categoryId": "e004b7a8-256d-4070-8d81-90a2ccef470b",
+            "color": "",
+            "disabledWhilePrinting": false,
             "name": "air_circulation_stop",
             "visible": true
         },
@@ -1450,6 +1458,14 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
                "color" : "group",
                "name" : "AIR_CIRCULATION_STOP",
                "pos" : 3,
+               "showInPause" : true,
+               "showInPrinting" : true,
+               "showInStandby" : true
+            },
+            {
+               "color" : "group",
+               "name" : "FLASHFORGE_GET_TVOC",
+               "pos" : 4,
                "showInPause" : true,
                "showInPrinting" : true,
                "showInStandby" : true
