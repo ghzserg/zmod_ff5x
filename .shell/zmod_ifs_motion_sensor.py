@@ -1,6 +1,7 @@
-# Filament Motion Sensor Module
+# IFS Filament Motion Sensor Module
 #
 # Copyright (C) 2021 Joshua Wherrett <thejoshw.code@gmail.com>
+# Copyright (C) 2025 ghzserg https://github.com/ghzserg/zmod
 #
 # This file may be distributed under the terms of the GNU GPLv3 license.
 import logging
