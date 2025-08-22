@@ -12,7 +12,7 @@ class ZmodIfsMotionSensor:
     def __init__(self, config):
         # Read config
         self.printer = config.get_printer()
-        self.extruder_name = config.get('extruder')
+        self.extruder_name = config.get('extruder', 'extruder')
         self.detection_length = config.getfloat(
                 'detection_length', 7., above=0.)
         # Get printer objects
