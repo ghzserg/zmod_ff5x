@@ -804,7 +804,7 @@ class zmod_color:
     def find_t_code(self, filename):
         pattern = re.compile(r'^T[0-9]$')
 
-        with open(f"{virtual_sd.path}/{filename}", 'r', encoding='utf-8') as file:
+        with open(f"{self.virtual_sd.path}/{filename}", 'r', encoding='utf-8') as file:
             for line in file:
                 stripped_line = line.strip()
                 if pattern.match(stripped_line):
