@@ -616,7 +616,7 @@ class zmod_ifs:
             f"FILAMENT_UNLOAD_BEFORE_CUTTING={config['filament_unload_before_cutting']} "
             f"FILAMENT_UNLOAD_AFTER_CUTTING={config['filament_unload_after_cutting']} "
         )
-        self.gcode.run_script_from_command("_GOTO_KAKASHNIK")
+        self.gcode.run_script_from_command("_GOTO_TRASH")
         self.gcode.run_script_from_command(f"IFS_F24 PRUTOK={prutok}")
 
         self.gcode.run_script_from_command("G92 E0")
