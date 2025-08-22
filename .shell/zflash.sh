@@ -1,5 +1,7 @@
 #!/bin/sh
 
+source /opt/config/mod/.shell/0.sh
+
 if ! mount |grep media >/dev/null; then
     [ ${ZLANG} != 'ru' ] && echo "Flash drive not connected. Insert the flash drive and restart the printer." || echo "Флешка не подключена. Вставьте флешку и перезагрузите принтер."
     exit 1
@@ -9,7 +11,6 @@ if [ -f /ZMOD ]; then
     /opt/config/mod/.shell/zremote.sh /opt/config/mod/.shell/zflash.sh
     exit 0
 fi
-source /opt/config/mod/.shell/0.sh
 
 if [ ${FF5X} -eq 1 ]; then
     export LD_LIBRARY_PATH=//usr/prog/qt-4.8.6/lib:$LD_LIBRARY_PATH
