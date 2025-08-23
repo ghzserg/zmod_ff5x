@@ -16,7 +16,7 @@ class ZmodIfsMotionSensor:
         self.printer = config.get_printer()
         self.extruder_name = config.get('extruder', 'extruder')
         self.detection_length = config.getfloat(
-                'detection_length', 7., above=0.)
+                'detection_length', 10., above=0.)
         # Get printer objects
         self.reactor = self.printer.get_reactor()
         self.runout_helper = filament_switch_sensor.RunoutHelper(config)

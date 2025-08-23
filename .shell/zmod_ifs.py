@@ -250,11 +250,12 @@ class zmod_ifs:
 
     # Получить тип прутка из конфига
     def get_prutok_type_from_config(self, prutok):
+        valid_types = ['PLA', 'ABS', 'PETG', 'TPU', 'PLA-CF', 'PETG-CF', 'SILK']
         ret="PLA"
+
         with open(FFCONFIG, 'r') as file:
             config = json.load(file)
             ret=config["FFMInfo"].get(f"ffmType{prutok}", "PLA")
-        valid_types = ['PLA', 'ABS', 'PETG', 'TPU', 'PLA-CF', 'PETG-CF', 'SILK']
         if ret not in valid_types:
             ret="PLA"
         return ret
@@ -279,8 +280,13 @@ class zmod_ifs:
             "filament_drop_length_add": 90,         # Дополнительная длина сброса в какашник при смене типа филамента (смена разных материаалов, к примеру PETG на композитный PETG)
             "nozzle_cleaning_length": 60,           # Длина прочистки сопла (дистанция на сколько вытаскивать пруток из экструдера
                                                     #   (то есть на сколько милиметров доставать пруток из фидера, когда текущая катушка больше не используется)
-            "filament_fan_speed": 102               # Скорость работы вентилятора при сбросе через какашник (то есть сдувает подтеки из сопла, когда происходит очистка)
-            #"temp": 230                            # Температура до которой необхоидмо разогреть сопло для смены филамента
+            "filament_fan_speed": 102,              # Скорость работы вентилятора при сбросе через какашник (то есть сдувает подтеки из сопла, когда происходит очистка)
+            #"temp": 230,                           # Температура до которой необхоидмо разогреть сопло для смены филамента
+
+            "filament_autoinsert_empty_length": 600,# Сколько мм затягивать при автоматической вставке прутка, если экструдер пустой
+            "filament_autoinsert_full_length": 550, # Сколько мм затягивать при автоматической вставке прутка, если экструдер был занят
+            "filament_autoinsert_ret_length": 90,   # Сколько мм втягивать обратно, если сработал эдатчик экструдера (срабатывает только на пустом экструдере)
+            "filament_autoinsert_speed": 1200       # Скорость вставки прутка
         }
 
         temp_defaults = {
@@ -348,7 +354,7 @@ class zmod_ifs:
 
         channel = gcmd.get_int('CHANNEL', cur_prutok)
         if channel != cur_prutok:
-            self.gcode.run_script_from_command(f"CHANGE_FILAMENT CHANNEL={channel}")
+            self.gcode.run_script_from_command(f"_A_CHANGE_FILAMENT CHANNEL={channel} RESTORE=0")
         else:
             self.print_str(f"Указываю активный пруток T{cur_prutok}")
             self.gcode.run_script_from_command(f"SDCARD_SET_CHANNEL CHANNEL={cur_prutok}")
@@ -433,6 +439,7 @@ class zmod_ifs:
     cmd_IFS_AUTOINSERT_help = "Автоматическая загрузка филамента"
     def cmd_IFS_AUTOINSERT(self, gcmd):
         prutok = gcmd.get_int('PRUTOK', 1)
+        config = self.get_prutok_config(prutok)
 
         self.gcode.respond_info(f"Автоматическая вставка прутка {prutok}")
         self.wait_for_state()
@@ -441,10 +448,10 @@ class zmod_ifs:
         gcmd = self.gcode.create_gcode_command("IFS_F24", "IFS_F24", {'PRUTOK': prutok})
         self.cmd_IFS_F24(gcmd)
 
-        # Затягиваем пруток
-        response = self._cmd_IFS_F10(prutok, leng=600, speed=1200)
-        # Проверяем надо ли втягивать
+        # Проверяем есть ли чтото в экструдере
         if self.get_extruder_sensor():
+            # Затягиваем пруток
+            response = self._cmd_IFS_F10(prutok, leng=config['filament_autoinsert_full_length'], speed=config['filament_autoinsert_speed'])
             self.gcode.respond_info("В экструдере есть пруток")
             success, ret_code, values = self.wait_for_state(
                  Port=prutok,
@@ -454,6 +461,7 @@ class zmod_ifs:
                  timeout=120
             )
         else:
+            response = self._cmd_IFS_F10(prutok, leng=config['filament_autoinsert_empty_length'], speed=config['filament_autoinsert_speed'])
             self.gcode.respond_info("В экструдере нет прутка")
             success, ret_code, values = self.wait_for_state(
                  Port=prutok,
@@ -469,7 +477,7 @@ class zmod_ifs:
             self.print_result(ret_code, values)
             if ret_code == RET_EXTRUDER:
                 # Втягиваем пруток
-                gcmd = self.gcode.create_gcode_command("IFS_F11", "IFS_F11", {'PRUTOK': prutok, 'LEN': 90, 'SPEED': 1200})
+                gcmd = self.gcode.create_gcode_command("IFS_F11", "IFS_F11", {'PRUTOK': prutok, 'LEN': config["filament_autoinsert_ret_length"], 'SPEED': config[-"filament_autoinsert_speed"]})
                 self.cmd_IFS_F11(gcmd)
 
         # Помечаем как вставленный
@@ -644,9 +652,14 @@ class zmod_ifs:
         if not self.get_extruder_sensor():
             return
 
+        temp = int(gcmd.get_float('TEMP', 0.0))
+
         prutok = self.get_current_channel_from_config()
         config=self.get_prutok_config(prutok)
-        self.gcode.run_script_from_command(f"TEMPERATURE_WAIT SENSOR=extruder MINIMUM={config['temp']-2} MAXIMUM={config['temp']+4}")
+
+        if temp < int(config['temp']):
+            self.gcode.run_script_from_command(f"M104 S{config['temp']}")
+            self.gcode.run_script_from_command(f"TEMPERATURE_WAIT SENSOR=extruder MINIMUM={config['temp']-2} MAXIMUM={config['temp']+4}")
         self.gcode.run_script_from_command(f"IFS_REMOVE_PRUTOK PRUTOK={prutok} FORCE=0")
 
     def _sensor_reader(self):

@@ -897,8 +897,9 @@ class zmod_color:
             self.gcode.run_script_from_command(f"INSERT_PRUTOK_IFS PRUTOK={spool_number} NEED_STOP=0")
 
         except Exception as e:
-            gcmd.respond_info(f"Error processing filament change: {str(e)}")
-            logging.exception("filament mapping error")
+            gcmd.respond_info(f"Ошибка при смене филамента: {str(e)}")
+            gcmd.respond_info(f"После исправления вызовите END_CHANGE_FILAMENT")
+            logging.exception(f"Ошибка при смене филамента: {str(e)}")
 
     def cmd_CHANGE_TOOL_ZCOLOR(self, gcmd):
         gcmd.respond_raw("// action:prompt_end")
