@@ -477,7 +477,7 @@ class zmod_ifs:
             self.print_result(ret_code, values)
             if ret_code == RET_EXTRUDER:
                 # Втягиваем пруток
-                gcmd = self.gcode.create_gcode_command("IFS_F11", "IFS_F11", {'PRUTOK': prutok, 'LEN': config["filament_autoinsert_ret_length"], 'SPEED': config[-"filament_autoinsert_speed"]})
+                gcmd = self.gcode.create_gcode_command("IFS_F11", "IFS_F11", {'PRUTOK': prutok, 'LEN': config["filament_autoinsert_ret_length"], 'SPEED': config["filament_autoinsert_speed"]})
                 self.cmd_IFS_F11(gcmd)
 
         # Помечаем как вставленный
@@ -632,7 +632,11 @@ class zmod_ifs:
         self.gcode.run_script_from_command(f"IFS_F24 PRUTOK={prutok}")
 
         self.gcode.run_script_from_command("G92 E0")
+
+        self.gcode.run_script_from_command("_DISABLE_SENSOR")
         self.gcode.run_script_from_command(f"G1 E-{config['nozzle_cleaning_length']} F{config['filament_unload_speed']}")
+        self.gcode.run_script_from_command("_ENABLE_SENSOR")
+
         self.gcode.run_script_from_command(f"IFS_F11 PRUTOK={prutok} LEN={round(config['nozzle_cleaning_length']*1.67)} SPEED={config['filament_unload_speed']*2} WAIT=0")
         self.gcode.run_script_from_command("M400")
 
