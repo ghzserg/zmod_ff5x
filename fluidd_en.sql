@@ -857,9 +857,18 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "alias": "",
             "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
             "color": "#008800",
-            "disabledWhilePrinting": true,
+            "disabledWhilePrinting": false,
             "name": "color",
             "order": 14,
+            "visible": true
+        },
+        {
+            "alias": "END_FILAMENT_CHANGE",
+            "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
+            "color": "#008800",
+            "disabledWhilePrinting": false,
+            "name": "end_filament_change",
+            "order": 15,
             "visible": true
         },
         {
@@ -1167,6 +1176,22 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
                "color" : "group",
                "name" : "ZRESTORE",
                "pos" : 19,
+               "showInPause" : true,
+               "showInPrinting" : true,
+               "showInStandby" : true
+            },
+            {
+               "color" : "group",
+               "name" : "COLOR",
+               "pos" : 20,
+               "showInPause" : true,
+               "showInPrinting" : true,
+               "showInStandby" : true
+            },
+            {
+               "color" : "group",
+               "name" : "EMD_FILAMENT_CHANGE",
+               "pos" : 21,
                "showInPause" : true,
                "showInPrinting" : true,
                "showInStandby" : true
