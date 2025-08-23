@@ -10,7 +10,7 @@ class ZmodIfsSwitchSensor:
         self.query_adc = self.printer.lookup_object('query_adc')
 
         self.runout_helper = RunoutHelper(config)
-
+        self.get_status = self.runout_helper.get_status
         self.printer.add_object(f"filament_switch_sensor {self.name}", self)
 
         self.reactor = self.printer.get_reactor()
@@ -35,9 +35,6 @@ class ZmodIfsSwitchSensor:
     def get_filament(self):
         value, _ = self.query_adc.adc["temperature_sensor filamentValue"].get_last_value()
         return value >= 0.72 if value > 0.3 else True
-
-    def get_status(self, eventtime):
-        return self.runout_helper.get_status(eventtime)
 
 def load_config_prefix(config):
     return ZmodIfsSwitchSensor(config)
