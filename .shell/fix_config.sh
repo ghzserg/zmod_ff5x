@@ -67,7 +67,7 @@ restore_base()
         grep -q zmod ${KLIPPER_DIR}/klippy/extras/spi_temperature.py && cp ${MOD_CONF}/mod/.shell/spi_temperature.py.orig ${KLIPPER_DIR}/klippy/extras/spi_temperature.py
         grep -q zmod /opt/klipper/start.sh && cp ${MOD_CONF}/mod/.shell/start.sh.orig /opt/klipper/start.sh
     else
-        grep -q "zmod 1.1" ${KLIPPER_DIR}/klippy/extras/virtual_sdcard.py && cp ${MOD_CONF}/mod/.shell/virtual_sdcard.py.orig ${KLIPPER_DIR}/klippy/extras/virtual_sdcard.py
+        grep -q zmod ${KLIPPER_DIR}/klippy/extras/virtual_sdcard.py && cp ${MOD_CONF}/mod/.shell/virtual_sdcard.py.orig ${KLIPPER_DIR}/klippy/extras/virtual_sdcard.py
     fi
     grep -q receive_time ${KLIPPER_DIR}/klippy/extras/buttons.py && cp ${MOD_CONF}/mod/.shell/buttons.py.orig ${KLIPPER_DIR}/klippy/extras/buttons.py
     rm -f ${KLIPPER_DIR}/klippy/extras/zmod.py
@@ -362,7 +362,7 @@ unset LD_PRELOAD
         grep -q "Zcontrol 1.18" ${KLIPPER_DIR}/klippy/extras/spi_temperature.py || cp ${MOD_CONF}/mod/.shell/spi_temperature.py ${KLIPPER_DIR}/klippy/extras/spi_temperature.py
         grep -q "zmod 1.0" /opt/klipper/start.sh || cp ${MOD_CONF}/mod/.shell/start.sh /opt/klipper/start.sh
     else
-        grep -q zmod ${KLIPPER_DIR}/klippy/extras/virtual_sdcard.py || cp ${MOD_CONF}/mod/.shell/virtual_sdcard.py ${KLIPPER_DIR}/klippy/extras/virtual_sdcard.py
+        grep -q "zmod 1.1" ${KLIPPER_DIR}/klippy/extras/virtual_sdcard.py || cp ${MOD_CONF}/mod/.shell/virtual_sdcard.py ${KLIPPER_DIR}/klippy/extras/virtual_sdcard.py
     fi
 
     check_link ${KLIPPER_DIR}/klippy/extras/zmod.py ${MOD_CONF}/mod/.shell/zmod.py
