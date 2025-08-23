@@ -658,6 +658,7 @@ class zmod_ifs:
         config=self.get_prutok_config(prutok)
 
         if temp < int(config['temp']):
+            gcmd.respond_info(f"Extruder Temp: S{config['temp']}")
             self.gcode.run_script_from_command(f"M104 S{config['temp']}")
             self.gcode.run_script_from_command(f"TEMPERATURE_WAIT SENSOR=extruder MINIMUM={config['temp']-2} MAXIMUM={config['temp']+4}")
         self.gcode.run_script_from_command(f"IFS_REMOVE_PRUTOK PRUTOK={prutok} FORCE=0")
