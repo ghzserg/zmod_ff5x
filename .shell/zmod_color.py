@@ -643,6 +643,7 @@ class zmod_color:
 
                 with open(FFCONFIG, 'w') as file:
                     json.dump(config, file, indent=2)
+                    gcmd.respond_raw(f"Extruder: {zslot}")
 
     def cmd_GET_T(self, gcmd):
         zslot = gcmd.get_int('SLOT', 0)
