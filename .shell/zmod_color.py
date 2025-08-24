@@ -720,11 +720,10 @@ class zmod_color:
             status_code, response_data = self.get_printer_data_detail()
         if status_code:
             result = self.parse_printer_response(response_data)
+
             tools = [
-                gcmd.get_int('T0', result[0]['ID']),
-                gcmd.get_int('T1', result[1]['ID']),
-                gcmd.get_int('T2', result[2]['ID']),
-                gcmd.get_int('T3', result[3]['ID'])
+                next((int(result[j]['ID']) for j in range(i, -1, -1) if j < len(result)), 1)
+                for i in range(4)
             ]
 
             for i, tool in enumerate(tools):
@@ -832,11 +831,10 @@ class zmod_color:
             status_code, response_data = self.get_printer_data_detail()
         if status_code:
             result = self.parse_printer_response(response_data)
+
             tools = [
-                gcmd.get_int('T0', result[0]['ID']),
-                gcmd.get_int('T1', result[1]['ID']),
-                gcmd.get_int('T2', result[2]['ID']),
-                gcmd.get_int('T3', result[3]['ID'])
+                next((int(result[j]['ID']) for j in range(i, -1, -1) if j < len(result)), 1)
+                for i in range(4)
             ]
 
             for i, tool in enumerate(tools):
@@ -937,14 +935,12 @@ class zmod_color:
         else:
             status_code, response_data = self.get_printer_data_detail()
         if status_code:
+            result = self.parse_printer_response(response_data)
 #            gcmd.respond_raw(json.dumps(response_data, indent=2))
-            result = self.parse_printer_response(response_data)
-            result = self.parse_printer_response(response_data)
+
             tools = [
-                gcmd.get_int('T0', result[0]['ID']),
-                gcmd.get_int('T1', result[1]['ID']),
-                gcmd.get_int('T2', result[2]['ID']),
-                gcmd.get_int('T3', result[3]['ID'])
+                next((int(result[j]['ID']) for j in range(i, -1, -1) if j < len(result)), 1)
+                for i in range(4)
             ]
 
             for i, tool in enumerate(tools):
