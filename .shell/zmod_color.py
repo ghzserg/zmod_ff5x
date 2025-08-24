@@ -723,10 +723,10 @@ class zmod_color:
 
             default_values = [result[i]['ID'] if i < len(result) else result[-1]['ID'] for i in range(4)] if result else [1, 1, 1, 1]
             tools = [
-                gcmd.get_int('T0', default_values[0]),
-                gcmd.get_int('T1', default_values[1]),
-                gcmd.get_int('T2', default_values[2]),
-                gcmd.get_int('T3', default_values[3])
+                gcmd.get_int('T0', int(default_values[0])),
+                gcmd.get_int('T1', int(default_values[1])),
+                gcmd.get_int('T2', int(default_values[2])),
+                gcmd.get_int('T3', int(default_values[3]))
             ]
 
             for i, tool in enumerate(tools):
@@ -742,8 +742,9 @@ class zmod_color:
 
                 gcmd.respond_raw("// action:prompt_button_group_start")
                 for tool_idx, tool_val in enumerate(tools):
-                    if 0 <= (tool_val - 1) < len(result):
-                        slot_info = result[tool_val - 1]
+                    for slot_info in result:
+                        if int(slot_info['ID']) != tool_val:
+                            continue
                         btn_text = (
                             f"T{tool_idx} -> "
                             f"{slot_info['ID']}: "
@@ -756,7 +757,7 @@ class zmod_color:
                         )
                         gcmd.respond_raw(
                             f"// action:prompt_button {btn_text}|"
-                            f"CHANGE_T_ZCOLOR T={tool_idx+1} {params}|primary"
+                            f"CHANGE_T_ZCOLOR T={tool_idx} {params}|primary"
                         )
                 gcmd.respond_raw("// action:prompt_button_group_end")
 
@@ -771,11 +772,12 @@ class zmod_color:
                 gcmd.respond_raw(f"// {leveling_text}")
                 gcmd.respond_raw(f"// IFS ON")
                 for tool_idx, tool_val in enumerate(tools):
-                    if 0 <= (tool_val - 1) < len(result):
-                        slot_info = result[tool_val - 1]
+                    for slot_info in result:
+                        if int(slot_info['ID']) != tool_val:
+                            continue
                         gcmd.respond_raw(
-                            f"{self._t('file_tool')} {tool_idx+1} -> "
-                            f"{self._t('spool')} {slot_info['ID']}: "
+                            f"T{tool_idx} -> "
+                            f"{slot_info['ID']}: "
                             f"{slot_info['Material']}/{slot_info['Color']}"
                         )
                 gcmd2 = self.gcode.create_gcode_command("PRINT_ZCOLOR", "PRINT_ZCOLOR", {
@@ -837,12 +839,11 @@ class zmod_color:
 
             default_values = [result[i]['ID'] if i < len(result) else result[-1]['ID'] for i in range(4)] if result else [1, 1, 1, 1]
             tools = [
-                gcmd.get_int('T0', default_values[0]),
-                gcmd.get_int('T1', default_values[1]),
-                gcmd.get_int('T2', default_values[2]),
-                gcmd.get_int('T3', default_values[3])
+                gcmd.get_int('T0', int(default_values[0])),
+                gcmd.get_int('T1', int(default_values[1])),
+                gcmd.get_int('T2', int(default_values[2])),
+                gcmd.get_int('T3', int(default_values[3]))
             ]
-
 
             for i, tool in enumerate(tools):
                 if tool < 1 or tool > 4:
@@ -851,8 +852,9 @@ class zmod_color:
             material_mappings = []
 
             for tool_idx, tool_val in enumerate(tools):
-                if 0 <= (tool_val - 1) < len(result):
-                    slot_info = result[tool_val - 1]
+                for slot_info in result:
+                    if int(slot_info['ID']) != tool_val:
+                        continue
                     material_mappings.append({
                         "toolId": tool_idx,
                         "slotId": slot_info['ID'],
@@ -934,50 +936,49 @@ class zmod_color:
 
             default_values = [result[i]['ID'] if i < len(result) else result[-1]['ID'] for i in range(4)] if result else [1, 1, 1, 1]
             tools = [
-                gcmd.get_int('T0', default_values[0]),
-                gcmd.get_int('T1', default_values[1]),
-                gcmd.get_int('T2', default_values[2]),
-                gcmd.get_int('T3', default_values[3])
+                gcmd.get_int('T0', int(default_values[0])),
+                gcmd.get_int('T1', int(default_values[1])),
+                gcmd.get_int('T2', int(default_values[2])),
+                gcmd.get_int('T3', int(default_values[3]))
             ]
-
 
             for i, tool in enumerate(tools):
                 if tool < 1 or tool > 4:
                     raise gcmd.error(self._t('error_tool', i, tool))
 
             ztool = gcmd.get_int('T', 0)
-            if ztool < 1 or ztool > 4:
+            if ztool < 0 or ztool > 3:
                 raise gcmd.error(self._t('error_tool', '', ztool))
 
-            if ztool == 1:
-                params=f"                 T1={tools[1]} T2={tools[2]} T3={tools[3]} FILENAME=\"{fname}\" LEVELING={leveling} "
+            if ztool == 0:
+                params=f"              T1={tools[1]} T2={tools[2]} T3={tools[3]} FILENAME=\"{fname}\" LEVELING={leveling} "
+            elif ztool == 1:
+                params=f"T0={tools[0]}               T2={tools[2]} T3={tools[3]} FILENAME=\"{fname}\" LEVELING={leveling} "
             elif ztool == 2:
-                params=f"T0={tools[0]}                  T2={tools[2]} T3={tools[3]} FILENAME=\"{fname}\" LEVELING={leveling} "
-            elif ztool == 3:
-                params=f"T0={tools[0]} T1={tools[1]}                  T3={tools[3]} FILENAME=\"{fname}\" LEVELING={leveling} "
+                params=f"T0={tools[0]} T1={tools[1]}               T3={tools[3]} FILENAME=\"{fname}\" LEVELING={leveling} "
             else:
-                params=f"T0={tools[0]} T1={tools[1]} T2={tools[2]}                  FILENAME=\"{fname}\" LEVELING={leveling} "
+                params=f"T0={tools[0]} T1={tools[1]} T2={tools[2]}               FILENAME=\"{fname}\" LEVELING={leveling} "
 
             gcmd.respond_raw(f"// action:prompt_begin {self._t('prompt_material')}")
             gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_map_color')}")
             gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_file', fname)}")
-            gcmd.respond_raw(f"// action:prompt_text T{ztool-1}:")
+            gcmd.respond_raw(f"// action:prompt_text T{ztool}:")
 
             gcmd.respond_raw("// action:prompt_button_group_start")
-            for idx, slot in enumerate(result):
+            for slot in result:
                 btn_text = (
                     f"{slot['ID']}: "
                     f"{slot['Material']}/{slot['Color']}"
                 )
                 gcmd.respond_raw(
                     f"// action:prompt_button {btn_text}|"
-                    f"SET_ZCOLOR T{ztool-1}={idx+1} {params}|primary"
+                    f"SET_ZCOLOR T{ztool}={slot['ID']} {params}|primary"
                 )
 
             gcmd.respond_raw("// action:prompt_button_group_end")
             gcmd.respond_raw(
                 f"// action:prompt_footer_button {self._t('cancel')}|"
-                f"SET_ZCOLOR T{ztool-1}={tools[ztool-1]} {params}"
+                f"SET_ZCOLOR T{ztool}={tools[ztool]} {params}"
             )
             gcmd.respond_raw("// action:prompt_show")
         else:
