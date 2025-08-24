@@ -742,7 +742,7 @@ class zmod_color:
                     if 0 <= (tool_val - 1) < len(result):
                         slot_info = result[tool_val - 1]
                         btn_text = (
-                            f"{self._t('file_tool')} {tool_idx+1} -> "
+                            f"{T{tool_idx} -> "
                             f"{self._t('spool')} {slot_info['ID']}: "
                             f"{slot_info['Material']}/{slot_info['Color']}"
                         )
@@ -950,7 +950,7 @@ class zmod_color:
             gcmd.respond_raw(f"// action:prompt_begin {self._t('prompt_material')}")
             gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_map_color')}")
             gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_file', fname)}")
-            gcmd.respond_raw(f"// action:prompt_text {self._t('file_tool')} {ztool}:")
+            gcmd.respond_raw(f"// action:prompt_text T{ztool-1}:")
 
             gcmd.respond_raw("// action:prompt_button_group_start")
             for idx, slot in enumerate(result):
