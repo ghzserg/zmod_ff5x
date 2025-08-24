@@ -215,11 +215,13 @@ class zmod_ifs:
                     if result == ret_command_data:
                         return ret_command_data
                     else:
+                        self.gcode.run_script_from_command("_ENABLE_SENSOR")
                         raise self.gcode.error(f"{command}#{command_id} ret {ret_command_data} != {result}")
                         return None
                 else:
                     return self._ret_command_data
             if eventtime - start_time > timeout:
+                self.gcode.run_script_from_command("_ENABLE_SENSOR")
                 raise self.gcode.error(f"Таймаут ожидания ответа от команды {command}#{command_id}")
                 return None
         return None
@@ -635,10 +637,9 @@ class zmod_ifs:
 
         self.gcode.run_script_from_command("_DISABLE_SENSOR")
         self.gcode.run_script_from_command(f"G1 E-{config['nozzle_cleaning_length']} F{config['filament_unload_speed']}")
-        self.gcode.run_script_from_command("_ENABLE_SENSOR")
-
         self.gcode.run_script_from_command(f"IFS_F11 PRUTOK={prutok} LEN={round(config['nozzle_cleaning_length']*1.67)} SPEED={config['filament_unload_speed']*2} WAIT=0")
         self.gcode.run_script_from_command("M400")
+        self.gcode.run_script_from_command("_ENABLE_SENSOR")
 
         if self.get_extruder_sensor():
             raise self.gcode.error("Не удалось извлечь пруток из экструдера")
@@ -662,7 +663,7 @@ class zmod_ifs:
         config=self.get_prutok_config(prutok)
 
         if temp < int(config['temp']):
-            gcmd.respond_info(f"Extruder Temp: S{config['temp']}")
+            gcmd.respond_info(f"Extruder Temp: {config['temp']}")
             self.gcode.run_script_from_command(f"M104 S{config['temp']}")
             self.gcode.run_script_from_command(f"TEMPERATURE_WAIT SENSOR=extruder MINIMUM={config['temp']-2} MAXIMUM={config['temp']+4}")
         self.gcode.run_script_from_command(f"IFS_REMOVE_PRUTOK PRUTOK={prutok} FORCE=0")

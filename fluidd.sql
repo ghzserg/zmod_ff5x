@@ -870,11 +870,11 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "visible": true
         },
         {
-            "alias": "END_FILAMENT_CHANGE",
+            "alias": "END_CHANGE_FILAMENT",
             "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
             "color": "#008800",
             "disabledWhilePrinting": false,
-            "name": "end_filament_change",
+            "name": "end_change_filament",
             "order": 15,
             "visible": true
         },
