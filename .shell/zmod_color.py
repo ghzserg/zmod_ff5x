@@ -742,7 +742,7 @@ class zmod_color:
                     if 0 <= (tool_val - 1) < len(result):
                         slot_info = result[tool_val - 1]
                         btn_text = (
-                            f"{T{tool_idx} -> "
+                            f"T{tool_idx} -> "
                             f"{self._t('spool')} {slot_info['ID']}: "
                             f"{slot_info['Material']}/{slot_info['Color']}"
                         )
