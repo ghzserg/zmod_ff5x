@@ -902,7 +902,10 @@ class zmod_color:
 
         except Exception as e:
             if restore == 1:
-                gcmd.respond_raw(f"!! Ошибка при смене филамента: {str(e)}\nПосле исправления вызовите END_CHANGE_FILAMENT")
+                gcmd.respond_raw(f"!! Ошибка при смене филамента: {str(e)}\nВстаю на паузу")
+                pause_resume = self.printer.lookup_object('pause_resume')
+                pause_resume.send_pause_command()
+                self.gcode.run_script_from_command("PAUSE\nM400\n")
             else:
                 gcmd.respond_raw(f"!! Ошибка при смене филамента: {str(e)}\nПечать отменена")
                 raise

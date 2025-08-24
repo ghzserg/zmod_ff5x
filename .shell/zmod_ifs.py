@@ -415,15 +415,15 @@ class zmod_ifs:
             f"FILAMENT_FAN_SPEED={config['filament_fan_speed']} "
         )
 
-    def print_result(self, ret_code, values, info=True):
+    def print_result(self, ret_code, values, prutok, info=True):
         if ret_code == RET_OK:
             self.print_str("IFS в режиме готовности")
         elif ret_code == RET_EXTRUDER:
-            self.print_str("Сработал датчик экструдера", info)
+            self.print_str("Сработал датчик наличя прутка в экструдере", info)
         elif ret_code == RET_SILK:
-            self.print_str("Сработал датчик прутка", info)
+            self.print_str(f"Нет прутка {prutok} в IFS", info)
         elif ret_code == RET_STALL:
-            self.print_str("Сработала остановка прутка", info)
+            self.print_str(f"Остановился пруток {prutok} в IFS", info)
         elif ret_code == RET_TIMEOUT:
             self.print_str("Превышено время ожидания", info)
         elif ret_code == RET_EXIT:
@@ -476,7 +476,7 @@ class zmod_ifs:
         if not success:
             gcmd = self.gcode.create_gcode_command("IFS_F112", "IFS_F112", {})
             self.cmd_IFS_F112(gcmd)
-            self.print_result(ret_code, values)
+            self.print_result(ret_code, values, prutok)
             if ret_code == RET_EXTRUDER:
                 # Втягиваем пруток
                 gcmd = self.gcode.create_gcode_command("IFS_F11", "IFS_F11", {'PRUTOK': prutok, 'LEN': config["filament_autoinsert_ret_length"], 'SPEED': config["filament_autoinsert_speed"]})
@@ -526,9 +526,9 @@ class zmod_ifs:
                     gcmd = self.gcode.create_gcode_command("IFS_F112", "IFS_F112", {})
                     self.cmd_IFS_F112(gcmd)
                 if ret_code == RET_EXTRUDER:
-                    self.print_result(ret_code, values)
+                    self.print_result(ret_code, values, prutok)
                 else:
-                    self.print_result(ret_code, values, info=False)
+                    self.print_result(ret_code, values, prutok, info=False)
             else:
                 self.wait_for_state(timeout=120)
 
