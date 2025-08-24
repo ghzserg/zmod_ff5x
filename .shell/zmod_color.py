@@ -902,9 +902,9 @@ class zmod_color:
 
         except Exception as e:
             if restore == 1:
-                gcmd.error(f"Ошибка при смене филамента: {str(e)}\nПосле исправления вызовите END_CHANGE_FILAMENT")
+                gcmd.respond_raw(f"!! Ошибка при смене филамента: {str(e)}\nПосле исправления вызовите END_CHANGE_FILAMENT")
             else:
-                gcmd.error(f"Ошибка при смене филамента: {str(e)}\nПечать отменена")
+                gcmd.respond_raw(f"!! Ошибка при смене филамента: {str(e)}\nПечать отменена")
                 raise
 
     def cmd_CHANGE_TOOL_ZCOLOR(self, gcmd):
