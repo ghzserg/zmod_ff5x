@@ -722,7 +722,12 @@ class zmod_color:
             result = self.parse_printer_response(response_data)
 
             default_values = [result[i]['ID'] if i < len(result) else result[-1]['ID'] for i in range(4)] if result else [1, 1, 1, 1]
-            tools = [gcmd.get_int(f'T{i}', default_values[i]) for i in range(4)]
+            tools = [
+                gcmd.get_int('T0', default_values[0]),
+                gcmd.get_int('T1', default_values[1]),
+                gcmd.get_int('T2', default_values[2]),
+                gcmd.get_int('T3', default_values[3])
+            ]
 
             for i, tool in enumerate(tools):
                 if tool < 1 or tool > 4:
@@ -831,7 +836,13 @@ class zmod_color:
             result = self.parse_printer_response(response_data)
 
             default_values = [result[i]['ID'] if i < len(result) else result[-1]['ID'] for i in range(4)] if result else [1, 1, 1, 1]
-            tools = [gcmd.get_int(f'T{i}', default_values[i]) for i in range(4)]
+            tools = [
+                gcmd.get_int('T0', default_values[0]),
+                gcmd.get_int('T1', default_values[1]),
+                gcmd.get_int('T2', default_values[2]),
+                gcmd.get_int('T3', default_values[3])
+            ]
+
 
             for i, tool in enumerate(tools):
                 if tool < 1 or tool > 4:
@@ -922,7 +933,13 @@ class zmod_color:
 #            gcmd.respond_raw(json.dumps(response_data, indent=2))
 
             default_values = [result[i]['ID'] if i < len(result) else result[-1]['ID'] for i in range(4)] if result else [1, 1, 1, 1]
-            tools = [gcmd.get_int(f'T{i}', default_values[i]) for i in range(4)]
+            tools = [
+                gcmd.get_int('T0', default_values[0]),
+                gcmd.get_int('T1', default_values[1]),
+                gcmd.get_int('T2', default_values[2]),
+                gcmd.get_int('T3', default_values[3])
+            ]
+
 
             for i, tool in enumerate(tools):
                 if tool < 1 or tool > 4:
