@@ -143,7 +143,7 @@ TRANSLATIONS = {
         'error_napr': "Недопустимое направление (0-1)",
         'error_no_filename': "Не указано имя файла (FILENAME).",
         'error_slot': "Неверный SLOT. Допустимые: 1-4",
-        'error_tool': "Неверный TOOL{}: {}. Допустимо: 1-4",
+        'error_tool': "Неверный T{}: {}. Допустимо: 1-4",
         'error_type': "Неверный тип материала: {}. Допустимо: {}",
         'file_tool': "Файл",
         'load_error': "!! Ошибка загрузки / выгружки\n{}",
@@ -180,7 +180,7 @@ TRANSLATIONS = {
         'error_napr': "Invalid direction (0-1)",
         'error_no_filename': "Missing FILENAME parameter",
         'error_slot': "Invalid SLOT. Valid: 1-4",
-        'error_tool': "Invalid TOOL{}: {}. Valid: 1-4",
+        'error_tool': "Invalid T{}: {}. Valid: 1-4",
         'error_type': "Invalid material type: {}. Valid: {}",
         'file_tool': "In file",
         'load_error': "!! Load/unload error\n{}",
@@ -217,7 +217,7 @@ TRANSLATIONS = {
         'error_napr': "Ungültige Richtung (0-1)",
         'error_no_filename': "Dateiname nicht angegeben (FILENAME)",
         'error_slot': "Ungültiger SLOT. Erlaubt: 1-4",
-        'error_tool': "Ungültiges TOOL{}: {}. Erlaubt: 1-4",
+        'error_tool': "Ungültiges T{}: {}. Erlaubt: 1-4",
         'error_type': "Ungültiger Materialtyp: {}. Erlaubt: {}",
         'file_tool': "In Datei",
         'load_error': "!! Fehler beim Laden/Entladen\n{}",
@@ -254,7 +254,7 @@ TRANSLATIONS = {
         'error_napr': "Direction invalide (0-1)",
         'error_no_filename': "Nom de fichier non spécifié (FILENAME)",
         'error_slot': "Emplacement SLOT invalide. Autorisé: 1-4",
-        'error_tool': "Outil TOOL{} invalide: {}. Autorisé: 1-4",
+        'error_tool': "Outil T{} invalide: {}. Autorisé: 1-4",
         'error_type': "Type de matériau invalide: {}. Autorisé: {}",
         'file_tool': "Dans le fichier",
         'load_error': "!! Erreur de chargement/déchargement\n{}",
@@ -291,7 +291,7 @@ TRANSLATIONS = {
         'error_napr': "Direzione non valida (0-1)",
         'error_no_filename': "Nome file non specificato (FILENAME)",
         'error_slot': "Slot non valido. Consentiti: 1-4",
-        'error_tool': "Strumento TOOL{} non valido: {}. Consentiti: 1-4",
+        'error_tool': "Strumento T{} non valido: {}. Consentiti: 1-4",
         'error_type': "Tipo di materiale non valido: {}. Consentiti: {}",
         'file_tool': "Nel file",
         'load_error': "!! Errore di caricamento/scaricamento\n{}",
@@ -328,7 +328,7 @@ TRANSLATIONS = {
         'error_napr': "Dirección inválida (0-1)",
         'error_no_filename': "Nombre de archivo no especificado (FILENAME)",
         'error_slot': "Ranura SLOT inválida. Permitidas: 1-4",
-        'error_tool': "Herramienta TOOL{} inválida: {}. Permitidas: 1-4",
+        'error_tool': "Herramienta T{} inválida: {}. Permitidas: 1-4",
         'error_type': "Tipo de material inválido: {}. Permitidos: {}",
         'file_tool': "En el archivo",
         'load_error': "!! Error de carga/descarga\n{}",
@@ -365,7 +365,7 @@ TRANSLATIONS = {
         'error_napr': "方向无效（0-1）",
         'error_no_filename': "未指定文件名（FILENAME）",
         'error_slot': "无效的SLOT。允许值：1-4",
-        'error_tool': "无效的TOOL{}: {}。允许值：1-4",
+        'error_tool': "无效的T{}: {}。允许值：1-4",
         'error_type': "无效的材料类型: {}。允许值：{}",
         'file_tool': "文件中",
         'load_error': "!! 加载/卸载错误\n{}",
@@ -402,7 +402,7 @@ TRANSLATIONS = {
         'error_napr': "方向が無効です（0-1）",
         'error_no_filename': "ファイル名が指定されていません（FILENAME）",
         'error_slot': "無効なSLOTです。1-4が有効",
-        'error_tool': "無効なTOOL{}: {}。1-4が有効",
+        'error_tool': "無効なT{}: {}。1-4が有効",
         'error_type': "無効な材料タイプ: {}。有効なタイプ：{}",
         'file_tool': "ファイル内",
         'load_error': "!! 読み込み/排出エラー\n{}",
@@ -439,7 +439,7 @@ TRANSLATIONS = {
         'error_napr': "방향이 잘못되었습니다 (0-1)",
         'error_no_filename': "파일 이름이 지정되지 않음 (FILENAME)",
         'error_slot': "잘못된 SLOT. 1-4만 허용",
-        'error_tool': "잘못된 TOOL{}: {}. 1-4만 허용",
+        'error_tool': "잘못된 T{}: {}. 1-4만 허용",
         'error_type': "잘못된 재료 유형: {}. 허용된 유형: {}",
         'file_tool': "파일 내",
         'load_error': "!! 로드/언로드 오류\n{}",
@@ -478,7 +478,7 @@ class zmod_color:
         self.gcode.register_command('SET_ZCOLOR', self.cmd_SET_ZCOLOR)
         self.gcode.register_command('SET_EXTRUDER_SLOT', self.cmd_SET_EXTRUDER_SLOT)
         self.gcode.register_command('PRINT_ZCOLOR', self.cmd_PRINT_ZCOLOR)
-        self.gcode.register_command('CHANGE_TOOL_ZCOLOR', self.cmd_CHANGE_TOOL_ZCOLOR)
+        self.gcode.register_command('CHANGE_T_ZCOLOR', self.cmd_CHANGE_T_ZCOLOR)
         self.gcode.register_command('_CHANGE_FILAMENT', self.cmd_CHANGE_FILAMENT)
         self.gcode.register_command('RUN_ZCOLOR', self.cmd_RUN_ZCOLOR)
         self.gcode.register_command('CHANGE_ZCOLOR', self.cmd_CHANGE_ZCOLOR)
@@ -708,16 +708,11 @@ class zmod_color:
         if leveling not in (0, 1):
             raise gcmd.error(self._t('error_leveling', leveling))
 
-        tools = [
-            gcmd.get_int('TOOL0', 1),
-            gcmd.get_int('TOOL1', 2),
-            gcmd.get_int('TOOL2', 3),
-            gcmd.get_int('TOOL3', 4)
-        ]
-
-        for i, tool in enumerate(tools):
-            if tool < 1 or tool > 4:
-                raise gcmd.error(self._t('error_tool', i, tool))
+        leveling_text = (
+            self._t('prompt_leveling_on')
+            if leveling
+            else self._t('prompt_leveling_off')
+        )
 
         if self.display:
             status_code, response_data = self.zsend_post_request("/detail")
@@ -725,12 +720,16 @@ class zmod_color:
             status_code, response_data = self.get_printer_data_detail()
         if status_code:
             result = self.parse_printer_response(response_data)
+            tools = [
+                gcmd.get_int('T0', result[0]['ID']),
+                gcmd.get_int('T1', result[1]['ID']),
+                gcmd.get_int('T2', result[2]['ID']),
+                gcmd.get_int('T3', result[3]['ID'])
+            ]
 
-            leveling_text = (
-                self._t('prompt_leveling_on')
-                if leveling
-                else self._t('prompt_leveling_off')
-            )
+            for i, tool in enumerate(tools):
+                if tool < 1 or tool > 4:
+                    raise gcmd.error(self._t('error_tool', i, tool))
 
             if silent == 0:
                 gcmd.respond_raw(f"// action:prompt_begin {self._t('prompt_material')}")
@@ -750,19 +749,19 @@ class zmod_color:
                         )
                         params = (
                             f"LEVELING={leveling} FILENAME=\"{fname}\" "
-                            f"TOOL0={tools[0]} TOOL1={tools[1]} "
-                            f"TOOL2={tools[2]} TOOL3={tools[3]}"
+                            f"T0={tools[0]} T1={tools[1]} "
+                            f"T2={tools[2]} T3={tools[3]}"
                         )
                         gcmd.respond_raw(
                             f"// action:prompt_button {btn_text}|"
-                            f"CHANGE_TOOL_ZCOLOR TOOL={tool_idx+1} {params}|primary"
+                            f"CHANGE_T_ZCOLOR T={tool_idx+1} {params}|primary"
                         )
                 gcmd.respond_raw("// action:prompt_button_group_end")
 
                 gcmd.respond_raw(
                     f"// action:prompt_footer_button {self._t('send_print')}|"
                     f"PRINT_ZCOLOR LEVELING={leveling} FILENAME=\"{fname}\" "
-                    f"TOOL0={tools[0]} TOOL1={tools[1]} TOOL2={tools[2]} TOOL3={tools[3]}|red"
+                    f"T0={tools[0]} T1={tools[1]} T2={tools[2]} T3={tools[3]}|red"
                 )
                 gcmd.respond_raw(f"// action:prompt_footer_button {self._t('cancel')}|RESPOND TYPE=command MSG=action:prompt_end")
                 gcmd.respond_raw("// action:prompt_show")
@@ -779,7 +778,7 @@ class zmod_color:
                         )
                 gcmd2 = self.gcode.create_gcode_command("PRINT_ZCOLOR", "PRINT_ZCOLOR", {
                         'LEVELING': leveling, 'FILENAME': fname,
-                        'TOOL0': tools[0], 'TOOL1': tools[1], 'TOOL2': tools[2], 'TOOL3': tools[3]
+                        'T0': tools[0], 'T1': tools[1], 'T2': tools[2], 'T3': tools[3]
                         })
                 self.cmd_PRINT_ZCOLOR(gcmd2)
             elif silent == 2:
@@ -827,23 +826,23 @@ class zmod_color:
         if leveling not in (0, 1):
             raise gcmd.error(self._t('error_leveling', leveling))
 
-        tools = [
-            gcmd.get_int('TOOL0', 1),
-            gcmd.get_int('TOOL1', 2),
-            gcmd.get_int('TOOL2', 3),
-            gcmd.get_int('TOOL3', 4)
-        ]
-
-        for i, tool in enumerate(tools):
-            if tool < 1 or tool > 4:
-                raise gcmd.error(self._t('error_tool', i, tool))
-
         if self.display:
             status_code, response_data = self.zsend_post_request("/detail")
         else:
             status_code, response_data = self.get_printer_data_detail()
         if status_code:
             result = self.parse_printer_response(response_data)
+            tools = [
+                gcmd.get_int('T0', result[0]['ID']),
+                gcmd.get_int('T1', result[1]['ID']),
+                gcmd.get_int('T2', result[2]['ID']),
+                gcmd.get_int('T3', result[3]['ID'])
+            ]
+
+            for i, tool in enumerate(tools):
+                if tool < 1 or tool > 4:
+                    raise gcmd.error(self._t('error_tool', i, tool))
+
             material_mappings = []
 
             for tool_idx, tool_val in enumerate(tools):
@@ -910,7 +909,7 @@ class zmod_color:
                 gcmd.respond_raw(f"!! Ошибка при смене филамента: {str(e)}\nПечать отменена")
                 raise
 
-    def cmd_CHANGE_TOOL_ZCOLOR(self, gcmd):
+    def cmd_CHANGE_T_ZCOLOR(self, gcmd):
         gcmd.respond_raw("// action:prompt_end")
         fname = gcmd.get('FILENAME', '')
         if fname == '':
@@ -920,29 +919,18 @@ class zmod_color:
         if leveling not in (0, 1):
             raise gcmd.error(self._t('error_leveling', leveling))
 
-        ztool = gcmd.get_int('TOOL', 0)
+        ztool = gcmd.get_int('T', 0)
         if ztool < 1 or ztool > 4:
             raise gcmd.error(self._t('error_tool', '', ztool))
 
-        tools = [
-            gcmd.get_int('TOOL0', 1),
-            gcmd.get_int('TOOL1', 2),
-            gcmd.get_int('TOOL2', 3),
-            gcmd.get_int('TOOL3', 4)
-        ]
-
-        for i, tool in enumerate(tools):
-            if tool < 1 or tool > 4:
-                raise gcmd.error(self._t('error_tool', i, tool))
-
         if ztool == 1:
-            params=f"                 TOOL1={tools[1]} TOOL2={tools[2]} TOOL3={tools[3]} FILENAME=\"{fname}\" LEVELING={leveling} "
+            params=f"                 T1={tools[1]} T2={tools[2]} T3={tools[3]} FILENAME=\"{fname}\" LEVELING={leveling} "
         elif ztool == 2:
-            params=f"TOOL0={tools[0]}                  TOOL2={tools[2]} TOOL3={tools[3]} FILENAME=\"{fname}\" LEVELING={leveling} "
+            params=f"T0={tools[0]}                  T2={tools[2]} T3={tools[3]} FILENAME=\"{fname}\" LEVELING={leveling} "
         elif ztool == 3:
-            params=f"TOOL0={tools[0]} TOOL1={tools[1]}                  TOOL3={tools[3]} FILENAME=\"{fname}\" LEVELING={leveling} "
+            params=f"T0={tools[0]} T1={tools[1]}                  T3={tools[3]} FILENAME=\"{fname}\" LEVELING={leveling} "
         else:
-            params=f"TOOL0={tools[0]} TOOL1={tools[1]} TOOL2={tools[2]}                  FILENAME=\"{fname}\" LEVELING={leveling} "
+            params=f"T0={tools[0]} T1={tools[1]} T2={tools[2]}                  FILENAME=\"{fname}\" LEVELING={leveling} "
 
         if self.display:
             status_code, response_data = self.zsend_post_request("/detail")
@@ -951,6 +939,18 @@ class zmod_color:
         if status_code:
 #            gcmd.respond_raw(json.dumps(response_data, indent=2))
             result = self.parse_printer_response(response_data)
+            result = self.parse_printer_response(response_data)
+            tools = [
+                gcmd.get_int('T0', result[0]['ID']),
+                gcmd.get_int('T1', result[1]['ID']),
+                gcmd.get_int('T2', result[2]['ID']),
+                gcmd.get_int('T3', result[3]['ID'])
+            ]
+
+            for i, tool in enumerate(tools):
+                if tool < 1 or tool > 4:
+                    raise gcmd.error(self._t('error_tool', i, tool))
+
             gcmd.respond_raw(f"// action:prompt_begin {self._t('prompt_material')}")
             gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_map_color')}")
             gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_file', fname)}")
@@ -964,13 +964,13 @@ class zmod_color:
                 )
                 gcmd.respond_raw(
                     f"// action:prompt_button {btn_text}|"
-                    f"SET_ZCOLOR TOOL{ztool-1}={idx+1} {params}|primary"
+                    f"SET_ZCOLOR T{ztool-1}={idx+1} {params}|primary"
                 )
 
             gcmd.respond_raw("// action:prompt_button_group_end")
             gcmd.respond_raw(
                 f"// action:prompt_footer_button {self._t('cancel')}|"
-                f"SET_ZCOLOR TOOL{ztool-1}={tools[ztool-1]} {params}"
+                f"SET_ZCOLOR T{ztool-1}={tools[ztool-1]} {params}"
             )
             gcmd.respond_raw("// action:prompt_show")
         else:
