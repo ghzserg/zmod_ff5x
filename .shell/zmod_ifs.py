@@ -419,7 +419,7 @@ class zmod_ifs:
         if ret_code == RET_OK:
             self.print_str("IFS в режиме готовности")
         elif ret_code == RET_EXTRUDER:
-            self.print_str("Сработал датчик наличя прутка в экструдере", info)
+            self.print_str("Сработал датчик наличия прутка в экструдере", info)
         elif ret_code == RET_SILK:
             self.print_str(f"Нет прутка {prutok} в IFS", info)
         elif ret_code == RET_STALL:
