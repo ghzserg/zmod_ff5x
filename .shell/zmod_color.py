@@ -727,7 +727,7 @@ class zmod_color:
 #                    1
 #                )
 #                for i in range(4)
-            ]
+#            ]
 
             tools = [
                 gcmd.get_int('T0', default_values[0]),
