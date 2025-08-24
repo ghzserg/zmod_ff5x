@@ -673,7 +673,7 @@ class zmod_color:
 
             result = self.parse_printer_response(response_data)
 
-            prompt_text = f"Extruder: None <{self.get_current_channel()}>"
+            prompt_text = f"Extruder: None ({self.get_current_channel()})"
             if self.get_extruder_sensor():
                 prompt_text = f"Extruder: {self.get_current_channel()}"
                 for slot in result:
@@ -917,19 +917,6 @@ class zmod_color:
         if leveling not in (0, 1):
             raise gcmd.error(self._t('error_leveling', leveling))
 
-        ztool = gcmd.get_int('T', 0)
-        if ztool < 1 or ztool > 4:
-            raise gcmd.error(self._t('error_tool', '', ztool))
-
-        if ztool == 1:
-            params=f"                 T1={tools[1]} T2={tools[2]} T3={tools[3]} FILENAME=\"{fname}\" LEVELING={leveling} "
-        elif ztool == 2:
-            params=f"T0={tools[0]}                  T2={tools[2]} T3={tools[3]} FILENAME=\"{fname}\" LEVELING={leveling} "
-        elif ztool == 3:
-            params=f"T0={tools[0]} T1={tools[1]}                  T3={tools[3]} FILENAME=\"{fname}\" LEVELING={leveling} "
-        else:
-            params=f"T0={tools[0]} T1={tools[1]} T2={tools[2]}                  FILENAME=\"{fname}\" LEVELING={leveling} "
-
         if self.display:
             status_code, response_data = self.zsend_post_request("/detail")
         else:
@@ -946,6 +933,19 @@ class zmod_color:
             for i, tool in enumerate(tools):
                 if tool < 1 or tool > 4:
                     raise gcmd.error(self._t('error_tool', i, tool))
+
+            ztool = gcmd.get_int('T', 0)
+            if ztool < 1 or ztool > 4:
+                raise gcmd.error(self._t('error_tool', '', ztool))
+
+            if ztool == 1:
+                params=f"                 T1={tools[1]} T2={tools[2]} T3={tools[3]} FILENAME=\"{fname}\" LEVELING={leveling} "
+            elif ztool == 2:
+                params=f"T0={tools[0]}                  T2={tools[2]} T3={tools[3]} FILENAME=\"{fname}\" LEVELING={leveling} "
+            elif ztool == 3:
+                params=f"T0={tools[0]} T1={tools[1]}                  T3={tools[3]} FILENAME=\"{fname}\" LEVELING={leveling} "
+            else:
+                params=f"T0={tools[0]} T1={tools[1]} T2={tools[2]}                  FILENAME=\"{fname}\" LEVELING={leveling} "
 
             gcmd.respond_raw(f"// action:prompt_begin {self._t('prompt_material')}")
             gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_map_color')}")
