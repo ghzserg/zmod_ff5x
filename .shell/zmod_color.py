@@ -673,7 +673,7 @@ class zmod_color:
 
             result = self.parse_printer_response(response_data)
 
-            prompt_text = f"Extruder: None"
+            prompt_text = f"Extruder: None <{self.get_current_channel()}>"
             if self.get_extruder_sensor():
                 prompt_text = f"Extruder: {self.get_current_channel()}"
                 for slot in result:
