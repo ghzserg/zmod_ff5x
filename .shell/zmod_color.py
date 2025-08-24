@@ -721,9 +721,19 @@ class zmod_color:
         if status_code:
             result = self.parse_printer_response(response_data)
 
-            tools = [
-                next((int(result[j]['ID']) for j in range(i, -1, -1) if j < len(result)), 1)
+            default_values = [
+                next(
+                    (int(result[j]['ID']) for j in range(i, -1, -1) if j < len(result)),
+                    1
+                )
                 for i in range(4)
+            ]
+
+            tools = [
+                gcmd.get_int('T0', default_values[0]),
+                gcmd.get_int('T1', default_values[1]),
+                gcmd.get_int('T2', default_values[2]),
+                gcmd.get_int('T3', default_values[3])
             ]
 
             for i, tool in enumerate(tools):
@@ -743,7 +753,7 @@ class zmod_color:
                         slot_info = result[tool_val - 1]
                         btn_text = (
                             f"T{tool_idx} -> "
-                            f"{self._t('spool')} {slot_info['ID']}: "
+                            f"{slot_info['ID']}: "
                             f"{slot_info['Material']}/{slot_info['Color']}"
                         )
                         params = (
@@ -832,9 +842,19 @@ class zmod_color:
         if status_code:
             result = self.parse_printer_response(response_data)
 
-            tools = [
-                next((int(result[j]['ID']) for j in range(i, -1, -1) if j < len(result)), 1)
+            default_values = [
+                next(
+                    (int(result[j]['ID']) for j in range(i, -1, -1) if j < len(result)),
+                    1
+                )
                 for i in range(4)
+            ]
+
+            tools = [
+                gcmd.get_int('T0', default_values[0]),
+                gcmd.get_int('T1', default_values[1]),
+                gcmd.get_int('T2', default_values[2]),
+                gcmd.get_int('T3', default_values[3])
             ]
 
             for i, tool in enumerate(tools):
@@ -925,9 +945,19 @@ class zmod_color:
             result = self.parse_printer_response(response_data)
 #            gcmd.respond_raw(json.dumps(response_data, indent=2))
 
-            tools = [
-                next((int(result[j]['ID']) for j in range(i, -1, -1) if j < len(result)), 1)
+            default_values = [
+                next(
+                    (int(result[j]['ID']) for j in range(i, -1, -1) if j < len(result)),
+                    1
+                )
                 for i in range(4)
+            ]
+
+            tools = [
+                gcmd.get_int('T0', default_values[0]),
+                gcmd.get_int('T1', default_values[1]),
+                gcmd.get_int('T2', default_values[2]),
+                gcmd.get_int('T3', default_values[3])
             ]
 
             for i, tool in enumerate(tools):
@@ -955,7 +985,7 @@ class zmod_color:
             gcmd.respond_raw("// action:prompt_button_group_start")
             for idx, slot in enumerate(result):
                 btn_text = (
-                    f"{self._t('spool')} {slot['ID']}: "
+                    f"{slot['ID']}: "
                     f"{slot['Material']}/{slot['Color']}"
                 )
                 gcmd.respond_raw(
