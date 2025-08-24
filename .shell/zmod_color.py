@@ -721,12 +721,12 @@ class zmod_color:
         if status_code:
             result = self.parse_printer_response(response_data)
 
-            default_values = [
-                next(
-                    (int(result[j]['ID']) for j in range(i, -1, -1) if j < len(result)),
-                    1
-                )
-                for i in range(4)
+            default_values = [0, 1, 2, 3]
+#                next(
+#                    (int(result[j]['ID']) for j in range(i, -1, -1) if j < len(result)),
+#                    1
+#                )
+#                for i in range(4)
             ]
 
             tools = [
