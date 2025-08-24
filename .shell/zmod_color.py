@@ -884,7 +884,7 @@ class zmod_color:
         channel = gcmd.get_int('CHANNEL', None)
         restore = gcmd.get_int('RESTORE', 1)
         if channel is None:
-            gcmd.respond_info("Error: CHANNEL parameter is required")
+            raise gcmd.error("Error: CHANNEL parameter is required")
             return
 
         try:
@@ -898,12 +898,14 @@ class zmod_color:
             spool_number = mapping[channel]
 
             self.gcode.run_script_from_command(f"INSERT_PRUTOK_IFS PRUTOK={spool_number} NEED_STOP=0")
+            self.gcode.run_script_from_command("END_CHANGE_FILAMENT")
 
         except Exception as e:
-            gcmd.respond_info(f"Ошибка при смене филамента: {str(e)}")
             if restore == 1:
-                gcmd.respond_info(f"После исправления вызовите END_CHANGE_FILAMENT")
-            raise
+                gcmd.error(f"Ошибка при смене филамента: {str(e)}\nПосле исправления вызовите END_CHANGE_FILAMENT")
+            else:
+                gcmd.error(f"Ошибка при смене филамента: {str(e)}\nПечать отменена")
+                raise
 
     def cmd_CHANGE_TOOL_ZCOLOR(self, gcmd):
         gcmd.respond_raw("// action:prompt_end")
