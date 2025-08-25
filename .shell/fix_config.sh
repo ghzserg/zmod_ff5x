@@ -59,6 +59,7 @@ restore_base()
         china_razbl polar3d.com
     else
         sed -i '\|mount --bind /bin/echo /usr/bin/cmd_pwm|d' /usr/prog/app_startup.sh
+        sed -i '\|/usr/data/config/mod/.shell/app_startup_mcu.sh|d' /usr/prog/app_startup.sh
     fi
 
     grep -q _output_callback_gcode ${KLIPPER_DIR}/klippy/webhooks.py && cp ${MOD_CONF}/mod/.shell/webhooks.py.orig ${KLIPPER_DIR}/klippy/webhooks.py
@@ -228,6 +229,8 @@ fix_config()
             mount --bind /bin/echo /usr/bin/cmd_pwm
         fi
         grep -q "mount --bind /bin/echo /usr/bin/cmd_pwm" /usr/prog/app_startup.sh || sed -i '\#mount /usr/prog/etc /etc#a\mount --bind /bin/echo /usr/bin/cmd_pwm' /usr/prog/app_startup.sh
+        grep -q "/usr/data/config/mod/.shell/app_startup_mcu.sh" /usr/prog/app_startup.sh || sed -i '\#mount --bind /bin/echo /usr/bin/cmd_pwm /etc#a\/usr/data/config/mod/.shell/app_startup_mcu.sh' /usr/prog/app_startup.sh
+
     fi
 
     echo "[zmod]
