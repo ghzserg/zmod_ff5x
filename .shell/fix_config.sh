@@ -763,23 +763,8 @@ stepper: stepper_x, stepper_y, stepper_z
     fi
     echo "END fix_config"
 
-    if [ "$1" == "start" ]; then
-        if grep -q "klipper13 = 1" ${MOD_CONF}/mod_data/variables.cfg; then
-            cnt=$(find ${PROGRAM_DIR}/control/ -name Update|wc -l)
-            if [ "$cnt" -ne 0 ]; then
-                # Если обновляем MCU
-                find ${PROGRAM_DIR}/control/ -name Update| sed 's/Update//'| while read a; do
-                    mount -o bind ${MOD_CONF}/mod/.shell/update_mcu.sh ${a}run.sh
-                done
-            else
-                # Если обновлений нет
-                mount -o bind ${MOD_CONF}/mod/.shell/klipper13.sh ${KLIPPER_DIR}/start.sh
-                sync
-            fi
-#        else
-#            A=$(find /opt/PROGRAM/control/ -name NationsCommand |head -1)
-#            $A -r || $A -r
-        fi
+    if [ "$1" == "start" ] && [ ${FF5X} -eq 0 ]; then
+        ${MOD_CONF}/mod/.shell/app_startup_mcu.sh
     fi
     sync
 }

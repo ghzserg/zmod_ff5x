@@ -66,6 +66,17 @@ kill $(ps|grep klippy.py| grep -v grep| awk '{print $1}')
 
 mkdir -p ${CONFIG_DIR}/mod_data/log/
 
+if [ "${CHECH_ARCH}" == "mips" ];then
+    mv ${CONFIG_DIR}/mod_data/log/update_mcu_ifs.4.log ${CONFIG_DIR}/mod_data/log/update_mcu_ifs.5.log
+    mv ${CONFIG_DIR}/mod_data/log/update_mcu_ifs.3.log ${CONFIG_DIR}/mod_data/log/update_mcu_ifs.4.log
+    mv ${CONFIG_DIR}/mod_data/log/update_mcu_ifs.2.log ${CONFIG_DIR}/mod_data/log/update_mcu_ifs.3.log
+    mv ${CONFIG_DIR}/mod_data/log/update_mcu_ifs.1.log ${CONFIG_DIR}/mod_data/log/update_mcu_ifs.2.log
+    mv ${CONFIG_DIR}/mod_data/log/update_mcu_ifs.log ${CONFIG_DIR}/mod_data/log/update_mcu_ifs.1.log
+
+    update_mcu_ifs &>${CONFIG_DIR}/mod_data/log/update_mcu_ifs.log
+fi
+
+
 if [ "$1" == "mainboard" ]; then
     mv ${CONFIG_DIR}/mod_data/log/update_mcu_mainboard.4.log ${CONFIG_DIR}/mod_data/log/update_mcu_mainboard.5.log
     mv ${CONFIG_DIR}/mod_data/log/update_mcu_mainboard.3.log ${CONFIG_DIR}/mod_data/log/update_mcu_mainboard.4.log
@@ -86,14 +97,6 @@ else
     mv ${CONFIG_DIR}/mod_data/log/update_mcu_eboard.log ${CONFIG_DIR}/mod_data/log/update_mcu_eboard.1.log
 
     update_mcu_eboard &>${CONFIG_DIR}/mod_data/log/update_mcu_eboard.log
-
-    mv ${CONFIG_DIR}/mod_data/log/update_mcu_ifs.4.log ${CONFIG_DIR}/mod_data/log/update_mcu_ifs.5.log
-    mv ${CONFIG_DIR}/mod_data/log/update_mcu_ifs.3.log ${CONFIG_DIR}/mod_data/log/update_mcu_ifs.4.log
-    mv ${CONFIG_DIR}/mod_data/log/update_mcu_ifs.2.log ${CONFIG_DIR}/mod_data/log/update_mcu_ifs.3.log
-    mv ${CONFIG_DIR}/mod_data/log/update_mcu_ifs.1.log ${CONFIG_DIR}/mod_data/log/update_mcu_ifs.2.log
-    mv ${CONFIG_DIR}/mod_data/log/update_mcu_ifs.log ${CONFIG_DIR}/mod_data/log/update_mcu_ifs.1.log
-
-    update_mcu_ifs &>${CONFIG_DIR}/mod_data/log/update_mcu_ifs.log
 
     ${CONFIG_DIR}/mod/.shell/root/audio/audio_midi.sh For_Elise.mid
     sync
