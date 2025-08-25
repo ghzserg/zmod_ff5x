@@ -1,1 +1,1 @@
-/opt/config/mod/.shell/gcode_shell_command.py
+/.shell/gcode_shell_command.py
