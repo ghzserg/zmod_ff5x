@@ -24,7 +24,7 @@ class ZmodIfsSwitchSensor:
         sig = inspect.signature(self.runout_helper.note_filament_present)
         if 'eventtime' in sig.parameters:
             self.new = True
-        else
+        else:
             self.new = False
 
     def check_state(self, eventtime):
