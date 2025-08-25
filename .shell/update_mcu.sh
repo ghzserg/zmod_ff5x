@@ -24,7 +24,6 @@ fi
 FIRMWARE_Head_M3="${CONFIG_DIR}/mod/.shell/root/mcu/Eboard.hex"
 FIRMWARE_Board_M3="${CONFIG_DIR}/mod/.shell/root/mcu/Mainboard.bin"
 
-
 cat $WORK_DIR/mcu.img > /dev/fb0
 
 update_mcu_mainboard()

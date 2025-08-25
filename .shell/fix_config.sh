@@ -768,7 +768,7 @@ stepper: stepper_x, stepper_y, stepper_z
             cnt=$(find /opt/PROGRAM/control/ -name Update|wc -l)
             if [ "$cnt" -ne 0 ]; then
                 # Если обновляем MCU
-                find /opt/PROGRAM/control/ -name Update| sed 's/Update//'| while read a; do
+                find ${PROGRAM_DIR}/control/ -name Update| sed 's/Update//'| while read a; do
                     mount -o bind ${MOD_CONF}/mod/.shell/update_mcu.sh ${a}run.sh
                 done
             else
