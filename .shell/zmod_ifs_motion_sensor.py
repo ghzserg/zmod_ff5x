@@ -80,7 +80,7 @@ class ZmodIfsMotionSensor:
             if self.new:
                 self.runout_helper.note_filament_present(eventtime, True)
             else:
-                self.runout_helper.note_filament_present()
+                self.runout_helper.note_filament_present(True)
         else:
             extruder_pos = self._get_extruder_pos(eventtime)
             # Check for filament runout
