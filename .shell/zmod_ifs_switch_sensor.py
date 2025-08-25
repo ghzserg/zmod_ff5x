@@ -15,12 +15,17 @@ class ZmodIfsSwitchSensor:
         self.printer.add_object(f"filament_switch_sensor {self.name}", self)
 
         self.reactor = self.printer.get_reactor()
-        self.timer = self.reactor.register_timer(self.check_state, self.reactor.NOW)
 
         self.printer.register_event_handler("klippy:ready", self._handle_ready)
 
     def _handle_ready(self):
+        self.timer = self.reactor.register_timer(self.check_state, self.reactor.NOW)
         self.check_state(self.reactor.NOW)
+        sig = inspect.signature(self.runout_helper.note_filament_present)
+        if 'eventtime' in sig.parameters:
+            self.new = True
+        else
+            self.new = False
 
     def check_state(self, eventtime):
         try:
@@ -30,7 +35,7 @@ class ZmodIfsSwitchSensor:
             new_state = True
 
         sig = inspect.signature(self.runout_helper.note_filament_present)
-        if 'eventtime' in sig.parameters:
+        if self.new:
             self.runout_helper.note_filament_present(eventtime, new_state)
         else:
             self.runout_helper.note_filament_present(new_state)
