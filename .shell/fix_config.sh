@@ -763,7 +763,7 @@ stepper: stepper_x, stepper_y, stepper_z
     fi
     echo "END fix_config"
 
-    if [ "$1" == "start" ] && [ ${FF5X} -eq 0 ]; then
+    if [ "$1" == "start" ]; then
         if grep -q "klipper13 = 1" ${MOD_CONF}/mod_data/variables.cfg; then
             cnt=$(find /opt/PROGRAM/control/ -name Update|wc -l)
             if [ "$cnt" -ne 0 ]; then
