@@ -31,7 +31,7 @@ update_mcu_mainboard()
 {
     if [ -f $WORK_DIR/NationsCommand ];then
 	chmod a+x $WORK_DIR/NationsCommand
-	if [ -f $WORK_DIR/$FIRMWARE_Board_M3 ];then
+	if [ -f $FIRMWARE_Board_M3 ];then
 		echo "burn M3 firmware..."
 		$WORK_DIR/NationsCommand -c -d --fn $WORK_DIR/$FIRMWARE_Board_M3 --v -r
 	fi
@@ -42,7 +42,7 @@ update_mcu_eboard()
 {
     if [ -f $WORK_DIR/IAPCommand ];then
 	chmod a+x $WORK_DIR/IAPCommand
-	if [ -f $WORK_DIR/$FIRMWARE_Head_M3 ];then
+	if [ -f $FIRMWARE_Head_M3 ];then
 		echo "burn M3 firmware..."
 		$WORK_DIR/IAPCommand $WORK_DIR/$FIRMWARE_Head_M3 $EBOARD_TTY
 		sync
