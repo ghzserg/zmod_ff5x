@@ -63,6 +63,7 @@ update_mcu_ifs()
 
 killall python3.7 firmwareExe
 kill $(ps|grep klippy.py| grep -v grep| awk '{print $1}')
+kill $(ps|grep klippy.py| grep -v grep| awk '{print $1}')
 
 mkdir -p ${CONFIG_DIR}/mod_data/log/
 
@@ -75,7 +76,6 @@ if [ "${CHECH_ARCH}" == "mips" ];then
 
     update_mcu_ifs &>${CONFIG_DIR}/mod_data/log/update_mcu_ifs.log
 fi
-
 
 if [ "$1" == "mainboard" ]; then
     mv ${CONFIG_DIR}/mod_data/log/update_mcu_mainboard.4.log ${CONFIG_DIR}/mod_data/log/update_mcu_mainboard.5.log
