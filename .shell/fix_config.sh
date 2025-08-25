@@ -221,7 +221,12 @@ fix_config()
     [ -f ${MOD_CONF}/mod_data/variables.cfg ] || echo "[Variables]" >${MOD_CONF}/mod_data/variables.cfg
 
     if [ ${FF5X} -eq 1 ]; then
-        [ -f ${MOD_CONF}/mod_data/cmd_pwm ] || cp /usr/bin/cmd_pwm ${MOD_CONF}/mod_data/cmd_pwm
+        md5=$(md5sum ${MOD_CONF}/mod_data/cmd_pwm 2>/dev/null |awk '{print $1}')
+        if [ "$md5" != "bb0a72766632c11bd83ae68a8da94688" ]; then
+            umount /usr/bin/cmd_pwm
+            cp /usr/bin/cmd_pwm ${MOD_CONF}/mod_data/cmd_pwm
+            mount --bind /bin/echo /usr/bin/cmd_pwm
+        fi
         grep -q "mount --bind /bin/echo /usr/bin/cmd_pwm" /usr/prog/app_startup.sh || sed -i '\#mount /usr/prog/etc /etc#a\mount --bind /bin/echo /usr/bin/cmd_pwm' /usr/prog/app_startup.sh
     fi
 
