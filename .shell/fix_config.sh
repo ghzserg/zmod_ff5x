@@ -229,8 +229,7 @@ fix_config()
             mount --bind /bin/echo /usr/bin/cmd_pwm
         fi
         grep -q "mount --bind /bin/echo /usr/bin/cmd_pwm" /usr/prog/app_startup.sh || sed -i '\#mount /usr/prog/etc /etc#a\mount --bind /bin/echo /usr/bin/cmd_pwm' /usr/prog/app_startup.sh
-        grep -q "/usr/data/config/mod/.shell/app_startup_mcu.sh" /usr/prog/app_startup.sh || sed -i '\#mount --bind /bin/echo /usr/bin/cmd_pwm /etc#a\/usr/data/config/mod/.shell/app_startup_mcu.sh' /usr/prog/app_startup.sh
-
+        grep -q "/usr/data/config/mod/.shell/app_startup_mcu.sh" /usr/prog/app_startup.sh || sed -i '\#mount --bind /bin/echo /usr/bin/cmd_pwm#a\/usr/data/config/mod/.shell/app_startup_mcu.sh' /usr/prog/app_startup.sh
     fi
 
     echo "[zmod]
