@@ -4,15 +4,15 @@
 
 set -x
 
+WORK_DIR=$(pwd)
+
 CHECH_ARCH=`uname -m`
 if [ "${CHECH_ARCH}" == "armv7l" ];then
-    WORK_DIR=$(pwd)
-    CONFIG_DIR="/opt/config/"
+    CONFIG_DIR="/opt/config"
     EBOARD_TTY="/dev/ttyS1"
 else if [ "${CHECH_ARCH}" == "mips" ];then
     export PATH=/bin:/sbin:/usr/bin:/usr/sbin
     CONFIG_DIR="/usr/data/config"
-    WORK_DIR=`dirname $0`
     EBOARD_TTY="/dev/ttyS5"
 else
     echo "Machine architecture error."
