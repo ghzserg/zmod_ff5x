@@ -1,1 +1,1 @@
-/.shell/zmod_tenz.py
+/usr/data/config/mod/.shell/zmod_tenz.py

@@ -1,1 +1,1 @@
-/.shell/zmod_ifs.py
+/usr/data/config/mod/.shell/zmod_ifs.py

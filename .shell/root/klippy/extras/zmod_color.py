@@ -1,1 +1,1 @@
-/.shell/zmod_color.py
+/usr/data/config/mod/.shell/zmod_color.py
