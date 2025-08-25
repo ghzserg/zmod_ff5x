@@ -1,5 +1,6 @@
 # ZmodIfsSwitchSensor
 # Copyright (C) 2025 ghzserg https://github.com/ghzserg/zmod
+import inspect
 
 from .filament_switch_sensor import RunoutHelper
 
@@ -14,11 +15,18 @@ class ZmodIfsSwitchSensor:
         self.printer.add_object(f"filament_switch_sensor {self.name}", self)
 
         self.reactor = self.printer.get_reactor()
+        sig = inspect.signature(self.runout_helper.note_filament_present)
+        if 'eventtime' in sig.parameters:
+            self.new = True
+        else:
+            self.new = False
+
         self.timer = self.reactor.register_timer(self.check_state, self.reactor.NOW)
 
         self.printer.register_event_handler("klippy:ready", self._handle_ready)
 
     def _handle_ready(self):
+
         self.check_state(self.reactor.NOW)
 
     def check_state(self, eventtime):
@@ -28,7 +36,11 @@ class ZmodIfsSwitchSensor:
             self.gcode.respond_info(f"Error reading filament sensor: {e}")
             new_state = True
 
-        self.runout_helper.note_filament_present(new_state)
+        sig = inspect.signature(self.runout_helper.note_filament_present)
+        if self.new:
+            self.runout_helper.note_filament_present(eventtime, new_state)
+        else:
+            self.runout_helper.note_filament_present(new_state)
 
         return eventtime + 0.5
 

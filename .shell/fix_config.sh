@@ -59,6 +59,7 @@ restore_base()
         china_razbl polar3d.com
     else
         sed -i '\|mount --bind /bin/echo /usr/bin/cmd_pwm|d' /usr/prog/app_startup.sh
+        sed -i '\|/usr/data/config/mod/.shell/app_startup_mcu.sh|d' /usr/prog/app_startup.sh
     fi
 
     grep -q _output_callback_gcode ${KLIPPER_DIR}/klippy/webhooks.py && cp ${MOD_CONF}/mod/.shell/webhooks.py.orig ${KLIPPER_DIR}/klippy/webhooks.py
@@ -228,6 +229,7 @@ fix_config()
             mount --bind /bin/echo /usr/bin/cmd_pwm
         fi
         grep -q "mount --bind /bin/echo /usr/bin/cmd_pwm" /usr/prog/app_startup.sh || sed -i '\#mount /usr/prog/etc /etc#a\mount --bind /bin/echo /usr/bin/cmd_pwm' /usr/prog/app_startup.sh
+        grep -q "/usr/data/config/mod/.shell/app_startup_mcu.sh" /usr/prog/app_startup.sh || sed -i '\#mount --bind /bin/echo /usr/bin/cmd_pwm#a\/usr/data/config/mod/.shell/app_startup_mcu.sh' /usr/prog/app_startup.sh
     fi
 
     echo "[zmod]
@@ -235,13 +237,15 @@ fix_config()
 
     check_link ${MOD_CONF}/mod/base.cfg ${ZLANG}/base.cfg
     check_link ${MOD_CONF}/mod/client.cfg ${ZLANG}/client.cfg
+    check_link ${MOD_CONF}/mod/klipper13_base.cfg ${ZLANG}/klipper13_base.cfg
     if [ ${FF5X} -eq 0 ]; then
+        check_link ${MOD_CONF}/mod/klipper13.cfg ${ZLANG}/klipper13_ff5m.cfg
+        check_link ${MOD_CONF}/mod/klipper11.cfg ${ZLANG}/klipper11.cfg
         check_link ${MOD_CONF}/mod/display_off.cfg ${ZLANG}/display_off.cfg
         check_link ${MOD_CONF}/mod/ff5.cfg ${ZLANG}/ff5.cfg
         check_link ${MOD_CONF}/mod/mod.cfg ${ZLANG}/mod.cfg
-        check_link ${MOD_CONF}/mod/klipper13.cfg ${ZLANG}/klipper13.cfg
-        check_link ${MOD_CONF}/mod/klipper11.cfg ${ZLANG}/klipper11.cfg
     else
+        check_link ${MOD_CONF}/mod/klipper13.cfg ${ZLANG}/klipper13_ad5x.cfg
         check_link ${MOD_CONF}/mod/display_off.cfg ${ZLANG}/ad5x_display_off.cfg
         check_link ${MOD_CONF}/mod/ad5x.cfg ${ZLANG}/ad5x.cfg
         check_link ${MOD_CONF}/mod/base_display_off.cfg ${ZLANG}/display_off.cfg
@@ -681,6 +685,13 @@ stepper: stepper_x, stepper_y, stepper_z
         fi
     fi
 
+    if grep -q "klipper13 = 1" ${MOD_CONF}/mod_data/variables.cfg; then
+        grep -q '^\[include ./mod/klipper13.cfg\]' ${PRINTER_CFG} || sed -i '/\[include printer\.base\.cfg\]/a [include ./mod/klipper13.cfg]' ${PRINTER_CFG} && NEED_REBOOT=1
+    else
+        grep -q '^\[include ./mod/klipper13.cfg\]' ${PRINTER_CFG} && sed -i '/^\[include \.\/mod\/klipper13\.cfg\]$/d' ${PRINTER_CFG} && NEED_REBOOT=1
+    fi
+
+
     if [ ${FF5X} -eq 0 ]; then
         if ! { head -n 2 ${PRINTER_CFG} | tail -n 1 | grep -qE '^\[include \.\/mod\/klipper1[13]\.cfg\]$'; }; then
             sed -i '\|\[include \./mod/klipper11\.cfg\]|d' "${PRINTER_CFG}"
@@ -688,11 +699,9 @@ stepper: stepper_x, stepper_y, stepper_z
             NEED_REBOOT=1
         fi
         if grep -q "klipper13 = 1" ${MOD_CONF}/mod_data/variables.cfg; then
-            grep -q '^\[include ./mod/klipper13.cfg\]' ${PRINTER_CFG} || sed -i '/\[include printer\.base\.cfg\]/a [include ./mod/klipper13.cfg]' ${PRINTER_CFG} && NEED_REBOOT=1
             grep -q '^\[include ./mod/klipper11.cfg\]' ${PRINTER_CFG} && sed -i '/^\[include \.\/mod\/klipper11\.cfg\]$/d' ${PRINTER_CFG} && NEED_REBOOT=1
         else
             grep -q '^\[include ./mod/klipper11.cfg\]' ${PRINTER_CFG} || sed -i '/\[include printer\.base\.cfg\]/a [include ./mod/klipper11.cfg]' ${PRINTER_CFG} && NEED_REBOOT=1
-            grep -q '^\[include ./mod/klipper13.cfg\]' ${PRINTER_CFG} && sed -i '/^\[include \.\/mod\/klipper13\.cfg\]$/d' ${PRINTER_CFG} && NEED_REBOOT=1
         fi
 
         ! grep -q "motion_sensor" ${MOD_CONF}/mod_data/variables.cfg && sed -i '2 i\motion_sensor = 0' ${MOD_CONF}/mod_data/variables.cfg
@@ -764,22 +773,7 @@ stepper: stepper_x, stepper_y, stepper_z
     echo "END fix_config"
 
     if [ "$1" == "start" ] && [ ${FF5X} -eq 0 ]; then
-        if grep -q "klipper13 = 1" ${MOD_CONF}/mod_data/variables.cfg; then
-            cnt=$(find /opt/PROGRAM/control/ -name Update|wc -l)
-            if [ "$cnt" -ne 0 ]; then
-                # Если обновляем MCU
-                find /opt/PROGRAM/control/ -name Update| sed 's/Update//'| while read a; do
-                    mount -o bind ${MOD_CONF}/mod/.shell/update_mcu.sh ${a}run.sh
-                done
-            else
-                # Если обновлений нет
-                mount -o bind ${MOD_CONF}/mod/.shell/klipper13.sh ${KLIPPER_DIR}/start.sh
-                sync
-            fi
-#        else
-#            A=$(find /opt/PROGRAM/control/ -name NationsCommand |head -1)
-#            $A -r || $A -r
-        fi
+        ${MOD_CONF}/mod/.shell/app_startup_mcu.sh
     fi
     sync
 }
