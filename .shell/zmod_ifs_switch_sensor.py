@@ -1,5 +1,6 @@
 # ZmodIfsSwitchSensor
 # Copyright (C) 2025 ghzserg https://github.com/ghzserg/zmod
+import inspect
 
 from .filament_switch_sensor import RunoutHelper
 
@@ -28,7 +29,11 @@ class ZmodIfsSwitchSensor:
             self.gcode.respond_info(f"Error reading filament sensor: {e}")
             new_state = True
 
-        self.runout_helper.note_filament_present(new_state)
+        sig = inspect.signature(self.runout_helper.note_filament_present)
+        if 'eventtime' in sig.parameters:
+            self.runout_helper.note_filament_present(eventtime, new_state)
+        else:
+            self.runout_helper.note_filament_present(new_state)
 
         return eventtime + 0.5
 
