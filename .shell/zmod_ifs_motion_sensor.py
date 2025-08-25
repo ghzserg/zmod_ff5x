@@ -5,6 +5,7 @@
 #
 # This file may be distributed under the terms of the GNU GPLv3 license.
 import logging
+import inspect
 from . import filament_switch_sensor
 
 CHECK_RUNOUT_TIMEOUT = .250
@@ -20,6 +21,11 @@ class ZmodIfsMotionSensor:
         # Get printer objects
         self.reactor = self.printer.get_reactor()
         self.runout_helper = filament_switch_sensor.RunoutHelper(config)
+        sig = inspect.signature(self.runout_helper.note_filament_present)
+        if 'eventtime' in sig.parameters:
+            self.new = True
+        else:
+            self.new = False
         self.get_status = self.runout_helper.get_status
         self.extruder = None
         self.estimated_print_time = None
@@ -44,7 +50,10 @@ class ZmodIfsMotionSensor:
                 self.detection_length)
     def _handle_ready(self):
         self.ifs = self.printer.lookup_object('zmod_ifs')
-        self.runout_helper.note_filament_present(True)
+        if self.new:
+            self.runout_helper.note_filament_present(eventtime, True)
+        else:
+            self.runout_helper.note_filament_present(True)
         self.extruder = self.printer.lookup_object(self.extruder_name)
         self.estimated_print_time = (
                 self.printer.lookup_object('mcu').estimated_print_time)
@@ -68,11 +77,18 @@ class ZmodIfsMotionSensor:
             self._update_filament_runout_pos(eventtime)
             # Check for filament insertion
             # Filament is always assumed to be present on an encoder event
-            self.runout_helper.note_filament_present(True)
+            if self.new:
+                self.runout_helper.note_filament_present(eventtime, True)
+            else:
+                self.runout_helper.note_filament_present()
         else:
             extruder_pos = self._get_extruder_pos(eventtime)
             # Check for filament runout
-            self.runout_helper.note_filament_present(
+            if self.new:
+                self.runout_helper.note_filament_present(eventtime,
+                    extruder_pos < self.filament_runout_pos)
+            else:
+                self.runout_helper.note_filament_present(
                     extruder_pos < self.filament_runout_pos)
         return eventtime + CHECK_RUNOUT_TIMEOUT
 
