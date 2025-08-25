@@ -765,7 +765,7 @@ stepper: stepper_x, stepper_y, stepper_z
 
     if [ "$1" == "start" ]; then
         if grep -q "klipper13 = 1" ${MOD_CONF}/mod_data/variables.cfg; then
-            cnt=$(find /opt/PROGRAM/control/ -name Update|wc -l)
+            cnt=$(find ${PROGRAM_DIR}/control/ -name Update|wc -l)
             if [ "$cnt" -ne 0 ]; then
                 # Если обновляем MCU
                 find ${PROGRAM_DIR}/control/ -name Update| sed 's/Update//'| while read a; do
