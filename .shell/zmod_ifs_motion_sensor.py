@@ -51,7 +51,7 @@ class ZmodIfsMotionSensor:
     def _handle_ready(self):
         self.ifs = self.printer.lookup_object('zmod_ifs')
         if self.new:
-            self.runout_helper.note_filament_present(eventtime, True)
+            self.runout_helper.note_filament_present(self.reactor.monotonic(), True)
         else:
             self.runout_helper.note_filament_present(True)
         self.extruder = self.printer.lookup_object(self.extruder_name)
