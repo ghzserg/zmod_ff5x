@@ -3,13 +3,12 @@
 # Start guppyscreen
 #
 
-source /opt/config/mod/.shell/0.sh
-
 GUPPYSCREEN=/root/guppyscreen/guppyscreen
 PID_FILE=/run/guppyscreen.pid
 NICENESS=10
 
 start() {
+    source /opt/config/mod/.shell/0.sh
     xzcat /opt/config/mod/.shell/screen_off.raw.xz > /dev/fb0
     [ ${FF5X} -eq 0 ] && backlight 0
 
@@ -32,7 +31,7 @@ start() {
     export TSLIB_CALIBFILE=/etc/pointercal
     export TSLIB_FBDEVICE=/dev/fb0
 
-    if [ ${ZLANG} != 'ru' ]; then
+    if [ "${ZLANG}" != 'ru' ]; then
         sed -i 's/Экструдер/Extruder/' /opt/config/mod_data/guppyconfig.json
         sed -i 's/Стол/Bed/' /opt/config/mod_data/guppyconfig.json
         sed -i 's/Вес/Weight/' /opt/config/mod_data/guppyconfig.json
