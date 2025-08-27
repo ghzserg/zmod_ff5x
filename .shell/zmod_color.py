@@ -668,6 +668,7 @@ class zmod_color:
             status_code, response_data = self.zsend_post_request("/detail")
         else:
             status_code, response_data = self.get_printer_data_detail()
+        gcmd.respond_raw(response_data)
         if status_code:
             gcmd.respond_raw(f"// action:prompt_begin {self._t('prompt_material')}")
 
