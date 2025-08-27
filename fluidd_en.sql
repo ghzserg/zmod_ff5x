@@ -863,11 +863,11 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "visible": true
         },
         {
-            "alias": "END_CHANGE_FILAMENT",
+            "alias": "SET_EXTRUDER_SLOT",
             "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
             "color": "#008800",
             "disabledWhilePrinting": false,
-            "name": "end_change_filament",
+            "name": "set_extruder_slot",
             "order": 15,
             "visible": true
         },
