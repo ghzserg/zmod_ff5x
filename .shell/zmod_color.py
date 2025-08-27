@@ -668,7 +668,7 @@ class zmod_color:
             status_code, response_data = self.zsend_post_request("/detail")
         else:
             status_code, response_data = self.get_printer_data_detail()
-        gcmd.respond_raw(json.dump(response_data))
+        gcmd.respond_raw(json.dumps(response_data))
         if status_code:
             gcmd.respond_raw(f"// action:prompt_begin {self._t('prompt_material')}")
 
@@ -694,7 +694,7 @@ class zmod_color:
             gcmd.respond_raw(f"// action:prompt_footer_button {self._t('reset_colors')}|RESET_ZCOLOR")
             gcmd.respond_raw("// action:prompt_show")
         else:
-            gcmd.respond_raw(self._t('no_response', response_data))
+            gcmd.respond_raw(self._t('no_response', json.dumps(response_data)))
 
     def cmd_SET_ZCOLOR(self, gcmd):
         silent = gcmd.get_int('SILENT', 0)
