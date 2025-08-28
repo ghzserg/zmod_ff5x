@@ -43,6 +43,7 @@ class zmod_ifs:
         self.query_adc = self.printer.lookup_object('query_adc')
         self.filament_sensor = self.printer.lookup_object('temperature_sensor filamentValue')
         self.language = 'en'
+        self.ifs = True
         self.zmod = self.printer.lookup_object('zmod', None)
         if self.zmod is not None:
             self.language = self.zmod.get_lang()
@@ -85,6 +86,13 @@ class zmod_ifs:
         self.gcode.register_command('IFS_F24', self.cmd_IFS_F24)        # Прижим филамента
         self.gcode.register_command('IFS_F39', self.cmd_IFS_F39)        # Отжим филамента
         self.gcode.register_command('IFS_F112', self.cmd_IFS_F112)      # Прекращаем подачу прутка
+
+    def _handle_ready(self):
+        self.get_prutok_config(1)
+        self.sensor_thread.start()
+
+    def get_ifs_status(self):
+        return self.ifs
 
     # self.wait_for_state(
     #     Port=2,
@@ -146,9 +154,6 @@ class zmod_ifs:
             self.reactor.pause(self.reactor.monotonic() + HOST_REPORT_TIME)
         return False, RET_EXIT, None
 
-    def _handle_ready(self):
-        self.get_prutok_config(1)
-        self.sensor_thread.start()
 
     def _handle_disconnect(self):
         logging.info("IFS: Printer disconnected. Stopping IFS thread.")
@@ -235,6 +240,8 @@ class zmod_ifs:
             self._command = f"{new_command}"
 
     def get_port(self, port=0):
+        if not self.ifs:
+            return False
         return self.ifs_data.get_port(port)
 
     def print_str(self, string, info=True):
@@ -264,7 +271,7 @@ class zmod_ifs:
 
     # Получить конфиг прутка по номеру прутка
     def get_prutok_config(self, prutok):
-        if prutok < 1 or prutok > 4:
+        if prutok < 0 or prutok > 4:
             self.print_str(f"Некорректный номер прутка {prutok}", False)
         filament=self.get_prutok_type_from_config(prutok)
 
@@ -338,6 +345,9 @@ class zmod_ifs:
 
     # Указать текущий пруток
     def cmd_SET_CURRENT_PRUTOK(self, gcmd):
+        if not self.ifs:
+            self.gcode.run_script_from_command("_IFS_OFF")
+            return
         cur_prutok = 99
 
         # Проверяем что пруток в экструдере
@@ -383,6 +393,7 @@ class zmod_ifs:
             f"FILAMENT_TUBE_LENGTH={config['filament_tube_length']} "
             f"FILAMENT_DROP_LENGTH={config['filament_drop_length']} "
             f"FILAMENT_FAN_SPEED={config['filament_fan_speed']} "
+            f"NOZZLE_CLEANING_LENGTH={config['nozzle_cleaning_length']} "
         )
 
     # Вставить пруток в IFS
@@ -413,6 +424,7 @@ class zmod_ifs:
             f"FILAMENT_DROP_LENGTH={config['filament_drop_length']} "
             f"FILAMENT_DROP_LENGTH_ADD={filament_drop_length_add} "
             f"FILAMENT_FAN_SPEED={config['filament_fan_speed']} "
+            f"NOZZLE_CLEANING_LENGTH={config['nozzle_cleaning_length']} "
         )
 
     def print_result(self, ret_code, values, prutok, info=True):
@@ -440,6 +452,10 @@ class zmod_ifs:
 
     cmd_IFS_AUTOINSERT_help = "Автоматическая загрузка филамента"
     def cmd_IFS_AUTOINSERT(self, gcmd):
+        if not self.ifs:
+            self.gcode.run_script_from_command("_IFS_OFF")
+            return
+
         prutok = gcmd.get_int('PRUTOK', 1)
         config = self.get_prutok_config(prutok)
 
@@ -491,6 +507,10 @@ class zmod_ifs:
         self.cmd_IFS_F39(gcmd)
 
     def _cmd_IFS_F10(self, prutok, leng, speed):
+        if not self.ifs:
+            self.gcode.run_script_from_command("_IFS_OFF")
+            return
+
         self.gcode.respond_info(f"Вставить пруток {prutok} длинной {leng} со скоростью {speed}")
         response = self.send_command_and_wait(f"F10 C{prutok} L{leng} S{speed}", result=f"F10 ok. FFS channel {prutok} feeding.")
         self.info(f"F10 C{prutok} L{leng} S{speed} > {response}")
@@ -498,6 +518,10 @@ class zmod_ifs:
 
     # Загрузить пруток
     def cmd_IFS_F10(self, gcmd):
+        if not self.ifs:
+            self.gcode.run_script_from_command("_IFS_OFF")
+            return
+
         prutok = gcmd.get_int('PRUTOK', 1)
         leng = gcmd.get_int('LEN', 90)
         speed = gcmd.get_int('SPEED', 1200)
@@ -533,6 +557,10 @@ class zmod_ifs:
                 self.wait_for_state(timeout=120)
 
     def _cmd_IFS_F11(self, prutok, leng, speed):
+        if not self.ifs:
+            self.gcode.run_script_from_command("_IFS_OFF")
+            return
+
         self.gcode.respond_info(f"Извлечь пруток {prutok} длинной {leng} со скоростью {speed}")
         response = self.send_command_and_wait(f"F11 C{prutok} L{leng} S{speed}", result=f"F11 ok. FFS channel {prutok} exiting.")
         self.info(f"F11 C{prutok} L{leng} S{speed} > {response}")
@@ -540,6 +568,10 @@ class zmod_ifs:
 
     # Выгрузить пруток
     def cmd_IFS_F11(self, gcmd):
+        if not self.ifs:
+            self.gcode.run_script_from_command("_IFS_OFF")
+            return
+
         prutok = gcmd.get_int('PRUTOK', 1)
         leng = gcmd.get_int('LEN', 90)
         speed = gcmd.get_int('SPEED', 1200)
@@ -564,6 +596,10 @@ class zmod_ifs:
 
     # Пометить пруток как вставленный
     def cmd_IFS_F23(self, gcmd):
+        if not self.ifs:
+            self.gcode.run_script_from_command("_IFS_OFF")
+            return
+
         prutok = gcmd.get_int('PRUTOK', 1)
         wait = gcmd.get_int('WAIT', 1)
 
@@ -576,6 +612,10 @@ class zmod_ifs:
 
     # Заблокировать пруток
     def cmd_IFS_F24(self, gcmd):
+        if not self.ifs:
+            self.gcode.run_script_from_command("_IFS_OFF")
+            return
+
         prutok = gcmd.get_int('PRUTOK', 1)
         wait = gcmd.get_int('WAIT', 1)
 
@@ -587,6 +627,10 @@ class zmod_ifs:
 
     # Разблокировать пруток
     def cmd_IFS_F39(self, gcmd):
+        if not self.ifs:
+            self.gcode.run_script_from_command("_IFS_OFF")
+            return
+
         prutok = gcmd.get_int('PRUTOK', 1)
         wait = gcmd.get_int('WAIT', 1)
 
@@ -598,6 +642,10 @@ class zmod_ifs:
 
     # Остановить движение
     def cmd_IFS_F112(self, gcmd):
+        if not self.ifs:
+            self.gcode.run_script_from_command("_IFS_OFF")
+            return
+
         wait = gcmd.get_int('WAIT', 0)
 
         response = self.send_command_and_wait(f"F112", result="F112 ok.")
@@ -620,6 +668,10 @@ class zmod_ifs:
             self.print_str("Пруток ОТСУСТВУЕТ в экструдере", info == 1)
 
     def cmd__IFS_REMOVE_PRUTOK(self, gcmd, prutok, force, config):
+        if not self.ifs:
+            self.gcode.run_script_from_command("_IFS_OFF")
+            return
+
         if (not self.get_extruder_sensor() and force == 0) or prutok == 0:
             return
 
@@ -647,6 +699,10 @@ class zmod_ifs:
             gcmd.respond_info("Пруток извлечен из экструдера")
 
     def cmd_IFS_REMOVE_PRUTOK(self, gcmd):
+        if not self.ifs:
+            self.gcode.run_script_from_command("_IFS_OFF")
+            return
+
         prutok = gcmd.get_int('PRUTOK', 0)
         force = gcmd.get_int('FORCE', 1)
 
@@ -654,6 +710,10 @@ class zmod_ifs:
         self.cmd__IFS_REMOVE_PRUTOK(gcmd, prutok, force, config)
 
     def cmd_IFS_REMOVE_CURRENT_PRUTOK(self, gcmd):
+        if not self.ifs:
+            self.gcode.run_script_from_command("_IFS_OFF")
+            return
+
         if not self.get_extruder_sensor():
             return
 
@@ -699,9 +759,13 @@ class zmod_ifs:
                     response = ser.readline().decode('utf-8', errors='ignore').strip()
                     #self._respond_info(f"IN: {response}")
                     if not response:
-                        logging.warning(f"Пустой ответ от устройства {current_command}")
-                        self._respond_info(f"Пустой ответ от устройства {current_command}")
+                        if self.ifs:
+                            logging.warning(f"Пустой ответ от устройства {current_command}")
+                            self._respond_info(f"Пустой ответ от устройства {current_command}")
+                            self._respond_info(f"IFS отклюен")
+                            self.ifs = False
                         break
+                    self.ifs = True
 
                     if command_id == -1:
                         self.ifs_data.update_from_string(response)
@@ -755,7 +819,7 @@ class IfsData:
 
     def update_from_string(self, data_str):
         if data_str is None:
-            return;
+            return
 
         silk_state = 0
         silk = 0

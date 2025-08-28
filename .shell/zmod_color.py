@@ -472,8 +472,8 @@ class zmod_color:
 
         self.display = config.getboolean('display', True)
         self.language = 'en'
+        self.ifs = False
         self.gcode = self.printer.lookup_object('gcode')
-        self.gcode.register_command('GET_T', self.cmd_GET_T)
         self.gcode.register_command('GET_ZCOLOR', self.cmd_GET_ZCOLOR)
         self.gcode.register_command('SET_ZCOLOR', self.cmd_SET_ZCOLOR)
         self.gcode.register_command('SET_EXTRUDER_SLOT', self.cmd_SET_EXTRUDER_SLOT)
@@ -513,9 +513,10 @@ class zmod_color:
         return "Not found"
 
     def get_current_channel(self):
-        with open(FFCONFIG, 'r') as file:
-            config = json.load(file)
-            return int(config["FFMInfo"].get("channel", 0))
+        if self.ifs:
+            with open(FFCONFIG, 'r') as file:
+                config = json.load(file)
+                return int(config["FFMInfo"].get("channel", 0))
         return 0
 
     def get_extruder_sensor(self):
@@ -528,6 +529,9 @@ class zmod_color:
     def get_printer_data_detail(self):
         response_data = {
             "detail": {
+                "hasMatlStation": False,
+                "indepMatlInfo": {
+                    },
                 "matlStationInfo": {
                     "slotInfos": []
                 }
@@ -538,6 +542,12 @@ class zmod_color:
             config = json.load(file)
 
             ffm_info = config["FFMInfo"]
+            response_data["detail"]["hasMatlStation"] = self.zmod_ifs.get_ifs_status()
+            response_data["detail"]["indepMatlInfo"] = {
+                "materialName": ffm_info.get("ffmType0", "N/A"),
+                "materialColor": ffm_info["ffmColor0"]
+            }
+
             for i in range(0, 5):
                 color_key = f"ffmColor{i}"
                 type_key = f"ffmType{i}"
@@ -614,19 +624,34 @@ class zmod_color:
 
     def parse_printer_response(self, response_data):
         slots_info = []
-        slots = response_data.get('detail', {}).get('matlStationInfo', {}).get('slotInfos', [])
-        for slot in slots:
-            if slot.get('hasFilament', True):
-                slot_id = slot.get('slotId', 'N/A')
+        self.ifs = response_data.get('detail', {}).get('hasMatlStation', False)
+        if self.ifs:
+            slots = response_data.get('detail', {}).get('matlStationInfo', {}).get('slotInfos', [])
+            for slot in slots:
+                if slot.get('hasFilament', True):
+                    slot_id = slot.get('slotId', 'N/A')
+                    material = slot.get('materialName', 'N/A').upper()
+                    hex_color = slot.get('materialColor', '161616').replace("#", "")
+                    color_name = COLOR_MAPPING.get(hex_color.lower(), {}).get(self.language, hex_color)
+                    slots_info.append({
+                        'ID': slot_id,
+                        'Material': material,
+                        'Color': color_name,
+                        'HEX': hex_color.upper()
+                    })
+        else:
+            slot = response_data.get('detail', {}).get('indepMatlInfo', {})
+            if slot:
                 material = slot.get('materialName', 'N/A').upper()
                 hex_color = slot.get('materialColor', '161616').replace("#", "")
                 color_name = COLOR_MAPPING.get(hex_color.lower(), {}).get(self.language, hex_color)
                 slots_info.append({
-                    'ID': slot_id,
+                    'ID': 0,
                     'Material': material,
                     'Color': color_name,
                     'HEX': hex_color.upper()
                 })
+
         return slots_info
 
     def cmd_SET_EXTRUDER_SLOT(self, gcmd):
@@ -645,31 +670,14 @@ class zmod_color:
                     json.dump(config, file, indent=2)
                     gcmd.respond_raw(f"Extruder: {zslot}")
 
-    def cmd_GET_T(self, gcmd):
-        zslot = gcmd.get_int('SLOT', 0)
-        if zslot < 1 or zslot > 4:
-            raise gcmd.error(self._t('error_slot'))
-        if self.display:
-            status_code, response_data = self.zsend_post_request("/detail")
-        else:
-            status_code, response_data = self.get_printer_data_detail()
-        if status_code:
-            result = self.parse_printer_response(response_data)
-            for slot in result:
-                if zslot == int(slot['ID']):
-                    msg = self._t('change_spool', slot['ID'], slot['Material'], slot['Color'])
-                    gcmd.respond_raw(msg)
-        else:
-            gcmd.respond_raw(self._t('no_response', json.dumps(response_data)))
-
     def cmd_GET_ZCOLOR(self, gcmd):
         gcmd.respond_raw("// action:prompt_end")
         if self.display:
             status_code, response_data = self.zsend_post_request("/detail")
         else:
             status_code, response_data = self.get_printer_data_detail()
-        gcmd.respond_raw(json.dumps(response_data))
         if status_code:
+            #gcmd.respond_raw(json.dumps(response_data))
             gcmd.respond_raw(f"// action:prompt_begin {self._t('prompt_material')}")
 
             result = self.parse_printer_response(response_data)
@@ -683,6 +691,7 @@ class zmod_color:
                         break
 
             gcmd.respond_raw(f"// action:prompt_text {prompt_text}")
+            gcmd.respond_raw(f"// action:prompt_text IFS: {self.ifs}")
 
             gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_choose')}")
             gcmd.respond_raw("// action:prompt_button_group_start")
@@ -722,17 +731,20 @@ class zmod_color:
         if status_code:
             result = self.parse_printer_response(response_data)
 
-            default_values = [result[i]['ID'] if i < len(result) else result[-1]['ID'] for i in range(4)] if result else [1, 1, 1, 1]
-            tools = [
-                gcmd.get_int('T0', int(default_values[0])),
-                gcmd.get_int('T1', int(default_values[1])),
-                gcmd.get_int('T2', int(default_values[2])),
-                gcmd.get_int('T3', int(default_values[3]))
-            ]
+            if not self.ifs:
+                silent = 2
+            else:
+                default_values = [result[i]['ID'] if i < len(result) else result[-1]['ID'] for i in range(4)] if result else [1, 1, 1, 1]
+                tools = [
+                    gcmd.get_int('T0', int(default_values[0])),
+                    gcmd.get_int('T1', int(default_values[1])),
+                    gcmd.get_int('T2', int(default_values[2])),
+                    gcmd.get_int('T3', int(default_values[3]))
+                ]
 
-            for i, tool in enumerate(tools):
-                if tool < 1 or tool > 4:
-                    raise gcmd.error(self._t('error_tool', i, tool))
+                for i, tool in enumerate(tools):
+                    if tool < 1 or tool > 4:
+                        raise gcmd.error(self._t('error_tool', i, tool))
 
             if silent == 0:
                 gcmd.respond_raw(f"// action:prompt_begin {self._t('prompt_material')}")
@@ -803,7 +815,10 @@ class zmod_color:
                         gcmd.respond_raw(self._t('printing_error', response_data2))
                 else:
                     gcmd.respond_raw(f"Выключаю IFS")
-                    self.gcode.run_script_from_command(f"SDCARD_ENABLE_FFM ENABLE=0")
+                    if self.display:
+                        self.gcode.run_script_from_command("SDCARD_ENABLE_FFM ENABLE=0")
+                    else:
+                        self.gcode.run_script_from_command("_IFS_OFF")
                     self.gcode.run_script_from_command(f"SDCARD_PRINT_FILE FILENAME={fname}")
         else:
             gcmd.respond_raw(self._t('no_response', json.dumps(response_data)))
@@ -893,6 +908,11 @@ class zmod_color:
         if channel is None:
             raise gcmd.error("Error: CHANNEL parameter is required")
             return
+
+        if not self.ifs:
+            gcmd.respond_raw(f"//info IFS: Off. T{channel} ignore")
+            return
+        gcmd.respond_raw(f"//info T{channel}")
 
         try:
             with open(FILE_CONFIG, 'r') as f:
@@ -988,7 +1008,7 @@ class zmod_color:
     def cmd_RUN_ZCOLOR(self, gcmd):
         gcmd.respond_raw("// action:prompt_end")
         zslot = gcmd.get_int('SLOT', 0)
-        if zslot < 1 or zslot > 4:
+        if zslot < 0 or zslot > 4:
             raise gcmd.error(self._t('error_slot'))
 
         zhex = gcmd.get('HEX', '161616').upper()
@@ -1028,7 +1048,7 @@ class zmod_color:
     def cmd_CHANGE_ZCOLOR(self, gcmd):
         gcmd.respond_raw("// action:prompt_end")
         zslot = gcmd.get_int('SLOT', 0)
-        if zslot < 1 or zslot > 4:
+        if zslot < 0 or zslot > 4:
             raise gcmd.error(self._t('error_slot'))
 
         zhex = gcmd.get('HEX', '').upper()
@@ -1044,14 +1064,24 @@ class zmod_color:
             if ztype not in valid_types:
                 raise gcmd.error(self._t('error_type', ztype, ', '.join(valid_types[:-1])))
 
-            payload = {
-                "cmd": "msConfig_cmd",
-                "args": {
-                    "slot": zslot,
-                    "mt": ztype,
-                    "rgb": f"#{zhex}"
+            if zslot!=0:
+                payload = {
+                    "cmd": "msConfig_cmd",
+                    "args": {
+                        "slot": zslot,
+                        "mt": ztype,
+                        "rgb": f"#{zhex}"
+                    }
                 }
-            }
+            else:
+                payload = {
+                    "cmd": "ipdMsConfig_cmd",
+                    "args": {
+                        "mt": ztype,
+                        "rgb": f"#{zhex}"
+                    }
+                }
+
             if self.display:
                 status_code, response_data = self.zsend_post_request("/control", payload=payload)
             else:
@@ -1100,7 +1130,7 @@ class zmod_color:
     def cmd_IN_ZCOLOR(self, gcmd):
         gcmd.respond_raw("// action:prompt_end")
         zslot = gcmd.get_int('SLOT', 0)
-        if zslot < 1 or zslot > 4:
+        if zslot < 0 or zslot > 4:
             raise gcmd.error(self._t('error_slot'))
 
         napr = gcmd.get_int('NAPR', 0)
@@ -1109,13 +1139,22 @@ class zmod_color:
 
         if self.display:
             action = "load" if napr == 0 else "unload"
-            payload = {
-                "cmd": "ms_cmd",
-                "args": {
-                    "slot": zslot,
-                    "action": napr
+            if zslot != 0:
+                payload = {
+                    "cmd": "ms_cmd",
+                    "args": {
+                        "slot": zslot,
+                        "action": napr
+                    }
                 }
-            }
+            else:
+                payload = {
+                    "cmd": "ipdMs_cmd",
+                    "args": {
+                        "action": napr
+                    }
+                }
+
             status_code, response_data = self.zsend_post_request("/control", payload=payload)
             if status_code == 200:
                 gcmd.respond_raw(self._t(f'{action}_success'))
