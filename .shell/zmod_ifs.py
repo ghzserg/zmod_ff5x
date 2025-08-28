@@ -240,6 +240,8 @@ class zmod_ifs:
             self._command = f"{new_command}"
 
     def get_port(self, port=0):
+        if not self.ifs:
+            return False
         return self.ifs_data.get_port(port)
 
     def print_str(self, string, info=True):
