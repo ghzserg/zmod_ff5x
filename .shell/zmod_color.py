@@ -542,6 +542,12 @@ class zmod_color:
             config = json.load(file)
 
             ffm_info = config["FFMInfo"]
+            response_data["detail"]["hasMatlStation"] = self.ifs
+            response_data["detail"]["indepMatlInfo"] = {
+                "materialName": ffm_info.get("ffmType0", "N/A"),
+                "materialColor": ffm_info["ffmColor0"]
+            }
+
             for i in range(0, 5):
                 color_key = f"ffmColor{i}"
                 type_key = f"ffmType{i}"
@@ -898,6 +904,11 @@ class zmod_color:
         if channel is None:
             raise gcmd.error("Error: CHANNEL parameter is required")
             return
+
+        if not self.ifs:
+            gcmd.respond_raw(f"//info IFS: Off. T{channel} ignore")
+            return
+        gcmd.respond_raw(f"//info T{channel}")
 
         try:
             with open(FILE_CONFIG, 'r') as f:
