@@ -1120,13 +1120,22 @@ class zmod_color:
 
         if self.display:
             action = "load" if napr == 0 else "unload"
-            payload = {
-                "cmd": "ms_cmd",
-                "args": {
-                    "slot": zslot,
-                    "action": napr
+            if zslot != 0:
+                payload = {
+                    "cmd": "ms_cmd",
+                    "args": {
+                        "slot": zslot,
+                        "action": napr
+                    }
                 }
-            }
+            else:
+                payload = {
+                    "cmd": "ipdMs_cmd",
+                    "args": {
+                        "action": action
+                    }
+                }
+
             status_code, response_data = self.zsend_post_request("/control", payload=payload)
             if status_code == 200:
                 gcmd.respond_raw(self._t(f'{action}_success'))
