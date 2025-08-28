@@ -660,7 +660,7 @@ class zmod_color:
                     msg = self._t('change_spool', slot['ID'], slot['Material'], slot['Color'])
                     gcmd.respond_raw(msg)
         else:
-            gcmd.respond_raw(self._t('no_response', response_data))
+            gcmd.respond_raw(self._t('no_response', json.dumps(response_data)))
 
     def cmd_GET_ZCOLOR(self, gcmd):
         gcmd.respond_raw("// action:prompt_end")
@@ -668,6 +668,7 @@ class zmod_color:
             status_code, response_data = self.zsend_post_request("/detail")
         else:
             status_code, response_data = self.get_printer_data_detail()
+        gcmd.respond_raw(json.dumps(response_data))
         if status_code:
             gcmd.respond_raw(f"// action:prompt_begin {self._t('prompt_material')}")
 
@@ -693,7 +694,7 @@ class zmod_color:
             gcmd.respond_raw(f"// action:prompt_footer_button {self._t('reset_colors')}|RESET_ZCOLOR")
             gcmd.respond_raw("// action:prompt_show")
         else:
-            gcmd.respond_raw(self._t('no_response', response_data))
+            gcmd.respond_raw(self._t('no_response', json.dumps(response_data)))
 
     def cmd_SET_ZCOLOR(self, gcmd):
         silent = gcmd.get_int('SILENT', 0)
@@ -805,7 +806,7 @@ class zmod_color:
                     self.gcode.run_script_from_command(f"SDCARD_ENABLE_FFM ENABLE=0")
                     self.gcode.run_script_from_command(f"SDCARD_PRINT_FILE FILENAME={fname}")
         else:
-            gcmd.respond_raw(self._t('no_response', response_data))
+            gcmd.respond_raw(self._t('no_response', json.dumps(response_data)))
 
     def find_t_code(self, filename):
         pattern = re.compile(r'^T([0-9])$')
@@ -884,7 +885,7 @@ class zmod_color:
                 self.find_t_code(fname)
                 self.gcode.run_script_from_command(f"SDCARD_PRINT_FILE FILENAME={fname}")
         else:
-            gcmd.respond_raw(self._t('no_response', response_data))
+            gcmd.respond_raw(self._t('no_response', json.dumps(response_data)))
 
     def cmd_CHANGE_FILAMENT(self, gcmd):
         channel = gcmd.get_int('CHANNEL', None)
@@ -982,7 +983,7 @@ class zmod_color:
             )
             gcmd.respond_raw("// action:prompt_show")
         else:
-            gcmd.respond_raw(self._t('no_response', response_data))
+            gcmd.respond_raw(self._t('no_response', json.dumps(response_data)))
 
     def cmd_RUN_ZCOLOR(self, gcmd):
         gcmd.respond_raw("// action:prompt_end")
@@ -1059,7 +1060,7 @@ class zmod_color:
                 self.cmd_GET_ZCOLOR(gcmd)
                 gcmd.respond_raw(self._t('config_success'))
             else:
-                gcmd.respond_raw(self._t('config_error', response_data))
+                gcmd.respond_raw(self._t('config_error', json.dumps(response_data)))
             return
 
         if ztype:
@@ -1119,7 +1120,7 @@ class zmod_color:
             if status_code == 200:
                 gcmd.respond_raw(self._t(f'{action}_success'))
             else:
-                gcmd.respond_raw(self._t(f'{action}_error', response_data))
+                gcmd.respond_raw(self._t(f'{action}_error', json.dumps(response_data)))
         else:
             if napr == 0:
                 self.gcode.run_script_from_command(f"INSERT_PRUTOK_IFS PRUTOK={zslot}")
