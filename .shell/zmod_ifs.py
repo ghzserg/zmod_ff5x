@@ -271,7 +271,7 @@ class zmod_ifs:
 
     # Получить конфиг прутка по номеру прутка
     def get_prutok_config(self, prutok):
-        if prutok < 1 or prutok > 4:
+        if prutok < 0 or prutok > 4:
             self.print_str(f"Некорректный номер прутка {prutok}", False)
         filament=self.get_prutok_type_from_config(prutok)
 
