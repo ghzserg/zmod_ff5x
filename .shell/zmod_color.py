@@ -472,8 +472,8 @@ class zmod_color:
 
         self.display = config.getboolean('display', True)
         self.language = 'en'
+        self.ifs = False
         self.gcode = self.printer.lookup_object('gcode')
-        self.gcode.register_command('GET_T', self.cmd_GET_T)
         self.gcode.register_command('GET_ZCOLOR', self.cmd_GET_ZCOLOR)
         self.gcode.register_command('SET_ZCOLOR', self.cmd_SET_ZCOLOR)
         self.gcode.register_command('SET_EXTRUDER_SLOT', self.cmd_SET_EXTRUDER_SLOT)
@@ -662,23 +662,6 @@ class zmod_color:
                 with open(FFCONFIG, 'w') as file:
                     json.dump(config, file, indent=2)
                     gcmd.respond_raw(f"Extruder: {zslot}")
-
-    def cmd_GET_T(self, gcmd):
-        zslot = gcmd.get_int('SLOT', 0)
-        if zslot < 1 or zslot > 4:
-            raise gcmd.error(self._t('error_slot'))
-        if self.display:
-            status_code, response_data = self.zsend_post_request("/detail")
-        else:
-            status_code, response_data = self.get_printer_data_detail()
-        if status_code:
-            result = self.parse_printer_response(response_data)
-            for slot in result:
-                if zslot == int(slot['ID']):
-                    msg = self._t('change_spool', slot['ID'], slot['Material'], slot['Color'])
-                    gcmd.respond_raw(msg)
-        else:
-            gcmd.respond_raw(self._t('no_response', json.dumps(response_data)))
 
     def cmd_GET_ZCOLOR(self, gcmd):
         gcmd.respond_raw("// action:prompt_end")
@@ -1006,7 +989,7 @@ class zmod_color:
     def cmd_RUN_ZCOLOR(self, gcmd):
         gcmd.respond_raw("// action:prompt_end")
         zslot = gcmd.get_int('SLOT', 0)
-        if zslot < 1 or zslot > 4:
+        if zslot < 0 or zslot > 4:
             raise gcmd.error(self._t('error_slot'))
 
         zhex = gcmd.get('HEX', '161616').upper()
@@ -1046,7 +1029,7 @@ class zmod_color:
     def cmd_CHANGE_ZCOLOR(self, gcmd):
         gcmd.respond_raw("// action:prompt_end")
         zslot = gcmd.get_int('SLOT', 0)
-        if zslot < 1 or zslot > 4:
+        if zslot < 0 or zslot > 4:
             raise gcmd.error(self._t('error_slot'))
 
         zhex = gcmd.get('HEX', '').upper()
@@ -1118,7 +1101,7 @@ class zmod_color:
     def cmd_IN_ZCOLOR(self, gcmd):
         gcmd.respond_raw("// action:prompt_end")
         zslot = gcmd.get_int('SLOT', 0)
-        if zslot < 1 or zslot > 4:
+        if zslot < 0 or zslot > 4:
             raise gcmd.error(self._t('error_slot'))
 
         napr = gcmd.get_int('NAPR', 0)
