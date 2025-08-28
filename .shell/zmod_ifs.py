@@ -375,10 +375,6 @@ class zmod_ifs:
 
     # Извлечь пруток из IFS
     def cmd_REMOVE_PRUTOK_IFS(self, gcmd):
-        if not self.ifs:
-            self.gcode.run_script_from_command("_IFS_OFF")
-            return
-
         prutok = gcmd.get_int('PRUTOK', 1)
         need_stop = gcmd.get_int('NEED_STOP', 1)
         config = self.get_prutok_config(prutok)
@@ -401,10 +397,6 @@ class zmod_ifs:
 
     # Вставить пруток в IFS
     def cmd_INSERT_PRUTOK_IFS(self, gcmd):
-        if not self.ifs:
-            self.gcode.run_script_from_command("_IFS_OFF")
-            return
-
         prutok = gcmd.get_int('PRUTOK', 1)
         need_stop = gcmd.get_int('NEED_STOP', 1)
         config = self.get_prutok_config(prutok)
