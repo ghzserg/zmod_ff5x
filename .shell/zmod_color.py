@@ -1132,7 +1132,7 @@ class zmod_color:
                 payload = {
                     "cmd": "ipdMs_cmd",
                     "args": {
-                        "action": action
+                        "action": napr
                     }
                 }
 
