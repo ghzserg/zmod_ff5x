@@ -346,7 +346,7 @@ class zmod_ifs:
     # Указать текущий пруток
     def cmd_SET_CURRENT_PRUTOK(self, gcmd):
         if not self.ifs:
-            self.gcode.run_script_from_command(f"_IFS_OFF")
+            self.gcode.run_script_from_command("_IFS_OFF")
             return
         cur_prutok = 99
 
@@ -376,7 +376,7 @@ class zmod_ifs:
     # Извлечь пруток из IFS
     def cmd_REMOVE_PRUTOK_IFS(self, gcmd):
         if not self.ifs:
-            self.gcode.run_script_from_command(f"_IFS_OFF")
+            self.gcode.run_script_from_command("_IFS_OFF")
             return
 
         prutok = gcmd.get_int('PRUTOK', 1)
@@ -402,7 +402,7 @@ class zmod_ifs:
     # Вставить пруток в IFS
     def cmd_INSERT_PRUTOK_IFS(self, gcmd):
         if not self.ifs:
-            self.gcode.run_script_from_command(f"_IFS_OFF")
+            self.gcode.run_script_from_command("_IFS_OFF")
             return
 
         prutok = gcmd.get_int('PRUTOK', 1)
@@ -459,7 +459,7 @@ class zmod_ifs:
     cmd_IFS_AUTOINSERT_help = "Автоматическая загрузка филамента"
     def cmd_IFS_AUTOINSERT(self, gcmd):
         if not self.ifs:
-            self.gcode.run_script_from_command(f"_IFS_OFF")
+            self.gcode.run_script_from_command("_IFS_OFF")
             return
 
         prutok = gcmd.get_int('PRUTOK', 1)
@@ -514,7 +514,7 @@ class zmod_ifs:
 
     def _cmd_IFS_F10(self, prutok, leng, speed):
         if not self.ifs:
-            self.gcode.run_script_from_command(f"_IFS_OFF")
+            self.gcode.run_script_from_command("_IFS_OFF")
             return
 
         self.gcode.respond_info(f"Вставить пруток {prutok} длинной {leng} со скоростью {speed}")
@@ -525,7 +525,7 @@ class zmod_ifs:
     # Загрузить пруток
     def cmd_IFS_F10(self, gcmd):
         if not self.ifs:
-            self.gcode.run_script_from_command(f"_IFS_OFF")
+            self.gcode.run_script_from_command("_IFS_OFF")
             return
 
         prutok = gcmd.get_int('PRUTOK', 1)
@@ -564,7 +564,7 @@ class zmod_ifs:
 
     def _cmd_IFS_F11(self, prutok, leng, speed):
         if not self.ifs:
-            self.gcode.run_script_from_command(f"_IFS_OFF")
+            self.gcode.run_script_from_command("_IFS_OFF")
             return
 
         self.gcode.respond_info(f"Извлечь пруток {prutok} длинной {leng} со скоростью {speed}")
@@ -575,7 +575,7 @@ class zmod_ifs:
     # Выгрузить пруток
     def cmd_IFS_F11(self, gcmd):
         if not self.ifs:
-            self.gcode.run_script_from_command(f"_IFS_OFF")
+            self.gcode.run_script_from_command("_IFS_OFF")
             return
 
         prutok = gcmd.get_int('PRUTOK', 1)
@@ -603,7 +603,7 @@ class zmod_ifs:
     # Пометить пруток как вставленный
     def cmd_IFS_F23(self, gcmd):
         if not self.ifs:
-            self.gcode.run_script_from_command(f"_IFS_OFF")
+            self.gcode.run_script_from_command("_IFS_OFF")
             return
 
         prutok = gcmd.get_int('PRUTOK', 1)
@@ -619,7 +619,7 @@ class zmod_ifs:
     # Заблокировать пруток
     def cmd_IFS_F24(self, gcmd):
         if not self.ifs:
-            self.gcode.run_script_from_command(f"_IFS_OFF")
+            self.gcode.run_script_from_command("_IFS_OFF")
             return
 
         prutok = gcmd.get_int('PRUTOK', 1)
@@ -634,7 +634,7 @@ class zmod_ifs:
     # Разблокировать пруток
     def cmd_IFS_F39(self, gcmd):
         if not self.ifs:
-            self.gcode.run_script_from_command(f"_IFS_OFF")
+            self.gcode.run_script_from_command("_IFS_OFF")
             return
 
         prutok = gcmd.get_int('PRUTOK', 1)
@@ -649,7 +649,7 @@ class zmod_ifs:
     # Остановить движение
     def cmd_IFS_F112(self, gcmd):
         if not self.ifs:
-            self.gcode.run_script_from_command(f"_IFS_OFF")
+            self.gcode.run_script_from_command("_IFS_OFF")
             return
 
         wait = gcmd.get_int('WAIT', 0)
@@ -675,7 +675,7 @@ class zmod_ifs:
 
     def cmd__IFS_REMOVE_PRUTOK(self, gcmd, prutok, force, config):
         if not self.ifs:
-            self.gcode.run_script_from_command(f"_IFS_OFF")
+            self.gcode.run_script_from_command("_IFS_OFF")
             return
 
         if (not self.get_extruder_sensor() and force == 0) or prutok == 0:
@@ -706,7 +706,7 @@ class zmod_ifs:
 
     def cmd_IFS_REMOVE_PRUTOK(self, gcmd):
         if not self.ifs:
-            self.gcode.run_script_from_command(f"_IFS_OFF")
+            self.gcode.run_script_from_command("_IFS_OFF")
             return
 
         prutok = gcmd.get_int('PRUTOK', 0)
@@ -717,7 +717,7 @@ class zmod_ifs:
 
     def cmd_IFS_REMOVE_CURRENT_PRUTOK(self, gcmd):
         if not self.ifs:
-            self.gcode.run_script_from_command(f"_IFS_OFF")
+            self.gcode.run_script_from_command("_IFS_OFF")
             return
 
         if not self.get_extruder_sensor():
