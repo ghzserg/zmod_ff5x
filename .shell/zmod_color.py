@@ -542,7 +542,7 @@ class zmod_color:
             config = json.load(file)
 
             ffm_info = config["FFMInfo"]
-            response_data["detail"]["hasMatlStation"] = self.ifs
+            response_data["detail"]["hasMatlStation"] = self.zmod_ifs.get_ifs_status
             response_data["detail"]["indepMatlInfo"] = {
                 "materialName": ffm_info.get("ffmType0", "N/A"),
                 "materialColor": ffm_info["ffmColor0"]
