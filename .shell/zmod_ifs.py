@@ -393,6 +393,7 @@ class zmod_ifs:
             f"FILAMENT_TUBE_LENGTH={config['filament_tube_length']} "
             f"FILAMENT_DROP_LENGTH={config['filament_drop_length']} "
             f"FILAMENT_FAN_SPEED={config['filament_fan_speed']} "
+            f"NOZZLE_CLEANING_LENGTH={config['nozzle_cleaning_length']} "
         )
 
     # Вставить пруток в IFS
@@ -423,6 +424,7 @@ class zmod_ifs:
             f"FILAMENT_DROP_LENGTH={config['filament_drop_length']} "
             f"FILAMENT_DROP_LENGTH_ADD={filament_drop_length_add} "
             f"FILAMENT_FAN_SPEED={config['filament_fan_speed']} "
+            f"NOZZLE_CLEANING_LENGTH={config['nozzle_cleaning_length']} "
         )
 
     def print_result(self, ret_code, values, prutok, info=True):
