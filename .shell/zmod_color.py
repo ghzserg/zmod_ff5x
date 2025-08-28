@@ -669,8 +669,8 @@ class zmod_color:
             status_code, response_data = self.zsend_post_request("/detail")
         else:
             status_code, response_data = self.get_printer_data_detail()
-        gcmd.respond_raw(json.dumps(response_data))
         if status_code:
+            self.ifs = response_data.get('detail', {}).get('hasMatlStation', False)
             gcmd.respond_raw(f"// action:prompt_begin {self._t('prompt_material')}")
 
             result = self.parse_printer_response(response_data)
@@ -721,6 +721,7 @@ class zmod_color:
         else:
             status_code, response_data = self.get_printer_data_detail()
         if status_code:
+            self.ifs = response_data.get('detail', {}).get('hasMatlStation', False)
             result = self.parse_printer_response(response_data)
 
             default_values = [result[i]['ID'] if i < len(result) else result[-1]['ID'] for i in range(4)] if result else [1, 1, 1, 1]
@@ -735,7 +736,6 @@ class zmod_color:
                 if tool < 1 or tool > 4:
                     raise gcmd.error(self._t('error_tool', i, tool))
 
-            self.ifs = response_data.get('detail', {}).get('hasMatlStation', False)
             if not self.ifs:
                 silent = 2
 
@@ -841,6 +841,7 @@ class zmod_color:
         else:
             status_code, response_data = self.get_printer_data_detail()
         if status_code:
+            self.ifs = response_data.get('detail', {}).get('hasMatlStation', False)
             result = self.parse_printer_response(response_data)
 
             default_values = [result[i]['ID'] if i < len(result) else result[-1]['ID'] for i in range(4)] if result else [1, 1, 1, 1]
@@ -937,6 +938,7 @@ class zmod_color:
         else:
             status_code, response_data = self.get_printer_data_detail()
         if status_code:
+            self.ifs = response_data.get('detail', {}).get('hasMatlStation', False)
             result = self.parse_printer_response(response_data)
 #            gcmd.respond_raw(json.dumps(response_data, indent=2))
 
