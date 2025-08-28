@@ -735,6 +735,10 @@ class zmod_color:
                 if tool < 1 or tool > 4:
                     raise gcmd.error(self._t('error_tool', i, tool))
 
+            self.ifs = response_data.get('detail', {}).get('hasMatlStation', False)
+            if not self.ifs:
+                silent = 2
+
             if silent == 0:
                 gcmd.respond_raw(f"// action:prompt_begin {self._t('prompt_material')}")
                 gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_map_color')}")
