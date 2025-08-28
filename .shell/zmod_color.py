@@ -1045,14 +1045,24 @@ class zmod_color:
             if ztype not in valid_types:
                 raise gcmd.error(self._t('error_type', ztype, ', '.join(valid_types[:-1])))
 
-            payload = {
-                "cmd": "msConfig_cmd",
-                "args": {
-                    "slot": zslot,
-                    "mt": ztype,
-                    "rgb": f"#{zhex}"
+            if zslot!=0:
+                payload = {
+                    "cmd": "msConfig_cmd",
+                    "args": {
+                        "slot": zslot,
+                        "mt": ztype,
+                        "rgb": f"#{zhex}"
+                    }
                 }
-            }
+            else:
+                payload = {
+                    "cmd": "ipdMsConfig_cmd",
+                    "args": {
+                        "mt": ztype,
+                        "rgb": f"#{zhex}"
+                    }
+                }
+
             if self.display:
                 status_code, response_data = self.zsend_post_request("/control", payload=payload)
             else:
