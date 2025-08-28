@@ -528,6 +528,9 @@ class zmod_color:
     def get_printer_data_detail(self):
         response_data = {
             "detail": {
+                "hasMatlStation": False,
+                "indepMatlInfo": {
+                    },
                 "matlStationInfo": {
                     "slotInfos": []
                 }
@@ -614,19 +617,34 @@ class zmod_color:
 
     def parse_printer_response(self, response_data):
         slots_info = []
-        slots = response_data.get('detail', {}).get('matlStationInfo', {}).get('slotInfos', [])
-        for slot in slots:
-            if slot.get('hasFilament', True):
-                slot_id = slot.get('slotId', 'N/A')
+        self.ifs = response_data.get('detail', {}).get('hasMatlStation', False)
+        if self.ifs:
+            slots = response_data.get('detail', {}).get('matlStationInfo', {}).get('slotInfos', [])
+            for slot in slots:
+                if slot.get('hasFilament', True):
+                    slot_id = slot.get('slotId', 'N/A')
+                    material = slot.get('materialName', 'N/A').upper()
+                    hex_color = slot.get('materialColor', '161616').replace("#", "")
+                    color_name = COLOR_MAPPING.get(hex_color.lower(), {}).get(self.language, hex_color)
+                    slots_info.append({
+                        'ID': slot_id,
+                        'Material': material,
+                        'Color': color_name,
+                        'HEX': hex_color.upper()
+                    })
+        else:
+            slot = response_data.get('detail', {}).get('indepMatlInfo', {})
+            if slot:
                 material = slot.get('materialName', 'N/A').upper()
                 hex_color = slot.get('materialColor', '161616').replace("#", "")
                 color_name = COLOR_MAPPING.get(hex_color.lower(), {}).get(self.language, hex_color)
                 slots_info.append({
-                    'ID': slot_id,
+                    'ID': 0,
                     'Material': material,
                     'Color': color_name,
                     'HEX': hex_color.upper()
                 })
+
         return slots_info
 
     def cmd_SET_EXTRUDER_SLOT(self, gcmd):
