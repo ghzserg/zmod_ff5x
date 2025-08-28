@@ -677,6 +677,7 @@ class zmod_color:
         else:
             status_code, response_data = self.get_printer_data_detail()
         if status_code:
+            gcmd.respond_raw(json.dumps(response_data))
             gcmd.respond_raw(f"// action:prompt_begin {self._t('prompt_material')}")
 
             result = self.parse_printer_response(response_data)
