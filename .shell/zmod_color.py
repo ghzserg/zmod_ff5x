@@ -513,9 +513,10 @@ class zmod_color:
         return "Not found"
 
     def get_current_channel(self):
-        with open(FFCONFIG, 'r') as file:
-            config = json.load(file)
-            return int(config["FFMInfo"].get("channel", 0))
+        if self.ifs:
+            with open(FFCONFIG, 'r') as file:
+                config = json.load(file)
+                return int(config["FFMInfo"].get("channel", 0))
         return 0
 
     def get_extruder_sensor(self):
@@ -683,6 +684,7 @@ class zmod_color:
                         break
 
             gcmd.respond_raw(f"// action:prompt_text {prompt_text}")
+            gcmd.respond_raw(f"// action:prompt_text IFS: {self.ifs}")
 
             gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_choose')}")
             gcmd.respond_raw("// action:prompt_button_group_start")
