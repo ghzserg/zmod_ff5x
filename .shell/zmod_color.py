@@ -910,9 +910,9 @@ class zmod_color:
             return
 
         if not self.ifs:
-            gcmd.respond_raw(f"//info IFS: Off. T{channel} ignore")
+            gcmd.respond_raw(f"info IFS: Off. T{channel} ignore")
             return
-        gcmd.respond_raw(f"//info T{channel}")
+        gcmd.respond_raw(f"info T{channel}")
 
         try:
             with open(FILE_CONFIG, 'r') as f:
