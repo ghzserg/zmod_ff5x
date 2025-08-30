@@ -935,7 +935,7 @@ class IfsData:
         with self.lock:
             if port < 0 or port > 4:
                 self.cur_port = 0
-            else
+            else:
                 self.cur_port = port
 
     def get_stall(self):
