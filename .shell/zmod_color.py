@@ -931,6 +931,10 @@ class zmod_color:
             if restore == 1:
                 gcmd.respond_raw(f"!! Ошибка при смене филамента: {str(e)}\nВстаю на паузу")
                 gcmd.respond_raw(f"tgalarm_photo Ошибка при смене филамента: {str(e)}\nВстаю на паузу")
+                try:
+                    self.gcode.run_script_from_command("IFS_F39 PRUTOK=1\nIFS_F39 PRUTOK=2\IFS_F39 PRUTOK=3\nIFS_F39 PRUTOK=4\n")
+                except:
+                    pass
                 pause_resume = self.printer.lookup_object('pause_resume')
                 pause_resume.send_pause_command()
                 self.gcode.run_script_from_command("PAUSE\nM400\n")
