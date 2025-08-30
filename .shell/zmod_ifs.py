@@ -199,6 +199,9 @@ class zmod_ifs:
     def get_ifs_sensor(self):
         return self.ifs_data.get_stall()
 
+    def set_cur_port(self, port):
+        return self.ifs_data.set_cur_port(port)
+
     def send_command_and_wait(self, command, timeout=5.0, result=None):
         """
         Отправляет команду и возвращает ответ.
@@ -256,7 +259,9 @@ class zmod_ifs:
     def get_current_channel_from_config(self):
         with open(FFCONFIG, 'r') as file:
             config = json.load(file)
-            return int(config["FFMInfo"].get("channel", 0))
+            prutok = int(config["FFMInfo"].get("channel", 0))
+            self.set_cur_port(prutok)
+            return prutok
         return 0
 
     # Получить тип прутка из конфига
@@ -393,6 +398,7 @@ class zmod_ifs:
             config = json.load(file)
             ffm_info = config["FFMInfo"]
             prutok = ffm_info.get("channel", 1)
+            self.set_cur_port(prutok)
             filament_type = ffm_info.get(f"ffmType{prutok}", "PLA")
             filament_color = ffm_info.get(f"ffmColor{prutok}", "#161616")
 
@@ -862,6 +868,7 @@ class zmod_ifs:
 class IfsData:
     def __init__(self):
         self.lock = threading.Lock()
+        self.cur_port = 0       # Текущий активный порт
         self.Port1 = False      # Загрузка порта 1
         self.Port2 = False      # Загрузка порта 2
         self.Port3 = False      # Загрузка порта 3
@@ -869,7 +876,7 @@ class IfsData:
         self.Silk = 0           # Загруженные порты
         self.Chan = 0           # Текущий активный порт
         self.Insert = 0         # В каком порту появился филамент
-        self.Stall = 0          # Скорость движения нити
+        self.Stall = False      # Движение по любому порту
         self.State = 0          # Состояние IFS
         self.NeedInsert = False # Нужно ли вставлять пруток
 
@@ -881,7 +888,7 @@ class IfsData:
         silk = 0
         chan = 0
         insert = 0
-        stall = 0
+        stall_state = 0
         state = 0
 
         state_match = re.search(r'FFS_state:\s*(\d+)', data_str)
@@ -907,23 +914,30 @@ class IfsData:
 
         stall_match = re.search(r'stall_state:\s*(\d+)', data_str)
         if stall_match:
-            stall = int(stall_match.group(1))
+            stall_state = int(stall_match.group(1))
 
         with self.lock:
             self.Port1 = port1
             self.Port2 = port2
             self.Port3 = port3
             self.Port4 = port4
+            if self.cur_port == 0:
+                self.Stall = stall_state != 0
+            else:
+                self.Stall = (stall_state >> (self.cur_port - 1) ) & 1 == 1
             self.Silk = silk_state
             self.State = state
             self.Chan = chan
             self.NeedInsert = insert != 0 and insert != self.Insert and state == FFS_STATUS_READY
             self.Insert = insert
-            self.Stall = stall
+
+    def set_cur_port(self, port):
+        with self.lock:
+            self.cur_port = port
 
     def get_stall(self):
         with self.lock:
-            return self.Stall != 0
+            return self.Stall
 
     # Возвращает статус конкретного порта
     def get_port(self, port):

@@ -516,7 +516,10 @@ class zmod_color:
         if self.ifs:
             with open(FFCONFIG, 'r') as file:
                 config = json.load(file)
-                return int(config["FFMInfo"].get("channel", 0))
+                prutok = int(config["FFMInfo"].get("channel", 0))
+                if not self.display:
+                    self.ifs.set_cur_port(prutok)
+                return prutok
         return 0
 
     def get_extruder_sensor(self):
@@ -665,6 +668,8 @@ class zmod_color:
                 config = json.load(file)
 
                 config["FFMInfo"]["channel"] = zslot
+                if not self.display:
+                    self.ifs.set_cur_port(zslot)
 
                 with open(FFCONFIG, 'w') as file:
                     json.dump(config, file, indent=2)
