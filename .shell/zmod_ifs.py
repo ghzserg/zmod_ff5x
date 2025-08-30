@@ -358,7 +358,7 @@ class zmod_ifs:
                 try:
                     with open(FILE_CONFIG, 'r') as f:
                         mapping = json.load(f)
-                        cur_prutok = mapping.index(prutok)
+                        cur_prutok = mapping.index(n_prutok)
                 except Exception as e:
                     cur_prutok = 98
 
