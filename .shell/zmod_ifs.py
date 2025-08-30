@@ -73,6 +73,7 @@ class zmod_ifs:
         self.gcode.register_command('INSERT_PRUTOK_IFS', self.cmd_INSERT_PRUTOK_IFS)    # Вставить пруток в IFS по номеру прутка
         self.gcode.register_command('SET_CURRENT_PRUTOK', self.cmd_SET_CURRENT_PRUTOK)  # Указать klipper какой пруток сейчас активен
         self.gcode.register_command('ANALOG_PRUTOK', self.cmd_ANALOG_PRUTOK)            # Загрузить аналогичный пруток
+        self.gcode.register_command('IFS_MOTION', self.cmd_IFS_MOTION)                  # Проверить, остановился или кончился филамент
 
         # Внутренние конманды начинаются с IFS
         self.gcode.register_command('IFS_AUTOINSERT', self.cmd_IFS_AUTOINSERT, desc=self.cmd_IFS_AUTOINSERT_help)
@@ -343,6 +344,14 @@ class zmod_ifs:
         config = data.get(filament, {})
         config['filament_type'] = filament
         return config
+
+    # Проверить остановился или закончился пруток
+    def cmd_IFS_MOTION(self, gcmd):
+        cur_prutok=self.get_current_channel_from_config()
+        if self.get_port(cur_prutok):
+            self.gcode.run_script_from_command("_PRINT_IFS_MOTION")
+        else:
+            self.gcode.run_script_from_command("RESUME_MOTION_SENSOR")
 
     # Указать текущий пруток
     def cmd_SET_CURRENT_PRUTOK(self, gcmd):
