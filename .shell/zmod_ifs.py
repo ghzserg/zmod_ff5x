@@ -980,7 +980,7 @@ class IfsData:
                 'Chan':   self.Chan,
                 'Insert': self.Insert,
                 'NeedInsert': self.NeedInsert,
-                'Stall':  self.Stall
+                'Stall':  self.Stall,
                 'stall_state': self.stall_state
             }
 
