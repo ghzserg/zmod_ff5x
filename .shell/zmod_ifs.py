@@ -143,7 +143,7 @@ class zmod_ifs:
                     else:
                         silk_count = 0
                 if stall and Port != 0:        # проверяем движение прутка
-                    current_stall = current_values['Stall']
+                    current_stall = current_values['stall_state']
                     if ((current_stall >> (Port - 1)) & 1 == 1) == stall['status']:
                         stall_count += 1
                         if stall_count >= stall['count']:
@@ -888,6 +888,7 @@ class IfsData:
         self.Chan = 0           # Текущий активный порт
         self.Insert = 0         # В каком порту появился филамент
         self.Stall = False      # Движение по любому порту
+        self.stall_state = 0    # Движение по любому порту RAW
         self.State = 0          # Состояние IFS
         self.NeedInsert = False # Нужно ли вставлять пруток
 
@@ -932,6 +933,7 @@ class IfsData:
             self.Port2 = port2
             self.Port3 = port3
             self.Port4 = port4
+            self.stall_state = stall_state
             if self.cur_port == 0:
                 self.Stall = stall_state != 0
             else:
@@ -979,6 +981,7 @@ class IfsData:
                 'Insert': self.Insert,
                 'NeedInsert': self.NeedInsert,
                 'Stall':  self.Stall
+                'stall_state': self.stall_state
             }
 
 
