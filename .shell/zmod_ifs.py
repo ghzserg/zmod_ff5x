@@ -711,7 +711,7 @@ class zmod_ifs:
         wait = gcmd.get_int('WAIT', 0)
 
         response = self.send_command_and_wait(f"F112", result="F112 ok.")
-        self.gcode.respond_info(f"Остановка движения прутка")
+        self.gcode.respond_info(f"Останавливаю движение прутка")
         self.info(f"F112 > {response}")
         if wait == 1:
             self.wait_for_state()
