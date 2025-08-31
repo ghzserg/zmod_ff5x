@@ -724,8 +724,8 @@ class zmod_ifs:
             self.gcode.run_script_from_command("_IFS_OFF")
             return
 
-        response = self.send_command_and_wait(f"F13")
-        self.info(f"F13 > {response}")
+        response = self.send_command_and_wait("F13")
+        self.print_str(f"F13 > {response}")
 
     cmd_IFS_STATUS_help = "Get current IFS status"
     def cmd_IFS_STATUS(self, gcmd):
