@@ -83,6 +83,7 @@ class zmod_ifs:
         self.gcode.register_command('IFS_REMOVE_CURRENT_PRUTOK', self.cmd_IFS_REMOVE_CURRENT_PRUTOK)
 
         self.gcode.register_command('IFS_F10', self.cmd_IFS_F10)        # Вставить пруток
+        self.gcode.register_command('IFS_F13', self.cmd_IFS_F13)        # Извлечь пруток
         self.gcode.register_command('IFS_F11', self.cmd_IFS_F11)        # Извлечь пруток
         self.gcode.register_command('IFS_F23', self.cmd_IFS_F23)        # Помечаем пруток как вставленный
         self.gcode.register_command('IFS_F24', self.cmd_IFS_F24)        # Прижим филамента
@@ -716,6 +717,15 @@ class zmod_ifs:
         self.info(f"F112 > {response}")
         if wait == 1:
             self.wait_for_state()
+
+    # Статус
+    def cmd_IFS_F13(self, gcmd):
+        if not self.ifs:
+            self.gcode.run_script_from_command("_IFS_OFF")
+            return
+
+        response = self.send_command_and_wait(f"F13")
+        self.info(f"F13 > {response}")
 
     cmd_IFS_STATUS_help = "Get current IFS status"
     def cmd_IFS_STATUS(self, gcmd):
