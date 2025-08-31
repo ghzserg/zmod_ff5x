@@ -358,7 +358,6 @@ class zmod_ifs:
             self.gcode.run_script_from_command("_PRINT_IFS_MOTION PAUSE=1")
         else:
             self.gcode.run_script_from_command("_PRINT_IFS_MOTION PAUSE=0")
-            self.gcode.run_script_from_command("RESUME_MOTION_SENSOR")
 
     # Указать текущий пруток
     def cmd_SET_CURRENT_PRUTOK(self, gcmd):
