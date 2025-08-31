@@ -518,7 +518,7 @@ class zmod_color:
                 config = json.load(file)
                 prutok = int(config["FFMInfo"].get("channel", 0))
                 if not self.display:
-                    self.ifs.set_cur_port(prutok)
+                    self.zmod_ifs.set_cur_port(prutok)
                 return prutok
         return 0
 
@@ -669,7 +669,7 @@ class zmod_color:
 
                 config["FFMInfo"]["channel"] = zslot
                 if not self.display:
-                    self.ifs.set_cur_port(zslot)
+                    self.zmod_ifs.set_cur_port(zslot)
 
                 with open(FFCONFIG, 'w') as file:
                     json.dump(config, file, indent=2)
