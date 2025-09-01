@@ -462,9 +462,6 @@ class zmod_ifs:
 
     # Очистить пруток от IFS до экструдера
     def cmd_PURGE_PRUTOK_IFS(self, gcmd):
-        if not self.get_extruder_sensor():
-            return
-
         prutok = self.get_current_channel_from_config()
         config = self.get_prutok_config(prutok)
 
@@ -483,6 +480,8 @@ class zmod_ifs:
                 f"FILAMENT_FAN_SPEED={config['filament_fan_speed']} "
                 f"NOZZLE_CLEANING_LENGTH={config['nozzle_cleaning_length']} "
             )
+        self.gcode.run_script_from_command("SET_GCODE_VARIABLE MACRO=_A_CHANGE_FILAMENT VARIABLE=purge VALUE=0")
+
     # Вставить пруток в IFS
     def cmd_INSERT_PRUTOK_IFS(self, gcmd):
         prutok = gcmd.get_int('PRUTOK', 1)
