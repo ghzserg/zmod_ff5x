@@ -465,7 +465,7 @@ class zmod_ifs:
         prutok = self.get_current_channel_from_config()
         config = self.get_prutok_config(prutok)
 
-        while not self.get_extruder_sensor():
+        while self.get_extruder_sensor():
             self.gcode.run_script_from_command(
                 f"_PURGE_PRUTOK_IFS "
                 f"PRUTOK={prutok} "
