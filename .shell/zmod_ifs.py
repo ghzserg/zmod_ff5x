@@ -432,7 +432,7 @@ class zmod_ifs:
                 with open(FILE_CONFIG, 'w') as f:
                     json.dump(new_mapping, f)
 
-                self.gcode.run_script_from_command(f"_A_CHANGE_FILAMENT CHANNEL={t_prutok} RESTORE=0")
+                self.gcode.run_script_from_command(f"_A_CHANGE_FILAMENT CHANNEL={t_prutok} RESTORE=1")
                 self.gcode.run_script_from_command("RESUME")
                 return
 
