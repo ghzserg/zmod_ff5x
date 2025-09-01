@@ -42,6 +42,7 @@ class ZmodIfsMotionSensor:
                 self._handle_not_printing)
         # Регистрация объекта
         self.printer.add_object(f"filament_motion_sensor {self.name}", self)
+        self.gcode = self.printer.lookup_object('gcode')
         self.gcode.register_command('IFS_MOTION_ON', self.cmd_IFS_MOTION_ON)
 
     def cmd_IFS_MOTION_ON(self, gcmd):
