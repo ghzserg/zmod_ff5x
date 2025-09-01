@@ -69,6 +69,7 @@ class zmod_ifs:
 
         # Регистрация команд G-кода
         # Внешние команды
+        self.gcode.register_command('PURGE_PRUTOK_IFS', self.cmd_PURGE_PRUTOK_IFS)      # Очистить пруток от IFS до экструдера
         self.gcode.register_command('REMOVE_PRUTOK_IFS', self.cmd_REMOVE_PRUTOK_IFS)    # Удаляет пруток по номеру прутка
         self.gcode.register_command('INSERT_PRUTOK_IFS', self.cmd_INSERT_PRUTOK_IFS)    # Вставить пруток в IFS по номеру прутка
         self.gcode.register_command('SET_CURRENT_PRUTOK', self.cmd_SET_CURRENT_PRUTOK)  # Указать klipper какой пруток сейчас активен
@@ -459,6 +460,29 @@ class zmod_ifs:
             f"NOZZLE_CLEANING_LENGTH={config['nozzle_cleaning_length']} "
         )
 
+    # Очистить пруток от IFS до экструдера
+    def cmd_PURGE_PRUTOK_IFS(self, gcmd):
+        if not self.get_extruder_sensor():
+            return
+
+        prutok = self.get_current_channel_from_config()
+        config = self.get_prutok_config(prutok)
+
+        while not self.get_extruder_sensor():
+            self.gcode.run_script_from_command(
+                f"_PURGE_PRUTOK_IFS "
+                f"PRUTOK={prutok} "
+                f"FILAMENT_TYPE={config['filament_type']} "
+                f"FILAMENT_UNLOAD_SPEED={config['filament_unload_speed']} "
+                f"FILAMENT_LOAD_SPEED={config['filament_load_speed']} "
+                f"FILAMENT_UNLOAD_BEFORE_CUTTING={config['filament_unload_before_cutting']} "
+                f"FILAMENT_UNLOAD_AFTER_CUTTING={config['filament_unload_after_cutting']} "
+                f"FILAMENT_UNLOAD_AFTER_DROP={config['filament_unload_after_drop']} "
+                f"FILAMENT_TUBE_LENGTH={config['filament_tube_length']} "
+                f"FILAMENT_DROP_LENGTH={config['filament_drop_length']} "
+                f"FILAMENT_FAN_SPEED={config['filament_fan_speed']} "
+                f"NOZZLE_CLEANING_LENGTH={config['nozzle_cleaning_length']} "
+            )
     # Вставить пруток в IFS
     def cmd_INSERT_PRUTOK_IFS(self, gcmd):
         prutok = gcmd.get_int('PRUTOK', 1)
