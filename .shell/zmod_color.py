@@ -712,8 +712,6 @@ class zmod_color:
 
     def cmd_SET_ZCOLOR(self, gcmd):
         silent = gcmd.get_int('SILENT', 0)
-        if silent == 0:
-            gcmd.respond_raw("// action:prompt_end")
 
         fname = gcmd.get('FILENAME', '')
         if fname == '':
@@ -752,6 +750,7 @@ class zmod_color:
                         raise gcmd.error(self._t('error_tool', i, tool))
 
             if silent == 0:
+                gcmd.respond_raw("// action:prompt_end")
                 gcmd.respond_raw(f"// action:prompt_begin {self._t('prompt_material')}")
                 gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_map_color')}")
                 gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_file', fname)}")

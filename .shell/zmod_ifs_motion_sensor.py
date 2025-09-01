@@ -44,13 +44,13 @@ class ZmodIfsMotionSensor:
         self.printer.add_object(f"filament_motion_sensor {self.name}", self)
         self.gcode = self.printer.lookup_object('gcode')
         self.gcode.register_command('IFS_MOTION_ON', self.cmd_IFS_MOTION_ON)
+        self.gcode.register_command('IFS_MOTION_OFF', self.cmd_IFS_MOTION_OFF)
 
     def cmd_IFS_MOTION_ON(self, gcmd):
         if self.new:
             self.runout_helper.note_filament_present(eventtime, True)
         else:
             self.runout_helper.note_filament_present(True)
-        self.gcode.register_command('IFS_MOTION_ON', self.cmd_IFS_MOTION_ON)
 
     def cmd_IFS_MOTION_OFF(self, gcmd):
         if self.new:
