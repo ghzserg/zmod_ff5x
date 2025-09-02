@@ -838,7 +838,7 @@ class zmod_color:
                     channel_num = match.group(1)
                     self.gcode.run_script_from_command(f"SET_CURRENT_PRUTOK CHANNEL={channel_num}")
                     return
-        self.gcode.run_script_from_command(f"SET_CURRENT_PRUTOK")
+        self.gcode.run_script_from_command("SET_CURRENT_PRUTOK")
 
     def cmd_PRINT_ZCOLOR(self, gcmd):
         gcmd.respond_raw("// action:prompt_end")
@@ -916,7 +916,7 @@ class zmod_color:
         if not self.ifs:
             gcmd.respond_raw(f"info IFS: Off. T{channel} ignore")
             return
-        gcmd.respond_raw(f"info T{channel}")
+        gcmd.respond_raw(f"// T{channel}")
 
         try:
             with open(FILE_CONFIG, 'r') as f:
