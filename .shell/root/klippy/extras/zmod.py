@@ -1,1 +1,1 @@
-/usr/data/config/mod/.shell/zmod.py
+/opt/config/mod/.shell/zmod.py

@@ -1,1 +1,0 @@
-/usr/data/config/mod/.shell/zmod_ifs_switch_sensor.py
