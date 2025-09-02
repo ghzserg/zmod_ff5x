@@ -20,6 +20,7 @@ PROGRAM_DIR="/usr/prog/PROGRAM/"
 GLINES=50000
 UPDATE_DIR="/usr/data/update/"
 ZLANG="en"
+
 if grep -q "language: en" ${MOD_CONF}/mod_data/lang.cfg; then ZLANG="en";
 else if grep -q "language: ru" ${MOD_CONF}/mod_data/lang.cfg; then ZLANG="ru";
 else if grep -q "language: de" ${MOD_CONF}/mod_data/lang.cfg; then ZLANG="de";
