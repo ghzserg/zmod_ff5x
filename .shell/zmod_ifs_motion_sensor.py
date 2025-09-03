@@ -47,6 +47,7 @@ class ZmodIfsMotionSensor:
         self.gcode.register_command('IFS_MOTION_OFF', self.cmd_IFS_MOTION_OFF)
 
     def cmd_IFS_MOTION_ON(self, gcmd):
+        eventtime = self.reactor.monotonic()
         self._update_filament_runout_pos(eventtime)
         if self.new:
             self.runout_helper.note_filament_present(eventtime, True)
@@ -55,6 +56,7 @@ class ZmodIfsMotionSensor:
 
     def cmd_IFS_MOTION_OFF(self, gcmd):
         if self.new:
+            eventtime = self.reactor.monotonic()
             self.runout_helper.note_filament_present(eventtime, False)
         else:
             self.runout_helper.note_filament_present(False)
