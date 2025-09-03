@@ -47,6 +47,7 @@ class ZmodIfsMotionSensor:
         self.gcode.register_command('IFS_MOTION_OFF', self.cmd_IFS_MOTION_OFF)
 
     def cmd_IFS_MOTION_ON(self, gcmd):
+        self._update_filament_runout_pos(eventtime)
         if self.new:
             self.runout_helper.note_filament_present(eventtime, True)
         else:
@@ -91,6 +92,10 @@ class ZmodIfsMotionSensor:
         # Получаем статус филамента из zmod_ifs
         if self.ifs.get_ifs_sensor():
             self._update_filament_runout_pos(eventtime)
+
+            extruder_pos = self._get_extruder_pos(eventtime)
+            logging.info(f"MS: ON {extruder_pos} {self.filament_runout_pos} True")
+
             # Check for filament insertion
             # Filament is always assumed to be present on an encoder event
             if self.new:
@@ -99,6 +104,9 @@ class ZmodIfsMotionSensor:
                 self.runout_helper.note_filament_present(True)
         else:
             extruder_pos = self._get_extruder_pos(eventtime)
+
+            logging.info(f"MS: OF {extruder_pos} {self.filament_runout_pos} {extruder_pos < self.filament_runout_pos}")
+
             # Check for filament runout
             if self.new:
                 self.runout_helper.note_filament_present(eventtime,
@@ -106,6 +114,7 @@ class ZmodIfsMotionSensor:
             else:
                 self.runout_helper.note_filament_present(
                     extruder_pos < self.filament_runout_pos)
+
         return eventtime + CHECK_RUNOUT_TIMEOUT
 
 def load_config_prefix(config):
