@@ -860,7 +860,9 @@ class zmod_ifs:
                         if self.ifs:
                             logging.warning(f"Пустой ответ от устройства {current_command}")
                             self._respond_info(f"Пустой ответ от устройства {current_command}")
-                            self._respond_info(f"IFS отклюен")
+                            self.reactor.register_async_callback(
+                                lambda eventtime: self._safe_run_script("_IFS_OFF")
+                            )
                             self.ifs = False
                         break
                     self.ifs = True
