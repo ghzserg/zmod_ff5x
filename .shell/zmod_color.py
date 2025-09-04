@@ -476,7 +476,7 @@ class zmod_color:
         self.gcode = self.printer.lookup_object('gcode')
         self.gcode.register_command('GET_ZCOLOR', self.cmd_GET_ZCOLOR)
         self.gcode.register_command('SET_ZCOLOR', self.cmd_SET_ZCOLOR)
-        self.gcode.register_command('SET_EXTRUDER_SLOT', self.cmd_SET_EXTRUDER_SLOT)
+        self.gcode.register_command('_SET_EXTRUDER_SLOT', self.cmd_SET_EXTRUDER_SLOT)
         self.gcode.register_command('PRINT_ZCOLOR', self.cmd_PRINT_ZCOLOR)
         self.gcode.register_command('CHANGE_T_ZCOLOR', self.cmd_CHANGE_T_ZCOLOR)
         self.gcode.register_command('_CHANGE_FILAMENT', self.cmd_CHANGE_FILAMENT)
