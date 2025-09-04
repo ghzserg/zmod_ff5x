@@ -878,7 +878,7 @@ class zmod_ifs:
                         if current_values['NeedInsert']:
                             prutok = current_values['Insert']
                             self.reactor.register_async_callback(
-                                lambda eventtime, p=prutok: self._safe_run_script(f"IFS_AUTOINSERT PRUTOK={p}")
+                                lambda eventtime, p=prutok: self._safe_run_script(f"_IFS_AUTOINSERT PRUTOK={p}")
                             )
                     else:
                         #self._respond_info(f"! {command} -> {response}")
