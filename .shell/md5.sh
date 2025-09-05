@@ -59,7 +59,7 @@ EOF
 chmod +x list.link
 
 excludes=(
-    -not -name "*.pyc"
+    -and -not -name "*.pyc"
     -and -not -path "./dev*"
     -and -not -path "./run*"
     -and -not -path "*__pycache__*"
@@ -67,41 +67,38 @@ excludes=(
     -and -not -name "md5.sh"
     -and -not -name "link.sh"
     -and -not -name "list.link"
-    -and -not -path "./.rnd"
-    -and -not -path "./.wpa_cli_history"
-    -and -not -path "./root/printer_data/version.txt"
-    -and -not -path "./etc/dropbear/*"
-    -and -not -path "./etc/timezone"
-    -and -not -path "./etc/localtime"
-    -and -not -path "./opt/config/*"
-    -and -not -path "./opt/PROGRAM/control/*"
-    -and -not -path "./opt/PROGRAM/kernel/*"
-    -and -not -path "./opt/PROGRAM/library/*"
-    -and -not -path "./opt/PROGRAM/software/*"
+    -and -not -path "./usr/bin/cmd_pwm"
+    -and -not -path "./usr/data/config/*"
+    -and -not -path "./usr/prog/PROGRAM/control/*"
+    -and -not -path "./usr/prog/PROGRAM/kernel/*"
+    -and -not -path "./usr/prog/PROGRAM/library/*"
+    -and -not -path "./usr/prog/PROGRAM/software/*"
     -and -not -path "./opt/auto_run.sh"
-    -and -not -path "./root/version"
-    -and -not -path "./root/.viminfo"
-    -and -not -path "./opt/klipper/start.sh"
-    -and -not -path "./opt/klipper/klippy/extras/spi_temperature.py"
-    -and -not -path "./opt/klipper/klippy/extras/virtual_sdcard.py"
-    -and -not -path "./opt/klipper/klippy/extras/gcode_shell_command.py"
-    -and -not -path "./opt/klipper/klippy/extras/buttons.py"
-    -and -not -path "./opt/klipper/klippy/extras/save_variables.py"
-    -and -not -path "./opt/klipper/klippy/mcu.py"
-    -and -not -path "./opt/klipper/klippy/toolhead.py"
-    -and -not -path "./opt/klipper/klippy/webhooks.py"
-    -and -not -path "./opt/key.priv"
-    -and -not -path "./opt/private.pem"
-    -and -not -path "./opt/key.pub"
+    -and -not -path "./usr/prog/klipper/klippy/extras/spi_temperature.py"
+    -and -not -path "./usr/prog/klipper/klippy/extras/gcode_shell_command.py"
+    -and -not -path "./usr/prog/klipper/klippy/extras/buttons.py"
+    -and -not -path "./usr/prog/klipper/klippy/extras/save_variables.py"
+    -and -not -path "./usr/prog/klipper/klippy/mcu.py"
+    -and -not -path "./usr/prog/klipper/klippy/toolhead.py"
+    -and -not -path "./usr/prog/klipper/klippy/webhooks.py"
     -and -not -path "./etc/shadow-"
     -and -not -path "./etc/shadow"
-    -and -not -path "./etc/rtl_hostapd_2G.conf"
+    -and -not -path "./usr/prog/MAC"
+    -and -not -path "./usr/prog/app_startup.sh"
+    -and -not -path "./usr/prog/wifi/wpa_supplicant.conf"
+    -and -not -path "./usr/prog/tslib-1.12/etc/pointercal"
+    -and -not -path "./usr/data/logs/*"
+    -and -not -path "./usr/data/gcodes/*"
+    -and -not -path "./usr/prog/etc/shadow-"
+    -and -not -path "./usr/prog/etc/shadow"
+    -and -not -path "./usr/prog/wifi/rtl_hostapd_2G.conf"
+    -and -not -path "./usr/data/database/*"
+    -and -not -path "./usr/data/camera/*"
+    -and -not -path "./usr/prog/nginx/logs/*"
     -and -not -path "./etc/hosts"
-    -and -not -path "./etc/random-seed"
-    -and -not -path "./etc/MAC"
-    -and -not -path "./etc/wpa_supplicant.conf"
-    -and -not -path "./opt/tslib-1.12/etc/pointercal"
-    -and -not -path "./Settings/Trolltech.conf"
+    -and -not -path "./usr/prog/moonraker/moonraker/*"
+    -and -not -path "./usr/data/FlashForge-TestModel-01.3mf"
+    -and -not -path "./usr/prog/klipper/start.sh"
 )
 
 find . \
@@ -116,13 +113,13 @@ find .  \
     "${excludes[@]}" \
     -exec cp -a {} ../stock/{} \;
 
-echo 'echo ${DIR_STR}'>>list.link
-find .  \
-    -type d \
-    "${excludes[@]}" \
-    -print0 | sort -z | while IFS= read -r -d '' fn; do
-        ./link.sh "$fn" "dir"
-    done >>list.link
+#echo 'echo ${DIR_STR}'>>list.link
+#find .  \
+#    -type d \
+#    "${excludes[@]}" \
+#    -print0 | sort -z | while IFS= read -r -d '' fn; do
+#        ./link.sh "$fn" "dir"
+#    done >>list.link
 
 echo 'echo ${LINK_STR}' >>list.link
 find .  \
@@ -132,13 +129,13 @@ find .  \
         ./link.sh "$fn" "link"
     done >>list.link
 
-echo 'echo ${FILE_STR}'>>list.link
-find .  \
-    -type f \
-    "${excludes[@]}" \
-    -print0 | sort -z | while IFS= read -r -d '' fn; do
-        ./link.sh "$fn" "file"
-    done >>list.link
+#echo 'echo ${FILE_STR}'>>list.link
+#find .  \
+#    -type f \
+#    "${excludes[@]}" \
+#    -print0 | sort -z | while IFS= read -r -d '' fn; do
+#        ./link.sh "$fn" "file"
+#    done >>list.link
 
 >md5sum.list
 find .  \

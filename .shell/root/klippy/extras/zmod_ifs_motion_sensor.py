@@ -1,0 +1,1 @@
+/usr/data/config/mod/.shell/zmod_ifs_motion_sensor.py
