@@ -96,7 +96,7 @@ class ZmodIfsMotionSensor:
             self._update_filament_runout_pos(eventtime)
 
             extruder_pos = self._get_extruder_pos(eventtime)
-            logging.info(f"MS: ON {extruder_pos} {self.filament_runout_pos} True")
+            #logging.info(f"MS: ON {extruder_pos} {self.filament_runout_pos} True")
 
             # Check for filament insertion
             # Filament is always assumed to be present on an encoder event
@@ -107,7 +107,7 @@ class ZmodIfsMotionSensor:
         else:
             extruder_pos = self._get_extruder_pos(eventtime)
 
-            logging.info(f"MS: OF {extruder_pos} {self.filament_runout_pos} {extruder_pos < self.filament_runout_pos}")
+            #logging.info(f"MS: OF {extruder_pos} {self.filament_runout_pos} {extruder_pos < self.filament_runout_pos}")
 
             # Check for filament runout
             if self.new:
