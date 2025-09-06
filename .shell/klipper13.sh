@@ -3,6 +3,8 @@
 if [ -f /usr/data/config/mod/.shell/fix_config.sh ]; then
     /usr/data/config/mod/.shell/fix_config.sh start
 
+    find /usr/prog/PROGRAM/control/ -name NationsCommand| while read a; do $a -r ; done;
+
     export PATH=$PATH:/usr/prog/Python-3.8.2/bin
     export LD_LIBRARY_PATH=/usr/prog/Python-3.8.2/lib:$LD_LIBRARY_PATH
     export LD_LIBRARY_PATH=/usr/prog/openssl-1.0.2d/lib:$LD_LIBRARY_PATH
