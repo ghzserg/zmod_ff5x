@@ -19,7 +19,7 @@ a15e99b47a5596f2593399c71bf3bade  ./etc/protocols
 8fefbe28fe4b2987ca683d4dcf7f204a  ./etc/rc_maps.cfg
 9ebdc6f90a6070a1cdac5ecde97fbd33  ./etc/services
 48411b4a74eab31bc1a68b34fb0f2531  ./etc/shadow
-791bdb4d7d2b8c7ebc874f502145c87f  ./etc/shells
+5dd94ad48f489b2a9d95aa9f0d4370f7  ./etc/shells
 c75a0237f0ebfdeba8b4fdb45b850d6b  ./etc/ssl/certs/ca-certificates.crt
 5b561a90362b8eb9127c792c3f5902e0  ./etc/ssl/ct_log_list.cnf
 5b561a90362b8eb9127c792c3f5902e0  ./etc/ssl/ct_log_list.cnf.dist
@@ -3155,6 +3155,7 @@ e50b5668af7b7d8ab93fbe56312d7d41  ./usr/bin/arecordmidi
 839b85bbaa8332feaaa7c8a3658e4ffb  ./usr/bin/aseqdump
 d805f5531e5c6e4ebf9c95ee1719c1d3  ./usr/bin/aseqnet
 e2c0527e5637f7f535d8207287e2a18f  ./usr/bin/aserver
+14e9fa0569bd37d921232fbebab2d340  ./usr/bin/bash
 d30e5736235a70f9a94a91ce43eff07c  ./usr/bin/busybox
 832cd98780da8610bda713aa443d632d  ./usr/bin/cec-compliance
 6d4cdd70c02ef50b7383a8aeaf8c0d6d  ./usr/bin/cec-ctl
