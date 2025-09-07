@@ -89,6 +89,7 @@ class zmod_ifs:
         self.gcode.register_command('IFS_F23', self.cmd_IFS_F23)        # Помечаем пруток как вставленный
         self.gcode.register_command('IFS_F24', self.cmd_IFS_F24)        # Прижим филамента
         self.gcode.register_command('IFS_F39', self.cmd_IFS_F39)        # Отжим филамента
+        self.gcode.register_command('IFS_F18', self.cmd_IFS_F18)        # Отжим филамента везде
         self.gcode.register_command('IFS_F112', self.cmd_IFS_F112)      # Прекращаем подачу прутка
 
     def _handle_ready(self):
@@ -726,6 +727,20 @@ class zmod_ifs:
         self.gcode.respond_info(f"Разблокировка прутка {prutok}")
         response = self.send_command_and_wait(f"F39 C{prutok}", result=f"F39 ok. FFS channel {prutok} release.")
         self.info(f"F39 C{prutok} > {response}")
+        if wait == 1:
+            self.wait_for_state()
+
+    # Разблокировать пруток ALL
+    def cmd_IFS_F18(self, gcmd):
+        if not self.ifs:
+            self.gcode.run_script_from_command("_IFS_OFF")
+            return
+
+        wait = gcmd.get_int('WAIT', 1)
+
+        self.gcode.respond_info(f"Разблокировка прутка ALL")
+        response = self.send_command_and_wait("F18", result=f"F18 ok.")
+        self.info("F18 > {response}")
         if wait == 1:
             self.wait_for_state()
 
