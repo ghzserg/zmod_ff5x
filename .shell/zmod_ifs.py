@@ -123,7 +123,7 @@ class zmod_ifs:
             self.ifs_data.update_from_string(response)
             current_values = self.ifs_data.get_values()
             state = current_values['State']
-            self.info(f"F13 {state}?5?{check_state} > {response}")
+            self.info(f"F13 need:{check_state}|{FFS_STATUS_READY} cur:{state} > {response}")
 
             # Проверка что статус готов
             if state == FFS_STATUS_READY:
@@ -153,7 +153,7 @@ class zmod_ifs:
                     else:
                         stall_count = 0
             if self.reactor.monotonic() - start_time > timeout:
-                raise self.gcode.error(f"IFS: Вышло время для получения статуса {state}")
+                raise self.gcode.error(f"IFS: Вышло время для получения статуса {check_state}|{FFS_STATUS_READY} получен {state}")
                 return False, RET_TIMEOUT, current_values
 
             self.reactor.pause(self.reactor.monotonic() + HOST_REPORT_TIME)
@@ -740,7 +740,7 @@ class zmod_ifs:
 
         self.gcode.respond_info(f"Разблокировка прутка ALL")
         response = self.send_command_and_wait("F18", result=f"F18 ok")
-        self.info("F18 > {response}")
+        self.info(f"F18 > {response}")
         if wait == 1:
             self.wait_for_state()
 
