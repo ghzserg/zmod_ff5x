@@ -15,6 +15,7 @@ STOPBITS = 1
 BYTESIZE = 8
 TIMEOUT = 0.2
 HOST_REPORT_TIME = 0.2
+RETRY_COUNT = 3
 FFCONFIG='/usr/data/config/Adventurer5M.json'
 TYPECONFIG='/usr/data/config/mod_data/filament.json'
 FILE_CONFIG='/usr/data/config/mod_data/file.json'
@@ -34,6 +35,7 @@ RET_SILK     = 2         # по сработке дачика прутка
 RET_STALL    = 3         # по сработке движения прутка
 RET_TIMEOUT  = 4         # Таймаут получения нужного статуса
 RET_EXIT     = 5         # По завершению программы
+RET_RETRY    = 6         # Надо повторить запрос
 
 class zmod_ifs:
     def __init__(self, config):
@@ -130,6 +132,11 @@ class zmod_ifs:
             # Проверка что статус готов
             if state == FFS_STATUS_READY:
                 return True, RET_OK, current_values
+
+            if state == FFS_STATUS_DRV_ERROR:
+                gcmd = self.gcode.create_gcode_command("IFS_F15", "IFS_F15", {})
+                self.cmd_IFS_F15(gcmd)
+                return False, RET_RETRY, current_values
 
             if state == check_state:          # ждем сработки нужного статуса
                 if extruder and self.get_extruder_sensor() == extruder['status']: # Проверяем сработку датчика в экструдере
@@ -532,6 +539,8 @@ class zmod_ifs:
             self.print_str("Превышено время ожидания", info)
         elif ret_code == RET_EXIT:
             self.print_str("Завершение программы")
+        elif ret_code == RET_RETRY:
+            self.print_str("Сбой драйвера IFS", info)
         else:
             self.print_str("Неизвестный код завершения", info)
 
@@ -560,27 +569,33 @@ class zmod_ifs:
 
         # Проверяем есть ли чтото в экструдере
         if self.get_extruder_sensor():
-            # Затягиваем пруток
-            response = self._cmd_IFS_F10(prutok, leng=config['filament_autoinsert_full_length'], speed=config['filament_autoinsert_speed'])
             self.gcode.respond_info("В экструдере есть пруток")
-            success, ret_code, values = self.wait_for_state(
-                 Port=prutok,
-                 FFS_state=FFS_STATUS_ZAGRUZKA,
-                 silk={'count': 3, 'status': False},
-                 stall={'count': 3, 'status': False},
-                 timeout=120
-            )
+            # Затягиваем пруток
+            for attempt in range(RETRY_COUNT):
+                response = self._cmd_IFS_F10(prutok, leng=config['filament_autoinsert_full_length'], speed=config['filament_autoinsert_speed'])
+                success, ret_code, values = self.wait_for_state(
+                     Port=prutok,
+                     FFS_state=FFS_STATUS_ZAGRUZKA,
+                     silk={'count': 3, 'status': False},
+                     stall={'count': 3, 'status': False},
+                     timeout=120
+                )
+                if ret_code!=RET_RETRY:
+                    break
         else:
-            response = self._cmd_IFS_F10(prutok, leng=config['filament_autoinsert_empty_length'], speed=config['filament_autoinsert_speed'])
             self.gcode.respond_info("В экструдере нет прутка")
-            success, ret_code, values = self.wait_for_state(
-                 Port=prutok,
-                 FFS_state=FFS_STATUS_ZAGRUZKA,
-                 silk={'count': 3, 'status': False},
-                 stall={'count': 3, 'status': False},
-                 extruder={'count': 1, 'status': True},
-                 timeout=120
-            )
+            for attempt in range(RETRY_COUNT):
+                response = self._cmd_IFS_F10(prutok, leng=config['filament_autoinsert_empty_length'], speed=config['filament_autoinsert_speed'])
+                success, ret_code, values = self.wait_for_state(
+                     Port=prutok,
+                     FFS_state=FFS_STATUS_ZAGRUZKA,
+                     silk={'count': 3, 'status': False},
+                     stall={'count': 3, 'status': False},
+                     extruder={'count': 1, 'status': True},
+                     timeout=120
+                )
+                if ret_code!=RET_RETRY:
+                    break
         if not success:
             gcmd = self.gcode.create_gcode_command("IFS_F112", "IFS_F112", {})
             self.cmd_IFS_F112(gcmd)
@@ -623,21 +638,24 @@ class zmod_ifs:
         check = gcmd.get_int('CHECK', 0)
         sleep = gcmd.get_int('SLEEP', 0)
 
-        response = self._cmd_IFS_F10(prutok, leng, speed)
-        if sleep == 1:
-            # Ждем пока треть прутка пройдет
-            self.reactor.pause(self.reactor.monotonic() + (leng * 20) // speed + 1)
-            return
-        if wait == 1:
-            if check == 1:
-                success, ret_code, values = self.wait_for_state(
-                    Port=prutok,
-                    FFS_state=FFS_STATUS_ZAGRUZKA,
-                    silk={'count': 3, 'status': False},
-                    stall={'count': 3, 'status': False},
-                    extruder={'count': 1, 'status': True},
-                    timeout=120
-                )
+        for attempt in range(RETRY_COUNT):
+            response = self._cmd_IFS_F10(prutok, leng, speed)
+            if sleep == 1:
+                # Ждем пока треть прутка пройдет
+                self.reactor.pause(self.reactor.monotonic() + (leng * 20) // speed + 1)
+                return
+            if wait == 1:
+                if check == 1:
+                    success, ret_code, values = self.wait_for_state(
+                        Port=prutok,
+                        FFS_state=FFS_STATUS_ZAGRUZKA,
+                        silk={'count': 3, 'status': False},
+                        stall={'count': 3, 'status': False},
+                        extruder={'count': 1, 'status': True},
+                        timeout=120
+                    )
+                    if ret_code==RET_RETRY:
+                        continue
                 if not success:
                     gcmd = self.gcode.create_gcode_command("IFS_F112", "IFS_F112", {})
                     self.cmd_IFS_F112(gcmd)
@@ -647,6 +665,8 @@ class zmod_ifs:
                     self.print_result(ret_code, values, prutok, info=False)
             else:
                 self.wait_for_state(timeout=120)
+            if ret_code!=RET_RETRY:
+                break
 
     def _cmd_IFS_F11(self, prutok, leng, speed):
         if not self.ifs:
@@ -670,21 +690,27 @@ class zmod_ifs:
         wait = gcmd.get_int('WAIT', 1)
         check = gcmd.get_int('CHECK', 0)
 
-        response = self._cmd_IFS_F11(prutok, leng, speed)
-        if wait == 1:
-            if check == 1:
-                success, ret_code, values = self.wait_for_state(
-                    Port=prutok,
-                    FFS_state=FFS_STATUS_VIGRUZKA,
-                    silk={'count': 3, 'status': False},
-                    stall={'count': 3, 'status': False},
-                    extruder={'count': 1, 'status': True},
-                    timeout=120
-                )
-                gcmd = self.gcode.create_gcode_command("IFS_F112", "IFS_F112", {})
-                self.cmd_IFS_F112(gcmd)
-            else:
-                self.wait_for_state(timeout=120)
+        for attempt in range(RETRY_COUNT):
+            response = self._cmd_IFS_F11(prutok, leng, speed)
+            if wait == 1:
+                if check == 1:
+                    success, ret_code, values = self.wait_for_state(
+                        Port=prutok,
+                        FFS_state=FFS_STATUS_VIGRUZKA,
+                        silk={'count': 3, 'status': False},
+                        stall={'count': 3, 'status': False},
+                        extruder={'count': 1, 'status': True},
+                        timeout=120
+                    )
+                    if ret_code==RET_RETRY:
+                        continue
+                    gcmd = self.gcode.create_gcode_command("IFS_F112", "IFS_F112", {})
+                    self.cmd_IFS_F112(gcmd)
+                else:
+                    self.wait_for_state(timeout=120)
+           if ret_code!=RET_RETRY:
+                break
+
 
     # Пометить пруток как вставленный
     def cmd_IFS_F23(self, gcmd):
@@ -697,10 +723,15 @@ class zmod_ifs:
 
         self.gcode.respond_info(f"Помечаем пруток {prutok}")
 
-        response = self.send_command_and_wait(f"F23 C{prutok}", result=f"F23 ok. chan {prutok}.")
-        self.info(f"F23 C{prutok} > {response}")
-        if wait == 1:
-            self.wait_for_state()
+        for attempt in range(RETRY_COUNT):
+            response = self.send_command_and_wait(f"F23 C{prutok}", result=f"F23 ok. chan {prutok}.")
+            self.info(f"F23 C{prutok} > {response}")
+            if wait == 1:
+                self.wait_for_state()
+                if ret_code==RET_RETRY:
+                    continue
+            else:
+                break
 
     # Заблокировать пруток
     def cmd_IFS_F24(self, gcmd):
@@ -712,10 +743,15 @@ class zmod_ifs:
         wait = gcmd.get_int('WAIT', 1)
 
         self.gcode.respond_info(f"Блокировка прутка {prutok}")
-        response = self.send_command_and_wait(f"F24 C{prutok}", result=f"F24 ok. chan {prutok}.")
-        self.info(f"F24 C{prutok} > {response}")
-        if wait == 1:
-            self.wait_for_state()
+        for attempt in range(RETRY_COUNT):
+            response = self.send_command_and_wait(f"F24 C{prutok}", result=f"F24 ok. chan {prutok}.")
+            self.info(f"F24 C{prutok} > {response}")
+            if wait == 1:
+                self.wait_for_state()
+                if ret_code==RET_RETRY:
+                    continue
+            else:
+                break
 
     # Разблокировать пруток
     def cmd_IFS_F39(self, gcmd):
@@ -727,10 +763,15 @@ class zmod_ifs:
         wait = gcmd.get_int('WAIT', 1)
 
         self.gcode.respond_info(f"Разблокировка прутка {prutok}")
-        response = self.send_command_and_wait(f"F39 C{prutok}", result=f"F39 ok. FFS channel {prutok} release.")
-        self.info(f"F39 C{prutok} > {response}")
-        if wait == 1:
-            self.wait_for_state()
+        for attempt in range(RETRY_COUNT):
+            response = self.send_command_and_wait(f"F39 C{prutok}", result=f"F39 ok. FFS channel {prutok} release.")
+            self.info(f"F39 C{prutok} > {response}")
+            if wait == 1:
+                self.wait_for_state()
+                if ret_code==RET_RETRY:
+                    continue
+            else:
+                break
 
     # Сброс драйвера
     def cmd_IFS_F15(self, gcmd):
@@ -751,10 +792,15 @@ class zmod_ifs:
         wait = gcmd.get_int('WAIT', 1)
 
         self.gcode.respond_info(f"Разблокировка прутка ALL")
-        response = self.send_command_and_wait("F18", result=f"F18 ok")
-        self.info(f"F18 > {response}")
-        if wait == 1:
-            self.wait_for_state()
+        for attempt in range(RETRY_COUNT):
+            response = self.send_command_and_wait("F18", result=f"F18 ok")
+            self.info(f"F18 > {response}")
+            if wait == 1:
+                self.wait_for_state()
+                if ret_code==RET_RETRY:
+                    continue
+            else:
+                break
 
     # Остановить движение
     def cmd_IFS_F112(self, gcmd):
@@ -764,11 +810,17 @@ class zmod_ifs:
 
         wait = gcmd.get_int('WAIT', 0)
 
-        response = self.send_command_and_wait(f"F112", result="F112 ok.")
         self.gcode.respond_info(f"Останавливаю движение прутка")
-        self.info(f"F112 > {response}")
-        if wait == 1:
-            self.wait_for_state()
+
+        for attempt in range(RETRY_COUNT):
+            response = self.send_command_and_wait(f"F112", result="F112 ok.")
+            self.info(f"F112 > {response}")
+            if wait == 1:
+                self.wait_for_state()
+                if ret_code==RET_RETRY:
+                    continue
+            else:
+                break
 
     # Статус
     def cmd_IFS_F13(self, gcmd):
