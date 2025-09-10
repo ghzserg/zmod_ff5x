@@ -19,13 +19,14 @@ FFCONFIG='/usr/data/config/Adventurer5M.json'
 TYPECONFIG='/usr/data/config/mod_data/filament.json'
 FILE_CONFIG='/usr/data/config/mod_data/file.json'
 
-FFS_STATUS_DELTA    = 11 # дельта от первой катушки
-FFS_STATUS_OPROS    = 3  # Опрос катушек
-FFS_STATUS_READY    = 5  # Готов к работе
-FFS_STATUS_ZAGAT    = 7  # 18, 29, 40 поджата катушка
-FFS_STATUS_ZAGRUZKA = 11 # 22, 33, 44 загрузка катушки
-FFS_STATUS_VIGRUZKA = 15 # 26, 37, 48 выгрузка катушки
-FFS_STATUS_OTZGAT   = 12 # 23, 34, 45 отжим катушки
+FFS_STATUS_DELTA     = 11  # Дельта от первой катушки
+FFS_STATUS_OPROS     =  3  # Опрос катушек
+FFS_STATUS_READY     =  5  # Готов к работе
+FFS_STATUS_ZAGAT     =  7  # 18, 29, 40 поджата катушка
+FFS_STATUS_ZAGRUZKA  = 11  # 22, 33, 44 загрузка катушки
+FFS_STATUS_VIGRUZKA  = 15  # 26, 37, 48 выгрузка катушки
+FFS_STATUS_OTZGAT    = 12  # 23, 34, 45 отжим катушки
+FFS_STATUS_DRV_ERROR = 127 # Ошибка драйвера
 
 RET_OK       = 0         # Все отработало штатно
 RET_EXTRUDER = 1         # по сработке датчика экструдера
@@ -84,12 +85,13 @@ class zmod_ifs:
         self.gcode.register_command('IFS_REMOVE_CURRENT_PRUTOK', self.cmd_IFS_REMOVE_CURRENT_PRUTOK)
 
         self.gcode.register_command('IFS_F10', self.cmd_IFS_F10)        # Вставить пруток
-        self.gcode.register_command('IFS_F13', self.cmd_IFS_F13)        # Извлечь пруток
         self.gcode.register_command('IFS_F11', self.cmd_IFS_F11)        # Извлечь пруток
+        self.gcode.register_command('IFS_F13', self.cmd_IFS_F13)        # Состояние IFS
+        self.gcode.register_command('IFS_F15', self.cmd_IFS_F15)        # Сброс драйвера
+        self.gcode.register_command('IFS_F18', self.cmd_IFS_F18)        # Отжим филамента везде
         self.gcode.register_command('IFS_F23', self.cmd_IFS_F23)        # Помечаем пруток как вставленный
         self.gcode.register_command('IFS_F24', self.cmd_IFS_F24)        # Прижим филамента
         self.gcode.register_command('IFS_F39', self.cmd_IFS_F39)        # Отжим филамента
-        self.gcode.register_command('IFS_F18', self.cmd_IFS_F18)        # Отжим филамента везде
         self.gcode.register_command('IFS_F112', self.cmd_IFS_F112)      # Прекращаем подачу прутка
 
     def _handle_ready(self):
@@ -729,6 +731,16 @@ class zmod_ifs:
         self.info(f"F39 C{prutok} > {response}")
         if wait == 1:
             self.wait_for_state()
+
+    # Сброс драйвера
+    def cmd_IFS_F15(self, gcmd):
+        if not self.ifs:
+            self.gcode.run_script_from_command("_IFS_OFF")
+            return
+
+        self.gcode.respond_info(f"Сброс драйвера")
+        response = self.send_command_and_wait("F15 C", result="F15 ok.")
+        self.info(f"F15 > {response}")
 
     # Разблокировать пруток ALL
     def cmd_IFS_F18(self, gcmd):
