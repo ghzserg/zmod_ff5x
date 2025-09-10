@@ -664,7 +664,7 @@ class zmod_ifs:
                 else:
                     self.print_result(ret_code, values, prutok, info=False)
             else:
-                self.wait_for_state(timeout=120)
+                success, ret_code, values = self.wait_for_state(timeout=120)
             if ret_code!=RET_RETRY:
                 break
 
@@ -707,7 +707,7 @@ class zmod_ifs:
                     gcmd = self.gcode.create_gcode_command("IFS_F112", "IFS_F112", {})
                     self.cmd_IFS_F112(gcmd)
                 else:
-                    self.wait_for_state(timeout=120)
+                    success, ret_code, values = self.wait_for_state(timeout=120)
            if ret_code!=RET_RETRY:
                 break
 
@@ -727,7 +727,7 @@ class zmod_ifs:
             response = self.send_command_and_wait(f"F23 C{prutok}", result=f"F23 ok. chan {prutok}.")
             self.info(f"F23 C{prutok} > {response}")
             if wait == 1:
-                self.wait_for_state()
+                success, ret_code, values = self.wait_for_state()
                 if ret_code==RET_RETRY:
                     continue
             else:
@@ -747,7 +747,7 @@ class zmod_ifs:
             response = self.send_command_and_wait(f"F24 C{prutok}", result=f"F24 ok. chan {prutok}.")
             self.info(f"F24 C{prutok} > {response}")
             if wait == 1:
-                self.wait_for_state()
+                success, ret_code, values = self.wait_for_state()
                 if ret_code==RET_RETRY:
                     continue
             else:
@@ -767,7 +767,7 @@ class zmod_ifs:
             response = self.send_command_and_wait(f"F39 C{prutok}", result=f"F39 ok. FFS channel {prutok} release.")
             self.info(f"F39 C{prutok} > {response}")
             if wait == 1:
-                self.wait_for_state()
+                success, ret_code, values = self.wait_for_state()
                 if ret_code==RET_RETRY:
                     continue
             else:
@@ -796,7 +796,7 @@ class zmod_ifs:
             response = self.send_command_and_wait("F18", result=f"F18 ok")
             self.info(f"F18 > {response}")
             if wait == 1:
-                self.wait_for_state()
+                success, ret_code, values = self.wait_for_state()
                 if ret_code==RET_RETRY:
                     continue
             else:
@@ -816,7 +816,7 @@ class zmod_ifs:
             response = self.send_command_and_wait(f"F112", result="F112 ok.")
             self.info(f"F112 > {response}")
             if wait == 1:
-                self.wait_for_state()
+                success, ret_code, values = self.wait_for_state()
                 if ret_code==RET_RETRY:
                     continue
             else:
