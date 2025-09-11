@@ -665,6 +665,8 @@ class zmod_ifs:
                         self.print_result(ret_code, values, prutok, info=False)
                     if ret_code!=RET_RETRY:
                         break
+                else:
+                    break
             else:
                 success, ret_code, values = self.wait_for_state(timeout=120)
                 if ret_code!=RET_RETRY:
@@ -714,6 +716,8 @@ class zmod_ifs:
                     success, ret_code, values = self.wait_for_state(timeout=120)
                     if ret_code!=RET_RETRY:
                         break
+            else:
+                break
 
     # Пометить пруток как вставленный
     def cmd_IFS_F23(self, gcmd):
