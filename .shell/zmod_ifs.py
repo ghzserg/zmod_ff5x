@@ -656,15 +656,15 @@ class zmod_ifs:
                     )
                     if ret_code==RET_RETRY:
                         continue
-                if not success:
-                    gcmd = self.gcode.create_gcode_command("IFS_F112", "IFS_F112", {})
-                    self.cmd_IFS_F112(gcmd)
-                if ret_code == RET_EXTRUDER:
-                    self.print_result(ret_code, values, prutok)
-                else:
-                    self.print_result(ret_code, values, prutok, info=False)
-                if ret_code!=RET_RETRY:
-                    break
+                    if not success:
+                        gcmd = self.gcode.create_gcode_command("IFS_F112", "IFS_F112", {})
+                        self.cmd_IFS_F112(gcmd)
+                    if ret_code == RET_EXTRUDER:
+                        self.print_result(ret_code, values, prutok)
+                    else:
+                        self.print_result(ret_code, values, prutok, info=False)
+                    if ret_code!=RET_RETRY:
+                        break
             else:
                 success, ret_code, values = self.wait_for_state(timeout=120)
                 if ret_code!=RET_RETRY:
@@ -731,8 +731,8 @@ class zmod_ifs:
             self.info(f"F23 C{prutok} > {response}")
             if wait == 1:
                 success, ret_code, values = self.wait_for_state()
-                if ret_code==RET_RETRY:
-                    continue
+                if ret_code!=RET_RETRY:
+                    break
             else:
                 break
 
@@ -751,8 +751,8 @@ class zmod_ifs:
             self.info(f"F24 C{prutok} > {response}")
             if wait == 1:
                 success, ret_code, values = self.wait_for_state()
-                if ret_code==RET_RETRY:
-                    continue
+                if ret_code!=RET_RETRY:
+                    break
             else:
                 break
 
@@ -771,8 +771,8 @@ class zmod_ifs:
             self.info(f"F39 C{prutok} > {response}")
             if wait == 1:
                 success, ret_code, values = self.wait_for_state()
-                if ret_code==RET_RETRY:
-                    continue
+                if ret_code!=RET_RETRY:
+                    break
             else:
                 break
 
@@ -800,8 +800,8 @@ class zmod_ifs:
             self.info(f"F18 > {response}")
             if wait == 1:
                 success, ret_code, values = self.wait_for_state()
-                if ret_code==RET_RETRY:
-                    continue
+                if ret_code!=RET_RETRY:
+                    break
             else:
                 break
 
@@ -820,8 +820,8 @@ class zmod_ifs:
             self.info(f"F112 > {response}")
             if wait == 1:
                 success, ret_code, values = self.wait_for_state()
-                if ret_code==RET_RETRY:
-                    continue
+                if ret_code!=RET_RETRY:
+                    break
             else:
                 break
 
