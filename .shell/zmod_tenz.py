@@ -154,18 +154,18 @@ class zmod_tenz:
             )
         else:
             shutdown_msg = (
-                f"Nozzle hit bed or part detachment. Weight {cur_temp}. FIRMWARE_RESTART. https://github.com/ghzserg/zmod/wiki/Global_en#nozzle_control"
+                f"Nozzle hit bed or part detachment. Weight {cur_temp}>{self.max_temp}. FIRMWARE_RESTART. https://github.com/ghzserg/zmod/wiki/Global_en#nozzle_control"
                 if self.language != 'ru'
-                else f"Удар сопла о стол или отрыв детали. Вес {cur_temp}. FIRMWARE_RESTART. https://github.com/ghzserg/zmod/wiki/Global_ru#nozzle_control"
+                else f"Удар сопла о стол или отрыв детали. Вес {cur_temp}>{self.max_temp}. FIRMWARE_RESTART. https://github.com/ghzserg/zmod/wiki/Global_ru#nozzle_control"
             )
             self.stop_thread = True
             self.printer.invoke_async_shutdown(shutdown_msg, shutdown_msg)
 
     def _async_zcontrol_action(self, cur_temp):
         msg = (
-            f"!! Nozzle hit bed or part detachment. Weight {cur_temp}. PAUSE. https://github.com/ghzserg/zmod/wiki/Global_en#nozzle_control"
+            f"!! Nozzle hit bed or part detachment. Weight {cur_temp}>{self.max_temp}. PAUSE. https://github.com/ghzserg/zmod/wiki/Global_en#nozzle_control"
             if self.language != 'ru'
-            else f"!! Удар сопла о стол или отрыв детали. Вес {cur_temp}. PAUSE. https://github.com/ghzserg/zmod/wiki/Global_ru#nozzle_control"
+            else f"!! Удар сопла о стол или отрыв детали. Вес {cur_temp}>{self.max_temp}. PAUSE. https://github.com/ghzserg/zmod/wiki/Global_ru#nozzle_control"
         )
         self.gcode.respond_raw(msg)
         pause_resume = self.printer.lookup_object('pause_resume')
