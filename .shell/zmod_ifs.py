@@ -851,36 +851,6 @@ class zmod_ifs:
         else:
             self.print_str("Пруток ОТСУСТВУЕТ в экструдере", info == 1)
 
-    def cmd__IFS_REMOVE_PRUTOK(self, gcmd, prutok, force, config):
-        if not self.ifs:
-            self.gcode.run_script_from_command("_IFS_OFF")
-            return
-
-        if (not self.get_extruder_sensor() and force == 0) or prutok == 0:
-            return
-
-        gcmd.respond_info(f"Извлекаю пруток {prutok} {config['filament_type']} из экструдера")
-        self.gcode.run_script_from_command(
-            f"_REZGEM_PRUTOK "
-            f"FILAMENT_UNLOAD_SPEED={config['filament_unload_speed']} "
-            f"FILAMENT_UNLOAD_BEFORE_CUTTING={config['filament_unload_before_cutting']} "
-            f"FILAMENT_UNLOAD_AFTER_CUTTING={config['filament_unload_after_cutting']} "
-        )
-        self.gcode.run_script_from_command("_GOTO_TRASH")
-        self.gcode.run_script_from_command(f"IFS_F24 PRUTOK={prutok}")
-
-        self.gcode.run_script_from_command("G92 E0")
-
-        self.gcode.run_script_from_command("_DISABLE_SENSOR")
-        self.gcode.run_script_from_command(f"G1 E-{config['nozzle_cleaning_length']} F{config['filament_unload_speed']}")
-        self.gcode.run_script_from_command(f"IFS_F11 PRUTOK={prutok} LEN={round(config['nozzle_cleaning_length']*1.67)} SPEED={config['filament_unload_speed']*2} WAIT=0")
-        self.gcode.run_script_from_command("M400")
-        self.gcode.run_script_from_command("_ENABLE_SENSOR")
-
-        if self.get_extruder_sensor():
-            raise self.gcode.error("Не удалось извлечь пруток из экструдера")
-        else:
-            gcmd.respond_info("Пруток извлечен из экструдера")
 
     def cmd_IFS_REMOVE_PRUTOK(self, gcmd):
         if not self.ifs:
@@ -890,8 +860,34 @@ class zmod_ifs:
         prutok = gcmd.get_int('PRUTOK', 0)
         force = gcmd.get_int('FORCE', 1)
 
+        if (not self.get_extruder_sensor() and force == 0) or prutok == 0:
+            return
+
         config=self.get_prutok_config(prutok)
-        self.cmd__IFS_REMOVE_PRUTOK(gcmd, prutok, force, config)
+        self.gcode.run_script_from_command(
+            f"_IFS_REMOVE_PRUTOK "
+            f"PRUTOK={prutok} "
+            f"FORCE={force} "
+            f"TEMP={config['temp']} "
+            f"NEED_STOP={need_stop} "
+            f"FILAMENT_TYPE={config['filament_type']} "
+            f"FILAMENT_UNLOAD_SPEED={config['filament_unload_speed']} "
+            f"FILAMENT_LOAD_SPEED={config['filament_load_speed']} "
+            f"FILAMENT_UNLOAD_BEFORE_CUTTING={config['filament_unload_before_cutting']} "
+            f"FILAMENT_UNLOAD_AFTER_CUTTING={config['filament_unload_after_cutting']} "
+            f"FILAMENT_UNLOAD_AFTER_DROP={config['filament_unload_after_drop']} "
+            f"FILAMENT_TUBE_LENGTH={config['filament_tube_length']} "
+            f"FILAMENT_DROP_LENGTH={config['filament_drop_length']} "
+            f"FILAMENT_DROP_LENGTH_ADD={filament_drop_length_add} "
+            f"FILAMENT_FAN_SPEED={config['filament_fan_speed']} "
+            f"NOZZLE_CLEANING_LENGTH={config['nozzle_cleaning_length']} "
+        )
+
+        if self.get_extruder_sensor():
+            raise self.gcode.error("Не удалось извлечь пруток из экструдера")
+        else:
+            gcmd.respond_info("Пруток извлечен из экструдера")
+
 
     def cmd_IFS_REMOVE_CURRENT_PRUTOK(self, gcmd):
         if not self.ifs:
