@@ -663,14 +663,12 @@ class zmod_ifs:
                         self.print_result(ret_code, values, prutok)
                     else:
                         self.print_result(ret_code, values, prutok, info=False)
-                    if ret_code!=RET_RETRY:
-                        break
                 else:
-                    break
-            else:
-                success, ret_code, values = self.wait_for_state(timeout=120)
+                    success, ret_code, values = self.wait_for_state(timeout=120)
                 if ret_code!=RET_RETRY:
                     break
+            else:
+                break
 
     def _cmd_IFS_F11(self, prutok, leng, speed):
         if not self.ifs:
@@ -710,12 +708,10 @@ class zmod_ifs:
                         continue
                     gcmd = self.gcode.create_gcode_command("IFS_F112", "IFS_F112", {})
                     self.cmd_IFS_F112(gcmd)
-                    if ret_code!=RET_RETRY:
-                        break
                 else:
                     success, ret_code, values = self.wait_for_state(timeout=120)
-                    if ret_code!=RET_RETRY:
-                        break
+                if ret_code!=RET_RETRY:
+                    break
             else:
                 break
 
