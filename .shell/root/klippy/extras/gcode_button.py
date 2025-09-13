@@ -12,8 +12,6 @@ class GCodeButton:
         self.name = config.get_name().split(' ')[-1]
         self.pin = config.get('pin')
         self.last_state = 0
-        self.latching_mode = config.getboolean('latching_mode', False)
-        self.is_latched = False
         buttons = self.printer.load_object(config, "buttons")
         if config.get('analog_range', None) is None:
             buttons.register_debounce_button(self.pin, self.button_callback
@@ -31,38 +29,23 @@ class GCodeButton:
         self.gcode.register_mux_command("QUERY_BUTTON", "BUTTON", self.name,
                                         self.cmd_QUERY_BUTTON,
                                         desc=self.cmd_QUERY_BUTTON_help)
-        if self.latching_mode:
-            self.gcode.register_mux_command("RESET_BUTTON", "BUTTON", self.name,
-                                            self.cmd_RESET_BUTTON,
-                                            desc=self.cmd_RESET_BUTTON_help)
 
     cmd_QUERY_BUTTON_help = "Report on the state of a button"
     def cmd_QUERY_BUTTON(self, gcmd):
         gcmd.respond_info(self.name + ": " + self.get_status()['state'])
 
-    cmd_RESET_BUTTON_help = "Reset latching button to allow next activation"
-    def cmd_RESET_BUTTON(self, gcmd):
-        self.is_latched = False
-        try:
-            self.gcode.run_script(self.release_template.render())
-        except:
-            logging.exception("Script running error")
-
     def button_callback(self, eventtime, state):
         self.last_state = state
         template = self.press_template
-        if not state and not self.is_latched:
+        if not state:
             template = self.release_template
         try:
             self.gcode.run_script(template.render())
         except:
             logging.exception("Script running error")
 
-        if self.latching_mode and state:
-            self.is_latched = True
-
     def get_status(self, eventtime=None):
-        if self.last_state or self.is_latched:
+        if self.last_state:
             return {'state': "PRESSED"}
         return {'state': "RELEASED"}
 
