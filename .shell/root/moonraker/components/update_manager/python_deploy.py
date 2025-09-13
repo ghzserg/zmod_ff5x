@@ -258,7 +258,8 @@ class PythonDeploy(AppDeploy):
         assert self.pip_cmd is not None
         pip_args = f"install -U --quiet --dry-run --no-deps --report - {norm_name}"
         pip_exec = pip_utils.AsyncPipExecutor(self.pip_cmd, self.server)
-        resp = await pip_exec.call_pip_with_response(pip_args)
+        await self._update_pip(pip_exec)
+        resp = await pip_exec.call_pip_with_response(pip_args, timeout=1200.)
         data: Dict[str, Any] = json_wrapper.loads(resp)
         install_data: List[Dict[str, Any]] = data.get("install", [])
         if not install_data:
