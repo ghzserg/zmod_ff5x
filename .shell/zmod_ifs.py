@@ -45,7 +45,7 @@ class zmod_ifs:
         self.gcode = self.printer.lookup_object('gcode')
         self.query_adc = self.printer.lookup_object('query_adc')
         self.filament_sensor = self.printer.lookup_object('temperature_sensor filamentValue')
-        self.language = 'en'
+        self.lang = 'en'
         self.ifs = True
         self.zmod = self.printer.lookup_object('zmod', None)
         self.ifs_data = IfsData()
@@ -96,7 +96,7 @@ class zmod_ifs:
 
     def _handle_ready(self):
         if self.zmod is not None:
-            self.language = self.zmod.get_lang()
+            self.lang = self.zmod.get_lang()
         self.get_prutok_config(1)
         self.sensor_thread.start()
 
@@ -200,10 +200,10 @@ class zmod_ifs:
 
     def getlang(self):
         if self.zmod is None:
-            self.language = 'en'
+            self.lang = 'en'
             self.zmod = self.printer.lookup_object('zmod', None)
             if self.zmod is not None:
-                self.language = self.zmod.get_lang()
+                self.lang = self.zmod.get_lang()
 
     def get_extruder_sensor(self):
         value, timestamp = self.query_adc.adc["temperature_sensor filamentValue"].get_last_value()
