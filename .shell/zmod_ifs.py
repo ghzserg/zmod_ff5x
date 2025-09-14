@@ -873,7 +873,6 @@ class zmod_ifs:
             f"FILAMENT_UNLOAD_AFTER_DROP={config['filament_unload_after_drop']} "
             f"FILAMENT_TUBE_LENGTH={config['filament_tube_length']} "
             f"FILAMENT_DROP_LENGTH={config['filament_drop_length']} "
-            f"FILAMENT_DROP_LENGTH_ADD={filament_drop_length_add} "
             f"FILAMENT_FAN_SPEED={config['filament_fan_speed']} "
             f"NOZZLE_CLEANING_LENGTH={config['nozzle_cleaning_length']} "
         )
