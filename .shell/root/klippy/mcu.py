@@ -230,7 +230,7 @@ class MCU_trsync:
             s.note_homing_end()
         return params['trigger_reason']
 
-TRSYNC_TIMEOUT = 0.025
+TRSYNC_TIMEOUT = 0.1
 TRSYNC_SINGLE_MCU_TIMEOUT = 0.250
 
 class TriggerDispatch:
