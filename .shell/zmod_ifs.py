@@ -865,7 +865,6 @@ class zmod_ifs:
             f"PRUTOK={prutok} "
             f"FORCE={force} "
             f"TEMP={config['temp']} "
-            f"NEED_STOP={need_stop} "
             f"FILAMENT_TYPE={config['filament_type']} "
             f"FILAMENT_UNLOAD_SPEED={config['filament_unload_speed']} "
             f"FILAMENT_LOAD_SPEED={config['filament_load_speed']} "
