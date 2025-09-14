@@ -201,8 +201,8 @@ class zmod_ifs:
         if self.zmod is None:
             self.lang = 'en'
             self.zmod = self.printer.lookup_object('zmod', None)
-            if self.zmod is not None:
-                self.lang = self.zmod.get_lang()
+        if self.zmod is not None:
+            self.lang = self.zmod.get_lang()
 
     def get_extruder_sensor(self):
         value, timestamp = self.query_adc.adc["temperature_sensor filamentValue"].get_last_value()
