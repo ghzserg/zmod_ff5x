@@ -23,8 +23,8 @@ if [ "$1" == "0" ]
         sed -i 's|^TRSYNC_TIMEOUT = .*|TRSYNC_TIMEOUT = 0.025|' $F
         sync
     else
-        grep -q "TRSYNC_TIMEOUT = 0.05" $F && exit 0
-        sed -i 's|^TRSYNC_TIMEOUT = .*|TRSYNC_TIMEOUT = 0.05|' $F
+        grep -q "TRSYNC_TIMEOUT = 0.1" $F && exit 0
+        sed -i 's|^TRSYNC_TIMEOUT = .*|TRSYNC_TIMEOUT = 0.1|' $F
         sync
 fi
 
