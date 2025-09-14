@@ -197,7 +197,7 @@ class zmod_ifs:
         if self.debug:
             self.gcode.respond_info(msg)
 
-    def getlang(self):
+    def get_lang(self):
         if self.zmod is None:
             self.lang = 'en'
             self.zmod = self.printer.lookup_object('zmod', None)
