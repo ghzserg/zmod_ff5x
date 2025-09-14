@@ -95,8 +95,7 @@ class zmod_ifs:
         self.gcode.register_command('IFS_F112', self.cmd_IFS_F112)      # Прекращаем подачу прутка
 
     def _handle_ready(self):
-        if self.zmod is not None:
-            self.lang = self.zmod.get_lang()
+        self.get_lang()
         self.get_prutok_config(1)
         self.sensor_thread.start()
 
