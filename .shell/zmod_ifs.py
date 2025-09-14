@@ -208,8 +208,8 @@ class zmod_ifs:
             result = (value >= 0.72)
         return result
 
-    def get_ifs_sensor(self):
-        return self.ifs_data.get_stall()
+    def get_ifs_sensor(self, slot):
+        return self.ifs_data.get_stall(slot)
 
     def set_cur_port(self, port):
         return self.ifs_data.set_cur_port(port)
@@ -644,30 +644,29 @@ class zmod_ifs:
                 # Ждем пока треть прутка пройдет
                 self.reactor.pause(self.reactor.monotonic() + (leng * 20) // speed + 1)
                 return
-            if wait == 1:
-                if check == 1:
-                    success, ret_code, values = self.wait_for_state(
-                        Port=prutok,
-                        FFS_state=FFS_STATUS_ZAGRUZKA,
-                        silk={'count': 3, 'status': False},
-                        stall={'count': 3, 'status': False},
-                        extruder={'count': 1, 'status': True},
-                        timeout=120
-                    )
-                    if ret_code==RET_RETRY:
-                        continue
-                    if not success:
-                        gcmd = self.gcode.create_gcode_command("IFS_F112", "IFS_F112", {})
-                        self.cmd_IFS_F112(gcmd)
-                    if ret_code == RET_EXTRUDER:
-                        self.print_result(ret_code, values, prutok)
-                    else:
-                        self.print_result(ret_code, values, prutok, info=False)
-                else:
-                    success, ret_code, values = self.wait_for_state(timeout=120)
-                if ret_code!=RET_RETRY:
-                    break
+            if not wait:
+                return
+            if check == 1:
+                success, ret_code, values = self.wait_for_state(
+                    Port=prutok,
+                    FFS_state=FFS_STATUS_ZAGRUZKA,
+                    silk={'count': 3, 'status': False},
+                    stall={'count': 3, 'status': False},
+                    extruder={'count': 1, 'status': True},
+                    timeout=120
+                )
             else:
+                success, ret_code, values = self.wait_for_state() 
+            
+            if not success:
+                gcmd = self.gcode.create_gcode_command("IFS_F112", "IFS_F112", {})
+                self.cmd_IFS_F112(gcmd)
+                if ret_code == RET_EXTRUDER:
+                    self.print_result(ret_code, values, prutok)
+                else:
+                   self.print_result(ret_code, values, prutok, info=False)
+
+            if ret_code!=RET_RETRY:
                 break
 
     def _cmd_IFS_F11(self, prutok, leng, speed):
@@ -692,27 +691,29 @@ class zmod_ifs:
         wait = gcmd.get_int('WAIT', 1)
         check = gcmd.get_int('CHECK', 0)
 
+        if speed == 0:                                                                                                      
+            self.print_str("Скорость не может быть = 0", False)
+
         for attempt in range(RETRY_COUNT):
             response = self._cmd_IFS_F11(prutok, leng, speed)
-            if wait == 1:
-                if check == 1:
-                    success, ret_code, values = self.wait_for_state(
-                        Port=prutok,
-                        FFS_state=FFS_STATUS_VIGRUZKA,
-                        silk={'count': 3, 'status': False},
-                        stall={'count': 3, 'status': False},
-                        extruder={'count': 1, 'status': True},
-                        timeout=120
+            if not wait:                                                                                                                                                                
+                return
+            if check == 1:
+                success, ret_code, values = self.wait_for_state(
+                    Port=prutok,
+                    FFS_state=FFS_STATUS_VIGRUZKA,
+                    silk={'count': 3, 'status': False},
+                    stall={'count': 3, 'status': False},
+                    extruder={'count': 1, 'status': True},
+                    timeout=120
                     )
-                    if ret_code==RET_RETRY:
-                        continue
-                    gcmd = self.gcode.create_gcode_command("IFS_F112", "IFS_F112", {})
-                    self.cmd_IFS_F112(gcmd)
-                else:
-                    success, ret_code, values = self.wait_for_state(timeout=120)
-                if ret_code!=RET_RETRY:
-                    break
             else:
+                success, ret_code, values = self.wait_for_state()
+            if not success:                                                                                                 
+                gcmd = self.gcode.create_gcode_command("IFS_F112", "IFS_F112", {})                                          
+                self.cmd_IFS_F112(gcmd)                                                                                     
+                                                                                                                            
+            if ret_code!=RET_RETRY:                                                                                         
                 break
 
     # Пометить пруток как вставленный
@@ -749,11 +750,11 @@ class zmod_ifs:
         for attempt in range(RETRY_COUNT):
             response = self.send_command_and_wait(f"F24 C{prutok}", result=f"F24 ok. chan {prutok}.")
             self.info(f"F24 C{prutok} > {response}")
-            if wait == 1:
-                success, ret_code, values = self.wait_for_state()
-                if ret_code!=RET_RETRY:
-                    break
-            else:
+            if not wait:
+                return
+            success, ret_code, values = self.wait_for_state()
+
+            if ret_code!=RET_RETRY:
                 break
 
     # Разблокировать пруток
@@ -902,6 +903,21 @@ class zmod_ifs:
             self.gcode.run_script_from_command(f"TEMPERATURE_WAIT SENSOR=extruder MINIMUM={config['temp']-2} MAXIMUM={config['temp']+4}")
         self.gcode.run_script_from_command(f"IFS_REMOVE_PRUTOK PRUTOK={prutok} FORCE=0")
 
+    def cmd_IFS_MOTION_ON(self, gcmd):
+        eventtime = self.reactor.monotonic()
+        self._update_filament_runout_pos(eventtime)
+        if self.new:
+            self.runout_helper.note_filament_present(eventtime, True)
+        else:
+            self.runout_helper.note_filament_present(True)
+
+    def cmd_IFS_MOTION_OFF(self, gcmd):
+        if self.new:
+            eventtime = self.reactor.monotonic()
+            self.runout_helper.note_filament_present(eventtime, False)
+        else:
+            self.runout_helper.note_filament_present(False)
+
     def _sensor_reader(self):
         while not self.stop_thread:
             ser = None
@@ -990,7 +1006,7 @@ class IfsData:
         self.Silk = 0           # Загруженные порты
         self.Chan = 0           # Текущий активный порт
         self.Insert = 0         # В каком порту появился филамент
-        self.Stall = False      # Движение по любому порту
+        self.Stalls = [False, False, False, False, False] # Движение по любому порту
         self.stall_state = 0    # Движение по любому порту RAW
         self.State = 0          # Состояние IFS
         self.NeedInsert = False # Нужно ли вставлять пруток
@@ -1038,9 +1054,13 @@ class IfsData:
             self.Port4 = port4
             self.stall_state = stall_state
             if self.cur_port == 0:
-                self.Stall = stall_state != 0
+                self.Stall[0] = stall_state != 0
             else:
-                self.Stall = (stall_state >> (self.cur_port - 1) ) & 1 == 1
+                self.Stalls[0] = (tall_state >> (self.cur_port - 1) ) & 1 == 1
+            self.Stalls[1] = (stall_state >> 0) & 1 == 1
+            self.Stalls[2] = (stall_state >> 1) & 1 == 1
+            self.Stalls[3] = (stall_state >> 2) & 1 == 1
+            self.Stalls[4] = (stall_state >> 3) & 1 == 1
             self.Silk = silk_state
             self.State = state
             self.Chan = chan
@@ -1054,9 +1074,9 @@ class IfsData:
             else:
                 self.cur_port = port
 
-    def get_stall(self):
+    def get_stall(self, slot):
         with self.lock:
-            return self.Stall
+            return self.Stalls[slot]
 
     # Возвращает статус конкретного порта
     def get_port(self, port):
@@ -1083,11 +1103,10 @@ class IfsData:
                 'Chan':   self.Chan,
                 'Insert': self.Insert,
                 'NeedInsert': self.NeedInsert,
-                'Stall':  self.Stall,
+                'Stall':  self.Stall[0],
                 'stall_state': self.stall_state
             }
 
 
 def load_config(config):
     return zmod_ifs(config)
-
