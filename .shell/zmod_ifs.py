@@ -95,8 +95,7 @@ class zmod_ifs:
         self.gcode.register_command('IFS_F112', self.cmd_IFS_F112)      # Прекращаем подачу прутка
 
     def _handle_ready(self):
-        if self.zmod is not None:
-            self.lang = self.zmod.get_lang()
+        self.get_lang()
         self.get_prutok_config(1)
         self.sensor_thread.start()
 
@@ -198,12 +197,12 @@ class zmod_ifs:
         if self.debug:
             self.gcode.respond_info(msg)
 
-    def getlang(self):
+    def get_lang(self):
         if self.zmod is None:
             self.lang = 'en'
             self.zmod = self.printer.lookup_object('zmod', None)
-            if self.zmod is not None:
-                self.lang = self.zmod.get_lang()
+        if self.zmod is not None:
+            self.lang = self.zmod.get_lang()
 
     def get_extruder_sensor(self):
         value, timestamp = self.query_adc.adc["temperature_sensor filamentValue"].get_last_value()
