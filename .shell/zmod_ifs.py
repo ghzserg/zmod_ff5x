@@ -48,8 +48,6 @@ class zmod_ifs:
         self.language = 'en'
         self.ifs = True
         self.zmod = self.printer.lookup_object('zmod', None)
-        if self.zmod is not None:
-            self.language = self.zmod.get_lang()
         self.ifs_data = IfsData()
 
         # Синхронизация потоков
@@ -97,6 +95,8 @@ class zmod_ifs:
         self.gcode.register_command('IFS_F112', self.cmd_IFS_F112)      # Прекращаем подачу прутка
 
     def _handle_ready(self):
+        if self.zmod is not None:
+            self.language = self.zmod.get_lang()
         self.get_prutok_config(1)
         self.sensor_thread.start()
 
@@ -162,7 +162,11 @@ class zmod_ifs:
                     else:
                         stall_count = 0
             if self.reactor.monotonic() - start_time > timeout:
-                raise self.gcode.error(f"IFS: Вышло время для получения статуса {check_state}|{FFS_STATUS_READY} получен {state}")
+                if self.lang == 'ru':
+                    error_msg = f"IFS: Вышло время для получения статуса {check_state}|{FFS_STATUS_READY} получен {state}"
+                else:
+                    error_msg = f"IFS: Timeout waiting for status {check_state}|{FFS_STATUS_READY}, received {state}"
+                raise self.gcode.error(error_msg)
                 return False, RET_TIMEOUT, current_values
 
             self.reactor.pause(self.reactor.monotonic() + HOST_REPORT_TIME)
@@ -244,7 +248,11 @@ class zmod_ifs:
                     return self._ret_command_data
             if eventtime - start_time > timeout:
                 self.gcode.run_script_from_command("_ENABLE_SENSOR")
-                raise self.gcode.error(f"Таймаут ожидания ответа от команды {command}#{command_id}")
+                if self.lang == 'ru':
+                    error_msg = f"Таймаут ожидания ответа от команды {command}#{command_id}"
+                else:
+                    error_msg = f"Timeout waiting for response from command {command}#{command_id}"
+                raise self.gcode.error(error_msg)
                 return None
         return None
 
@@ -291,7 +299,7 @@ class zmod_ifs:
     # Получить конфиг прутка по номеру прутка
     def get_prutok_config(self, prutok):
         if prutok < 0 or prutok > 4:
-            self.print_str(f"Некорректный номер прутка {prutok}", False)
+            self.print_str(f"Некорректный номер прутка {prutok}" if self.lang == 'ru' else f"Incorrect filament number {prutok}", False)
         filament=self.get_prutok_type_from_config(prutok)
 
         base_default = {
@@ -392,7 +400,7 @@ class zmod_ifs:
         if channel != cur_prutok:
             self.gcode.run_script_from_command(f"_A_CHANGE_FILAMENT CHANNEL={channel} RESTORE=0")
         else:
-            self.print_str(f"Указываю активный пруток T{cur_prutok}")
+            self.print_str(f"Указываю активный пруток T{cur_prutok}" if self.lang == 'ru' else f"Setting active filament T{cur_prutok}")
             self.gcode.run_script_from_command(f"SDCARD_SET_CHANNEL CHANNEL={cur_prutok}")
         self.print_str("Включаю IFS")
         self.gcode.run_script_from_command("SDCARD_ENABLE_FFM ENABLE=1")
@@ -527,22 +535,40 @@ class zmod_ifs:
         )
 
     def print_result(self, ret_code, values, prutok, info=True):
-        if ret_code == RET_OK:
-            self.print_str("IFS в режиме готовности")
-        elif ret_code == RET_EXTRUDER:
-            self.print_str("Сработал датчик наличия прутка в экструдере", info)
-        elif ret_code == RET_SILK:
-            self.print_str(f"Нет прутка {prutok} в IFS", info)
-        elif ret_code == RET_STALL:
-            self.print_str(f"Остановился пруток {prutok} в IFS", info)
-        elif ret_code == RET_TIMEOUT:
-            self.print_str("Превышено время ожидания", info)
-        elif ret_code == RET_EXIT:
-            self.print_str("Завершение программы")
-        elif ret_code == RET_RETRY:
-            self.print_str("Сбой драйвера IFS", info)
+        if self.lang == 'ru':
+            if ret_code == RET_OK:
+                self.print_str("IFS в режиме готовности")
+            elif ret_code == RET_EXTRUDER:
+                self.print_str("Сработал датчик наличия прутка в экструдере", info)
+            elif ret_code == RET_SILK:
+                self.print_str(f"Нет прутка {prutok} в IFS", info)
+            elif ret_code == RET_STALL:
+                self.print_str(f"Остановился пруток {prutok} в IFS", info)
+            elif ret_code == RET_TIMEOUT:
+                self.print_str("Превышено время ожидания", info)
+            elif ret_code == RET_EXIT:
+                self.print_str("Завершение программы")
+            elif ret_code == RET_RETRY:
+                self.print_str("Сбой драйвера IFS", info)
+            else:
+                self.print_str("Неизвестный код завершения", info)
         else:
-            self.print_str("Неизвестный код завершения", info)
+            if ret_code == RET_OK:
+                self.print_str("IFS in ready mode")
+            elif ret_code == RET_EXTRUDER:
+                self.print_str("Filament sensor triggered in extruder", info)
+            elif ret_code == RET_SILK:
+                self.print_str(f"No filament {prutok} in IFS", info)
+            elif ret_code == RET_STALL:
+                self.print_str(f"Filament {prutok} stalled in IFS", info)
+            elif ret_code == RET_TIMEOUT:
+                self.print_str("Timeout exceeded", info)
+            elif ret_code == RET_EXIT:
+                self.print_str("Program termination")
+            elif ret_code == RET_RETRY:
+                self.print_str("IFS driver failure", info)
+            else:
+                self.print_str("Unknown return code", info)
 
     def _safe_run_script(self, script):
         try:
@@ -560,7 +586,7 @@ class zmod_ifs:
         prutok = gcmd.get_int('PRUTOK', 1)
         config = self.get_prutok_config(prutok)
 
-        self.gcode.respond_info(f"Автоматическая вставка прутка {prutok}")
+        self.gcode.respond_info(f"Автоматическая вставка прутка {prutok}" if self.lang == 'ru' else f"Automatic filament insertion {prutok}")
         self.wait_for_state()
 
         # Прижим прутка
@@ -569,7 +595,7 @@ class zmod_ifs:
 
         # Проверяем есть ли чтото в экструдере
         if self.get_extruder_sensor():
-            self.gcode.respond_info("В экструдере есть пруток")
+            self.gcode.respond_info("В экструдере есть пруток" if self.lang == 'ru' else "There is filament in the extruder")
             # Затягиваем пруток
             for attempt in range(RETRY_COUNT):
                 response = self._cmd_IFS_F10(prutok, leng=config['filament_autoinsert_full_length'], speed=config['filament_autoinsert_speed'])
@@ -583,7 +609,7 @@ class zmod_ifs:
                 if ret_code!=RET_RETRY:
                     break
         else:
-            self.gcode.respond_info("В экструдере нет прутка")
+            self.gcode.respond_info("В экструдере нет прутка" if self.lang == 'ru' else "No filament in the extruder")
             for attempt in range(RETRY_COUNT):
                 response = self._cmd_IFS_F10(prutok, leng=config['filament_autoinsert_empty_length'], speed=config['filament_autoinsert_speed'])
                 success, ret_code, values = self.wait_for_state(
@@ -618,7 +644,7 @@ class zmod_ifs:
             self.gcode.run_script_from_command("_IFS_OFF")
             return
 
-        self.gcode.respond_info(f"Вставить пруток {prutok} длинной {leng} со скоростью {speed}")
+        self.gcode.respond_info(f"Вставить пруток {prutok} длинной {leng} со скоростью {speed}" if self.lang == 'ru' else f"Insert filament {prutok} with length {leng} at speed {speed}")
         response = self.send_command_and_wait(f"F10 C{prutok} L{leng} S{speed}", result=f"F10 ok. FFS channel {prutok} feeding.")
         self.info(f"F10 C{prutok} L{leng} S{speed} > {response}")
         return response
@@ -633,7 +659,7 @@ class zmod_ifs:
         leng = gcmd.get_int('LEN', 90)
         speed = gcmd.get_int('SPEED', 1200)
         if speed == 0:
-            self.print_str("Скорость не может быть = 0", False)
+            self.print_str("Скорость не может быть = 0" if self.lang == 'ru' else "Speed cannot be = 0", False)
         wait = gcmd.get_int('WAIT', 1)
         check = gcmd.get_int('CHECK', 0)
         sleep = gcmd.get_int('SLEEP', 0)
@@ -674,7 +700,7 @@ class zmod_ifs:
             self.gcode.run_script_from_command("_IFS_OFF")
             return
 
-        self.gcode.respond_info(f"Извлечь пруток {prutok} длинной {leng} со скоростью {speed}")
+        self.gcode.respond_info(f"Извлечь пруток {prutok} длинной {leng} со скоростью {speed}" if self.lang == 'ru' else f"Extract filament {prutok} with length {leng} at speed {speed}")
         response = self.send_command_and_wait(f"F11 C{prutok} L{leng} S{speed}", result=f"F11 ok. FFS channel {prutok} exiting.")
         self.info(f"F11 C{prutok} L{leng} S{speed} > {response}")
         return response
@@ -725,7 +751,7 @@ class zmod_ifs:
         prutok = gcmd.get_int('PRUTOK', 1)
         wait = gcmd.get_int('WAIT', 1)
 
-        self.gcode.respond_info(f"Помечаем пруток {prutok}")
+        self.gcode.respond_info(f"Помечаем пруток {prutok}" if self.lang == 'ru' else f"Marking filament {prutok}")
 
         for attempt in range(RETRY_COUNT):
             response = self.send_command_and_wait(f"F23 C{prutok}", result=f"F23 ok. chan {prutok}.")
@@ -746,7 +772,7 @@ class zmod_ifs:
         prutok = gcmd.get_int('PRUTOK', 1)
         wait = gcmd.get_int('WAIT', 1)
 
-        self.gcode.respond_info(f"Блокировка прутка {prutok}")
+        self.gcode.respond_info(f"Блокировка прутка {prutok}" if self.lang == 'ru' else f"Locking filament {prutok}")
         for attempt in range(RETRY_COUNT):
             response = self.send_command_and_wait(f"F24 C{prutok}", result=f"F24 ok. chan {prutok}.")
             self.info(f"F24 C{prutok} > {response}")
@@ -766,7 +792,7 @@ class zmod_ifs:
         prutok = gcmd.get_int('PRUTOK', 1)
         wait = gcmd.get_int('WAIT', 1)
 
-        self.gcode.respond_info(f"Разблокировка прутка {prutok}")
+        self.gcode.respond_info(f"Разблокировка прутка {prutok}" if self.lang == 'ru' else f"Unlocking filament {prutok}")
         for attempt in range(RETRY_COUNT):
             response = self.send_command_and_wait(f"F39 C{prutok}", result=f"F39 ok. FFS channel {prutok} release.")
             self.info(f"F39 C{prutok} > {response}")
@@ -783,7 +809,7 @@ class zmod_ifs:
             self.gcode.run_script_from_command("_IFS_OFF")
             return
 
-        self.gcode.respond_info(f"Сброс драйвера")
+        self.gcode.respond_info(f"Сброс драйвера" if self.lang == 'ru' else f"Driver reset")
         response = self.send_command_and_wait("F15 C", result="F15 ok.")
         self.info(f"F15 > {response}")
 
@@ -795,7 +821,7 @@ class zmod_ifs:
 
         wait = gcmd.get_int('WAIT', 1)
 
-        self.gcode.respond_info(f"Разблокировка прутка ALL")
+        self.gcode.respond_info(f"Разблокировка всех прутков" if self.lang == 'ru' else f"Unlocking all filaments")
         for attempt in range(RETRY_COUNT):
             response = self.send_command_and_wait("F18", result=f"F18 ok")
             self.info(f"F18 > {response}")
@@ -814,7 +840,7 @@ class zmod_ifs:
 
         wait = gcmd.get_int('WAIT', 0)
 
-        self.gcode.respond_info(f"Останавливаю движение прутка")
+        self.gcode.respond_info(f"Останавливаю движение прутка" if self.lang == 'ru' else f"Stopping filament movement")
 
         for attempt in range(RETRY_COUNT):
             response = self.send_command_and_wait(f"F112", result="F112 ok.")
@@ -844,10 +870,9 @@ class zmod_ifs:
         info = gcmd.get_int('INFO', 0)
 
         if self.get_extruder_sensor():
-            self.print_str("Пруток в экструдере")
+            self.print_str("Пруток в экструдере" if self.lang == 'ru' else "Filament in extruder")
         else:
-            self.print_str("Пруток ОТСУСТВУЕТ в экструдере", info == 1)
-
+            self.print_str("Пруток ОТСУСТВУЕТ в экструдере" if self.lang == 'ru' else "Filament ABSENT in extruder", info == 1)
 
     def cmd_IFS_REMOVE_PRUTOK(self, gcmd):
         if not self.ifs:
@@ -879,10 +904,9 @@ class zmod_ifs:
         )
 
         if self.get_extruder_sensor():
-            raise self.gcode.error("Не удалось извлечь пруток из экструдера")
+            raise self.gcode.error("Не удалось извлечь пруток из экструдера" if self.lang == 'ru' else "Failed to extract filament from extruder")
         else:
-            gcmd.respond_info("Пруток извлечен из экструдера")
-
+            gcmd.respond_info("Пруток извлечен из экструдера" if self.lang == 'ru' else "Filament extracted from extruder")
 
     def cmd_IFS_REMOVE_CURRENT_PRUTOK(self, gcmd):
         if not self.ifs:
@@ -950,8 +974,12 @@ class zmod_ifs:
                     #self._respond_info(f"IN: {response}")
                     if not response:
                         if self.ifs:
-                            logging.warning(f"Пустой ответ от устройства {current_command}")
-                            self._respond_info(f"Пустой ответ от устройства {current_command}")
+                            if self.lang == 'ru':
+                                logging.warning(f"Пустой ответ от устройства {current_command}")
+                                self._respond_info(f"Пустой ответ от устройства {current_command}")
+                            else:
+                                logging.warning(f"Empty response from device {current_command}")
+                                self._respond_info(f"Empty response from device {current_command}")
                             self.reactor.register_async_callback(
                                 lambda eventtime: self._safe_run_script("_IFS_OFF")
                             )
