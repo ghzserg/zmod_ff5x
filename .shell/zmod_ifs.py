@@ -218,8 +218,8 @@ class zmod_ifs:
             result = (value >= 0.72)
         return result
 
-    def get_ifs_sensor(self, slot):
-        return self.ifs_data.get_stall(slot)
+    def get_ifs_sensor(self, port):
+        return self.ifs_data.get_stall(port)
 
     def set_cur_port(self, port):
         return self.ifs_data.set_cur_port(port)
@@ -1122,12 +1122,12 @@ class IfsData:
             else:
                 self.cur_port = port
 
-    def get_stall(self, slot):
+    def get_stall(self, port):
         with self.lock:
-            if slot == 0:
+            if port == 0:
                 return self.Stall
             else:
-                return self.Stalls[slot-1]
+                return self.Stalls[port-1]
 
     # Возвращает статус конкретного порта
     def get_port(self, port):
