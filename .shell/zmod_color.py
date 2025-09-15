@@ -498,6 +498,9 @@ class zmod_color:
         self.query_adc = self.printer.lookup_object('query_adc')
         self.virtual_sd = self.printer.lookup_object('virtual_sdcard')
 
+    def get_display(self):
+        return self.display
+
     def get_printer_ip(self):
         interfaces = ['wlan0', 'eth0']
         for iface in interfaces:

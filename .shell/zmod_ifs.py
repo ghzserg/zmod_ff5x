@@ -48,6 +48,9 @@ class zmod_ifs:
         self.lang = 'en'
         self.ifs = True
         self.zmod = self.printer.lookup_object('zmod', None)
+        self.zmod_color = self.printer.lookup_object('zmod_color', None)
+        if not self.zmod_color or self.zmod_color.get_display():
+            return
         self.ifs_data = IfsData()
 
         # Синхронизация потоков
