@@ -1021,7 +1021,7 @@ ed8a1e935d91aea46689101f415606ed  ./usr/prog/ffmpeg-4.0.2/share/man/man1/ffprobe
 1abff61c4e8f41a2669c2b38e949c991  ./usr/prog/ffmpeg-4.0.2/share/man/man3/libavutil.3
 7f71409070f21823aa13367f0e74d27c  ./usr/prog/ffmpeg-4.0.2/share/man/man3/libswresample.3
 ae5ff6726ac8ec3dc538ab8fd794cab5  ./usr/prog/ffmpeg-4.0.2/share/man/man3/libswscale.3
-5843000a6abffa84875d6ad96ffef938  ./usr/prog/freecach.sh
+cc30db1fa76ebb2ebf52181639470767  ./usr/prog/freecach.sh
 911105839cacb39b68212d39a60fe602  ./usr/prog/klipper/checkEboard
 a6c97b70de5d9fa789241d5cec0484d0  ./usr/prog/klipper/config/example-cartesian.cfg
 04f4dd74bba45e1f9ffe5bdc09ff0632  ./usr/prog/klipper/config/example.cfg
@@ -5031,8 +5031,8 @@ e3eb0a1df437f3f97a64aca5952c8ea0  ./usr/prog/nginx/html/index.html
 025ce59fab18cc6e29d7cba7b60f3162  ./usr/prog/nginx/off
 e7bf6f5c3f43d7a85a65eff9592a865e  ./usr/prog/nginx/sbin/nginx
 e7bf6f5c3f43d7a85a65eff9592a865e  ./usr/prog/nginx/sbin/nginx.old
-d6b4a8c36ea95fc792121b108c090a3c  ./usr/prog/nim/lib/libnim_chatroom.so
-e4399705475d25eaeda4a044a9a0606f  ./usr/prog/nim/lib/libnim.so
+ec9abc171632669acf43c15fa4fcc64a  ./usr/prog/nim/lib/libnim_chatroom.so
+81ce43a1684bdb10d9f6d57b833ffecc  ./usr/prog/nim/lib/libnim.so
 ad04afb943c3e5742becca48dc91cbf2  ./usr/prog/opencv-4.2.0_mips/bin/opencv_annotation
 75cf9a275e5d331d6efd579aa1dd0f17  ./usr/prog/opencv-4.2.0_mips/bin/opencv_interactive-calibration
 f3b05d770df7def6be827cc3496f6ede  ./usr/prog/opencv-4.2.0_mips/bin/opencv_version
