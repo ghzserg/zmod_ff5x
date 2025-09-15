@@ -947,17 +947,19 @@ class zmod_ifs:
         else:
             self.runout_helper.note_filament_present(False)
 
-    def cmd_IFS_SWITCH_OFF(self, gcmd):                                                                                                                                                
-        if self.new:                                                                                                                                                                    
-            eventtime = self.reactor.monotonic()                                                                                                                                        
-            self.runout_helper.note_filament_present(eventtime, False)                                                                                                                  
-        else:                                                                                                                                                                           
-            self.runout_helper.note_filament_present(False)                                                                                                                             
-                                                                                                                                                                                        
-    def cmd_IFS_MOTION_OFF(self, gcmd):                                                                                                                                                 
-        if self.new:                                                                                                                                                         
-            eventtime = self.reactor.monotonic()                                                                                                                                        
+    def cmd_IFS_SWITCH_ON(self, gcmd):
+        if self.new:
+            eventtime = self.reactor.monotonic()
+            self.runout_helper.note_filament_present(eventtime, True)
+        else:
+            self.runout_helper.note_filament_present(True)
+
+    def cmd_IFS_SWITCH_OFF(self, gcmd):
+        if self.new:
+            eventtime = self.reactor.monotonic()
             self.runout_helper.note_filament_present(eventtime, False)
+        else:
+            self.runout_helper.note_filament_present(False)
 
     def _sensor_reader(self):
         while not self.stop_thread:
