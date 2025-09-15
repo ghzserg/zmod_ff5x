@@ -21,7 +21,7 @@ class ZmodIfsMotionSensor:
         # Get printer objects
         self.reactor = self.printer.get_reactor()
         self.runout_helper = filament_switch_sensor.RunoutHelper(config)
-        self.slot = config.getint('slot', 0, minval=0, maxval=4)
+        self.slot = config.getint('port', 0, minval=0, maxval=4)
         sig = inspect.signature(self.runout_helper.note_filament_present)
         if 'eventtime' in sig.parameters:
             self.new = True
@@ -76,7 +76,7 @@ class ZmodIfsMotionSensor:
         return self.extruder.find_past_position(print_time)
     def _extruder_pos_update_event(self, eventtime):
         # Получаем статус филамента из zmod_ifs
-        if self.ifs.get_ifs_sensor(self.slot):
+        if self.ifs.get_ifs_sensor(self.port):
             self._update_filament_runout_pos(eventtime)
 
             extruder_pos = self._get_extruder_pos(eventtime)
