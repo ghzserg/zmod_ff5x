@@ -21,7 +21,7 @@ class ZmodIfsMotionSensor:
         # Get printer objects
         self.reactor = self.printer.get_reactor()
         self.runout_helper = filament_switch_sensor.RunoutHelper(config)
-        self.slot = config.getint('port', 0, minval=0, maxval=4)
+        self.port = config.getint('port', 0, minval=0, maxval=4)
         sig = inspect.signature(self.runout_helper.note_filament_present)
         if 'eventtime' in sig.parameters:
             self.new = True
