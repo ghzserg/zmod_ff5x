@@ -513,6 +513,7 @@ class zmod_ifs:
     def cmd_INSERT_PRUTOK_IFS(self, gcmd):
         prutok = gcmd.get_int('PRUTOK', 1)
         need_stop = gcmd.get_int('NEED_STOP', 1)
+        trash = gcmd.get_int('TRASH', 0)
         config = self.get_prutok_config(prutok)
 
         filament_drop_length_add = 0
@@ -527,6 +528,7 @@ class zmod_ifs:
             f"PRUTOK={prutok} "
             f"TEMP={config['temp']} "
             f"NEED_STOP={need_stop} "
+            f"TRASH={trash} "
             f"FILAMENT_TYPE={config['filament_type']} "
             f"FILAMENT_UNLOAD_SPEED={config['filament_unload_speed']} "
             f"FILAMENT_LOAD_SPEED={config['filament_load_speed']} "
