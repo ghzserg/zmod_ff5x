@@ -25,7 +25,8 @@ sed "s/    \"defaultLocale\": \"ru\",/    \"defaultLocale\": \"${ZLANG}\",/" /op
 
 start() {
     # start busybox httpd
-    start-stop-daemon -S -b -m -p $PID_FILE --exec httpd -- -p 80 -f -h $WEBROOT -c ${MOD_CONF}/mod/.shell/root/httpd.conf
+    #start-stop-daemon -S -b -m -p $PID_FILE --exec httpd -- -p 80 -f -h $WEBROOT -c ${MOD_CONF}/mod/.shell/root/httpd.conf
+    start-stop-daemon -S -b -m -p $PID_FILE --exec ${MOD_CONF}/mod/.shell/root/zmod_httpd -- $WEBROOT
 }
 
 stop() {
