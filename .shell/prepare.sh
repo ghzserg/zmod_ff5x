@@ -26,13 +26,27 @@ wifi_fix()
 
     echo "WiFi station enabled — restarting network..."
 
+    ip addr flush dev "$INTERFACE" 2>/dev/null || ifconfig "$INTERFACE" 0.0.0.0 2>/dev/null
+    ifconfig "$INTERFACE" down
+    sleep 1
+    ifconfig "$INTERFACE" up
+
     killall wpa_supplicant 2>/dev/null || true
     killall wpa_cli        2>/dev/null || true
     killall udhcpc         2>/dev/null || true
 
     echo "wpa_supplicant"
-    wpa_supplicant -d -Dnl80211 -iwlan0 -c${WPA_CONFIG} -B
-    echo "/usr/bin/wpa_cli"
+    wpa_supplicant -iwlan0 -B -d -Dnl80211 -c${WPA_CONFIG}
+    for i in $(seq 1 10); do
+        if wpa_cli -i "$INTERFACE" status >/dev/null 2>&1; then
+            break
+        fi
+        sleep 1
+    done
+
+    echo "Enabling all networks..."
+    wpa_cli -i "$INTERFACE" enable_network all
+
     start-stop-daemon --start --background --exec /usr/sbin/wpa_cli -- -i wlan0 -a ${MOD_CONF}/mod/.shell/wifi.sh
     echo "Wi-Fi restart initiated. DHCP will start automatically on connection."
 }

@@ -13,7 +13,9 @@ case "$2" in
     CONNECTED)
         echo "$(date): Wi-Fi connected, starting DHCP on $1" >>${MOD_CONF}/mod_data/log/wifi.log
         killall udhcpc 2>/dev/null || true
-        udhcpc -i "$1" -b
+        ip addr flush dev "$1"
+        udhcpc -i "$1" -b -R -T 3 -t 5
+        ifconfig "$1"
         ;;
     DISCONNECTED)
         echo "$(date): Wi-Fi disconnected on $1" >>${MOD_CONF}/mod_data/log/wifi.log
