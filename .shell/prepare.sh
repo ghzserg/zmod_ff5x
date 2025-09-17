@@ -14,6 +14,7 @@ fi
 
 wifi_fix()
 {
+    INTERFACE=wlan0
     if [ ! -f "$FFCONFIG" ]; then
         echo "Config file not found: $FFCONFIG"
         return 0
@@ -36,7 +37,7 @@ wifi_fix()
     killall udhcpc         2>/dev/null || true
 
     echo "wpa_supplicant"
-    wpa_supplicant -iwlan0 -B -d -Dnl80211 -c${WPA_CONFIG}
+    wpa_supplicant -i$INTERFACE -B -d -Dnl80211 -c${WPA_CONFIG}
     for i in $(seq 1 10); do
         if wpa_cli -i "$INTERFACE" status >/dev/null 2>&1; then
             break
