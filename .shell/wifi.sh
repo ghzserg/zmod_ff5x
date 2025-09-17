@@ -21,7 +21,7 @@ wifi_fix()
 {
     INTERFACE=wlan0
     if ! grep -q "wifi = 1" /opt/config/mod_data/variables.cfg; then
-        echo "Wi-Fi disabled in zmod. Use SAVE_ZMOD_SATA wifi=1"
+        echo "Wi-Fi disabled in zmod. Use SAVE_ZMOD_DATA WIFI=1"
         return 0
     fi
 
@@ -36,6 +36,26 @@ wifi_fix()
     fi
 
     echo "WiFi station enabled — restarting network..."
+
+    [ ${FF5X} -eq 0 ] insmod /lib/modules/8821cu.ko || insmod /usr/prog/modules/8821cu.ko power_on=PB07
+
+    echo "Waiting for interface $INTERFACE to appear..."
+
+    while [ $COUNT -lt $TIMEOUT ]; do
+        if ip link show "$INTERFACE" >/dev/null 2>&1; then
+            echo "Interface $INTERFACE is now available."
+            break
+        fi
+        sleep 1
+        COUNT=$((COUNT + 1))
+    done
+
+    if [ $COUNT -ge $TIMEOUT ]; then
+        echo "Timeout: Interface $INTERFACE did not appear within $TIMEOUT seconds." >&2
+        return 1
+    fi
+
+    rfkill list
 
     ip addr flush dev "$INTERFACE" 2>/dev/null || ifconfig "$INTERFACE" 0.0.0.0 2>/dev/null
     ifconfig "$INTERFACE" down
