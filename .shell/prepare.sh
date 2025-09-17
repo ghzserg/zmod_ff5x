@@ -34,9 +34,12 @@ wifi_fix()
     echo "WiFi station enabled — restarting network..." >> ${MOD_CONF}/mod_data/log/wifi.log
 
     killall wpa_supplicant 2>/dev/null || true >> ${MOD_CONF}/mod_data/log/wifi.log
-    killall wpa_cli       2>/dev/null || true >> ${MOD_CONF}/mod_data/log/wifi.log
+    killall wpa_cli        2>/dev/null || true >> ${MOD_CONF}/mod_data/log/wifi.log
+    killall udhcpc         2>/dev/null || true >> ${MOD_CONF}/mod_data/log/wifi.log
 
+    echo "wpa_supplicant" >> ${MOD_CONF}/mod_data/log/wifi.log
     wpa_supplicant -d -Dnl80211 -iwlan0 -c${WPA_CONFIG} -B >> ${MOD_CONF}/mod_data/log/wifi.log
+    echo "/usr/bin/wpa_cli">> ${MOD_CONF}/mod_data/log/wifi.log
     start-stop-daemon --start --background --exec /usr/bin/wpa_cli -- -i wlan0 -a ${MOD_CONF}/mod/.shell/wifi.sh >> ${MOD_CONF}/mod_data/log/wifi.log
     echo "Wi-Fi restart initiated. DHCP will start automatically on connection." >> ${MOD_CONF}/mod_data/log/wifi.log
 }
