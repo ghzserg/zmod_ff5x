@@ -59,7 +59,7 @@ wifi_fix()
     killall wpa_cli
     killall -9 wpa_cli
 
-    start-stop-daemon --start --background --exec /usr/sbin/wpa_cli -- -i $INTERFACE -a ${WIFI_RECONNECT}
+    start-stop-daemon --start --oknodo --background --exec /usr/sbin/wpa_cli -- -i $INTERFACE -a ${WIFI_RECONNECT}
     echo "Wi-Fi restart initiated. DHCP will start automatically on connection."
 }
 
