@@ -150,7 +150,6 @@ start_prepare()
     cp ${TS_LIB}/pointercal /tmp/pointercal
     cp ${TS_LIB}/ts.conf /tmp/ts.conf
 
-    ${MOD_CONF}/mod/.shell/wifi.sh &
     start_moon
 }
 
