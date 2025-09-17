@@ -21,7 +21,6 @@ GLINES=1100
 UPDATE_DIR=/data/update/
 FFCONFIG='/opt/config/Adventurer5M.json'
 WPA_CONFIG="/etc/wpa_supplicant.conf"
-WIFI_RECONNECT="/bin/wifi_reconnect"
 ZLANG="en"
 if grep -q "language: en" ${MOD_CONF}/mod_data/lang.cfg; then ZLANG="en";
 else if grep -q "language: ru" ${MOD_CONF}/mod_data/lang.cfg; then ZLANG="ru";

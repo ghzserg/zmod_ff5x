@@ -6,13 +6,6 @@ else if [ -f /usr/data/config/mod/.shell/0.sh ]; then
     source /usr/data/config/mod/.shell/0.sh
 fi
 fi
-# $1 = interface (wlan0)
-# $2 = event (CONNECTED, DISCONNECTED, ...)
-#!/bin/sh
-case "$2" in
-CONNECTED) echo "connection established"; ;;
-DISCONNECTED) echo "connection lost"; ;;
-esac
 
 case "$2" in
     CONNECTED)

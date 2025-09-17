@@ -20,15 +20,20 @@ fi
 wifi_fix()
 {
     INTERFACE=wlan0
+    if ! grep -q "wifi = 1" /opt/config/mod_data/variables.cfg; then
+        echo "Wi-Fi disabled in zmod. Use SAVE_ZMOD_SATA wifi=1"
+        return 0
+    fi
+
     if [ ! -f "$FFCONFIG" ]; then
         echo "Config file not found: $FFCONFIG"
         return 0
     fi
 
-#    if ! grep -q '"wifiStationStatus" *: *true' "$FFCONFIG"; then
-#        echo "WiFi station disabled — skipping network restart."
-#        return 0
-#    fi
+    if grep -q '"wifiStationStatus" *: *true' "$FFCONFIG"; then
+        echo "WiFi station enabled on original screen — skipping network restart."
+        return 0
+    fi
 
     echo "WiFi station enabled — restarting network..."
 
@@ -59,7 +64,7 @@ wifi_fix()
     killall wpa_cli
     killall -9 wpa_cli
 
-    start-stop-daemon --start --oknodo --background --exec /usr/sbin/wpa_cli -- -i $INTERFACE -a ${WIFI_RECONNECT}
+    start-stop-daemon --start --oknodo --background --exec /usr/sbin/wpa_cli -- -i $INTERFACE -a ${MOD_CONF}/mod/.shell/wifi_reconnect.sh
     echo "Wi-Fi restart initiated. DHCP will start automatically on connection."
 }
 

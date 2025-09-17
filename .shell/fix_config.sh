@@ -221,8 +221,6 @@ fix_config()
     [ -f ${MOD_CONF}/mod_data/user.cfg ] || echo "" >${MOD_CONF}/mod_data/user.cfg
     [ -f ${MOD_CONF}/mod_data/variables.cfg ] || echo "[Variables]" >${MOD_CONF}/mod_data/variables.cfg
 
-    mount --bind ${MOD_CONF}/mod/.shell/wifi_reconnect.sh ${WIFI_RECONNECT}
-
     if [ ${FF5X} -eq 1 ]; then
         md5=$(md5sum ${MOD_CONF}/mod_data/cmd_pwm 2>/dev/null |awk '{print $1}')
         if [ "$md5" != "bb0a72766632c11bd83ae68a8da94688" ]; then
