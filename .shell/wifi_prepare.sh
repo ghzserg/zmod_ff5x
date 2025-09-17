@@ -53,6 +53,8 @@ wifi_fix()
     echo "Enabling all networks..."
     wpa_cli -i "$INTERFACE" enable_network all
 
+    killall wpa_cli 2>/dev/null || true
+
     start-stop-daemon --start --background --exec /usr/sbin/wpa_cli -- -i wlan0 -a ${MOD_CONF}/mod/.shell/wifi.sh
     echo "Wi-Fi restart initiated. DHCP will start automatically on connection."
 }
