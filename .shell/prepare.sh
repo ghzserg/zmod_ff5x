@@ -12,31 +12,6 @@ else if [ -f /usr/data/config/mod/.shell/0.sh ]; then
 fi
 fi
 
-wifi_fix()
-{
-    if [ ! -f "$FFCONFIG" ]; then
-        echo "Config file not found: $FFCONFIG"
-        return 0
-    fi
-
-    if ! grep -q '"wifiStationStatus" *: *true' "$FFCONFIG"; then
-        echo "WiFi station disabled — skipping network restart."
-        return 0
-    fi
-
-    echo "WiFi station enabled — restarting network..."
-
-    killall wpa_supplicant 2>/dev/null || true
-    killall wpa_cli        2>/dev/null || true
-    killall udhcpc         2>/dev/null || true
-
-    echo "wpa_supplicant"
-    wpa_supplicant -d -Dnl80211 -iwlan0 -c${WPA_CONFIG} -B
-    echo "/usr/bin/wpa_cli"
-    start-stop-daemon --start --background --exec /usr/bin/wpa_cli -- -i wlan0 -a ${MOD_CONF}/mod/.shell/wifi.sh
-    echo "Wi-Fi restart initiated. DHCP will start automatically on connection."
-}
-
 remove_base()
 {
     rm -rf ${UMOUNT_MOD}
@@ -175,13 +150,7 @@ start_prepare()
     cp ${TS_LIB}/pointercal /tmp/pointercal
     cp ${TS_LIB}/ts.conf /tmp/ts.conf
 
-    mv ${MOD_CONF}/mod_data/log/wifi.4.log ${MOD_CONF}/mod_data/log/wifi.5.log
-    mv ${MOD_CONF}/mod_data/log/wifi.3.log ${MOD_CONF}/mod_data/log/wifi.4.log
-    mv ${MOD_CONF}/mod_data/log/wifi.2.log ${MOD_CONF}/mod_data/log/wifi.3.log
-    mv ${MOD_CONF}/mod_data/log/wifi.1.log ${MOD_CONF}/mod_data/log/wifi.2.log
-    mv ${MOD_CONF}/mod_data/log/wifi.log ${MOD_CONF}/mod_data/log/wifi.1.log
-    wifi_fix &>${MOD_CONF}/mod_data/log/wifi.log
-
+    ${MOD_CONF}/mod/.shell/wifi.sh
     start_moon
 }
 
