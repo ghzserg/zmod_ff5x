@@ -11,6 +11,7 @@ import argparse
 import re
 import os
 import sys
+import io
 import base64
 import traceback
 import tempfile
@@ -35,8 +36,13 @@ from typing import (
 if TYPE_CHECKING:
     pass
 
+READ_SIZE = 1024 * 1024  # 1 MiB
 UFP_MODEL_PATH = "/3D/model.gcode"
 UFP_THUMB_PATH = "/Metadata/thumbnail.png"
+SUPPORTED_THUMB_FORMATS = ("png", "jpg", "qoi")
+FMT_CONV_MAP = {
+    "qoi": "png"
+}
 
 logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 logger = logging.getLogger("metadata")
@@ -130,17 +136,16 @@ class BaseSlicer(object):
         self.path = file_path
         self.slicer_name = "Unknown"
         self.slicer_version = "?"
+        self._file_data: str = ""
         self.header_data: str = ""
         self.footer_data: str = ""
         self.layer_height: Optional[float] = None
         self.has_m486_objects: bool = False
 
-    def set_data(self,
-                 header_data: str,
-                 footer_data: str,
-                 fsize: int) -> None:
-        self.header_data = header_data
-        self.footer_data = footer_data
+    def set_data(self, file_data: str, fsize: int) -> None:
+        self._file_data = file_data
+        self.header_data = file_data[:READ_SIZE]
+        self.footer_data = file_data[-READ_SIZE:]
         self.size: int = fsize
 
     def _check_has_objects(self,
@@ -191,14 +196,14 @@ class BaseSlicer(object):
         m = re.search(r"\n[MG]\d+\s.*\n", self.header_data)
         if m is None:
             return None
-        return m.start()
+        return len(self.header_data[:m.start()].encode())
 
     def parse_gcode_end_byte(self) -> Optional[int]:
         rev_data = self.footer_data[::-1]
         m = re.search(r"\n.*\s\d+[MG]\n", rev_data)
         if m is None:
             return None
-        return self.size - m.start()
+        return self.size - len(rev_data[:m.start()].encode())
 
     def parse_first_layer_height(self) -> Optional[float]:
         return None
@@ -255,13 +260,8 @@ class BaseSlicer(object):
         return None
 
     def parse_thumbnails(self) -> Optional[List[Dict[str, Any]]]:
-        for data in [self.header_data, self.footer_data]:
-            thumb_matches: List[str] = re.findall(
-                r"; thumbnail begin[;/\+=\w\s]+?; thumbnail end", data)
-            if thumb_matches:
-                break
-        else:
-            return None
+        parsed_matches: List[Dict[str, Any]] = []
+        has_miniature: bool = False
         thumb_dir = os.path.join(os.path.dirname(self.path), ".thumbs")
         if not os.path.exists(thumb_dir):
             try:
@@ -270,34 +270,46 @@ class BaseSlicer(object):
                 logger.info(f"Unable to create thumb dir: {thumb_dir}")
                 return None
         thumb_base = os.path.splitext(os.path.basename(self.path))[0]
-        parsed_matches: List[Dict[str, Any]] = []
-        has_miniature: bool = False
-        for match in thumb_matches:
-            lines = re.split(r"\r?\n", match.replace('; ', ''))
+        pattern = r"(thumbnail(?:_[A-Za-z0-9]+)?) begin([;/\+=\w\s]+?); \1 end"
+        for match in re.finditer(pattern, self._file_data):
+            ext = match.group(1).partition("_")[2].lower() or "png"
+            if ext not in SUPPORTED_THUMB_FORMATS:
+                logger.info(f"Unsupported thumbnail extension: {ext}")
+                continue
+            lines = re.split(r"\r?\n", match.group(2).replace('; ', ''))
             info = regex_find_ints(r"(%D)", lines[0])
             data = "".join(lines[1:-1])
             if len(info) != 3:
                 logger.info(
-                    f"MetadataError: Error parsing thumbnail"
-                    f" header: {lines[0]}")
+                    f"MetadataError: Error parsing thumbnail header: {lines[0]}"
+                )
                 continue
             if len(data) != info[2]:
                 logger.info(
                     f"MetadataError: Thumbnail Size Mismatch: "
                     f"detected {info[2]}, actual {len(data)}")
                 continue
-            thumb_name = f"{thumb_base}-{info[0]}x{info[1]}.png"
+            dest_ext = FMT_CONV_MAP.get(ext, ext)
+            thumb_name = f"{thumb_base}-{info[0]}x{info[1]}.{dest_ext}"
             thumb_path = os.path.join(thumb_dir, thumb_name)
             rel_thumb_path = os.path.join(".thumbs", thumb_name)
-            with open(thumb_path, "wb") as f:
-                f.write(base64.b64decode(data.encode()))
+            if dest_ext != ext:
+                # Convert image.  Format is determined by destination file
+                # extension.  Only formats supported by Pillow should be used.
+                with Image.open(io.BytesIO(base64.b64decode(data.encode()))) as im:
+                    im.save(thumb_path)
+            else:
+                with open(thumb_path, "wb") as f:
+                    f.write(base64.b64decode(data.encode()))
             parsed_matches.append({
                 'width': info[0], 'height': info[1],
                 'size': os.path.getsize(thumb_path),
                 'relative_path': rel_thumb_path})
             if info[0] == 32 and info[1] == 32:
                 has_miniature = True
-        if len(parsed_matches) > 0 and not has_miniature:
+        if not parsed_matches:
+            return None
+        if not has_miniature:
             # find the largest thumb index
             largest_match = parsed_matches[0]
             for item in parsed_matches:
@@ -1026,7 +1038,6 @@ class KiriMoto(BaseSlicer):
         )
 
 
-READ_SIZE = 1024 * 1024  # 1 MiB
 SUPPORTED_SLICERS: List[Type[BaseSlicer]] = [
     PrusaSlicer, Slic3rPE, Slic3r, Cura, Simplify3D,
     KISSlicer, IdeaMaker, IceSL, KiriMoto
@@ -1110,28 +1121,25 @@ def process_objects(file_path: str, slicer: BaseSlicer) -> bool:
     return True
 
 def get_slicer(file_path: str) -> BaseSlicer:
-    header_data = footer_data = ""
+    file_data = ""
     slicer: Optional[BaseSlicer] = None
-    size = os.path.getsize(file_path)
-    with open(file_path, 'r') as f:
+    with open(file_path, 'rb') as f:
         # read the default size, which should be enough to
         # identify the slicer
-        header_data = f.read(READ_SIZE)
+        size = f.seek(0, os.SEEK_END)
+        f.seek(0)
+        file_data = f.read(READ_SIZE).decode(errors="ignore")
         for impl in SUPPORTED_SLICERS:
             slicer = impl(file_path)
-            if slicer.check_identity(header_data):
+            if slicer.check_identity(file_data):
                 break
         else:
             slicer = UnknownSlicer(file_path)
         if size > READ_SIZE * 2:
             f.seek(size - READ_SIZE)
-            footer_data = f.read()
-        elif size > READ_SIZE:
-            remaining = size - READ_SIZE
-            footer_data = header_data[remaining - READ_SIZE:] + f.read()
-        else:
-            footer_data = header_data
-        slicer.set_data(header_data, footer_data, size)
+        if size > READ_SIZE:
+            file_data += f.read().decode(errors="ignore")
+        slicer.set_data(file_data, size)
     return slicer
 
 def run_gcode_processors(
