@@ -2,6 +2,11 @@
 
 source /opt/config/mod/.shell/0.sh
 
+if [ -f /ZMOD ]; then
+    /opt/config/mod/.shell/zremote.sh /opt/config/mod/.shell/zflash.sh
+    exit 0
+fi
+
 if ! mount |grep media >/dev/null; then
     mkdir -p /media
     mount /dev/sda /media || mount /dev/sda1 /media
@@ -9,11 +14,6 @@ fi
 if ! mount |grep media >/dev/null; then
     [ "${ZLANG}" != 'ru' ] && echo "Flash drive not connected. Insert the flash drive and restart the printer." || echo "Флешка не подключена. Вставьте флешку и перезагрузите принтер."
     exit 1
-fi
-
-if [ -f /ZMOD ]; then
-    /opt/config/mod/.shell/zremote.sh /opt/config/mod/.shell/zflash.sh
-    exit 0
 fi
 
 if [ ${FF5X} -eq 1 ]; then
