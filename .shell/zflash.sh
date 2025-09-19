@@ -9,7 +9,7 @@ fi
 
 if ! mount |grep media >/dev/null; then
     mkdir -p /media
-    mount /dev/sda /media || mount /dev/sda1 /media
+    mount /dev/sda /media 2>/dev/null || mount /dev/sda1 /media 2>/dev/null
 fi
 if ! mount |grep media >/dev/null; then
     [ "${ZLANG}" != 'ru' ] && echo "Flash drive not connected. Insert the flash drive and restart the printer." || echo "Флешка не подключена. Вставьте флешку и перезагрузите принтер."
