@@ -1,0 +1,25 @@
+import sys
+import re
+
+gcode = ''
+output = []
+tools = set([])
+colors = []
+t = ''
+print(sys.argv[1])
+with open(sys.argv[1], 'r') as gcode:
+    for line in gcode:
+        if re.match("T([0-9]+)", line):
+            output.append(line)
+            tools.add(re.match("T([0-9]+)", line).group(1))
+        elif re.match("; filament_colour = (.*)", line):
+            output.append(line)
+            colors = re.match("; filament_colour = (.*)", line).group(1).split(";")
+        else:
+            output.append(line)
+            
+
+with open(sys.argv[1], 'w') as f:
+    f.write("_IFS_COLORS COLORS=" + ",".join("{0}".format(c[1:]) for c in colors) + " TOOLS=" + ",".join(sorted(tools)) + "\n") 
+    for line in output:
+        f.write(line)
