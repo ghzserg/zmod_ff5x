@@ -43,7 +43,7 @@ END {
         maxx, maxy,         # Правый верхний угол
         maxx, miny          # Правый нижний угол
 }' >/tmp/printer
-
+echo 'RESPOND TYPE=echo MSG="Exclude 1"' >/tmp/printer
 
 sed -n '
     # Замена первой метки слоя на FIRST_LAYER_CHANGE
@@ -88,4 +88,5 @@ END {
         maxx, maxy,         # Правый верхний угол
         maxx, miny          # Правый нижний угол
 }' > /tmp/printer
+echo 'RESPOND TYPE=echo MSG="Exclude 2"' >/tmp/printer
 exit 0
