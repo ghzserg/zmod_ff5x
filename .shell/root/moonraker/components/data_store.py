@@ -137,9 +137,19 @@ class DataStore:
     async def _handle_temp_store_request(
         self, web_request: WebRequest
     ) -> Dict[str, Dict[str, List[Optional[float]]]]:
+        found = False
+        with open('/etc/os-release') as file:
+          for line in file:
+            if re.search('VERSION_CODENAME="Adventurer5MPro ', line):
+              found = True
+              break
         include_monitors = web_request.get_boolean("include_monitors", False)
         store = {}
         for name, sensor in self.temperature_store.items():
+            if name == "cutValue" or name == "filamentValue":
+                continue
+            if name == "tvocValue" and found:
+                continue
             if not include_monitors and name in self.temp_monitors:
                 continue
             store[name] = {f"{k}s": list(v) for k, v in sensor.items()}
