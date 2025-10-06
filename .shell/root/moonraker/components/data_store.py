@@ -147,9 +147,9 @@ class DataStore:
         include_monitors = web_request.get_boolean("include_monitors", False)
         store = {}
         for name, sensor in self.temperature_store.items():
-            if name == "cutValue" or name == "filamentValue":
+            if name == "temperature_sensor cutValue" or name == "temperature_sensor filamentValue":
                 continue
-            if name == "tvocValue" and found:
+            if name == "temperature_sensor tvocValue" and found:
                 continue
             if not include_monitors and name in self.temp_monitors:
                 continue
