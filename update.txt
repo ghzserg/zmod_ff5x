@@ -1,0 +1,6 @@
+enter to ssh
+chroot /usr/data/.mod/.zmod/
+cd /usr/data/config/mod/
+git remote add upstream https://github.com/function3d/zmod_ff5x.git
+git fetch upstream
+git checkout upstream/1.6
