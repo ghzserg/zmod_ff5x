@@ -1,6 +1,22 @@
-enter to ssh
+ssh root@printer_ip
 chroot /usr/data/.mod/.zmod/
 cd /usr/data/config/mod/
 git remote add upstream https://github.com/function3d/zmod_ff5x.git
 git fetch upstream
 git checkout upstream/1.6
+#mainsail
+cd /root/
+mv mainsail/ mainsail_/ 
+curl -L -o mainsail.zip https://github.com/function3d/mainsail/releases/download/v2.13.2-sms/mainsail.zip
+unzip mainsail.zip -d mainsail/
+sed -i 's/"port": null,/"port": "7125",/g' mainsail/config.json
+mkdir -p /usr/data/config/.theme
+cat > /usr/data/config/.theme/custom.css <<'EOF'
+.v-btn{
+  min-width: 32px !important;
+  margin-right:0 !important;
+}
+EOF
+mv /usr/data/config/mod_data/user.cfg /usr/data/config/mod_data/user.cfg.old
+curl -L -o /usr/data/config/mod_data/user.cfg https://raw.githubusercontent.com/function3d/zmod_ff5x/refs/heads/1.6/user.cfg
+REBOOT
