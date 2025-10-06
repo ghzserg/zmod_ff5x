@@ -4,13 +4,7 @@ https://github.com/function3d/mainsail
 https://docs.mainsail.xyz/about/development/environment  (VUE_APP_HOSTNAME=IP PRINTER)
 */
 
-.v-btn.mx-2, .v-btn.ifs-color, .v-btn.ifs-color-selected{
+.v-btn{
+  min-width: 32px !important;
   margin-right:0 !important;
-  min-width: 32px !important;
-}
-.v-btn.ifs-color-slot{
-  min-width: 32px !important;
-}
-.v-btn.ifs-color-selected{
-  background:var(--v-primary-base) !important;
 }
