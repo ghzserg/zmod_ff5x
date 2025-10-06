@@ -790,6 +790,7 @@ if [ -f ${MOD_CONF}/mod/SKIP_ZMOD ] || [ -f ${MOD_CONF}/mod/REMOVE ] || [ -f ${M
     restore_base &>${MOD_CONF}/mod_data/log/fix_config.log
 else
     fix_config "$1" &>${MOD_CONF}/mod_data/log/fix_config.log
+    ${MOD_CONF}/mod/.shell/wifi.sh &
 fi
 
 sync

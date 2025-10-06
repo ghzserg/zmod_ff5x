@@ -1006,7 +1006,11 @@ class zmod_ifs:
                             )
                             self.ifs = False
                         break
-                    self.ifs = True
+                    if not self.ifs:
+                        self.reactor.register_async_callback(
+                            lambda eventtime: self._safe_run_script("_IFS_ON")
+                        )
+                        self.ifs = True
 
                     if command_id == -1:
                         self.ifs_data.update_from_string(response)

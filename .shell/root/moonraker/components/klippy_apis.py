@@ -281,6 +281,10 @@ class KlippyAPI(APITransport):
             result.remove('filament_switch_sensor check_level_pin_alt')
         if 'filament_switch_sensor e1_sensor' in result:
             result.remove('filament_switch_sensor e1_sensor')
+        if 'temperature_sensor cutValue' in result:
+            result.remove('temperature_sensor cutValue')
+        if 'temperature_sensor filamentValue' in result:
+            result.remove('temperature_sensor filamentValue')
         if not found:
             if 'fan_generic external_fan' in result:
                 result.remove('fan_generic external_fan')

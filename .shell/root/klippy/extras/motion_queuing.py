@@ -24,21 +24,22 @@ class PrinterMotionQueuing:
     def __init__(self, config):
         self.printer = printer = config.get_printer()
         self.reactor = printer.get_reactor()
-        # Low level C allocations
+        # C trapq tracking
         self.trapqs = []
-        self.stepcompress = []
-        self.steppersyncs = []
-        # Low-level C flushing calls
         ffi_main, ffi_lib = chelper.get_ffi()
         self.trapq_finalize_moves = ffi_lib.trapq_finalize_moves
-        self.steppersync_start_gen_steps = ffi_lib.steppersync_start_gen_steps
-        self.steppersync_finalize_gen_steps = \
-            ffi_lib.steppersync_finalize_gen_steps
-        self.steppersync_history_expire = ffi_lib.steppersync_history_expire
-        # Flush notification callbacks
-        self.flush_callbacks = []
+        # C steppersync tracking
+        self.steppersyncmgr = ffi_main.gc(ffi_lib.steppersyncmgr_alloc(),
+                                          ffi_lib.steppersyncmgr_free)
+        self.syncemitters = []
+        self.steppersyncs = []
+        self.steppersyncmgr_gen_steps = ffi_lib.steppersyncmgr_gen_steps
         # History expiration
         self.clear_history_time = 0.
+        # Flush notification callbacks
+        self.flush_callbacks = []
+        # Kinematic step generation scan window time tracking
+        self.kin_flush_delay = SDS_CHECK_TIME
         # MCU tracking
         self.all_mcus = [m for n, m in printer.lookup_objects(module='mcu')]
         self.mcu = self.all_mcus[0]
@@ -53,36 +54,55 @@ class PrinterMotionQueuing:
         self.do_kick_flush_timer = True
         self.last_flush_time = self.last_step_gen_time = 0.
         self.need_flush_time = self.need_step_gen_time = 0.
-        # Kinematic step generation scan window time tracking
-        self.kin_flush_delay = SDS_CHECK_TIME
         # Register handlers
         printer.register_event_handler("klippy:shutdown", self._handle_shutdown)
+    # C trapq tracking
     def allocate_trapq(self):
         ffi_main, ffi_lib = chelper.get_ffi()
         trapq = ffi_main.gc(ffi_lib.trapq_alloc(), ffi_lib.trapq_free)
         self.trapqs.append(trapq)
         return trapq
-    def allocate_stepcompress(self, mcu, oid, name):
-        name = name.encode("utf-8")[:15]
+    def wipe_trapq(self, trapq):
+        # Expire any remaining movement in the trapq (force to history list)
+        self.trapq_finalize_moves(trapq, self.reactor.NEVER, 0.)
+    def lookup_trapq_append(self):
         ffi_main, ffi_lib = chelper.get_ffi()
-        sc = ffi_main.gc(ffi_lib.stepcompress_alloc(oid, name),
-                         ffi_lib.stepcompress_free)
-        self.stepcompress.append((mcu, sc))
-        return sc
+        return ffi_lib.trapq_append
+    # C steppersync tracking
+    def _lookup_steppersync(self, mcu):
+        for ss_mcu, ss in self.steppersyncs:
+            if ss_mcu is mcu:
+                return ss
+        ffi_main, ffi_lib = chelper.get_ffi()
+        ss = ffi_lib.steppersyncmgr_alloc_steppersync(self.steppersyncmgr)
+        self.steppersyncs.append((mcu, ss))
+        return ss
+    def allocate_syncemitter(self, mcu, name, alloc_stepcompress=True):
+        name = name.encode("utf-8")[:15]
+        ss = self._lookup_steppersync(mcu)
+        ffi_main, ffi_lib = chelper.get_ffi()
+        se = ffi_lib.steppersync_alloc_syncemitter(ss, name, alloc_stepcompress)
+        self.syncemitters.append(se)
+        return se
     def setup_mcu_movequeue(self, mcu, serialqueue, move_count):
         # Setup steppersync object for the mcu's main movequeue
-        stepqueues = []
-        for sc_mcu, sc in self.stepcompress:
-            if sc_mcu is mcu:
-                stepqueues.append(sc)
         ffi_main, ffi_lib = chelper.get_ffi()
-        ss = ffi_main.gc(
-            ffi_lib.steppersync_alloc(serialqueue, stepqueues, len(stepqueues),
-                                      move_count),
-            ffi_lib.steppersync_free)
-        self.steppersyncs.append((mcu, ss))
+        ss = self._lookup_steppersync(mcu)
+        ffi_lib.steppersync_setup_movequeue(ss, serialqueue, move_count)
         mcu_freq = float(mcu.seconds_to_clock(1.))
         ffi_lib.steppersync_set_time(ss, 0., mcu_freq)
+    def stats(self, eventtime):
+        # Globally calibrate mcu clocks (and step generation clocks)
+        sync_time = self.last_step_gen_time
+        ffi_main, ffi_lib = chelper.get_ffi()
+        for mcu, ss in self.steppersyncs:
+            offset, freq = mcu.calibrate_clock(sync_time, eventtime)
+            ffi_lib.steppersync_set_time(ss, offset, freq)
+        # Calculate history expiration
+        est_print_time = self.mcu.estimated_print_time(eventtime)
+        self.clear_history_time = max(0., est_print_time - MOVE_HISTORY_EXPIRE)
+        return False, ""
+    # Flush notification callbacks
     def register_flush_callback(self, callback, can_add_trapq=False):
         if can_add_trapq:
             self.flush_callbacks = [callback] + self.flush_callbacks
@@ -93,64 +113,14 @@ class PrinterMotionQueuing:
             fcbs = list(self.flush_callbacks)
             fcbs.remove(callback)
             self.flush_callbacks = fcbs
-    def _advance_flush_time(self, want_flush_time, want_step_gen_time=0.):
-        flush_time = max(want_flush_time, self.last_flush_time,
-                         want_step_gen_time - STEPCOMPRESS_FLUSH_TIME)
-        step_gen_time = max(want_step_gen_time, self.last_step_gen_time,
-                            flush_time)
-        # Invoke flush callbacks (if any)
-        for cb in self.flush_callbacks:
-            cb(flush_time, step_gen_time)
-        # Generate stepper movement and transmit
-        for mcu, ss in self.steppersyncs:
-            clock = max(0, mcu.print_time_to_clock(flush_time))
-            self.steppersync_start_gen_steps(ss, step_gen_time, clock)
-        for mcu, ss in self.steppersyncs:
-            clock = max(0, mcu.print_time_to_clock(flush_time))
-            ret = self.steppersync_finalize_gen_steps(ss, clock)
-            if ret:
-                raise mcu.error("Internal error in MCU '%s' stepcompress"
-                                % (mcu.get_name(),))
-        self.last_flush_time = flush_time
-        self.last_step_gen_time = step_gen_time
-        # Determine maximum history to keep
-        trapq_free_time = step_gen_time - self.kin_flush_delay
-        clear_history_time = self.clear_history_time
-        if not self.can_pause:
-            clear_history_time = trapq_free_time - MOVE_HISTORY_EXPIRE
-        # Move processed trapq moves to history list, and expire old history
-        for trapq in self.trapqs:
-            self.trapq_finalize_moves(trapq, trapq_free_time,
-                                      clear_history_time)
-        # Clean up old history entries in stepcompress objects
-        for mcu, ss in self.steppersyncs:
-            clock = max(0, mcu.print_time_to_clock(clear_history_time))
-            self.steppersync_history_expire(ss, clock)
-    def wipe_trapq(self, trapq):
-        # Expire any remaining movement in the trapq (force to history list)
-        self.trapq_finalize_moves(trapq, self.reactor.NEVER, 0.)
-    def lookup_trapq_append(self):
-        ffi_main, ffi_lib = chelper.get_ffi()
-        return ffi_lib.trapq_append
-    def stats(self, eventtime):
-        # Globally calibrate mcu clocks (and step generation clocks)
-        sync_time = self.last_step_gen_time
-        ffi_main, ffi_lib = chelper.get_ffi()
-        for mcu, ss in self.steppersyncs:
-            offset, freq = mcu.calibrate_clock(sync_time, eventtime)
-            ffi_lib.steppersync_set_time(ss, offset, freq)
-        # Calculate history expiration
-        est_print_time = self.mcu.estimated_print_time(eventtime)
-        self.clear_history_time = est_print_time - MOVE_HISTORY_EXPIRE
-        return False, ""
     # Kinematic step generation scan window time tracking
     def get_kin_flush_delay(self):
         return self.kin_flush_delay
     def check_step_generation_scan_windows(self):
         ffi_main, ffi_lib = chelper.get_ffi()
         kin_flush_delay = SDS_CHECK_TIME
-        for mcu, sc in self.stepcompress:
-            sk = ffi_lib.stepcompress_get_stepper_kinematics(sc)
+        for se in self.syncemitters:
+            sk = ffi_lib.syncemitter_get_stepper_kinematics(se)
             if sk == ffi_main.NULL:
                 continue
             trapq = ffi_lib.itersolve_get_trapq(sk)
@@ -163,6 +133,30 @@ class PrinterMotionQueuing:
     # Flush tracking
     def _handle_shutdown(self):
         self.can_pause = False
+    def _advance_flush_time(self, want_flush_time, want_step_gen_time=0.):
+        flush_time = max(want_flush_time, self.last_flush_time,
+                         want_step_gen_time - STEPCOMPRESS_FLUSH_TIME)
+        step_gen_time = max(want_step_gen_time, self.last_step_gen_time,
+                            flush_time)
+        # Invoke flush callbacks (if any)
+        for cb in self.flush_callbacks:
+            cb(flush_time, step_gen_time)
+        # Determine maximum history to keep
+        trapq_free_time = step_gen_time - self.kin_flush_delay
+        clear_history_time = self.clear_history_time
+        if not self.can_pause:
+            clear_history_time = max(0., trapq_free_time - MOVE_HISTORY_EXPIRE)
+        # Generate stepper movement and transmit
+        ret = self.steppersyncmgr_gen_steps(self.steppersyncmgr, flush_time,
+                                            step_gen_time, clear_history_time)
+        if ret:
+            raise self.mcu.error("Internal error in stepcompress")
+        self.last_flush_time = flush_time
+        self.last_step_gen_time = step_gen_time
+        # Move processed trapq entries to history list, and expire old history
+        for trapq in self.trapqs:
+            self.trapq_finalize_moves(trapq, trapq_free_time,
+                                      clear_history_time)
     def _await_flush_time(self, want_flush_time):
         while 1:
             if self.last_flush_time >= want_flush_time or not self.can_pause:
@@ -230,8 +224,8 @@ class PrinterMotionQueuing:
             flush_count = 0
             while self.last_step_gen_time < faux_time:
                 target = self.last_step_gen_time + batch_time
-                if flush_count > 100.:
-                    target = faux_time
+                if flush_count > 100. and faux_time > target:
+                    target += int((faux_time-target) / batch_time) * batch_time
                 self._advance_flush_time(0., target)
                 flush_count += 1
             if flush_count:
