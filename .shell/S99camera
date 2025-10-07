@@ -19,13 +19,14 @@ up() {
     ${V4l2} --all
     if [ $START = "on" ] && [ -c /dev/$VIDEO ]; then
         ${V4l2} -d /dev/$VIDEO --list-formats
+        ${V4l2} -d /dev/$VIDEO --list-formats-ext
         if ${V4l2} -d /dev/$VIDEO  --list-formats | grep MJPG; then
             if [ "$FS" -ne "0" ]; then
                 FFS="-fs $(( ${WIDTH} * ${HEIGHT} * 2 ))"
             else
                 FFS=""
             fi
-            ${V4l2} -d /dev/$VIDEO --set-fmt-video=width=${WIDTH},height=${HEIGHT},pixelformat=1
+            ${V4l2} -d /dev/$VIDEO --set-fmt-video=width=${WIDTH},height=${HEIGHT},pixelformat=MJPG
             if [ -f /ZMOD ]; then
                 start-stop-daemon -S -b -m -p $PID_FILE --exec /usr/bin/mjpg_streamer -- -o "/usr/lib/mjpg-streamer/output_http.so -w /usr/share/mjpg-streamer/www -p 8080" -i  "/usr/lib/mjpg-streamer/input_uvc.so -b 1 -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS $FFS"
             else
