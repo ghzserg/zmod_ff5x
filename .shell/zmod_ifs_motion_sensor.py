@@ -12,6 +12,9 @@ CHECK_RUNOUT_TIMEOUT = .250
 
 class ZmodIfsMotionSensor:
     def __init__(self, config):
+        self.zmod_color = self.printer.lookup_object('zmod_color', None)
+        if not self.zmod_color or self.zmod_color.get_display():
+            return
         self.name = config.get_name().split()[-1]
         # Read config
         self.printer = config.get_printer()
