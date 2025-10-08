@@ -404,7 +404,7 @@ class zmod_ifs:
         else:
             self.print_str(f"Указываю активный пруток T{cur_prutok}" if self.lang == 'ru' else f"Setting active filament T{cur_prutok}")
             self.gcode.run_script_from_command(f"SDCARD_SET_CHANNEL CHANNEL={cur_prutok}")
-        self.print_str("Включаю IFS")
+        self.print_str("Включаю IFS" if self.lang == 'ru' else f"Enable IFS")
         self.gcode.run_script_from_command("SDCARD_ENABLE_FFM ENABLE=1")
 
     def cmd_ANALOG_PRUTOK(self, gcmd):
