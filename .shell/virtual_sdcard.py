@@ -6,7 +6,7 @@
 import os, sys, logging, io
 
 VALID_GCODE_EXTS = ['gcode', 'g', 'gco','gx']
-VALID_GCODE_T = ['T0', 'T1', 'T2', 'T3','T4', 'T5', 'T6', 'T7','T8', 'T9', 'T10', 'T11','T12', 'T13', 'T14', 'T15']
+VALID_GCODE_T = {'T0', 'T1', 'T2', 'T3','T4', 'T5', 'T6', 'T7','T8', 'T9', 'T10', 'T11','T12', 'T13', 'T14', 'T15'}
 
 DEFAULT_ERROR_GCODE = """
 {% if 'heaters' in printer %}
@@ -304,12 +304,12 @@ class VirtualSD:
                 next_file_position = self.file_position + len(line) + 1
             self.next_file_position = next_file_position
             #logging.info("Starting SD card print (line %s)", line)   
-            if line in VALID_GCODE_T and self.enable_ffm and line.startswith("T"):
+            if line.startswith("T") and self.enable_ffm and line.split(';', 1)[0].strip() in VALID_GCODE_T:
                 self.print_channel = int(line[line.rfind('T')+1:])
                 if self.print_channel != self.load_channel:
                     self.gcode.run_script("M400")
                     self.change_filament = True
-                    # zmod 1.1
+                    # zmod 1.2
                     self.gcode.run_script(f"_A_CHANGE_FILAMENT CHANNEL={self.print_channel}")
                     while True:
                         if not self.change_filament:
