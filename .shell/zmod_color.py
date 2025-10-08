@@ -930,8 +930,12 @@ class zmod_color:
                 return
 
             spool_number = mapping[channel]
+            current_spool_number = self.get_current_channel()
 
-            self.gcode.run_script_from_command(f"INSERT_PRUTOK_IFS PRUTOK={spool_number} NEED_STOP=0")
+            if spool_number != current_spool_number:
+                self.gcode.run_script_from_command(f"INSERT_PRUTOK_IFS PRUTOK={spool_number} NEED_STOP=0")
+            else:
+                gcmd.respond_raw(f"Current Prutok = Prutok = {spool_number}")
             self.gcode.run_script_from_command("END_CHANGE_FILAMENT")
 
         except Exception as e:
