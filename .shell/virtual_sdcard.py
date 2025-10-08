@@ -303,23 +303,25 @@ class VirtualSD:
             else:
                 next_file_position = self.file_position + len(line) + 1
             self.next_file_position = next_file_position
-            #logging.info("Starting SD card print (line %s)", line)   
-            if line.startswith("T") and self.enable_ffm and line.split(';', 1)[0].strip() in VALID_GCODE_T:
-                self.print_channel = int(line[line.rfind('T')+1:])
-                if self.print_channel != self.load_channel:
-                    self.gcode.run_script("M400")
-                    self.change_filament = True
-                    # zmod 1.2
-                    self.gcode.run_script(f"_A_CHANGE_FILAMENT CHANNEL={self.print_channel}")
-                    while True:
-                        if not self.change_filament:
-                            break 
-                        if self.must_pause_work or self.work_timer is None:
-                            break
-                        self.reactor.pause(self.reactor.monotonic() + 0.5)
-                self.load_channel = self.print_channel
-                self.change_filament = False                    
-                continue         
+            #logging.info("Starting SD card print (line %s)", line)
+            if line.startswith("T") and self.enable_ffm:
+                cmd = line.split(';', 1)[0].strip()
+                if cmd in VALID_GCODE_T:
+                    self.print_channel = int(cmd[1:])
+                    if self.print_channel != self.load_channel:
+                        self.gcode.run_script("M400")
+                        self.change_filament = True
+                        # zmod 1.3
+                        self.gcode.run_script(f"_A_CHANGE_FILAMENT CHANNEL={self.print_channel}")
+                        while True:
+                            if not self.change_filament:
+                                break
+                            if self.must_pause_work or self.work_timer is None:
+                                break
+                            self.reactor.pause(self.reactor.monotonic() + 0.5)
+                    self.load_channel = self.print_channel
+                    self.change_filament = False
+                    continue
             try:
                 self.gcode.run_script(line)
             except self.gcode.error as e:
