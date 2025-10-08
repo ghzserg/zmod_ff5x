@@ -15,9 +15,6 @@ class ZmodIfsMotionSensor:
         self.name = config.get_name().split()[-1]
         # Read config
         self.printer = config.get_printer()
-        self.zmod_color = self.printer.lookup_object('zmod_color', None)
-        if not self.zmod_color or self.zmod_color.get_display():
-            return
         self.extruder_name = config.get('extruder', 'extruder')
         self.detection_length = config.getfloat(
                 'detection_length', 10., above=0.)
@@ -25,6 +22,11 @@ class ZmodIfsMotionSensor:
         self.reactor = self.printer.get_reactor()
         self.runout_helper = filament_switch_sensor.RunoutHelper(config)
         sig = inspect.signature(self.runout_helper.note_filament_present)
+
+        self.zmod_color = self.printer.lookup_object('zmod_color', None)
+        if not self.zmod_color or self.zmod_color.get_display():
+            return
+
         if 'eventtime' in sig.parameters:
             self.new = True
         else:
@@ -48,6 +50,7 @@ class ZmodIfsMotionSensor:
         self.gcode = self.printer.lookup_object('gcode')
         self.gcode.register_command('IFS_MOTION_ON', self.cmd_IFS_MOTION_ON)
         self.gcode.register_command('IFS_MOTION_OFF', self.cmd_IFS_MOTION_OFF)
+
 
     def cmd_IFS_MOTION_ON(self, gcmd):
         eventtime = self.reactor.monotonic()
