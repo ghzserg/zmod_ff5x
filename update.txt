@@ -24,4 +24,7 @@ EOF
 # update user.cfg
 mv /usr/data/config/mod_data/user.cfg /usr/data/config/mod_data/user.cfg.old
 curl -L -o /usr/data/config/mod_data/user.cfg https://raw.githubusercontent.com/function3d/zmod_ff5x/refs/heads/1.6/user.cfg
+# update restore_gcode
+curl -L -o /usr/data/config/mod_data/restore_gcode.sh https://raw.githubusercontent.com/function3d/zmod_ff5x/refs/heads/1.6/restore_gcode.sh
+chmod +x /usr/data/config/mod_data/restore_gcode.sh
 REBOOT
