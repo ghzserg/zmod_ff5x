@@ -821,7 +821,7 @@ class zmod_color:
                     else:
                         gcmd.respond_raw(self._t('printing_error', response_data2))
                 else:
-                    gcmd.respond_raw(f"Выключаю IFS")
+                    gcmd.respond_raw(f"IFS Off")
                     if self.display:
                         self.gcode.run_script_from_command("SDCARD_ENABLE_FFM ENABLE=0")
                     else:
@@ -831,7 +831,7 @@ class zmod_color:
             gcmd.respond_raw(self._t('no_response', json.dumps(response_data)))
 
     def find_t_code(self, filename):
-        pattern = re.compile(r'^T([0-9])$')
+        pattern = re.compile(r'^T([0-9])')
 
         with open(f"{self.virtual_sd.sdcard_dirname}/{filename}", 'r', encoding='utf-8') as file:
             for line in file:
