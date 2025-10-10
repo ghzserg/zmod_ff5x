@@ -483,12 +483,23 @@ class zmod_color:
         self.gcode.register_command('RUN_ZCOLOR', self.cmd_RUN_ZCOLOR)
         self.gcode.register_command('CHANGE_ZCOLOR', self.cmd_CHANGE_ZCOLOR)
         self.gcode.register_command('IN_ZCOLOR', self.cmd_IN_ZCOLOR)
+        self.gcode.register_command('UPDATE_FF_OFFSET', self.cmd_UPDATE_FF_OFFSET)
         self.printer.register_event_handler("klippy:ready", self._handle_ready)
 
         with open(FFCONFIG, 'r') as file:
             data = json.load(file)
             self.serialNumber = data['general']['printerSerialNumber']
             self.checkCode = data['general']['lanCode']
+
+            self.CutXOffset = float(data['leftExtruderOffset']['CutXOffset']) - 2.5
+            self.CutYOffset = float(data['leftExtruderOffset']['CutYOffset']) - 7.5
+            self.yOffset    = float(data['leftExtruderOffset']['yOffset']) + 229
+
+    def cmd_UPDATE_FF_OFFSET(self, gcmd):
+        self.gcode.run_script_from_command(f"SET_GCODE_VARIABLE MACRO=_REZGEM_PRUTOK VARIABLE=x_cut VALUE={self.CutXOffset:.2f}")
+        self.gcode.run_script_from_command(f"SET_GCODE_VARIABLE MACRO=_REZGEM_PRUTOK VARIABLE=y_cut VALUE={self.CutYOffset:.2f}")
+        self.gcode.run_script_from_command(f"SET_GCODE_VARIABLE MACRO=_CLIENT_VARIABLE VARIABLE=custom_park_y VALUE={yOffset:.2f}")
+        self.gcode.run_script_from_command(f"SET_GCODE_VARIABLE MACRO=_CLIENT_VARIABLE VARIABLE=park_at_cancel_y VALUE={yOffset:.2f}")
 
     def _handle_ready(self):
         self.zmod = self.printer.lookup_object('zmod', None)
