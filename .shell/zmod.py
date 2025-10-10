@@ -30,7 +30,7 @@ class zmod:
 
         full_path = os.path.join(self.sdcard_dirname, filename)
 
-        gcmd.respond_raw(f"ZEXCLUDE: Opening file {full_path}")
+        #gcmd.respond_raw(f"ZEXCLUDE: Opening file {full_path}")
 
         try:
             with open(full_path, 'r') as f:
@@ -45,17 +45,17 @@ class zmod:
                     if not line or line.startswith('#'):
                         continue
 
-                    gcmd.respond_raw(f"ZEXCLUDE: Processing line {line_num}: {line}")
-                    logging.info(f"ZEXCLUDE: Processing line {line_num}: {line}")
+                    #gcmd.respond_raw(f"ZEXCLUDE: Processing line {line_num}: {line}")
+                    #logging.info(f"ZEXCLUDE: Processing line {line_num}: {line}")
 
                     if line.startswith('EXCLUDE_OBJECT_DEFINE'):
-                        gcmd.respond_raw(f"ZEXCLUDE: Found EXCLUDE_OBJECT_DEFINE on line {line_num}")
-                        logging.info(f"ZEXCLUDE: Running script: {line}")
+                        #gcmd.respond_raw(f"ZEXCLUDE: Found EXCLUDE_OBJECT_DEFINE on line {line_num}")
+                        #logging.info(f"ZEXCLUDE: Running script: {line}")
 
                         try:
                             self.gcode.run_script_from_command(line)
-                            gcmd.respond_raw(f"ZEXCLUDE: Script executed successfully on line {line_num}")
-                            logging.info(f"ZEXCLUDE: Script completed: {line}")
+                            #gcmd.respond_raw(f"ZEXCLUDE: Script executed successfully on line {line_num}")
+                            #logging.info(f"ZEXCLUDE: Script completed: {line}")
                         except self.gcode.error as e:
                             error_message = str(e)
                             gcmd.respond_raw(f"ZEXCLUDE: Error on line {line_num}: {error_message}")
