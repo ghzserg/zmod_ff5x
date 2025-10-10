@@ -30,12 +30,9 @@ class zmod:
 
         full_path = os.path.join(self.sdcard_dirname, filename)
 
-        #gcmd.respond_raw(f"ZEXCLUDE: Opening file {full_path}")
-
         try:
             with open(full_path, 'r') as f:
-                gcmd.respond_raw(f"ZEXCLUDE: File opened successfully")
-                logging.info(f"ZEXCLUDE: File opened: {full_path}")
+                gcmd.respond_raw(f"ZEXCLUDE: {full_path}")
 
                 line_num = 0
                 for line in f:
@@ -45,17 +42,9 @@ class zmod:
                     if not line or line.startswith('#'):
                         continue
 
-                    #gcmd.respond_raw(f"ZEXCLUDE: Processing line {line_num}: {line}")
-                    #logging.info(f"ZEXCLUDE: Processing line {line_num}: {line}")
-
                     if line.startswith('EXCLUDE_OBJECT_DEFINE'):
-                        #gcmd.respond_raw(f"ZEXCLUDE: Found EXCLUDE_OBJECT_DEFINE on line {line_num}")
-                        #logging.info(f"ZEXCLUDE: Running script: {line}")
-
                         try:
                             self.gcode.run_script_from_command(line)
-                            #gcmd.respond_raw(f"ZEXCLUDE: Script executed successfully on line {line_num}")
-                            #logging.info(f"ZEXCLUDE: Script completed: {line}")
                         except self.gcode.error as e:
                             error_message = str(e)
                             gcmd.respond_raw(f"ZEXCLUDE: Error on line {line_num}: {error_message}")
@@ -73,9 +62,6 @@ class zmod:
                             gcmd.respond_raw("ZEXCLUDE: Unexpected error during script execution")
                             break
 
-                gcmd.respond_raw("ZEXCLUDE: End of file reached")
-                logging.info("ZEXCLUDE: End of file processing")
-
         except FileNotFoundError:
             gcmd.respond_raw(f"ZEXCLUDE: File not found: {full_path}")
             logging.error(f"ZEXCLUDE: File not found: {full_path}")
@@ -83,8 +69,7 @@ class zmod:
             logging.exception("zexclude_file_error")
             gcmd.respond_raw("ZEXCLUDE: Unexpected error during file processing")
 
-        gcmd.respond_raw("ZEXCLUDE: End file list")
-        logging.info("ZEXCLUDE: End file list")
+        gcmd.respond_raw("ZEXCLUDE: End")
 
     def cmd_SAVE_SHAPER(self, gcmd):
         shaper_name = gcmd.get('NAME', '').lower()
