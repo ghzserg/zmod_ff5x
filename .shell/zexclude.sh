@@ -18,32 +18,32 @@ if ! grep -q -e 'EXCLUDE_OBJECT_DEFINE' "${DATA_GCODES}/$1"; then
 fi
 
 # Igor Polunovskiy code
-grep ^EXCLUDE_OBJECT_DEFINE "${DATA_GCODES}/$1" | \
-awk -F= '{print $4}' | \
-sed 's/\],/\n/g; s/,/=/g; s/\[//g; s/\]//g' | \
-awk -F= '
-BEGIN {
-    maxy = -1000
-    maxx = -1000
-    miny = 1000
-    minx = 1000
-}
-{
-    if (maxx < $1) maxx = $1
-    if (minx > $1) minx = $1
-    if (maxy < $2) maxy = $2
-    if (miny > $2) miny = $2
-}
-END {
-    printf "EXCLUDE_OBJECT_DEFINE NAME=border0 CENTER=%.4f,%.4f POLYGON=[[%.4f,%.4f],[%.4f,%.4f],[%.4f,%.4f],[%.4f,%.4f]]\n",
-        (minx + maxx)/2,    # Центр по X
-        (miny + maxy)/2,    # Центр по Y
-        minx, miny,         # Левый нижний угол
-        minx, maxy,         # Левый верхний угол
-        maxx, maxy,         # Правый верхний угол
-        maxx, miny          # Правый нижний угол
-}' >/tmp/printer
-echo 'RESPOND TYPE=echo MSG="Exclude 1"' >/tmp/printer
+#grep ^EXCLUDE_OBJECT_DEFINE "${DATA_GCODES}/$1" | \
+#awk -F= '{print $4}' | \
+#sed 's/\],/\n/g; s/,/=/g; s/\[//g; s/\]//g' | \
+#awk -F= '
+#BEGIN {
+#    maxy = -1000
+#    maxx = -1000
+#    miny = 1000
+#    minx = 1000
+#}
+#{
+#    if (maxx < $1) maxx = $1
+#    if (minx > $1) minx = $1
+#    if (maxy < $2) maxy = $2
+#    if (miny > $2) miny = $2
+#}
+#END {
+#    printf "EXCLUDE_OBJECT_DEFINE NAME=border0 CENTER=%.4f,%.4f POLYGON=[[%.4f,%.4f],[%.4f,%.4f],[%.4f,%.4f],[%.4f,%.4f]]\n",
+#        (minx + maxx)/2,    # Центр по X
+#        (miny + maxy)/2,    # Центр по Y
+#        minx, miny,         # Левый нижний угол
+#        minx, maxy,         # Левый верхний угол
+#        maxx, maxy,         # Правый верхний угол
+#        maxx, miny          # Правый нижний угол
+#}' >/tmp/printer
+#echo 'RESPOND TYPE=echo MSG="Exclude 1"' >/tmp/printer
 
 sed -n '
     # Замена первой метки слоя на FIRST_LAYER_CHANGE
