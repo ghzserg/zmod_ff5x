@@ -1,10 +1,6 @@
-/*
-mainsail
-https://github.com/function3d/mainsail
-https://docs.mainsail.xyz/about/development/environment  (VUE_APP_HOSTNAME=IP PRINTER)
-*/
-
-.v-btn{
+.v-dialog__content .v-btn{
   min-width: 32px !important;
   margin-right:0 !important;
+  padding: 0 10px !important;
+  margin:0 6px !important;
 }
