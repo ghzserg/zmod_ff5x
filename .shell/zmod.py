@@ -53,7 +53,7 @@ class zmod:
                         logging.info(f"ZEXCLUDE: Running script: {line}")
 
                         try:
-                            self.gcode.run_script(line)
+                            self.gcode.run_script_from_command(line)
                             gcmd.respond_raw(f"ZEXCLUDE: Script executed successfully on line {line_num}")
                             logging.info(f"ZEXCLUDE: Script completed: {line}")
                         except self.gcode.error as e:
@@ -62,7 +62,7 @@ class zmod:
                             logging.error(f"ZEXCLUDE: Error on line {line_num}: {error_message}")
 
                             try:
-                                self.gcode.run_script(self.on_error_gcode.render())
+                                self.gcode.run_script_from_command(self.on_error_gcode.render())
                                 gcmd.respond_raw("ZEXCLUDE: Error handler executed")
                             except:
                                 logging.exception("zexclude_error")
