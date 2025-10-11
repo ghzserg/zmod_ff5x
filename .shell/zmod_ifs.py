@@ -52,7 +52,7 @@ class zmod_ifs:
         if not self.zmod_color or self.zmod_color.get_display():
             return
         self.ifs_data = IfsData()
-        self.temp_defaults = {
+        temp_defaults = {
             "PLA": 220,
             "PLA-CF": 220,
             "SILK": 230,
