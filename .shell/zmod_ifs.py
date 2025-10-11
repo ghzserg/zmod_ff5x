@@ -62,7 +62,7 @@ class zmod_ifs:
             "PETG-CF": 250
         }
         for option in config.get_prefix_options('filament_'):
-            filament_type = option[len('filament_'):]  # обрезаем 'filament_'
+            filament_type = option[len('filament_'):].upper()
             try:
                 temp = config.getint(option)
                 temp_defaults[filament_type] = temp
