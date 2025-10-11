@@ -20,7 +20,6 @@ FFCONFIG='/usr/data/config/Adventurer5M.json'
 TYPECONFIG='/usr/data/config/mod_data/filament.json'
 FILE_CONFIG='/usr/data/config/mod_data/file.json'
 
-
 FFS_STATUS_DELTA     = 11  # Дельта от первой катушки
 FFS_STATUS_OPROS     =  3  # Опрос катушек
 FFS_STATUS_READY     =  5  # Готов к работе
@@ -62,15 +61,13 @@ class zmod_ifs:
             "PETG": 250,
             "PETG-CF": 250
         }
-        for option in config.get_options():
-            if option.startswith('filament_'):
-                filament_type = option[len('filament_'):]  # обрезаем 'filament_'
-                try:
-                    temp = config.getint(option)
-                    temp_defaults[filament_type] = temp
-                except Exception:
-                    # игнорируем, если значение не число
-                    pass
+        for option in config.get_prefix_options('filament_'):
+            filament_type = option[len('filament_'):]  # обрезаем 'filament_'
+            try:
+                temp = config.getint(option)
+                temp_defaults[filament_type] = temp
+            except Exception:
+                pass
 
         self.temp_defaults = temp_defaults
 
