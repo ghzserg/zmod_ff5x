@@ -20,6 +20,7 @@ FFCONFIG='/usr/data/config/Adventurer5M.json'
 TYPECONFIG='/usr/data/config/mod_data/filament.json'
 FILE_CONFIG='/usr/data/config/mod_data/file.json'
 
+
 FFS_STATUS_DELTA     = 11  # Дельта от первой катушки
 FFS_STATUS_OPROS     =  3  # Опрос катушек
 FFS_STATUS_READY     =  5  # Готов к работе
@@ -52,6 +53,26 @@ class zmod_ifs:
         if not self.zmod_color or self.zmod_color.get_display():
             return
         self.ifs_data = IfsData()
+        self.temp_defaults = {
+            "PLA": 220,
+            "PLA-CF": 220,
+            "SILK": 230,
+            "TPU": 230,
+            "ABS": 250,
+            "PETG": 250,
+            "PETG-CF": 250
+        }
+        for option in config.get_options():
+            if option.startswith('filament_'):
+                filament_type = option[len('filament_'):]  # обрезаем 'filament_'
+                try:
+                    temp = config.getint(option)
+                    temp_defaults[filament_type] = temp
+                except Exception:
+                    # игнорируем, если значение не число
+                    pass
+
+        self.temp_defaults = temp_defaults
 
         # Синхронизация потоков
         self._command_lock = threading.Lock()
@@ -288,13 +309,12 @@ class zmod_ifs:
 
     # Получить тип прутка из конфига
     def get_prutok_type_from_config(self, prutok):
-        valid_types = ['PLA', 'ABS', 'PETG', 'TPU', 'PLA-CF', 'PETG-CF', 'SILK']
         ret="PLA"
 
         with open(FFCONFIG, 'r') as file:
             config = json.load(file)
             ret=config["FFMInfo"].get(f"ffmType{prutok}", "PLA")
-        if ret not in valid_types:
+        if ret not in self.temp_defaults:
             ret="PLA"
         return ret
 
@@ -327,15 +347,6 @@ class zmod_ifs:
             "filament_autoinsert_speed": 1200       # Скорость вставки прутка
         }
 
-        temp_defaults = {
-            "PLA": 220,
-            "PLA-CF": 220,
-            "SILK": 230,
-            "TPU": 230,
-            "ABS": 250,
-            "PETG": 250,
-            "PETG-CF": 250
-        }
 
         required_fields = ['temp'] + list(base_default.keys())
 
@@ -347,7 +358,7 @@ class zmod_ifs:
 
         changed = False
 
-        for filament_name, temp_default in temp_defaults.items():
+        for filament_name, temp_default in self.temp_defaults.items():
             if filament_name in data:
                 existing = data[filament_name]
                 normalized = {}
@@ -371,6 +382,13 @@ class zmod_ifs:
         config = data.get(filament, {})
         config['filament_type'] = filament
         return config
+
+    # Вывод температур
+    def cmd_IFS_PRINT_DEFAULTS(self, gcmd):
+        msg = ""
+        for filament_type, temp in self.temp_defaults.items():
+            msg += f"{filament_type}: {temp}°C\n"
+        self.print_str(msg.strip())
 
     # Проверить остановился или закончился пруток
     def cmd_IFS_MOTION(self, gcmd):
@@ -412,7 +430,6 @@ class zmod_ifs:
             self.gcode.run_script_from_command("_IFS_OFF")
             return
 
-        valid_types = ['PLA', 'ABS', 'PETG', 'TPU', 'PLA-CF', 'PETG-CF', 'SILK']
         prutok = 1
         t_prutok = 0
 
@@ -424,7 +441,7 @@ class zmod_ifs:
             filament_type = ffm_info.get(f"ffmType{prutok}", "PLA")
             filament_color = ffm_info.get(f"ffmColor{prutok}", "#161616")
 
-        if filament_type not in valid_types:
+        if filament_type not in self.temp_defaults:
             filament_type = "PLA"
 
         with open(FILE_CONFIG, 'r') as f:
