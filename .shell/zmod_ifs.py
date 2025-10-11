@@ -99,6 +99,7 @@ class zmod_ifs:
         self.gcode.register_command('IFS_MOTION', self.cmd_IFS_MOTION)                  # Проверить, остановился или кончился филамент
 
         # Внутренние конманды начинаются с IFS
+        self.gcode.register_command('IFS_PRINT_DEFAULTS', self.cmd_IFS_PRINT_DEFAULTS)
         self.gcode.register_command('IFS_AUTOINSERT', self.cmd_IFS_AUTOINSERT, desc=self.cmd_IFS_AUTOINSERT_help)
         self.gcode.register_command('IFS_STATUS', self.cmd_IFS_STATUS, desc=self.cmd_IFS_STATUS_help)
         self.gcode.register_command('IFS_EXTRUDER_SENSOR', self.cmd_IFS_EXTRUDER_SENSOR)

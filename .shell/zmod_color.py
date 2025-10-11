@@ -473,6 +473,7 @@ class zmod_color:
         self.display = config.getboolean('display', True)
         self.language = 'en'
         self.ifs = False
+        self.valid_types = ['PLA', 'ABS', 'PETG', 'TPU', 'PLA-CF', 'PETG-CF', 'SILK', '?']
         self.gcode = self.printer.lookup_object('gcode')
         self.gcode.register_command('GET_ZCOLOR', self.cmd_GET_ZCOLOR)
         self.gcode.register_command('SET_ZCOLOR', self.cmd_SET_ZCOLOR)
@@ -1040,12 +1041,11 @@ class zmod_color:
 
         zhex = gcmd.get('HEX', '161616').upper()
         ztype = gcmd.get('TYPE', '').upper()
-        valid_types = ['PLA', 'ABS', 'PETG', 'TPU', 'PLA-CF', 'PETG-CF', 'SILK', '?']
 
         color_name = COLOR_MAPPING.get(zhex.lower(), {}).get(self.language, zhex)
 
-        if ztype not in valid_types:
-            raise gcmd.error(self._t('error_type', ztype, ', '.join(valid_types[:-1])))
+        if ztype not in self.valid_types:
+            raise gcmd.error(self._t('error_type', ztype, ', '.join(self.valid_types[:-1])))
 
         gcmd.respond_raw(f"// action:prompt_begin {self._t('select_action')}")
         gcmd.respond_raw(f"// action:prompt_text {self._t('spool_info', zslot, ztype, color_name)}")
@@ -1080,7 +1080,6 @@ class zmod_color:
 
         zhex = gcmd.get('HEX', '').upper()
         ztype = gcmd.get('TYPE', '').upper()
-        valid_types = ['PLA', 'ABS', 'PETG', 'TPU', 'PLA-CF', 'PETG-CF', 'SILK', '?']
 
         if not zhex and not ztype:
             raise gcmd.error(self._t('error_color_or_type'))
@@ -1088,8 +1087,8 @@ class zmod_color:
         if zhex and ztype:
             if ztype == '?':
                 ztype = 'PLA'
-            if ztype not in valid_types:
-                raise gcmd.error(self._t('error_type', ztype, ', '.join(valid_types[:-1])))
+            if ztype not in self.valid_types:
+                raise gcmd.error(self._t('error_type', ztype, ', '.join(self.valid_types[:-1])))
 
             if zslot!=0:
                 payload = {
@@ -1123,8 +1122,8 @@ class zmod_color:
         if ztype:
             if ztype == '?':
                 ztype = 'PLA'
-            if ztype not in valid_types:
-                raise gcmd.error(self._t('error_type', ztype, ', '.join(valid_types[:-1])))
+            if ztype not in self.valid_types:
+                raise gcmd.error(self._t('error_type', ztype, ', '.join(self.valid_types[:-1])))
 
             gcmd.respond_raw(f"// action:prompt_begin {self._t('select_color')}")
             gcmd.respond_raw(f"// action:prompt_text {self._t('spool_info', zslot, ztype, '')}")
@@ -1144,7 +1143,7 @@ class zmod_color:
             gcmd.respond_raw(f"// action:prompt_begin {self._t('select_type')}")
             gcmd.respond_raw(f"// action:prompt_text {self._t('spool_info', zslot, '', color_name)}")
             gcmd.respond_raw("// action:prompt_button_group_start")
-            for material in valid_types[:-1]:  # Исключаем '?'
+            for material in self.valid_types[:-1]:  # Исключаем '?'
                 gcmd.respond_raw(
                     f"// action:prompt_button {material}|"
                     f"CHANGE_ZCOLOR SLOT={zslot} TYPE={material} HEX={zhex}|primary"
