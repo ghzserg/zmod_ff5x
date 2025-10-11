@@ -3,7 +3,7 @@ import re
 
 gcode = ''
 output = []
-tools = set(['0'])
+tools = set([])
 colors = []
 types = []
 t = ''
