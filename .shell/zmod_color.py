@@ -377,15 +377,18 @@ class zmod_color:
             self.serialNumber = data['general']['printerSerialNumber']
             self.checkCode = data['general']['lanCode']
 
+    def cmd_UPDATE_FF_OFFSET(self, gcmd):
+        with open(FFCONFIG, 'r') as file:
+            data = json.load(file)
+
             self.CutXOffset = float(data['leftExtruderOffset']['CutXOffset']) - 2.5
             self.CutYOffset = float(data['leftExtruderOffset']['CutYOffset']) - 7.5
             self.yOffset    = float(data['leftExtruderOffset']['yOffset']) + 229
 
-    def cmd_UPDATE_FF_OFFSET(self, gcmd):
-        self.gcode.run_script_from_command(f"SET_GCODE_VARIABLE MACRO=_REZGEM_PRUTOK VARIABLE=x_cut VALUE={self.CutXOffset:.2f}")
-        self.gcode.run_script_from_command(f"SET_GCODE_VARIABLE MACRO=_REZGEM_PRUTOK VARIABLE=y_cut VALUE={self.CutYOffset:.2f}")
-        self.gcode.run_script_from_command(f"SET_GCODE_VARIABLE MACRO=_CLIENT_VARIABLE VARIABLE=custom_park_y VALUE={self.yOffset:.2f}")
-        self.gcode.run_script_from_command(f"SET_GCODE_VARIABLE MACRO=_CLIENT_VARIABLE VARIABLE=park_at_cancel_y VALUE={self.yOffset:.2f}")
+            self.gcode.run_script_from_command(f"SET_GCODE_VARIABLE MACRO=_REZGEM_PRUTOK VARIABLE=x_cut VALUE={self.CutXOffset:.2f}")
+            self.gcode.run_script_from_command(f"SET_GCODE_VARIABLE MACRO=_REZGEM_PRUTOK VARIABLE=y_cut VALUE={self.CutYOffset:.2f}")
+            self.gcode.run_script_from_command(f"SET_GCODE_VARIABLE MACRO=_CLIENT_VARIABLE VARIABLE=custom_park_y VALUE={self.yOffset:.2f}")
+            self.gcode.run_script_from_command(f"SET_GCODE_VARIABLE MACRO=_CLIENT_VARIABLE VARIABLE=park_at_cancel_y VALUE={self.yOffset:.2f}")
 
     def _handle_ready(self):
         self.zmod = self.printer.lookup_object('zmod', None)
