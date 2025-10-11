@@ -6,129 +6,7 @@ import subprocess
 
 FFCONFIG='/usr/data/config/Adventurer5M.json'
 FILE_CONFIG='/usr/data/config/mod_data/file.json'
-
-COLOR_MAPPING = {
-    "ffffff": {
-        "ru": "белый", "en": "white",
-        "de": "weiß", "fr": "blanc", "it": "bianco", "es": "blanco",
-        "zh": "白色", "ja": "白", "ko": "흰색"
-    },
-    "fef043": {
-        "ru": "ярко-желтый", "en": "bright yellow",
-        "de": "knallgelb", "fr": "jaune vif", "it": "giallo brillante", "es": "amarillo brillante",
-        "zh": "亮黄色", "ja": "明るい黄色", "ko": "밝은 노란색"
-    },
-    "dcf478": {
-        "ru": "светло-зеленый", "en": "light green",
-        "de": "hellgrün", "fr": "vert clair", "it": "verde chiaro", "es": "verde claro",
-        "zh": "浅绿色", "ja": "薄緑", "ko": "연두색"
-    },
-    "0acc38": {
-        "ru": "зеленый", "en": "green",
-        "de": "grün", "fr": "vert", "it": "verde", "es": "verde",
-        "zh": "绿色", "ja": "緑", "ko": "초록색"
-    },
-    "067749": {
-        "ru": "темно-зеленый", "en": "dark green",
-        "de": "dunkelgrün", "fr": "vert foncé", "it": "verde scuro", "es": "verde oscuro",
-        "zh": "深绿色", "ja": "濃い緑", "ko": "진한 녹색"
-    },
-    "0c6283": {
-        "ru": "сине-зеленый", "en": "cyan",
-        "de": "türkis", "fr": "cyan", "it": "ciano", "es": "cian",
-        "zh": "青绿色", "ja": "シアン", "ko": "청록색"
-    },
-    "0de2a0": {
-        "ru": "бирюзовый", "en": "turquoise",
-        "de": "türkis", "fr": "turquoise", "it": "turchese", "es": "turquesa",
-        "zh": "绿松石色", "ja": "ターコイズ", "ko": "터키석색"
-    },
-    "75d9f3": {
-        "ru": "голубой", "en": "light blue",
-        "de": "hellblau", "fr": "bleu clair", "it": "azzurro", "es": "azul claro",
-        "zh": "天蓝色", "ja": "水色", "ko": "하늘색"
-    },
-    "45a8f9": {
-        "ru": "синий", "en": "blue",
-        "de": "blau", "fr": "bleu", "it": "blu", "es": "azul",
-        "zh": "蓝色", "ja": "青", "ko": "파란색"
-    },
-    "2750e0": {
-        "ru": "темно-синий", "en": "dark blue",
-        "de": "dunkelblau", "fr": "bleu foncé", "it": "blu scuro", "es": "azul oscuro",
-        "zh": "深蓝色", "ja": "濃い青", "ko": "진한 파란색"
-    },
-    "46328e": {
-        "ru": "фиолетовый", "en": "purple",
-        "de": "lila", "fr": "violet", "it": "viola", "es": "morado",
-        "zh": "紫色", "ja": "紫", "ko": "보라색"
-    },
-    "a03cf7": {
-        "ru": "ярко-фиолетовый", "en": "bright purple",
-        "de": "knalllila", "fr": "violet vif", "it": "viola brillante", "es": "morado brillante",
-        "zh": "亮紫色", "ja": "明るい紫", "ko": "밝은 보라색"
-    },
-    "f330f9": {
-        "ru": "пурпурный", "en": "magenta",
-        "de": "magenta", "fr": "magenta", "it": "magenta", "es": "magenta",
-        "zh": "品红色", "ja": "マゼンタ", "ko": "자홍색"
-    },
-    "d4b0dc": {
-        "ru": "сиреневый", "en": "lilac",
-        "de": "lilafarben", "fr": "lilas", "it": "lilla", "es": "lila",
-        "zh": "丁香色", "ja": "ライラック", "ko": "라일락색"
-    },
-    "f95d73": {
-        "ru": "розовый", "en": "pink",
-        "de": "rosa", "fr": "rose", "it": "rosa", "es": "rosa",
-        "zh": "粉色", "ja": "ピンク", "ko": "분홍색"
-    },
-    "f72224": {
-        "ru": "красный", "en": "red",
-        "de": "rot", "fr": "rouge", "it": "rosso", "es": "rojo",
-        "zh": "红色", "ja": "赤", "ko": "빨간색"
-    },
-    "7c4b00": {
-        "ru": "коричневый", "en": "brown",
-        "de": "braun", "fr": "marron", "it": "marrone", "es": "marrón",
-        "zh": "棕色", "ja": "茶色", "ko": "갈색"
-    },
-    "f98d33": {
-        "ru": "оранжевый", "en": "orange",
-        "de": "orange", "fr": "orange", "it": "arancione", "es": "naranja",
-        "zh": "橙色", "ja": "オレンジ", "ko": "주황색"
-    },
-    "fdebd5": {
-        "ru": "бежевый", "en": "beige",
-        "de": "beige", "fr": "beige", "it": "beige", "es": "beige",
-        "zh": "米色", "ja": "ベージュ", "ko": "베이지색"
-    },
-    "d3c4a3": {
-        "ru": "светло-коричневый", "en": "light brown",
-        "de": "hellbraun", "fr": "brun clair", "it": "marrone chiaro", "es": "marrón claro",
-        "zh": "浅棕色", "ja": "薄茶色", "ko": "연한 갈색"
-    },
-    "af7836": {
-        "ru": "терракотовый", "en": "terracotta",
-        "de": "terracotta", "fr": "terre cuite", "it": "terracotta", "es": "terracota",
-        "zh": "陶土色", "ja": "テラコッタ", "ko": "테라코타색"
-    },
-    "898989": {
-        "ru": "серый", "en": "gray",
-        "de": "grau", "fr": "gris", "it": "grigio", "es": "gris",
-        "zh": "灰色", "ja": "灰色", "ko": "회색"
-    },
-    "bcbcbc": {
-        "ru": "светло-серый", "en": "light gray",
-        "de": "hellgrau", "fr": "gris clair", "it": "grigio chiaro", "es": "gris claro",
-        "zh": "浅灰色", "ja": "薄灰色", "ko": "연한 회색"
-    },
-    "161616": {
-        "ru": "черный", "en": "black",
-        "de": "schwarz", "fr": "noir", "it": "nero", "es": "negro",
-        "zh": "黑色", "ja": "黒", "ko": "검은색"
-    }
-}
+COLOR_CONFIG = '/usr/data/config/mod_data/color.json'
 
 TRANSLATIONS = {
     'ru': {
@@ -487,6 +365,14 @@ class zmod_color:
         self.gcode.register_command('UPDATE_FF_OFFSET', self.cmd_UPDATE_FF_OFFSET)
         self.printer.register_event_handler("klippy:ready", self._handle_ready)
 
+        self.COLOR_MAPPING = {}
+        if os.path.exists(COLOR_CONFIG):
+            try:
+                with open(COLOR_CONFIG, 'r', encoding='utf-8') as f:
+                    self.COLOR_MAPPING = json.load(f)
+            except Exception as e:
+                self.COLOR_MAPPING = {}
+
         with open(FFCONFIG, 'r') as file:
             data = json.load(file)
             self.serialNumber = data['general']['printerSerialNumber']
@@ -650,7 +536,7 @@ class zmod_color:
                     slot_id = slot.get('slotId', 'N/A')
                     material = slot.get('materialName', 'N/A').upper()
                     hex_color = slot.get('materialColor', '161616').replace("#", "")
-                    color_name = COLOR_MAPPING.get(hex_color.lower(), {}).get(self.language, hex_color)
+                    color_name = self.COLOR_MAPPING.get(hex_color.lower(), {}).get(self.language, hex_color)
                     slots_info.append({
                         'ID': slot_id,
                         'Material': material,
@@ -662,7 +548,7 @@ class zmod_color:
             if slot:
                 material = slot.get('materialName', 'N/A').upper()
                 hex_color = slot.get('materialColor', '161616').replace("#", "")
-                color_name = COLOR_MAPPING.get(hex_color.lower(), {}).get(self.language, hex_color)
+                color_name = self.COLOR_MAPPING.get(hex_color.lower(), {}).get(self.language, hex_color)
                 slots_info.append({
                     'ID': 0,
                     'Material': material,
@@ -1042,7 +928,7 @@ class zmod_color:
         zhex = gcmd.get('HEX', '161616').upper()
         ztype = gcmd.get('TYPE', '').upper()
 
-        color_name = COLOR_MAPPING.get(zhex.lower(), {}).get(self.language, zhex)
+        color_name = self.COLOR_MAPPING.get(zhex.lower(), {}).get(self.language, zhex)
 
         if ztype not in self.valid_types:
             raise gcmd.error(self._t('error_type', ztype, ', '.join(self.valid_types[:-1])))
@@ -1128,7 +1014,7 @@ class zmod_color:
             gcmd.respond_raw(f"// action:prompt_begin {self._t('select_color')}")
             gcmd.respond_raw(f"// action:prompt_text {self._t('spool_info', zslot, ztype, '')}")
             gcmd.respond_raw("// action:prompt_button_group_start")
-            for hex_code, color_data in COLOR_MAPPING.items():
+            for hex_code, color_data in self.COLOR_MAPPING.items():
                 color_name = color_data[self.language]
                 gcmd.respond_raw(
                     f"// action:prompt_button {color_name}|"
@@ -1139,7 +1025,7 @@ class zmod_color:
             gcmd.respond_raw("// action:prompt_show")
 
         if zhex:
-            color_name = COLOR_MAPPING.get(zhex.lower(), {}).get(self.language, zhex)
+            color_name = self.COLOR_MAPPING.get(zhex.lower(), {}).get(self.language, zhex)
             gcmd.respond_raw(f"// action:prompt_begin {self._t('select_type')}")
             gcmd.respond_raw(f"// action:prompt_text {self._t('spool_info', zslot, '', color_name)}")
             gcmd.respond_raw("// action:prompt_button_group_start")
