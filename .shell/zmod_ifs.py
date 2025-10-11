@@ -70,6 +70,7 @@ class zmod_ifs:
                 pass
 
         self.temp_defaults = temp_defaults
+        self.zmod_color.valid_types = list(self.temp_defaults.keys()) + ['?']
 
         # Синхронизация потоков
         self._command_lock = threading.Lock()
