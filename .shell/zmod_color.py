@@ -366,12 +366,11 @@ class zmod_color:
         self.printer.register_event_handler("klippy:ready", self._handle_ready)
 
         self.COLOR_MAPPING = {}
-        if os.path.exists(COLOR_CONFIG):
-            try:
-                with open(COLOR_CONFIG, 'r', encoding='utf-8') as f:
-                    self.COLOR_MAPPING = json.load(f)
-            except Exception as e:
-                self.COLOR_MAPPING = {}
+        try:
+            with open(COLOR_CONFIG, 'r', encoding='utf-8') as f:
+                self.COLOR_MAPPING = json.load(f)
+        except Exception as e:
+            self.COLOR_MAPPING = {}
 
         with open(FFCONFIG, 'r') as file:
             data = json.load(file)
