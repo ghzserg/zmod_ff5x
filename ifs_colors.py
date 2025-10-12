@@ -23,6 +23,7 @@ with open(sys.argv[1], 'r') as gcode:
             output.append(line)
             types = re.match("; filament_type = (.*)", line).group(1).split(";")
         elif re.match("; filament_max_volumetric_speed = (.*)", line):
+            #E_FEEDRATES: unused
             output.append(line)
             feedrates = ','.join(
                 str(round(float(x) * 2 / 3))
