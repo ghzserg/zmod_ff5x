@@ -26,6 +26,7 @@ M104 S[new_filament_temp]
 G1 Z{max_layer_z + 3.0} F1200
 M204 S9000
 T[next_extruder]
+_IFS_VARS e_feedrate={new_filament_e_feedrate}
 {if next_extruder < 255}
 {if flush_length > 0}
 _GOTO_TRASH
