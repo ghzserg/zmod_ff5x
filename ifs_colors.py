@@ -6,7 +6,8 @@ output = []
 tools = set([])
 colors = []
 types = []
-t = ''
+feedrates=''
+
 print(sys.argv[1])
 with open(sys.argv[1], 'r') as gcode:
     for line in gcode:
@@ -21,11 +22,17 @@ with open(sys.argv[1], 'r') as gcode:
         elif re.match("; filament_type = (.*)", line):
             output.append(line)
             types = re.match("; filament_type = (.*)", line).group(1).split(";")
+        elif re.match("; filament_max_volumetric_speed = (.*)", line):
+            output.append(line)
+            feedrates = ','.join(
+                str(round(float(x) * 2 / 3))
+                for x in re.match("; filament_max_volumetric_speed = (.*)", line).group(1).split(',')
+            )
         else:
             output.append(line)
             
 
 with open(sys.argv[1], 'w') as f:
-    f.write("_IFS_COLORS START=1 TYPES=" + ",".join(types) + " COLORS=" + ",".join("{0}".format(c[1:]) for c in colors) + " TOOLS=" + ",".join(sorted(tools)) + "\n") 
+    f.write("_IFS_COLORS START=1 TYPES=" + ",".join(types) + " E_FEEDRATES=" + feedrates + " COLORS=" + ",".join("{0}".format(c[1:]) for c in colors) + " TOOLS=" + ",".join(sorted(tools)) + "\n") 
     for line in output:
         f.write(line)
