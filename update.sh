@@ -1,5 +1,5 @@
 # enter ssh
-ssh root@printer_ip
+# ssh root@printer_ip
 # change repository
 chroot /usr/data/.mod/.zmod/
 cd /usr/data/config/mod/
@@ -27,4 +27,4 @@ curl -L -o /usr/data/config/mod_data/user.cfg https://raw.githubusercontent.com/
 # update restore_gcode
 curl -L -o /usr/data/config/mod_data/restore_gcode.sh https://raw.githubusercontent.com/function3d/zmod_ff5x/refs/heads/1.6/restore_gcode.sh
 chmod +x /usr/data/config/mod_data/restore_gcode.sh
-REBOOT
+/opt/config/mod/.shell/zremote.sh reboot
