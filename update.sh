@@ -1,5 +1,9 @@
 # enter ssh
 # ssh root@printer_ip
+# download this script
+# curl -L -o update.sh https://raw.githubusercontent.com/function3d/zmod_ff5x/refs/heads/1.6/update.sh
+# run this script 
+#./update.sh
 # change repository
 chroot /usr/data/.mod/.zmod/
 cd /usr/data/config/mod/
