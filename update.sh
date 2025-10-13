@@ -20,9 +20,10 @@ unzip mainsail.zip -d mainsail/
 sed -i 's/"port": null,/"port": "7125",/g' mainsail/config.json
 mkdir -p /usr/data/config/.theme
 cat > /usr/data/config/.theme/custom.css <<'EOF'
-.v-btn{
+.v-dialog__content .v-btn{
   min-width: 32px !important;
-  margin-right:0 !important;
+  padding: 0 4px !important;
+  margin:0 2px !important;
 }
 EOF
 # update user.cfg
