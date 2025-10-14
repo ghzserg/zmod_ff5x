@@ -982,9 +982,13 @@ class zmod_ifs:
                             if self.lang == 'ru':
                                 logging.warning(f"Пустой ответ от устройства {current_command}")
                                 self._respond_info(f"Пустой ответ от устройства {current_command}")
+                                logging.warning("IFS не доступен")
+                                self._respond_info("IFS не доступен")
                             else:
                                 logging.warning(f"Empty response from device {current_command}")
                                 self._respond_info(f"Empty response from device {current_command}")
+                                logging.warning("IFS is not available")
+                                self._respond_info("IFS is not available")
                             self.reactor.register_async_callback(
                                 lambda eventtime: self._safe_run_script("_IFS_OFF")
                             )
@@ -992,11 +996,11 @@ class zmod_ifs:
                         break
                     if not self.ifs:
                         if self.lang == 'ru':
-                            logging.warning("IFS снова доступен")
-                            self._respond_info("IFS снова доступен")
+                            logging.warning("IFS доступен")
+                            self._respond_info("IFS доступен")
                         else:
-                            logging.warning("IFS is available again")
-                            self._respond_info("IFS is available again")
+                            logging.warning("IFS is available")
+                            self._respond_info("IFS is available")
                         self.reactor.register_async_callback(
                             lambda eventtime: self._safe_run_script("_IFS_ON")
                         )
