@@ -1029,10 +1029,10 @@ class zmod_ifs:
                     time.sleep(HOST_REPORT_TIME)
             except serial.SerialException as e:
                 logging.warning("IFS: Serial communication error: %s", e)
-                self._respond_info(f"IFS: sensor error: {str(e)}")
+                self._respond_info(f"IFS: sensor error: Serial communication error: {str(e)}")
             except Exception as e:
                 logging.exception("IFS: Error data")
-                self._error(f"IFS: sensor error: {str(e)}")
+                self._error(f"IFS: sensor error: Error data: {str(e)}")
             finally:
                 if ser and hasattr(ser, 'is_open') and ser.is_open:
                     try:
