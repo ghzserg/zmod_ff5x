@@ -991,6 +991,12 @@ class zmod_ifs:
                             self.ifs = False
                         break
                     if not self.ifs:
+                        if self.lang == 'ru':
+                            logging.warning("IFS снова доступен")
+                            self._respond_info("IFS снова доступен")
+                        else:
+                            logging.warning("IFS is available again")
+                            self._respond_info("IFS is available again")
                         self.reactor.register_async_callback(
                             lambda eventtime: self._safe_run_script("_IFS_ON")
                         )
