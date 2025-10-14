@@ -741,7 +741,7 @@ class zmod_color:
                     channel_num = match.group(1)
                     self.gcode.run_script_from_command(f"SET_CURRENT_PRUTOK CHANNEL={channel_num}")
                     return
-        self.gcode.run_script_from_command("SET_CURRENT_PRUTOK")
+        self.gcode.run_script_from_command("SET_CURRENT_PRUTOK CHANNEL=0")
 
     def cmd_PRINT_ZCOLOR(self, gcmd):
         gcmd.respond_raw("// action:prompt_end")
