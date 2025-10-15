@@ -212,6 +212,7 @@ fix_config()
 {
     echo "START fix_config"
     date
+    echo 15 > /proc/sys/vm/swappiness
     fstrim ${DATA} -v
     [ ${FF5X} -eq 0 ] && fstrim / -v || fstrim /usr/prog -v
 
@@ -350,6 +351,7 @@ unset LD_PRELOAD
             china_block polar3d.com
         else
             mount --bind /usr/data/config/mod/.shell/hosts /etc/hosts
+            mount --bind /usr/data/config/mod/.shell/mdev.conf /etc/mdev.conf
         fi
     else
         if [ ${FF5X} -eq 0 ]; then
