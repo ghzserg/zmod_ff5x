@@ -25,10 +25,13 @@
    - Improved routine for automatic print recovery after power outages or
    errors
 
+## Bambu Studio
 <img width="1509" height="800" alt="image" src="https://github.com/user-attachments/assets/1b265dbb-cb3f-47e2-84d0-d1f6e6c8948e" />
 
+## Flush volumes
 <img width="1200" height="799" alt="image" src="https://github.com/user-attachments/assets/149a324b-589d-4bb4-a1df-cc5baa7e0e3f" />
 
+## Mainsail
 <img width="964" height="729" alt="image" src="https://github.com/user-attachments/assets/61e10f93-6831-48b3-9e8b-338a4969ccb9" />
 
 ## How to install
@@ -51,7 +54,10 @@
 
 - Download the post-processing scripts purge_tower_exclude_object.py and ifs_colors.py to your PC and adapt the paths in the Bambu Studio post-processing scripts.
 
+## Pull request yours issues
+Let's do what Flashforge didn't want to do.
 
+## Results
 <img width="1005" height="1113" alt="image" src="https://github.com/user-attachments/assets/f6812bbf-ffd2-45d0-85fb-2e95d7d04b9b" />
 <img width="1200" height="1600" alt="image" src="https://github.com/user-attachments/assets/8ad8ce59-6f45-44ef-88ec-be9ecdcfb7f0" />
 
