@@ -61,5 +61,8 @@ Let's do what Flashforge didn't want to do.
 <img width="1005" height="1113" alt="image" src="https://github.com/user-attachments/assets/f6812bbf-ffd2-45d0-85fb-2e95d7d04b9b" />
 <img width="1200" height="1600" alt="image" src="https://github.com/user-attachments/assets/8ad8ce59-6f45-44ef-88ec-be9ecdcfb7f0" />
 
+## Credits
+Sergei (ghzserg) [zmod](https://github.com/ghzserg/zmod)
+
 
 
