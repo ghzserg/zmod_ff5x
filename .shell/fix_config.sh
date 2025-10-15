@@ -222,7 +222,7 @@ fix_config()
     [ -f ${MOD_CONF}/mod_data/user.cfg ] || echo "" >${MOD_CONF}/mod_data/user.cfg
     [ -f ${MOD_CONF}/mod_data/variables.cfg ] || echo "[Variables]" >${MOD_CONF}/mod_data/variables.cfg
 
-    mount --bind ${MOD_CONF}/.shell/mdev.conf /etc/mdev.conf
+    mount --bind ${MOD_CONF}/mod/.shell/mdev.conf /etc/mdev.conf
 
     if [ ${FF5X} -eq 1 ]; then
         [ -f ${MOD_CONF}/mod_data/color.json ] || cp ${MOD_CONF}/mod/.shell/color.json ${MOD_CONF}/mod_data/color.json
