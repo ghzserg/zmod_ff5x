@@ -579,14 +579,18 @@ class zmod_color:
                     gcmd.respond_raw(f"Extruder: {zslot}")
 
     def cmd_GET_ZCOLOR(self, gcmd):
-        gcmd.respond_raw("// action:prompt_end")
+        silent = gcmd.get_int('SILENT', 0)
+
+        if silent == 0:
+            gcmd.respond_raw("// action:prompt_end")
         if self.display:
             status_code, response_data = self.zsend_post_request("/detail")
         else:
             status_code, response_data = self.get_printer_data_detail()
         if status_code:
-            #gcmd.respond_raw(json.dumps(response_data))
-            gcmd.respond_raw(f"// action:prompt_begin {self._t('prompt_material')}")
+            if silent == 0:
+                #gcmd.respond_raw(json.dumps(response_data))
+                gcmd.respond_raw(f"// action:prompt_begin {self._t('prompt_material')}")
 
             result = self.parse_printer_response(response_data)
 
@@ -598,18 +602,28 @@ class zmod_color:
                         prompt_text = f"Extruder: {slot['ID']}: {slot['Material']}/{slot['Color']}"
                         break
 
-            gcmd.respond_raw(f"// action:prompt_text {prompt_text}")
-            gcmd.respond_raw(f"// action:prompt_text IFS: {self.ifs}")
+            if silent == 0:
+                gcmd.respond_raw(f"// action:prompt_text {prompt_text}")
+                gcmd.respond_raw(f"// action:prompt_text IFS: {self.ifs}")
 
-            gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_choose')}")
-            gcmd.respond_raw("// action:prompt_button_group_start")
+                gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_choose')}")
+                gcmd.respond_raw("// action:prompt_button_group_start")
+            else:
+                gcmd.respond_raw(f"// {prompt_text}")
+                gcmd.respond_raw(f"// IFS: {self.ifs}")
+
             for slot in result:
                 btn_text = f"{slot['ID']}: {slot['Material']}/{slot['Color']}"
-                gcmd.respond_raw(f"// action:prompt_button {btn_text}|RUN_ZCOLOR SLOT={slot['ID']} HEX={slot['HEX']} TYPE={slot['Material']}|primary")
-            gcmd.respond_raw("// action:prompt_button_group_end")
-            gcmd.respond_raw(f"// action:prompt_footer_button Ok|RESPOND TYPE=command MSG=action:prompt_end")
-            gcmd.respond_raw(f"// action:prompt_footer_button {self._t('reset_colors')}|RESET_ZCOLOR")
-            gcmd.respond_raw("// action:prompt_show")
+                if silent == 0:
+                    gcmd.respond_raw(f"// action:prompt_button {btn_text}|RUN_ZCOLOR SLOT={slot['ID']} HEX={slot['HEX']} TYPE={slot['Material']}|primary")
+                else:
+                    gcmd.respond_raw(f"// {btn_text}")
+
+            if silent == 0:
+                gcmd.respond_raw("// action:prompt_button_group_end")
+                gcmd.respond_raw(f"// action:prompt_footer_button Ok|RESPOND TYPE=command MSG=action:prompt_end")
+                gcmd.respond_raw(f"// action:prompt_footer_button {self._t('reset_colors')}|RESET_ZCOLOR")
+                gcmd.respond_raw("// action:prompt_show")
         else:
             gcmd.respond_raw(self._t('no_response', json.dumps(response_data)))
 
