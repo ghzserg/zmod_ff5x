@@ -5,13 +5,14 @@
    Bambu Lab printers)
    - Accurate time and material usage estimates
    - 24 mm retraction before filament cut on every color change (saves ~7
-   m of filament across 300 color changes)
+   meters of filament across 300 color changes)
    - Reduced purge multiplier (≈ 0.7) possible without color mixing in
    most prints
    - “Flush into object infill” and “flush into object supports”
    effectively reduce filament waste
-   - Material-to-waste ratio rarely exceeds 50%, even on 4-color prints
-   - Mainsail displays true colors directly from the slicer
+   - **Material-to-waste ratio rarely exceeds 50%, even on 4-color prints**
+   - **Mainsail displays true colors directly from the slicer**
+   - **45 seconds color change time**
    - Bed leveling before print (Level On/Off)
    - External spool printing (IFS On/Off)
    - Backup printing mode – up to 4 kg of uninterrupted printing (Backup
