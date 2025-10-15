@@ -69,4 +69,4 @@ do_hotplug() {
 }
 
 # Запускаем функцию и перенаправляем весь вывод в лог
-do_hotplug &>${MOD_CONF}/mod_data/log/automount.log
+do_hotplug &>> ${MOD_CONF}/mod_data/log/automount.log
