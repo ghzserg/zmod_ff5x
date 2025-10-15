@@ -8,7 +8,7 @@ elif [ -f /usr/data/config/mod/.shell/0.sh ]; then
 fi
 
 # Проверяем, есть ли строка '[include ./mod/display_off.cfg]' в PRINTER_CFG
-if ! grep -q '^\[include ./mod/display_off\.cfg\]' "${PRINTER_CFG}"; then
+if ! grep -q '^\[include ./mod/display_off\.cfg\]' "${MOD_CONF}/printer.cfg"; then
     exit 0
 fi
 
