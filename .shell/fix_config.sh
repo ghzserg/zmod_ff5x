@@ -212,6 +212,7 @@ fix_config()
 {
     echo "START fix_config"
     date
+    echo 15 > /proc/sys/vm/swappiness
     fstrim ${DATA} -v
     [ ${FF5X} -eq 0 ] && fstrim / -v || fstrim /usr/prog -v
 
@@ -222,6 +223,7 @@ fix_config()
     [ -f ${MOD_CONF}/mod_data/variables.cfg ] || echo "[Variables]" >${MOD_CONF}/mod_data/variables.cfg
 
     if [ ${FF5X} -eq 1 ]; then
+        [ -f ${MOD_CONF}/mod_data/color.json ] || cp ${MOD_CONF}/mod/.shell/color.json ${MOD_CONF}/mod_data/color.json
         md5=$(md5sum ${MOD_CONF}/mod_data/cmd_pwm 2>/dev/null |awk '{print $1}')
         if [ "$md5" != "bb0a72766632c11bd83ae68a8da94688" ]; then
             umount /usr/bin/cmd_pwm
@@ -349,6 +351,7 @@ unset LD_PRELOAD
             china_block polar3d.com
         else
             mount --bind /usr/data/config/mod/.shell/hosts /etc/hosts
+
         fi
     else
         if [ ${FF5X} -eq 0 ]; then
@@ -371,7 +374,7 @@ unset LD_PRELOAD
         grep -q "Zcontrol 1.18" ${KLIPPER_DIR}/klippy/extras/spi_temperature.py || cp ${MOD_CONF}/mod/.shell/spi_temperature.py ${KLIPPER_DIR}/klippy/extras/spi_temperature.py
         grep -q "zmod 1.0" /opt/klipper/start.sh || cp ${MOD_CONF}/mod/.shell/start.sh /opt/klipper/start.sh
     else
-        grep -q "zmod 1.1" ${KLIPPER_DIR}/klippy/extras/virtual_sdcard.py || cp ${MOD_CONF}/mod/.shell/virtual_sdcard.py ${KLIPPER_DIR}/klippy/extras/virtual_sdcard.py
+        grep -q "zmod 1.4" ${KLIPPER_DIR}/klippy/extras/virtual_sdcard.py || cp ${MOD_CONF}/mod/.shell/virtual_sdcard.py ${KLIPPER_DIR}/klippy/extras/virtual_sdcard.py
     fi
 
     check_link ${KLIPPER_DIR}/klippy/extras/zmod.py ${MOD_CONF}/mod/.shell/zmod.py

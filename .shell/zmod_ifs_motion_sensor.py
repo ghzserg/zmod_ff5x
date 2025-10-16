@@ -23,6 +23,11 @@ class ZmodIfsMotionSensor:
         self.runout_helper = filament_switch_sensor.RunoutHelper(config)
         self.port = config.getint('port', 0, minval=0, maxval=4)
         sig = inspect.signature(self.runout_helper.note_filament_present)
+
+        self.zmod_color = self.printer.lookup_object('zmod_color', None)
+        if not self.zmod_color or self.zmod_color.get_display():
+            return
+
         if 'eventtime' in sig.parameters:
             self.new = True
         else:

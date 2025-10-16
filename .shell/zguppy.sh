@@ -6,6 +6,8 @@ unset LD_PRELOAD
 
 up()
 {
+    umount /media 2>/dev/null
+    echo '/opt/config/mod/.shell/automount.sh' > /proc/sys/kernel/hotplug
     if [ -f /ZMOD ]; then
         /etc/init.d/S80guppyscreen start
     else
@@ -14,6 +16,8 @@ up()
         sleep 15
         [ ${FF5X} -eq 0 ] && mount --bind ${REMOUNT_MOD} ${UMOUNT_MOD}
     fi
+    echo '/opt/config/mod/.shell/automount.sh' > /proc/sys/kernel/hotplug
+    umount /media 2>/dev/null
 }
 
 stop()

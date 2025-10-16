@@ -1,7 +1,7 @@
 #!/bin/sh
 
 DATA=/usr/data
-DATA_GCODES=/usr/data/gcodes/
+DATA_GCODES=/usr/data/gcodes
 REMOUNT_MOD=${DATA}/lost+found
 UMOUNT_MOD=${DATA}/.mod
 MOD=${UMOUNT_MOD}/.zmod

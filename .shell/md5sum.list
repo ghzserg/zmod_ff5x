@@ -1548,7 +1548,7 @@ d89b7fb98cd1e4e3f1199595ace67b1c  ./usr/prog/klipper/klippy/extras/tmc.py
 ba54c5a953fa31b5677ee8e88321a731  ./usr/prog/klipper/klippy/extras/tsl1401cl_filament_width_sensor.py
 14f4a56540626e8ebed20585cb16bd22  ./usr/prog/klipper/klippy/extras/tuning_tower.py
 6d8cef9e8a0c5eb27a8d688ceec42b30  ./usr/prog/klipper/klippy/extras/verify_heater.py
-11aca0bbda87fb8c1d334a8304d90270  ./usr/prog/klipper/klippy/extras/virtual_sdcard.py
+3cbf1a41850c4aef9b88735dc25fccea  ./usr/prog/klipper/klippy/extras/virtual_sdcard.py
 5ab083031fb0b988c214560ccaf3c1c4  ./usr/prog/klipper/klippy/extras/z_thermal_adjust.py
 f4cb3fde782342926d0ea52dd26d3013  ./usr/prog/klipper/klippy/extras/z_tilt.py
 05c1b7c10dd2f95e0eec35727f46f1db  ./usr/prog/klipper/klippy/gcode.py

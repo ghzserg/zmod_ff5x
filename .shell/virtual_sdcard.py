@@ -6,7 +6,7 @@
 import os, sys, logging, io
 
 VALID_GCODE_EXTS = ['gcode', 'g', 'gco','gx']
-VALID_GCODE_T = ['T0', 'T1', 'T2', 'T3','T4', 'T5', 'T6', 'T7','T8', 'T9', 'T10', 'T11','T12', 'T13', 'T14', 'T15']
+VALID_GCODE_T = {'T0', 'T1', 'T2', 'T3','T4', 'T5', 'T6', 'T7','T8', 'T9', 'T10', 'T11','T12', 'T13', 'T14', 'T15'}
 
 DEFAULT_ERROR_GCODE = """
 {% if 'heaters' in printer %}
@@ -293,7 +293,7 @@ class VirtualSD:
                 continue
             # Pause if any other request is pending in the gcode class
             if gcode_mutex.test():
-                self.reactor.pause(self.reactor.monotonic() + 0.100)
+                self.reactor.pause(self.reactor.monotonic() + 0.050)
                 continue
             # Dispatch command
             self.cmd_from_sd = True
@@ -303,23 +303,25 @@ class VirtualSD:
             else:
                 next_file_position = self.file_position + len(line) + 1
             self.next_file_position = next_file_position
-            #logging.info("Starting SD card print (line %s)", line)   
-            if line in VALID_GCODE_T and self.enable_ffm and line.startswith("T"):
-                self.print_channel = int(line[line.rfind('T')+1:])
-                if self.print_channel != self.load_channel:
-                    self.gcode.run_script("M400")
-                    self.change_filament = True
-                    # zmod 1.1
-                    self.gcode.run_script(f"_A_CHANGE_FILAMENT CHANNEL={self.print_channel}")
-                    while True:
-                        if not self.change_filament:
-                            break 
-                        if self.must_pause_work or self.work_timer is None:
-                            break
-                        self.reactor.pause(self.reactor.monotonic() + 0.5)
-                self.load_channel = self.print_channel
-                self.change_filament = False                    
-                continue         
+            #logging.info("Starting SD card print (line %s)", line)
+            if line.startswith("T") and self.enable_ffm:
+                cmd = line.split(';', 1)[0].strip()
+                if cmd in VALID_GCODE_T:
+                    self.print_channel = int(cmd[1:])
+                    if self.print_channel != self.load_channel:
+                        self.gcode.run_script("M400")
+                        self.change_filament = True
+                        # zmod 1.4
+                        self.gcode.run_script(f"_A_CHANGE_FILAMENT CHANNEL={self.print_channel}")
+                        while True:
+                            if not self.change_filament:
+                                break
+                            if self.must_pause_work or self.work_timer is None:
+                                break
+                            self.reactor.pause(self.reactor.monotonic() + 0.5)
+                    self.load_channel = self.print_channel
+                    self.change_filament = False
+                    continue
             try:
                 self.gcode.run_script(line)
             except self.gcode.error as e:

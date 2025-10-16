@@ -46,12 +46,32 @@ class zmod_ifs:
         self.query_adc = self.printer.lookup_object('query_adc')
         self.filament_sensor = self.printer.lookup_object('temperature_sensor filamentValue')
         self.lang = 'en'
-        self.ifs = True
+        self.ifs = False
         self.zmod = self.printer.lookup_object('zmod', None)
         self.zmod_color = self.printer.lookup_object('zmod_color', None)
+        temp_defaults = {
+            "PLA": 220,
+            "PLA-CF": 220,
+            "SILK": 230,
+            "TPU": 230,
+            "ABS": 250,
+            "PETG": 250,
+            "PETG-CF": 250
+        }
+        for option in config.get_prefix_options('filament_'):
+            filament_type = option[len('filament_'):].upper()
+            try:
+                temp = config.getint(option)
+                temp_defaults[filament_type] = temp
+            except Exception:
+                pass
+
+        self.temp_defaults = temp_defaults
         if not self.zmod_color or self.zmod_color.get_display():
             return
         self.ifs_data = IfsData()
+
+        self.zmod_color.valid_types = list(self.temp_defaults.keys()) + ['?']
 
         # Синхронизация потоков
         self._command_lock = threading.Lock()
@@ -81,6 +101,7 @@ class zmod_ifs:
         self.gcode.register_command('IFS_MOTION', self.cmd_IFS_MOTION)                  # Проверить, остановился или кончился филамент
 
         # Внутренние конманды начинаются с IFS
+        self.gcode.register_command('IFS_PRINT_DEFAULTS', self.cmd_IFS_PRINT_DEFAULTS)
         self.gcode.register_command('IFS_AUTOINSERT', self.cmd_IFS_AUTOINSERT, desc=self.cmd_IFS_AUTOINSERT_help)
         self.gcode.register_command('IFS_STATUS', self.cmd_IFS_STATUS, desc=self.cmd_IFS_STATUS_help)
         self.gcode.register_command('IFS_EXTRUDER_SENSOR', self.cmd_IFS_EXTRUDER_SENSOR)
@@ -292,13 +313,12 @@ class zmod_ifs:
 
     # Получить тип прутка из конфига
     def get_prutok_type_from_config(self, prutok):
-        valid_types = ['PLA', 'ABS', 'PETG', 'TPU', 'PLA-CF', 'PETG-CF', 'SILK']
         ret="PLA"
 
         with open(FFCONFIG, 'r') as file:
             config = json.load(file)
             ret=config["FFMInfo"].get(f"ffmType{prutok}", "PLA")
-        if ret not in valid_types:
+        if ret not in self.temp_defaults:
             ret="PLA"
         return ret
 
@@ -331,15 +351,6 @@ class zmod_ifs:
             "filament_autoinsert_speed": 1200       # Скорость вставки прутка
         }
 
-        temp_defaults = {
-            "PLA": 220,
-            "PLA-CF": 220,
-            "SILK": 230,
-            "TPU": 230,
-            "ABS": 250,
-            "PETG": 250,
-            "PETG-CF": 250
-        }
 
         required_fields = ['temp'] + list(base_default.keys())
 
@@ -351,7 +362,7 @@ class zmod_ifs:
 
         changed = False
 
-        for filament_name, temp_default in temp_defaults.items():
+        for filament_name, temp_default in self.temp_defaults.items():
             if filament_name in data:
                 existing = data[filament_name]
                 normalized = {}
@@ -375,6 +386,13 @@ class zmod_ifs:
         config = data.get(filament, {})
         config['filament_type'] = filament
         return config
+
+    # Вывод температур
+    def cmd_IFS_PRINT_DEFAULTS(self, gcmd):
+        msg = ""
+        for filament_type, temp in self.temp_defaults.items():
+            msg += f"{filament_type}: {temp}°C\n"
+        self.print_str(msg.strip())
 
     # Проверить остановился или закончился пруток
     def cmd_IFS_MOTION(self, gcmd):
@@ -408,7 +426,7 @@ class zmod_ifs:
         else:
             self.print_str(f"Указываю активный пруток T{cur_prutok}" if self.lang == 'ru' else f"Setting active filament T{cur_prutok}")
             self.gcode.run_script_from_command(f"SDCARD_SET_CHANNEL CHANNEL={cur_prutok}")
-        self.print_str("Включаю IFS")
+        self.print_str("Включаю IFS" if self.lang == 'ru' else f"Enable IFS")
         self.gcode.run_script_from_command("SDCARD_ENABLE_FFM ENABLE=1")
 
     def cmd_ANALOG_PRUTOK(self, gcmd):
@@ -416,7 +434,6 @@ class zmod_ifs:
             self.gcode.run_script_from_command("_IFS_OFF")
             return
 
-        valid_types = ['PLA', 'ABS', 'PETG', 'TPU', 'PLA-CF', 'PETG-CF', 'SILK']
         prutok = 1
         t_prutok = 0
 
@@ -428,7 +445,7 @@ class zmod_ifs:
             filament_type = ffm_info.get(f"ffmType{prutok}", "PLA")
             filament_color = ffm_info.get(f"ffmColor{prutok}", "#161616")
 
-        if filament_type not in valid_types:
+        if filament_type not in self.temp_defaults:
             filament_type = "PLA"
 
         with open(FILE_CONFIG, 'r') as f:
@@ -998,15 +1015,25 @@ class zmod_ifs:
                             if self.lang == 'ru':
                                 logging.warning(f"Пустой ответ от устройства {current_command}")
                                 self._respond_info(f"Пустой ответ от устройства {current_command}")
+                                logging.warning("IFS не доступен")
+                                self._respond_info("IFS не доступен")
                             else:
                                 logging.warning(f"Empty response from device {current_command}")
                                 self._respond_info(f"Empty response from device {current_command}")
+                                logging.warning("IFS is not available")
+                                self._respond_info("IFS is not available")
                             self.reactor.register_async_callback(
                                 lambda eventtime: self._safe_run_script("_IFS_OFF")
                             )
                             self.ifs = False
                         break
                     if not self.ifs:
+                        if self.lang == 'ru':
+                            logging.warning("IFS доступен")
+                            self._respond_info("IFS доступен")
+                        else:
+                            logging.warning("IFS is available")
+                            self._respond_info("IFS is available")
                         self.reactor.register_async_callback(
                             lambda eventtime: self._safe_run_script("_IFS_ON")
                         )
@@ -1035,10 +1062,10 @@ class zmod_ifs:
                     time.sleep(HOST_REPORT_TIME)
             except serial.SerialException as e:
                 logging.warning("IFS: Serial communication error: %s", e)
-                self._respond_info(f"IFS: sensor error: {str(e)}")
+                self._respond_info(f"IFS: sensor error: Serial communication error: {str(e)}")
             except Exception as e:
                 logging.exception("IFS: Error data")
-                self._error(f"IFS: sensor error: {str(e)}")
+                self._error(f"IFS: sensor error: Error data: {str(e)}")
             finally:
                 if ser and hasattr(ser, 'is_open') and ser.is_open:
                     try:
