@@ -16,9 +16,11 @@ class ZmodIfsSwitchSensor:
 
         self.reactor = self.printer.get_reactor()
         sig = inspect.signature(self.runout_helper.note_filament_present)
-        self.new = 'eventtime' in sig.parameters
+        if 'eventtime' in sig.parameters:
+            self.new = True
+        else:
+            self.new = False
 
-        self.last_state = True
         self.timer = self.reactor.register_timer(self.check_state, self.reactor.NOW)
 
         self.printer.register_event_handler("klippy:ready", self._handle_ready)
@@ -34,13 +36,6 @@ class ZmodIfsSwitchSensor:
         except Exception as e:
             self.gcode.respond_info(f"Error reading filament sensor: {e}")
             new_state = True
-
-        print_state = self.printer.lookup_object('print_stats').get_status(eventtime)['state']
-        is_printing = print_state in ('printing')
-
-        if not is_printing and hasattr(self, "last_state") and self.last_state and not new_state:
-            self.runout_helper._exec_gcode("", self.runout_helper.runout_gcode)
-        self.last_state = new_state
 
         sig = inspect.signature(self.runout_helper.note_filament_present)
         if self.new:
@@ -69,11 +64,9 @@ class ZmodIfsPortSensor:
 
         self.reactor = self.printer.get_reactor()
         sig = inspect.signature(self.runout_helper.note_filament_present)
-        if 'eventtime' in sig.parameters:
-            self.new = True
-        else:
-            self.new = False
+        self.new = 'eventtime' in sig.parameters
 
+        self.last_state = True
         self.timer = self.reactor.register_timer(self.check_state, self.reactor.NOW)
 
         self.printer.register_event_handler("klippy:ready", self._handle_ready)
@@ -89,6 +82,13 @@ class ZmodIfsPortSensor:
         except Exception as e:
             self.gcode.respond_info(f"Error reading filament sensor: {e}")
             new_state = True
+
+        print_state = self.printer.lookup_object('print_stats').get_status(eventtime)['state']
+        is_printing = print_state in ('printing')
+
+        if not is_printing and hasattr(self, "last_state") and self.last_state and not new_state:
+            self.runout_helper._exec_gcode("", self.runout_helper.runout_gcode)
+        self.last_state = new_state
 
         sig = inspect.signature(self.runout_helper.note_filament_present)
         if self.new:
