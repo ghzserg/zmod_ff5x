@@ -107,6 +107,10 @@ class zmod_ifs:
         self.gcode.register_command('IFS_EXTRUDER_SENSOR', self.cmd_IFS_EXTRUDER_SENSOR)
         self.gcode.register_command('IFS_REMOVE_PRUTOK', self.cmd_IFS_REMOVE_PRUTOK)
         self.gcode.register_command('IFS_REMOVE_CURRENT_PRUTOK', self.cmd_IFS_REMOVE_CURRENT_PRUTOK)
+        self.gcode.register_command('IFS_MOTION_ON', self.cmd_IFS_MOTION_ON)
+        self.gcode.register_command('IFS_MOTION_OFF', self.cmd_IFS_MOTION_OFF)
+        self.gcode.register_command('IFS_SWITCH_ON', self.cmd_IFS_SWITCH_ON)                                                                                                 
+        self.gcode.register_command('IFS_SWITCH_OFF', self.cmd_IFS_SWITCH_OFF)
 
         self.gcode.register_command('IFS_F10', self.cmd_IFS_F10)        # Вставить пруток
         self.gcode.register_command('IFS_F11', self.cmd_IFS_F11)        # Извлечь пруток
@@ -235,8 +239,8 @@ class zmod_ifs:
             result = (value >= 0.72)
         return result
 
-    def get_ifs_sensor(self):
-        return self.ifs_data.get_stall()
+    def get_ifs_sensor(self, port):
+        return self.ifs_data.get_stall(port)
 
     def set_cur_port(self, port):
         return self.ifs_data.set_cur_port(port)
@@ -947,6 +951,35 @@ class zmod_ifs:
             self.gcode.run_script_from_command(f"TEMPERATURE_WAIT SENSOR=extruder MINIMUM={config['temp']-2} MAXIMUM={config['temp']+4}")
         self.gcode.run_script_from_command(f"IFS_REMOVE_PRUTOK PRUTOK={prutok} FORCE=0")
 
+    def cmd_IFS_MOTION_ON(self, gcmd):
+        eventtime = self.reactor.monotonic()
+        self._update_filament_runout_pos(eventtime)
+        if self.new:
+            self.runout_helper.note_filament_present(eventtime, True)
+        else:
+            self.runout_helper.note_filament_present(True)
+
+    def cmd_IFS_MOTION_OFF(self, gcmd):
+        if self.new:
+            eventtime = self.reactor.monotonic()
+            self.runout_helper.note_filament_present(eventtime, False)
+        else:
+            self.runout_helper.note_filament_present(False)
+
+    def cmd_IFS_SWITCH_ON(self, gcmd):
+        if self.new:
+            eventtime = self.reactor.monotonic()
+            self.runout_helper.note_filament_present(eventtime, True)
+        else:
+            self.runout_helper.note_filament_present(True)
+
+    def cmd_IFS_SWITCH_OFF(self, gcmd):
+        if self.new:
+            eventtime = self.reactor.monotonic()
+            self.runout_helper.note_filament_present(eventtime, False)
+        else:
+            self.runout_helper.note_filament_present(False)
+
     def _sensor_reader(self):
         while not self.stop_thread:
             ser = None
@@ -1054,6 +1087,7 @@ class IfsData:
         self.Chan = 0           # Текущий активный порт
         self.Insert = 0         # В каком порту появился филамент
         self.Stall = False      # Движение по любому порту
+        self.Stalls = [False, False, False, False]
         self.stall_state = 0    # Движение по любому порту RAW
         self.State = 0          # Состояние IFS
         self.NeedInsert = False # Нужно ли вставлять пруток
@@ -1103,7 +1137,11 @@ class IfsData:
             if self.cur_port == 0:
                 self.Stall = stall_state != 0
             else:
-                self.Stall = (stall_state >> (self.cur_port - 1) ) & 1 == 1
+                self.Stall = (stall_state >> (self.cur_port - 1) ) & 1 == 1           
+            self.Stalls[0] = (stall_state >> 0 ) & 1 == 1
+            self.Stalls[1] = (stall_state >> 1 ) & 1 == 1
+            self.Stalls[2] = (stall_state >> 2 ) & 1 == 1
+            self.Stalls[3] = (stall_state >> 3 ) & 1 == 1
             self.Silk = silk_state
             self.State = state
             self.Chan = chan
@@ -1117,9 +1155,12 @@ class IfsData:
             else:
                 self.cur_port = port
 
-    def get_stall(self):
+    def get_stall(self, port):
         with self.lock:
-            return self.Stall
+            if port == 0:
+                return self.Stall
+            else:
+                return self.Stalls[port-1]
 
     # Возвращает статус конкретного порта
     def get_port(self, port):
