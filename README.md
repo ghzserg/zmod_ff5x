@@ -26,13 +26,13 @@
    errors
 
 ## Bambu Studio
-<img width="1509" height="800" alt="image" src="https://github.com/user-attachments/assets/1b265dbb-cb3f-47e2-84d0-d1f6e6c8948e" />
+<img width="1436" height="799" alt="image" src="https://github.com/user-attachments/assets/1d6a9e77-8b35-4d04-96d4-d92022a3500b" />
 
 ## Flush volumes
-<img width="1200" height="799" alt="image" src="https://github.com/user-attachments/assets/149a324b-589d-4bb4-a1df-cc5baa7e0e3f" />
+<img width="1307" height="810" alt="image" src="https://github.com/user-attachments/assets/fea280f2-809d-4bae-a744-4a4c36465881" />
 
 ## Mainsail
-<img width="964" height="729" alt="image" src="https://github.com/user-attachments/assets/61e10f93-6831-48b3-9e8b-338a4969ccb9" />
+<img width="1059" height="810" alt="image" src="https://github.com/user-attachments/assets/236bda17-e14b-41fe-933f-d5d550358afb" />
 
 ## How to install
 
