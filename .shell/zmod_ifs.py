@@ -46,7 +46,7 @@ class zmod_ifs:
         self.query_adc = self.printer.lookup_object('query_adc')
         self.filament_sensor = self.printer.lookup_object('temperature_sensor filamentValue')
         self.lang = 'en'
-        self.ifs = False
+        self.ifs = True
         self.zmod = self.printer.lookup_object('zmod', None)
         self.zmod_color = self.printer.lookup_object('zmod_color', None)
         temp_defaults = {
