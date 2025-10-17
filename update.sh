@@ -32,4 +32,6 @@ curl -L -o /usr/data/config/mod_data/user.cfg https://raw.githubusercontent.com/
 # update restore_gcode
 curl -L -o /usr/data/config/mod_data/restore_gcode.sh https://raw.githubusercontent.com/function3d/zmod_ff5x/refs/heads/1.6/restore_gcode.sh
 chmod +x /usr/data/config/mod_data/restore_gcode.sh
+# purge tower as exclude object and colors for mainsail prompt print dialog
+curl -L -o /usr/data/config/mod_data/bambufy.py https://raw.githubusercontent.com/function3d/zmod_ff5x/refs/heads/1.6/bambufy.py
 /opt/config/mod/.shell/zremote.sh reboot
