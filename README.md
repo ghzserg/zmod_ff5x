@@ -1,4 +1,4 @@
-# AD5X
+# Bambufy AD5X
  - Compatible with Bambu Studio, better management of the prime tower
    ([3MF](https://github.com/function3d/zmod_ff5x/raw/refs/heads/1.6/PinkyWings_FireDragon.3mf))
   - Purge sequences fully controlled by Bambu Studio (same behavior as
