@@ -107,10 +107,6 @@ class zmod_ifs:
         self.gcode.register_command('IFS_EXTRUDER_SENSOR', self.cmd_IFS_EXTRUDER_SENSOR)
         self.gcode.register_command('IFS_REMOVE_PRUTOK', self.cmd_IFS_REMOVE_PRUTOK)
         self.gcode.register_command('IFS_REMOVE_CURRENT_PRUTOK', self.cmd_IFS_REMOVE_CURRENT_PRUTOK)
-        self.gcode.register_command('IFS_MOTION_ON', self.cmd_IFS_MOTION_ON)
-        self.gcode.register_command('IFS_MOTION_OFF', self.cmd_IFS_MOTION_OFF)
-        self.gcode.register_command('IFS_SWITCH_ON', self.cmd_IFS_SWITCH_ON)                                                                                                 
-        self.gcode.register_command('IFS_SWITCH_OFF', self.cmd_IFS_SWITCH_OFF)
 
         self.gcode.register_command('IFS_F10', self.cmd_IFS_F10)        # Вставить пруток
         self.gcode.register_command('IFS_F11', self.cmd_IFS_F11)        # Извлечь пруток
@@ -950,35 +946,6 @@ class zmod_ifs:
             self.gcode.run_script_from_command(f"M104 S{config['temp']}")
             self.gcode.run_script_from_command(f"TEMPERATURE_WAIT SENSOR=extruder MINIMUM={config['temp']-2} MAXIMUM={config['temp']+4}")
         self.gcode.run_script_from_command(f"IFS_REMOVE_PRUTOK PRUTOK={prutok} FORCE=0")
-
-    def cmd_IFS_MOTION_ON(self, gcmd):
-        eventtime = self.reactor.monotonic()
-        self._update_filament_runout_pos(eventtime)
-        if self.new:
-            self.runout_helper.note_filament_present(eventtime, True)
-        else:
-            self.runout_helper.note_filament_present(True)
-
-    def cmd_IFS_MOTION_OFF(self, gcmd):
-        if self.new:
-            eventtime = self.reactor.monotonic()
-            self.runout_helper.note_filament_present(eventtime, False)
-        else:
-            self.runout_helper.note_filament_present(False)
-
-    def cmd_IFS_SWITCH_ON(self, gcmd):
-        if self.new:
-            eventtime = self.reactor.monotonic()
-            self.runout_helper.note_filament_present(eventtime, True)
-        else:
-            self.runout_helper.note_filament_present(True)
-
-    def cmd_IFS_SWITCH_OFF(self, gcmd):
-        if self.new:
-            eventtime = self.reactor.monotonic()
-            self.runout_helper.note_filament_present(eventtime, False)
-        else:
-            self.runout_helper.note_filament_present(False)
 
     def _sensor_reader(self):
         while not self.stop_thread:
