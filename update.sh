@@ -11,7 +11,7 @@ cd /usr/data/config/mod/
 git remote add upstream https://github.com/function3d/zmod_ff5x.git
 # update zmod
 git fetch upstream
-git git checkout ba835db9
+git checkout upstream/1.6 
 # update mainsail
 cd /root/
 mv mainsail/ mainsail_/ 
