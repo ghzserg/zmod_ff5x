@@ -32,7 +32,7 @@
 <img width="1307" height="810" alt="image" src="https://github.com/user-attachments/assets/fea280f2-809d-4bae-a744-4a4c36465881" />
 
 ## Mainsail
-<img width="1059" height="810" alt="image" src="https://github.com/user-attachments/assets/236bda17-e14b-41fe-933f-d5d550358afb" />
+<img width="1059" height="810" alt="image" src="https://github.com/user-attachments/assets/bf80b66f-46e2-4b48-af52-d6f44f5accc8" />
 
 ## How to install
 
