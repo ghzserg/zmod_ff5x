@@ -52,8 +52,6 @@
 
 - Use this [3MF](https://github.com/function3d/zmod_ff5x/raw/refs/heads/1.6/PinkyWings_FireDragon.3mf) with Bambu Studio (from there you can save settings such as user profiles)
 
-- Download the post-processing scripts purge_tower_exclude_object.py and ifs_colors.py to your PC and adapt the paths in the Bambu Studio post-processing scripts
-
 ## Pull request yours issues
 Let's do what Flashforge didn't want to do
 
