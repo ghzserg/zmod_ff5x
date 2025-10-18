@@ -52,7 +52,7 @@
 
 	`./update.sh`
 
-- Use this [3MF](https://github.com/function3d/zmod_ff5x/raw/refs/heads/1.6/PinkyWings_FireDragon.3mf) with Bambu Studio (from there you can save settings such as user profiles)
+- Use this [3MF](https://github.com/function3d/zmod_ff5x/raw/refs/heads/1.6/bambufy/PinkyWings_FireDragon.3mf) with Bambu Studio (from there you can save settings such as user profiles)
 
 ## Pull request yours issues
 Let's do what Flashforge didn't want to do
