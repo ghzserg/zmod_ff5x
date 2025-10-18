@@ -28,10 +28,10 @@ cat > /usr/data/config/.theme/custom.css <<'EOF'
 EOF
 # update user.cfg
 mv /usr/data/config/mod_data/user.cfg /usr/data/config/mod_data/user.cfg.old
-curl -L -o /usr/data/config/mod_data/user.cfg https://raw.githubusercontent.com/function3d/zmod_ff5x/refs/heads/1.6/user.cfg
+curl -L -o /usr/data/config/mod_data/user.cfg https://raw.githubusercontent.com/function3d/zmod_ff5x/refs/heads/1.6/bambufy/user.cfg
 # update restore_gcode
-curl -L -o /usr/data/config/mod_data/restore_gcode.sh https://raw.githubusercontent.com/function3d/zmod_ff5x/refs/heads/1.6/restore_gcode.sh
+curl -L -o /usr/data/config/mod_data/restore_gcode.sh https://raw.githubusercontent.com/function3d/zmod_ff5x/refs/heads/1.6/bambufy/restore_gcode.sh
 chmod +x /usr/data/config/mod_data/restore_gcode.sh
 # purge tower as exclude object and colors for mainsail prompt print dialog
-curl -L -o /usr/data/config/mod_data/bambufy.py https://raw.githubusercontent.com/function3d/zmod_ff5x/refs/heads/1.6/bambufy.py
+curl -L -o /usr/data/config/mod_data/bambufy.py https://raw.githubusercontent.com/function3d/zmod_ff5x/refs/heads/1.6/bambufy/preprint.py
 /opt/config/mod/.shell/zremote.sh reboot
