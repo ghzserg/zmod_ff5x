@@ -42,11 +42,13 @@
 
 - Change the native display to Guppyscreen DISPLAY_OFF
 
+- Change web ui to mainsail WEB
+
 - Log in to your AD5X via ssh (user:root, password: root)
 
 - Download and run the update.sh script
 
-	`curl -L -o update.sh https://raw.githubusercontent.com/function3d/zmod_ff5x/refs/heads/1.6/update.sh`
+	`curl -L -o update.sh https://raw.githubusercontent.com/function3d/zmod_ff5x/refs/heads/1.6/bambufy/update.sh`
 
 	`./update.sh`
 
