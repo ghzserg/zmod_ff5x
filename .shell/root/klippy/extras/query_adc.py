@@ -11,6 +11,10 @@ class QueryADC:
         gcode = self.printer.lookup_object('gcode')
         gcode.register_command("QUERY_ADC", self.cmd_QUERY_ADC,
                                desc=self.cmd_QUERY_ADC_help)
+        gcode.register_command("GET_FILAMENT_VALUE", self.cmd_GET_FILAMENT_VALUE,
+                               desc=self.cmd_GET_FILAMENT_VALUE_help)
+        gcode.register_command("GET_CUT_VALUE", self.cmd_GET_CUT_VALUE,
+                               desc=self.cmd_GET_CUT_VALUE_help)
     def register_adc(self, name, mcu_adc):
         self.adc[name] = mcu_adc
     cmd_QUERY_ADC_help = "Report the last value of an analog pin"
@@ -29,6 +33,20 @@ class QueryADC:
             v = max(.00001, min(.99999, value))
             r = pullup * v / (1.0 - v)
             msg += "\n resistance %.3f (with %.0f pullup)" % (r, pullup)
+        gcmd.respond_info(msg)
+    def get_status(self, eventtime):
+        value, timestamp = self.adc["temperature_sensor filamentValue"].get_last_value()
+        value1, timestamp1 = self.adc["temperature_sensor cutValue"].get_last_value()
+        return {'value': value,'cut': value1}
+    cmd_GET_FILAMENT_VALUE_help = "get extruder filament sensor value"
+    def cmd_GET_FILAMENT_VALUE(self, gcmd):
+        value, timestamp = self.adc["temperature_sensor filamentValue"].get_last_value()
+        msg = "value:%.5f" % (value)
+        gcmd.respond_info(msg)
+    cmd_GET_CUT_VALUE_help = "get extruder filament sensor value"
+    def cmd_GET_CUT_VALUE(self, gcmd):
+        value, timestamp = self.adc["temperature_sensor cutValue"].get_last_value()
+        msg = "value:%.5f" % (value)
         gcmd.respond_info(msg)
 
 def load_config(config):
