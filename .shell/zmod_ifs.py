@@ -46,7 +46,7 @@ class zmod_ifs:
         self.query_adc = self.printer.lookup_object('query_adc')
         self.filament_sensor = self.printer.lookup_object('temperature_sensor filamentValue')
         self.lang = 'en'
-        self.ifs = True
+        self.ifs = False
         self.zmod = self.printer.lookup_object('zmod', None)
         self.zmod_color = self.printer.lookup_object('zmod_color', None)
         temp_defaults = {
@@ -1104,7 +1104,7 @@ class IfsData:
             if self.cur_port == 0:
                 self.Stall = stall_state != 0
             else:
-                self.Stall = (stall_state >> (self.cur_port - 1) ) & 1 == 1           
+                self.Stall = (stall_state >> (self.cur_port - 1) ) & 1 == 1
             self.Stalls[0] = (stall_state >> 0 ) & 1 == 1
             self.Stalls[1] = (stall_state >> 1 ) & 1 == 1
             self.Stalls[2] = (stall_state >> 2 ) & 1 == 1
