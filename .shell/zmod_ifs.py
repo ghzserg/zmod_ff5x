@@ -46,7 +46,7 @@ class zmod_ifs:
         self.query_adc = self.printer.lookup_object('query_adc')
         self.filament_sensor = self.printer.lookup_object('temperature_sensor filamentValue')
         self.lang = 'en'
-        self.ifs = False
+        self.ifs = True
         self.zmod = self.printer.lookup_object('zmod', None)
         self.zmod_color = self.printer.lookup_object('zmod_color', None)
         temp_defaults = {
@@ -235,8 +235,8 @@ class zmod_ifs:
             result = (value >= 0.72)
         return result
 
-    def get_ifs_sensor(self):
-        return self.ifs_data.get_stall()
+    def get_ifs_sensor(self, port):
+        return self.ifs_data.get_stall(port)
 
     def set_cur_port(self, port):
         return self.ifs_data.set_cur_port(port)
@@ -1054,6 +1054,7 @@ class IfsData:
         self.Chan = 0           # Текущий активный порт
         self.Insert = 0         # В каком порту появился филамент
         self.Stall = False      # Движение по любому порту
+        self.Stalls = [False, False, False, False]
         self.stall_state = 0    # Движение по любому порту RAW
         self.State = 0          # Состояние IFS
         self.NeedInsert = False # Нужно ли вставлять пруток
@@ -1103,7 +1104,11 @@ class IfsData:
             if self.cur_port == 0:
                 self.Stall = stall_state != 0
             else:
-                self.Stall = (stall_state >> (self.cur_port - 1) ) & 1 == 1
+                self.Stall = (stall_state >> (self.cur_port - 1) ) & 1 == 1           
+            self.Stalls[0] = (stall_state >> 0 ) & 1 == 1
+            self.Stalls[1] = (stall_state >> 1 ) & 1 == 1
+            self.Stalls[2] = (stall_state >> 2 ) & 1 == 1
+            self.Stalls[3] = (stall_state >> 3 ) & 1 == 1
             self.Silk = silk_state
             self.State = state
             self.Chan = chan
@@ -1117,9 +1122,12 @@ class IfsData:
             else:
                 self.cur_port = port
 
-    def get_stall(self):
+    def get_stall(self, port):
         with self.lock:
-            return self.Stall
+            if port == 0:
+                return self.Stall
+            else:
+                return self.Stalls[port-1]
 
     # Возвращает статус конкретного порта
     def get_port(self, port):
