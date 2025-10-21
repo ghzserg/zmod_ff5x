@@ -17,14 +17,18 @@ if grep -q "[update_manager $1]" ${MOD_CONF}/moonraker.conf || grep -q "[update_
         else
             echo "Включаю плагин $1"
         fi
-        echo "[include plugins/$1/$1.cfg]" >>${MOD_CONF}/mod_data/plugins.cfg
+        if [ -f "${MOD_CONF}/mod_data/plugins/$1/${ZLANG}/$1.cfg" ]; then
+            echo "[include plugins/$1/${ZLANG}/$1.cfg]" >>${MOD_CONF}/mod_data/plugins.cfg
+        else
+            echo "[include plugins/$1/$1.cfg]" >>${MOD_CONF}/mod_data/plugins.cfg
+        fi
     else
         if [ ${ZLANG} != 'ru' ]; then
             echo "Disable plugin $1"
         else
             echo "Выключаю плагин $1"
         fi
-        sed -i "/plugins\/$1\/$1\.cfg/d" ${MOD_CONF}/mod_data/plugins.cfg
+        sed -i "/plugins\/$1\//d" ${MOD_CONF}/mod_data/plugins.cfg
     fi
     echo "FIRMWARE_RESTART" >/tmp/printer
 else
