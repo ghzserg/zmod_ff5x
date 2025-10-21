@@ -11,21 +11,37 @@ get_origin_from_config() {
     /^\[.*\]$/ {
       if ($0 == section) {
         in_section = 1
-      } else {
-        in_section = 0
+      } else if (in_section) {
+        exit
       }
       next
     }
-    in_section && /^origin[[:space:]]*=/ {
-      gsub(/^[[:space:]]*origin[[:space:]]*=[[:space:]]*/, "")
-      print $0
+    in_section && /^origin[[:space:]]*:/ {
+      gsub(/^[[:space:]]*origin[[:space:]]*:[[:space:]]*/, "")
+      gsub(/[[:space:]]+$/, "")
+      print
       exit
     }
   ' "$config_file"
 }
 
-
 if grep -q "[update_manager $1]" ${MOD_CONF}/moonraker.conf || grep -q "[update_manager $1]" ${MOD_CONF}/mod_data/user.moonraker.conf; then
+    url=$(get_origin_from_config ${MOD_CONF}/moonraker.conf "$1")
+    if [ "$url" == "" ]; then
+        url=$(get_origin_from_config ${MOD_CONF}/mod_data/user.moonraker.conf "$1")
+    fi
+    if [ "$url" != "" ] && ! [ -d "${MOD_CONF}/mod_data/plugins/$1" ]; then
+        if ! [ -f /ZMOD ]; then
+            [ ${FF5X} -eq 0 ] && umount ${UMOUNT_MOD}
+            unset LD_LIBRARY_PATH
+            unset LD_PRELOAD
+            chroot ${MOD} git clone "${url}" "${MOD_CONF}/mod_data/plugins/$1"
+            [ ${FF5X} -eq 0 ] && mount --bind ${REMOUNT_MOD} ${UMOUNT_MOD}
+        else
+            git clone "${url}" "${MOD_CONF}/mod_data/plugins/$1"
+        fi
+    fi
+
     if ! [ -f "${MOD_CONF}/mod_data/plugins/$1/$1.cfg" ] && ! [ -f "${MOD_CONF}/mod_data/plugins/$1/${ZLANG}/$1.cfg" ]; then
         if [ ${ZLANG} != 'ru' ]; then
             echo "Plugin $1 not found in mod_data/plugins/$1/$1.cfg and mod_data/plugins/$1/${ZLANG}/$1.cfg"
@@ -39,16 +55,6 @@ if grep -q "[update_manager $1]" ${MOD_CONF}/moonraker.conf || grep -q "[update_
             echo "Enable plugin $1"
         else
             echo "Включаю плагин $1"
-        fi
-
-        url=$(get_origin_from_config ${MOD_CONF}/moonraker.conf "$1")
-        if [ "$url" == "" ]; then
-            url=$(get_origin_from_config ${MOD_CONF}/mod_data/user.moonraker.conf "$1")
-        fi
-
-        if [ "$url" != "" ] && ! [ -d "${MOD_CONF}/mod_data/plugins/$1" ]; then
-            cd ${MOD_CONF}/mod_data/plugins
-            git clone "${url}" "$1"
         fi
 
         if [ -f "${MOD_CONF}/mod_data/plugins/$1/${ZLANG}/$1.cfg" ]; then
