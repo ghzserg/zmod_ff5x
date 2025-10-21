@@ -112,6 +112,8 @@ fi
 /opt/config/mod/.shell/root/S65moonraker start
 /opt/config/mod/.shell/root/S70httpd start
 
+date -s "2025-10-21 00:00:00"
+
 # Пробуем синхронизировать время
 ntpd -dd -n -q -p pool.ntp.org || \
 ntpd -dd -n -q -p ru.pool.ntp.org || \
