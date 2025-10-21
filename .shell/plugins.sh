@@ -30,15 +30,28 @@ if grep -q "[update_manager $1]" ${MOD_CONF}/moonraker.conf || grep -q "[update_
     if [ "$url" == "" ]; then
         url=$(get_origin_from_config ${MOD_CONF}/mod_data/user.moonraker.conf "$1")
     fi
-    if [ "$url" != "" ] && ! [ -d "${MOD_CONF}/mod_data/plugins/$1" ]; then
-        if ! [ -f /ZMOD ]; then
-            [ ${FF5X} -eq 0 ] && umount ${UMOUNT_MOD}
-            unset LD_LIBRARY_PATH
-            unset LD_PRELOAD
-            chroot ${MOD} git clone "${url}" "${MOD_CONF}/mod_data/plugins/$1"
-            [ ${FF5X} -eq 0 ] && mount --bind ${REMOUNT_MOD} ${UMOUNT_MOD}
+    if [ "$url" != "" ]
+        if ! [ -d "${MOD_CONF}/mod_data/plugins/$1" ]; then
+            if ! [ -f /ZMOD ]; then
+                [ ${FF5X} -eq 0 ] && umount ${UMOUNT_MOD}
+                unset LD_LIBRARY_PATH
+                unset LD_PRELOAD
+                chroot ${MOD} git clone "${url}" "${MOD_CONF}/mod_data/plugins/$1"
+                [ ${FF5X} -eq 0 ] && mount --bind ${REMOUNT_MOD} ${UMOUNT_MOD}
+            else
+                git clone "${url}" "${MOD_CONF}/mod_data/plugins/$1"
+            fi
         else
-            git clone "${url}" "${MOD_CONF}/mod_data/plugins/$1"
+            if ! [ -f /ZMOD ]; then
+                [ ${FF5X} -eq 0 ] && umount ${UMOUNT_MOD}
+                unset LD_LIBRARY_PATH
+                unset LD_PRELOAD
+                chroot ${MOD} /bin/bash -c "cd \"${MOD_CONF}/mod_data/plugins/$1\" && git pull"
+                [ ${FF5X} -eq 0 ] && mount --bind ${REMOUNT_MOD} ${UMOUNT_MOD}
+            else
+                cd "${MOD_CONF}/mod_data/plugins/$1"
+                git pull
+            fi
         fi
     fi
 
