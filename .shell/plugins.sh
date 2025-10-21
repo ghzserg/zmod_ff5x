@@ -30,7 +30,7 @@ if grep -q "[update_manager $1]" ${MOD_CONF}/moonraker.conf || grep -q "[update_
     if [ "$url" == "" ]; then
         url=$(get_origin_from_config ${MOD_CONF}/mod_data/user.moonraker.conf "$1")
     fi
-    if [ "$url" != "" ]
+    if [ "$url" != "" ]; then
         if ! [ -d "${MOD_CONF}/mod_data/plugins/$1" ]; then
             if ! [ -f /ZMOD ]; then
                 [ ${FF5X} -eq 0 ] && umount ${UMOUNT_MOD}
