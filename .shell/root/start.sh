@@ -114,6 +114,50 @@ fi
 
 date -s "2025-10-21 00:00:00"
 
+get_origin_from_config() {
+  local config_file="$1"
+  local section="[update_manager $2]"
+
+  awk -v section="$section" '
+    BEGIN { in_section = 0 }
+    /^\[.*\]$/ {
+      if ($0 == section) {
+        in_section = 1
+      } else if (in_section) {
+        exit
+      }
+      next
+    }
+    in_section && /^origin[[:space:]]*:/ {
+      gsub(/^[[:space:]]*origin[[:space:]]*:[[:space:]]*/, "")
+      gsub(/[[:space:]]+$/, "")
+      print
+      exit
+    }
+  ' "$config_file"
+}
+
+# Создаем каталоги под плагины
+grep '/root/printer_data/config/mod_data/plugins/' /opt/config/moonraker.conf /opt/config/mod_data/user.moonraker.conf | sed 's|.*/||' | while read a; do
+    if ! [ -f "${MOD_CONF}/mod_data/plugins/$a/.git/config" ]; then
+        url=$(get_origin_from_config ${MOD_CONF}/moonraker.conf "$1")
+        if [ "$url" == "" ]; then
+            url=$(get_origin_from_config ${MOD_CONF}/mod_data/user.moonraker.conf "$1")
+        fi
+        if [ "$url" != "" ]; then
+            echo "[core]
+        repositoryformatversion = 0
+        filemode = true
+        bare = false
+        logallrefupdates = true
+[remote \"origin\"]
+        url = $url
+        fetch = +refs/heads/*:refs/remotes/origin/*
+" > "${MOD_CONF}/mod_data/plugins/$a/.git/config"
+        fi
+    fi
+done
+
 # Пробуем синхронизировать время
 ntpd -dd -n -q -p pool.ntp.org || \
 ntpd -dd -n -q -p ru.pool.ntp.org || \
