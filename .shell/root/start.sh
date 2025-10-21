@@ -171,14 +171,26 @@ grep '/root/printer_data/config/mod_data/plugins/' /opt/config/moonraker.conf /o
             branch=$(get_branch_from_config ${MOD_CONF}/mod_data/user.moonraker.conf "$a")
         fi
         if [ "$url" != "" ] && [ "$branch" != "" ]; then
+            echo "  Initializing repo for $a with origin: $url and branch: $branch"
             mkdir -p "${MOD_CONF}/mod_data/plugins/$a/"
             cd "${MOD_CONF}/mod_data/plugins/$a/"
+
             git init
             git remote add origin "$url"
             git config --local "branch.$branch.remote" origin
             git config --local "branch.$branch.merge" "refs/heads/$branch"
-            git branch "--set-upstream-to=origin/$branch" "$branch"
+
+            # Создаем файл ссылки для ветки
+            echo "0000000000000000000000000000000000000000" > ".git/refs/heads/$branch"
+            # Устанавливаем HEAD на созданную ветку
+            echo "ref: refs/heads/$branch" > .git/HEAD
+
+            echo "  Repo for $a initialized locally."
+        else
+            echo "  Warning: Could not determine origin URL or branch for $a. Skipping."
         fi
+    else
+        echo "  Repo for $a already exists, skipping initialization."
     fi
 done
 
