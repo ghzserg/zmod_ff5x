@@ -222,7 +222,7 @@ fix_config()
     mkdir -p ${MOD_CONF}/mod_data/database/
     [ -f ${MOD_CONF}/mod_data/user.cfg ] || echo "" >${MOD_CONF}/mod_data/user.cfg
     [ -f ${MOD_CONF}/mod_data/plugins.cfg ] || echo "" >${MOD_CONF}/mod_data/plugins.cfg
-    [ -d ${MOD_CONF}/mod_data/plugins ] || mkdir -p -d ${MOD_CONF}/mod_data/plugins
+    [ -d ${MOD_CONF}/mod_data/plugins ] || mkdir -p ${MOD_CONF}/mod_data/plugins
     [ -f ${MOD_CONF}/mod_data/variables.cfg ] || echo "[Variables]" >${MOD_CONF}/mod_data/variables.cfg
 
     if [ ${FF5X} -eq 1 ]; then
