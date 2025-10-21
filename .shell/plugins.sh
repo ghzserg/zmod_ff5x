@@ -3,11 +3,11 @@
 source /opt/config/mod/.shell/0.sh
 
 if grep -q "[update_manager $1]" ${MOD_CONF}/moonraker.conf || grep -q "[update_manager $1]" ${MOD_CONF}/mod_data/user.moonraker.conf; then
-    if ! [ -f "${MOD_CONF}/mod_data/$1/$1.cfg" ]; then
+    if ! [ -f "${MOD_CONF}/mod_data/plugins/$1/$1.cfg" ]; then
         if [ ${ZLANG} != 'ru' ]; then
-            echo "Plugin $1 not found in mod_data/$1/$1.cfg"
+            echo "Plugin $1 not found in mod_data/plugins/$1/$1.cfg"
         else
-            echo "Основной файл плагина $1 не найден в mod_data/$1/$1.cfg"
+            echo "Основной файл плагина $1 не найден в mod_data/plugins/$1/$1.cfg"
         fi
         exit 1
     fi
