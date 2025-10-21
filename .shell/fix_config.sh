@@ -40,6 +40,7 @@ restore_base()
     grep -q '^\[include ./mod/mod.cfg' ${MOD_CONF}/printer.cfg && sed -i '/mod.cfg/d' ${MOD_CONF}/printer.cfg
     grep -q '^\[include ./mod/klipper11.cfg' ${MOD_CONF}/printer.cfg && sed -i '/klipper11.cfg/d' ${MOD_CONF}/printer.cfg
     grep -q '^\[include ./mod/klipper13.cfg' ${MOD_CONF}/printer.cfg && sed -i '/klipper13.cfg/d' ${MOD_CONF}/printer.cfg
+    grep -q '^\[include ./mod_data/plugins.cfg' ${MOD_CONF}/printer.cfg && sed -i '/plugins.cfg/d' ${MOD_CONF}/printer.cfg
     grep -q '^\[include ./mod_data/user.cfg' ${MOD_CONF}/printer.cfg && sed -i '/user.cfg/d' ${MOD_CONF}/printer.cfg
     grep -q '^\[include ./mod/switch_sensor.cfg' ${MOD_CONF}/printer.cfg && sed -i '/switch_sensor.cfg/d' ${MOD_CONF}/printer.cfg
     grep -q '^\[include ./mod/motion_sensor.cfg' ${MOD_CONF}/printer.cfg && sed -i '/motion_sensor.cfg/d' ${MOD_CONF}/printer.cfg
@@ -220,6 +221,8 @@ fix_config()
 
     mkdir -p ${MOD_CONF}/mod_data/database/
     [ -f ${MOD_CONF}/mod_data/user.cfg ] || echo "" >${MOD_CONF}/mod_data/user.cfg
+    [ -f ${MOD_CONF}/mod_data/plugins.cfg ] || echo "" >${MOD_CONF}/mod_data/plugins.cfg
+    [ -d ${MOD_CONF}/mod_data/plugins ] || mkdir -p -d ${MOD_CONF}/mod_data/plugins
     [ -f ${MOD_CONF}/mod_data/variables.cfg ] || echo "[Variables]" >${MOD_CONF}/mod_data/variables.cfg
 
     if [ ${FF5X} -eq 1 ]; then
@@ -408,6 +411,9 @@ unset LD_PRELOAD
     cnt=$(grep '^\[include ./mod_data/user.cfg\]' ${PRINTER_CFG} |wc -l)
     [ "$cnt" -gt 1 ] && sed -i '/^\[include .\/mod_data\/user.cfg\]/d' ${PRINTER_CFG} && NEED_REBOOT=1
 
+    cnt=$(grep '^\[include ./mod_data/plugins.cfg\]' ${PRINTER_CFG} |wc -l)
+    [ "$cnt" -gt 1 ] && sed -i '/^\[include .\/mod_data\/plugins.cfg\]/d' ${PRINTER_CFG} && NEED_REBOOT=1
+
     cnt=$(grep '^\[include ./mod/mod.cfg\]' ${PRINTER_CFG} |wc -l)
     [ "$cnt" -gt 1 ] && sed -i '/^\[include .\/mod\/mod.cfg\]/d' ${PRINTER_CFG} && NEED_REBOOT=1
 
@@ -421,11 +427,23 @@ unset LD_PRELOAD
 
     grep -q '^\[include mod.user.cfg\]' ${PRINTER_CFG} && sed -i 's|^\[include mod.user.cfg\]|\[include ./mod_data/user.cfg\]|' ${PRINTER_CFG} && NEED_REBOOT=1
 
-    ! grep -q '^\[include ./mod_data/user.cfg\]'  ${PRINTER_CFG} && sed -i '3 i\[include ./mod_data/user.cfg]' ${PRINTER_CFG} && NEED_REBOOT=1
+    ! grep -q '^\[include ./mod_data/user.cfg\]' ${PRINTER_CFG} && sed -i '3 i\[include ./mod_data/user.cfg]' ${PRINTER_CFG} && NEED_REBOOT=1
+    ! grep -q '^\[include ./mod_data/plugins.cfg\]' ${PRINTER_CFG} && awk 'BEGIN { found_user = 0; inserted = 0; }
+/\[include \.\/mod_data\/user\.cfg\]/ {
+    if (!inserted) print "[include ./mod_data/plugins.cfg]";
+    print $0;
+    next;
+}
+/\[include \.\/mod_data\/plugins\.cfg\]/ {
+    inserted = 1;
+}
+{
+    print $0;
+}' ${PRINTER_CFG} > ${PRINTER_CFG}.tmp && mv ${PRINTER_CFG}.tmp ${PRINTER_CFG} && NEED_REBOOT=1
 
     # Восстанавливаем настройки
     if grep -q "display_off = 1" ${MOD_CONF}/mod_data/variables.cfg; then
-        grep -q '^\[include ./mod_data/user.cfg\]' ${PRINTER_CFG} && sed -i 's|\[include ./mod/mod.cfg\]|\[include ./mod/display_off.cfg\]|' ${PRINTER_CFG} && NEED_REBOOT=1
+        grep -q '^\[include ./mod_data/mod.cfg\]' ${PRINTER_CFG} && sed -i 's|\[include ./mod/mod.cfg\]|\[include ./mod/display_off.cfg\]|' ${PRINTER_CFG} && NEED_REBOOT=1
     fi
 
     if grep -q "display_off = 0" ${MOD_CONF}/mod_data/variables.cfg; then
