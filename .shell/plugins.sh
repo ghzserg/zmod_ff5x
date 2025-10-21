@@ -70,6 +70,7 @@ if grep -q "[update_manager $1]" ${MOD_CONF}/moonraker.conf || grep -q "[update_
             echo "Включаю плагин $1"
         fi
 
+        sed -i "/plugins\/$1\//d" ${MOD_CONF}/mod_data/plugins.cfg
         if [ -f "${MOD_CONF}/mod_data/plugins/$1/${ZLANG}/$1.cfg" ]; then
             echo "[include plugins/$1/${ZLANG}/$1.cfg]" >>${MOD_CONF}/mod_data/plugins.cfg
         else
