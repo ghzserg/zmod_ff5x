@@ -2,6 +2,31 @@
 
 source /opt/config/mod/.shell/0.sh
 
+set -x
+
+get_origin_from_config() {
+  local config_file="$1"
+  local section="[update_manager $2]"
+
+  awk -v section="$section" '
+    BEGIN { in_section = 0 }
+    /^\[.*\]$/ {
+      if ($0 == section) {
+        in_section = 1
+      } else if (in_section) {
+        exit
+      }
+      next
+    }
+    in_section && /^origin[[:space:]]*:/ {
+      gsub(/^[[:space:]]*origin[[:space:]]*:[[:space:]]*/, "")
+      gsub(/[[:space:]]+$/, "")
+      print
+      exit
+    }
+  ' "$config_file"
+}
+
 prepare_chroot()
 {
     echo ZMOD >/ZMOD
@@ -22,7 +47,7 @@ prepare_chroot()
     [ -L /etc/init.d/S98camera ] && rm -f /etc/init.d/S98camera
     [ -L /etc/init.d/S99camera ] || ln -s /opt/config/mod/.shell/root/S99camera /etc/init.d/
     [ -L /etc/init.d/S60klipper ] || ln -s /opt/config/mod/.shell/root/S60klipper /etc/init.d/
-    [ -L /root/klipper-env/klippy ] || ln -s /opt/config/mod/.shell/root/klippy /root/klipper-env/
+    [ ${FF5X} -eq 0 ] && [ -L /root/klipper-env/klippy ] || ln -s /opt/config/mod/.shell/root/klippy /root/klipper-env/
 
     [ -L /etc/init.d/S35tslib ] && rm -f /etc/init.d/S35tslib
     [ -L /etc/init.d/S80guppyscreen ] || ln -s /opt/config/mod/.shell/root/S80guppyscreen /etc/init.d/
@@ -32,7 +57,7 @@ prepare_chroot()
 
     [ -L /usr/lib/python3.12/site-packages/mido ] || ln -s /opt/config/mod/.shell/root/mido/ /usr/lib/python3.12/site-packages/
     [ -L /usr/lib/python3.12/site-packages/mido-1.3.3.dist-info ] || ln -s /opt/config/mod/.shell/root/mido-1.3.3.dist-info/ /usr/lib/python3.12/site-packages/
-    [ -L /root/klipper-env/lib/python3.12/site-packages/numpy ] || ln -s /usr/lib/python3.12/site-packages/numpy /root/klipper-env/lib/python3.12/site-packages/
+    [ ${FF5X} -eq 0 ] && [ -L /root/klipper-env/lib/python3.12/site-packages/numpy ] || ln -s /usr/lib/python3.12/site-packages/numpy /root/klipper-env/lib/python3.12/site-packages/
 
     [ -L /bin/sudo ] || ln -s /opt/config/mod/.shell/root/sudo /bin/sudo
 
@@ -109,40 +134,13 @@ if [ ${FF5X} -eq 0 ]; then
     fi
 fi
 
-/opt/config/mod/.shell/root/S65moonraker start
-/opt/config/mod/.shell/root/S70httpd start
-
-date -s "2025-10-21 00:00:00"
-
-get_origin_from_config() {
-  local config_file="$1"
-  local section="[update_manager $2]"
-
-  awk -v section="$section" '
-    BEGIN { in_section = 0 }
-    /^\[.*\]$/ {
-      if ($0 == section) {
-        in_section = 1
-      } else if (in_section) {
-        exit
-      }
-      next
-    }
-    in_section && /^origin[[:space:]]*:/ {
-      gsub(/^[[:space:]]*origin[[:space:]]*:[[:space:]]*/, "")
-      gsub(/[[:space:]]+$/, "")
-      print
-      exit
-    }
-  ' "$config_file"
-}
-
 # Создаем каталоги под плагины
 grep '/root/printer_data/config/mod_data/plugins/' /opt/config/moonraker.conf /opt/config/mod_data/user.moonraker.conf | sed 's|.*/||' | while read a; do
+    echo "Plugin $a"
     if ! [ -f "${MOD_CONF}/mod_data/plugins/$a/.git/config" ]; then
-        url=$(get_origin_from_config ${MOD_CONF}/moonraker.conf "$1")
+        url=$(get_origin_from_config ${MOD_CONF}/moonraker.conf "$a")
         if [ "$url" == "" ]; then
-            url=$(get_origin_from_config ${MOD_CONF}/mod_data/user.moonraker.conf "$1")
+            url=$(get_origin_from_config ${MOD_CONF}/mod_data/user.moonraker.conf "$a")
         fi
         if [ "$url" != "" ]; then
             echo "[core]
@@ -157,6 +155,11 @@ grep '/root/printer_data/config/mod_data/plugins/' /opt/config/moonraker.conf /o
         fi
     fi
 done
+
+/opt/config/mod/.shell/root/S65moonraker start
+/opt/config/mod/.shell/root/S70httpd start
+
+date -s "2025-10-21 00:00:00"
 
 # Пробуем синхронизировать время
 ntpd -dd -n -q -p pool.ntp.org || \
