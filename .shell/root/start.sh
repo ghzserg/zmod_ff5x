@@ -143,6 +143,7 @@ grep '/root/printer_data/config/mod_data/plugins/' /opt/config/moonraker.conf /o
             url=$(get_origin_from_config ${MOD_CONF}/mod_data/user.moonraker.conf "$a")
         fi
         if [ "$url" != "" ]; then
+            mkdir -p "${MOD_CONF}/mod_data/plugins/$a/.git/"
             echo "[core]
         repositoryformatversion = 0
         filemode = true
