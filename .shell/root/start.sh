@@ -171,12 +171,13 @@ grep '/root/printer_data/config/mod_data/plugins/' /opt/config/moonraker.conf /o
             branch=$(get_branch_from_config ${MOD_CONF}/mod_data/user.moonraker.conf "$a")
         fi
         if [ "$url" != "" ] && [ "$branch" != "" ]; then
-            branch=$(get_branch_from_config ${MOD_CONF}/moonraker.conf "$a")
             mkdir -p "${MOD_CONF}/mod_data/plugins/$a/"
             cd "${MOD_CONF}/mod_data/plugins/$a/"
             git init
             git remote add origin "$url"
             git config --local "branch.$branch.remote" origin
+            git config --local "branch.$branch.merge" "refs/heads/$branch"
+            git branch "--set-upstream-to=origin/$branch" "$branch"
         fi
     fi
 done
