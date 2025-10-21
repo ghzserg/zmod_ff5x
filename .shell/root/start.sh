@@ -27,6 +27,30 @@ get_origin_from_config() {
   ' "$config_file"
 }
 
+get_branch_from_config() {
+  local config_file="$1"
+  local section_name="$2"
+  local section="[update_manager $section_name]"
+
+  awk -v section="$section" '
+    BEGIN { in_section = 0 }
+    /^\[.*\]$/ {
+      if ($0 == section) {
+        in_section = 1
+      } else if (in_section) {
+        exit
+      }
+      next
+    }
+    in_section && (/^primary_branch[[:space:]]*:/ || /^branch[[:space:]]*:/) {
+      sub(/^[^:]*:[[:space:]]*/, "")
+      gsub(/[[:space:]]+$/, "")
+      print
+      exit
+    }
+  ' "$config_file"
+}
+
 prepare_chroot()
 {
     echo ZMOD >/ZMOD
@@ -142,17 +166,17 @@ grep '/root/printer_data/config/mod_data/plugins/' /opt/config/moonraker.conf /o
         if [ "$url" == "" ]; then
             url=$(get_origin_from_config ${MOD_CONF}/mod_data/user.moonraker.conf "$a")
         fi
-        if [ "$url" != "" ]; then
-            mkdir -p "${MOD_CONF}/mod_data/plugins/$a/.git/"
-            echo "[core]
-        repositoryformatversion = 0
-        filemode = true
-        bare = false
-        logallrefupdates = true
-[remote \"origin\"]
-        url = $url
-        fetch = +refs/heads/*:refs/remotes/origin/*
-" > "${MOD_CONF}/mod_data/plugins/$a/.git/config"
+        branch=$(get_branch_from_config ${MOD_CONF}/moonraker.conf "$a")
+        if [ "$branch" == "" ]; then
+            branch=$(get_branch_from_config ${MOD_CONF}/mod_data/user.moonraker.conf "$a")
+        fi
+        if [ "$url" != "" ] && [ "$branch" != "" ]; then
+            branch=$(get_branch_from_config ${MOD_CONF}/moonraker.conf "$a")
+            mkdir -p "${MOD_CONF}/mod_data/plugins/$a/"
+            cd "${MOD_CONF}/mod_data/plugins/$a/"
+            git init
+            git remote add origin "$url"
+            git config --local "branch.$branch.remote" origin
         fi
     fi
 done
