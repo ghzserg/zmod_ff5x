@@ -171,26 +171,16 @@ grep '/root/printer_data/config/mod_data/plugins/' /opt/config/moonraker.conf /o
             branch=$(get_branch_from_config ${MOD_CONF}/mod_data/user.moonraker.conf "$a")
         fi
         if [ "$url" != "" ] && [ "$branch" != "" ]; then
-            echo "  Initializing repo for $a with origin: $url and branch: $branch"
+            echo "Инициализирую репозиторий"
             mkdir -p "${MOD_CONF}/mod_data/plugins/$a/"
-            cd "${MOD_CONF}/mod_data/plugins/$a/"
-
-            git init
-            git remote add origin "$url"
-            git config --local "branch.$branch.remote" origin
-            git config --local "branch.$branch.merge" "refs/heads/$branch"
-
-            # Создаем файл ссылки для ветки
-            echo "0000000000000000000000000000000000000000" > ".git/refs/heads/$branch"
-            # Устанавливаем HEAD на созданную ветку
-            echo "ref: refs/heads/$branch" > .git/HEAD
-
-            echo "  Repo for $a initialized locally."
+            sqlite3 /opt/config/mod_data/database/moonraker-sql.db \
+            "DELETE FROM namespace_store WHERE namespace = 'update_manager' AND key = '$a'; \
+             INSERT INTO namespace_store (namespace, key, value) VALUES ('update_manager', '$a', '{\"last_config_hash\":\"?\",\"last_refresh_time\":0.0,\"is_valid\":false,\"pip_version_info\":null,\"repo_valid\":false,\"git_owner\":\"none\",\"git_repo_name\":\"$a\",\"git_remote\":\"origin\",\"git_branch\":\"$branch\",\"current_version\":\"0.0.0.0\",\"upstream_version\":\"0.0.0.0\",\"current_commit\":\"?\",\"upstream_commit\":\"?\",\"rollback_commit\":\"?\",\"rollback_branch\":\"$branch\",\"rollback_version\":\"0.0.0.0\",\"upstream_url\":\"$url\",\"recovery_url\":\"$url\",\"branches\":[\"$branch\"],\"head_detached\":false,\"git_messages\":[],\"commits_behind\":[],\"cbh_count\":0,\"diverged\":false,\"corrupt\":true,\"modified_files\":[],\"untracked_files\":[],\"pinned_commit_valid\":true}');"
         else
-            echo "  Warning: Could not determine origin URL or branch for $a. Skipping."
+            echo "Не найден url=$url или branch=$branh для $a. Пропускаю."
         fi
     else
-        echo "  Repo for $a already exists, skipping initialization."
+        echo "Репозиторий $a уже  существует, пропускаю."
     fi
 done
 
