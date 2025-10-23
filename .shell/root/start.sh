@@ -184,6 +184,8 @@ grep '/root/printer_data/config/mod_data/plugins/' /opt/config/moonraker.conf /o
     fi
 done
 
+grep -q mainsail-crew /root/mainsail/release_info.json && echo '{"project_name":"mainsail","project_owner":"ghzserg","version":"v1.0.0"}' >/root/mainsail/release_info.json
+
 /opt/config/mod/.shell/root/S65moonraker start
 /opt/config/mod/.shell/root/S70httpd start
 
