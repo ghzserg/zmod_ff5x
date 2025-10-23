@@ -184,6 +184,11 @@ grep '/root/printer_data/config/mod_data/plugins/' /opt/config/moonraker.conf /o
     fi
 done
 
+if grep -q mainsail-crew /root/mainsail/release_info.json; then
+    echo '{"project_name":"mainsail","project_owner":"ghzserg","version":"v1.0.0"}' >/root/mainsail/release_info.json
+    sqlite3 /opt/config/mod_data/database/moonraker-sql.db "DELETE FROM namespace_store WHERE namespace = 'update_manager' AND key = 'mainsail';"
+fi
+
 /opt/config/mod/.shell/root/S65moonraker start
 /opt/config/mod/.shell/root/S70httpd start
 

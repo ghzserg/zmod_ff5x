@@ -55,6 +55,7 @@ remove_base()
 
     rm -f ${LOG_FILES}/zmod
     rm -rf ${MOD_CONF}/mod/
+    rm -rf ${MOD_CONF}/.theme/
     sync
     reboot
     exit

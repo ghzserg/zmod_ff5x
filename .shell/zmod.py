@@ -34,9 +34,13 @@ class zmod:
             with open(full_path, 'r') as f:
                 gcmd.respond_raw(f"ZEXCLUDE: {full_path}")
 
+                max_lines = 3000
                 line_num = 0
                 for line in f:
                     line_num += 1
+                    if line_num > max_lines:
+                        break
+
                     line = line.strip()
 
                     if not line or line.startswith('#'):
