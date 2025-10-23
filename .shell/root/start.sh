@@ -184,9 +184,6 @@ grep '/root/printer_data/config/mod_data/plugins/' /opt/config/moonraker.conf /o
     fi
 done
 
-# Меняем ссылку на форк mainsail
-sqlite3 /opt/config/mod_data/database/moonraker-sql.db "UPDATE namespace_store SET value = replace(value, 'mainsail-crew/mainsail', 'ghzserg/mainsail') WHERE namespace = 'update_manager' AND key = 'mainsail';"
-
 /opt/config/mod/.shell/root/S65moonraker start
 /opt/config/mod/.shell/root/S70httpd start
 
