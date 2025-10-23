@@ -22,7 +22,6 @@ source /opt/config/mod_data/web.conf
 WEBROOT=/root/$CLIENT
 
 sed "s/    \"defaultLocale\": \"ru\",/    \"defaultLocale\": \"${ZLANG}\",/" /opt/config/mod/.shell/root/config.json >/root/mainsail/config.json
-sed -i 's/"name":"Mainsail"/"name":"Mainsail_color"/' /root/mainsail/manifest.webmanifest
 
 start() {
     # start busybox httpd
