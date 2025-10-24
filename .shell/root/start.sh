@@ -159,7 +159,8 @@ if [ ${FF5X} -eq 0 ]; then
 fi
 
 # Создаем каталоги под плагины
-grep '/root/printer_data/config/mod_data/plugins/' /opt/config/moonraker.conf /opt/config/mod_data/user.moonraker.conf | sed 's|.*/||' | while read a; do
+grep '/root/printer_data/config/mod_data/plugins/' /opt/config/moonraker.conf /opt/config/mod_data/user.moonraker.conf | sed 's|/$||' | sed 's|.*/||' | \
+while read a; do
     echo "Plugin $a"
     if ! [ -f "${MOD_CONF}/mod_data/plugins/$a/.git/config" ]; then
         url=$(get_origin_from_config ${MOD_CONF}/moonraker.conf "$a")
