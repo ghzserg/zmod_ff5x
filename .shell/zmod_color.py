@@ -615,7 +615,7 @@ class zmod_color:
             for slot in result:
                 btn_text = f"{slot['ID']}: {slot['Material']}/{slot['Color']}"
                 if silent == 0:
-                    gcmd.respond_raw(f"// action:prompt_button {btn_text}|RUN_ZCOLOR SLOT={slot['ID']} HEX={slot['HEX']} TYPE={slot['Material']}|primary")
+                    gcmd.respond_raw(f"// action:prompt_button {btn_text}|RUN_ZCOLOR SLOT={slot['ID']} HEX={slot['HEX']} TYPE={slot['Material']}|primary|{slot['HEX']}")
                 else:
                     gcmd.respond_raw(f"// {btn_text}")
 
