@@ -613,7 +613,7 @@ class zmod_color:
                 gcmd.respond_raw(f"// IFS: {self.ifs}")
 
             for slot in result:
-                btn_text = f"{slot['ID']}: {slot['Material']}/{slot['Color']}"
+                btn_text = f"{slot['ID']}: {slot['Material']}"
                 if silent == 0:
                     gcmd.respond_raw(f"// action:prompt_button {btn_text}|RUN_ZCOLOR SLOT={slot['ID']} HEX={slot['HEX']} TYPE={slot['Material']}|primary|{slot['HEX']}")
                 else:
@@ -682,7 +682,7 @@ class zmod_color:
                         btn_text = (
                             f"T{tool_idx} -> "
                             f"{slot_info['ID']}: "
-                            f"{slot_info['Material']}/{slot_info['Color']}"
+                            f"{slot_info['Material']}"
                         )
                         params = (
                             f"LEVELING={leveling} FILENAME=\"{fname}\" "
@@ -919,7 +919,7 @@ class zmod_color:
             for slot in result:
                 btn_text = (
                     f"{slot['ID']}: "
-                    f"{slot['Material']}/{slot['Color']}"
+                    f"{slot['Material']}"
                 )
                 gcmd.respond_raw(
                     f"// action:prompt_button {btn_text}|"
@@ -1033,7 +1033,7 @@ class zmod_color:
             for hex_code, color_data in self.COLOR_MAPPING.items():
                 color_name = color_data[self.language]
                 gcmd.respond_raw(
-                    f"// action:prompt_button {color_name}|"
+                    f"// action:prompt_button _ |"
                     f"CHANGE_ZCOLOR SLOT={zslot} TYPE={ztype} HEX={hex_code}|primary|{hex_code}"
                 )
             gcmd.respond_raw("// action:prompt_button_group_end")
