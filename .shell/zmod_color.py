@@ -691,7 +691,7 @@ class zmod_color:
                         )
                         gcmd.respond_raw(
                             f"// action:prompt_button {btn_text}|"
-                            f"CHANGE_T_ZCOLOR T={tool_idx} {params}|primary"
+                            f"CHANGE_T_ZCOLOR T={tool_idx} {params}|primary|{slot_info['HEX']}"
                         )
                 gcmd.respond_raw("// action:prompt_button_group_end")
 
@@ -923,7 +923,7 @@ class zmod_color:
                 )
                 gcmd.respond_raw(
                     f"// action:prompt_button {btn_text}|"
-                    f"SET_ZCOLOR T{ztool}={slot['ID']} {params}|primary"
+                    f"SET_ZCOLOR T{ztool}={slot['ID']} {params}|primary|{slot['HEX']}"
                 )
 
             gcmd.respond_raw("// action:prompt_button_group_end")
@@ -955,7 +955,7 @@ class zmod_color:
         gcmd.respond_raw("// action:prompt_button_group_start")
         gcmd.respond_raw(
             f"// action:prompt_button {self._t('change_color')}|"
-            f"CHANGE_ZCOLOR SLOT={zslot} TYPE={ztype}|primary"
+            f"CHANGE_ZCOLOR SLOT={zslot} TYPE={ztype}|primary|{zhex}"
         )
         gcmd.respond_raw(
             f"// action:prompt_button {self._t('change_type')}|"
@@ -1034,7 +1034,7 @@ class zmod_color:
                 color_name = color_data[self.language]
                 gcmd.respond_raw(
                     f"// action:prompt_button {color_name}|"
-                    f"CHANGE_ZCOLOR SLOT={zslot} TYPE={ztype} HEX={hex_code}|primary"
+                    f"CHANGE_ZCOLOR SLOT={zslot} TYPE={ztype} HEX={hex_code}|primary|{hex_code}"
                 )
             gcmd.respond_raw("// action:prompt_button_group_end")
             gcmd.respond_raw(f"// action:prompt_footer_button {self._t('cancel')}|RESPOND TYPE=command MSG=action:prompt_end")
@@ -1048,7 +1048,7 @@ class zmod_color:
             for material in self.valid_types[:-1]:  # Исключаем '?'
                 gcmd.respond_raw(
                     f"// action:prompt_button {material}|"
-                    f"CHANGE_ZCOLOR SLOT={zslot} TYPE={material} HEX={zhex}|primary"
+                    f"CHANGE_ZCOLOR SLOT={zslot} TYPE={material} HEX={zhex}|primary|{zhex}"
                 )
             gcmd.respond_raw("// action:prompt_button_group_end")
             gcmd.respond_raw(f"// action:prompt_footer_button {self._t('cancel')}|RESPOND TYPE=command MSG=action:prompt_end")
