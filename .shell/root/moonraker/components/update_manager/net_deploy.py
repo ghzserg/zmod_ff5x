@@ -162,7 +162,7 @@ class NetDeploy(AppDeploy):
         # Only used by "web" app types to fallback on the previous version info
         fallback_defs = {
             "mainsail": "ghzserg",
-            "fluidd": "fluidd-core"
+            "fluidd": "ghzserg"
         }
         for fname in ("manifest.json", "manifest.webmanifest"):
             manifest = self.path.joinpath(fname)
