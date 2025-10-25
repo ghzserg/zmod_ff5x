@@ -1073,7 +1073,7 @@ class zmod_color:
                     f"CHANGE_ZCOLOR SLOT={zslot} TYPE={ztype} HEX={hex_code}|primary|{hex_code}"
                 )
                 counter += 1
-                if counter % 11 == 0:
+                if counter % 4 == 0:
                     gcmd.respond_raw("// action:prompt_button_group_end")
                     gcmd.respond_raw("// action:prompt_button_group_start")
             gcmd.respond_raw("// action:prompt_button_group_end")
