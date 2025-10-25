@@ -11,6 +11,7 @@ else if [ "$1" == 'it' ]; then ZLANG="it"
 else if [ "$1" == 'zh' ]; then ZLANG="zh"
 else if [ "$1" == 'ja' ]; then ZLANG="ja"
 else if [ "$1" == 'ko' ]; then ZLANG="ko"
+else if [ "$1" == 'pt' ]; then ZLANG="pt"
 else ZLANG="en"
 fi; fi; fi; fi; fi; fi; fi; fi; fi
 
