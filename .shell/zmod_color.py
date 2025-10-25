@@ -646,9 +646,7 @@ class zmod_color:
                 gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_choose')}")
                 gcmd.respond_raw("// action:prompt_button_group_start")
             else:
-                gcmd.respond_raw(f"// {prompt_text}")
-                gcmd.respond_raw(f"// IFS: {self.ifs}")
-
+                gcmd.respond_raw(f"// {prompt_text} | IFS: {self.ifs}")
             for slot in result:
                 btn_text = f"{slot['ID']}: {slot['Material']}"
                 if silent == 0:
@@ -1067,12 +1065,17 @@ class zmod_color:
             gcmd.respond_raw(f"// action:prompt_begin {self._t('select_color')}")
             gcmd.respond_raw(f"// action:prompt_text {self._t('spool_info', zslot, ztype, '')}")
             gcmd.respond_raw("// action:prompt_button_group_start")
+            counter = 0
             for hex_code, color_data in self.COLOR_MAPPING.items():
                 color_name = color_data[self.language]
                 gcmd.respond_raw(
                     f"// action:prompt_button _ |"
                     f"CHANGE_ZCOLOR SLOT={zslot} TYPE={ztype} HEX={hex_code}|primary|{hex_code}"
                 )
+                counter += 1
+                if counter % 11 == 0:
+                    gcmd.respond_raw("// action:prompt_button_group_end")
+                    gcmd.respond_raw("// action:prompt_button_group_start")
             gcmd.respond_raw("// action:prompt_button_group_end")
             gcmd.respond_raw(f"// action:prompt_footer_button {self._t('cancel')}|RESPOND TYPE=command MSG=action:prompt_end")
             gcmd.respond_raw("// action:prompt_show")
