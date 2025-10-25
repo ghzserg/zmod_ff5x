@@ -1066,14 +1066,15 @@ class zmod_color:
             gcmd.respond_raw(f"// action:prompt_text {self._t('spool_info', zslot, ztype, '')}")
             gcmd.respond_raw("// action:prompt_button_group_start")
             counter = 0
+            total_colors = len(self.COLOR_MAPPING)
             for hex_code, color_data in self.COLOR_MAPPING.items():
-                color_name = color_data[self.language]
+                #color_name = color_data[self.language]
                 gcmd.respond_raw(
                     f"// action:prompt_button _ |"
                     f"CHANGE_ZCOLOR SLOT={zslot} TYPE={ztype} HEX={hex_code}|primary|{hex_code}"
                 )
                 counter += 1
-                if counter % 8 == 0:
+                if counter % 8 == 0 and counter < total_colors:
                     gcmd.respond_raw("// action:prompt_button_group_end")
                     gcmd.respond_raw("// action:prompt_button_group_start")
             gcmd.respond_raw("// action:prompt_button_group_end")
@@ -1086,13 +1087,14 @@ class zmod_color:
             gcmd.respond_raw(f"// action:prompt_text {self._t('spool_info', zslot, '', color_name)}")
             gcmd.respond_raw("// action:prompt_button_group_start")
             counter = 0
+            total_materials = len(self.valid_types) - 1  # Исключаем '?'
             for material in self.valid_types[:-1]:  # Исключаем '?'
                 gcmd.respond_raw(
                     f"// action:prompt_button {material}|"
                     f"CHANGE_ZCOLOR SLOT={zslot} TYPE={material} HEX={zhex}|primary|{zhex}"
                 )
                 counter += 1
-                if counter % 4 == 0:
+                if counter % 4 == 0 and counter < total_materials:
                     gcmd.respond_raw("// action:prompt_button_group_end")
                     gcmd.respond_raw("// action:prompt_button_group_start")
             gcmd.respond_raw("// action:prompt_button_group_end")
