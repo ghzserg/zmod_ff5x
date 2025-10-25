@@ -32,8 +32,8 @@ if [ "$M190" == "" ] || [ "$M109" == "" ]; then
 fi
 
 if [ "$2" == "TEST" ]; then
-    BED =      $(echo ${M190} | sed 's|M190 S||' | cut -d ' ' -f1 | cut -d ';' -f1)
-    EXTRUDER = $(echo ${M109} | sed 's|M109 S||' | cut -d ' ' -f1 | cut -d ';' -f1)
+    BED=$(echo ${M190} | sed 's|M190 S||' | cut -d ' ' -f1 | cut -d ';' -f1)
+    EXTRUDER=$(echo ${M109} | sed 's|M109 S||' | cut -d ' ' -f1 | cut -d ';' -f1)
     echo "_START_PRECLEAR BED=${BED} EXTRUDER=${EXTRUDER}" >/tmp/printer
 fi
 exit 0
