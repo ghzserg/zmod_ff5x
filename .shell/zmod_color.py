@@ -1085,11 +1085,16 @@ class zmod_color:
             gcmd.respond_raw(f"// action:prompt_begin {self._t('select_type')}")
             gcmd.respond_raw(f"// action:prompt_text {self._t('spool_info', zslot, '', color_name)}")
             gcmd.respond_raw("// action:prompt_button_group_start")
+            counter = 0
             for material in self.valid_types[:-1]:  # Исключаем '?'
                 gcmd.respond_raw(
                     f"// action:prompt_button {material}|"
                     f"CHANGE_ZCOLOR SLOT={zslot} TYPE={material} HEX={zhex}|primary|{zhex}"
                 )
+                counter += 1
+                if counter % 4 == 0:
+                    gcmd.respond_raw("// action:prompt_button_group_end")
+                    gcmd.respond_raw("// action:prompt_button_group_start")
             gcmd.respond_raw("// action:prompt_button_group_end")
             gcmd.respond_raw(f"// action:prompt_footer_button {self._t('cancel')}|RESPOND TYPE=command MSG=action:prompt_end")
             gcmd.respond_raw("// action:prompt_show")
