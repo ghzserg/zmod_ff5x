@@ -103,7 +103,8 @@ class GitDeploy(AppDeploy):
         # Refresh local repo state
         await self._update_repo_state(need_fetch=False)
         await self.restart_service()
-        subprocess.run(["/bin/sudo", "systemctl", "reboot"])
+        if self.name=="zmod":
+            subprocess.run(["/bin/sudo", "systemctl", "reboot"])
         self.notify_status("Update Finished...", is_complete=True)
         return True
 
