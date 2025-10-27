@@ -34,9 +34,11 @@ start() {
     if [ "${ZLANG}" != 'ru' ]; then
         sed -i 's/Экструдер/Extruder/' /opt/config/mod_data/guppyconfig.json
         sed -i 's/Стол/Bed/' /opt/config/mod_data/guppyconfig.json
+        sed -i 's/Голова/Head/' /opt/config/mod_data/guppyconfig.json
         sed -i 's/Вес/Weight/' /opt/config/mod_data/guppyconfig.json
     else
         sed -i 's/Extruder/Экструдер/' /opt/config/mod_data/guppyconfig.json
+        sed -i 's/Head/Голова/' /opt/config/mod_data/guppyconfig.json
         sed -i 's/Bed/Стол/' /opt/config/mod_data/guppyconfig.json
         sed -i 's/Weight/Вес/' /opt/config/mod_data/guppyconfig.json
     fi
