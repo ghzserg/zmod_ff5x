@@ -80,7 +80,7 @@ $1 ~ /G[123]/ {
     }
 }
 END {
-    printf "EXCLUDE_OBJECT_DEFINE NAME=border1 CENTER=%.4f,%.4f POLYGON=[[%.4f,%.4f],[%.4f,%.4f],[%.4f,%.4f],[%.4f,%.4f]]\n",
+    printf "EXCLUDE_OBJECT_DEFINE NAME=border1 CENTER=%.4f,%.4f POLYGON=[[%.4f,%.4f],[%.4f,%.4f],[%.4f,%.4f],[%.4f,%.4f]]\nRESPOND TYPE=echo MSG=\"Exclude 2\"\n",
         (minx + maxx)/2,    # Центр по X
         (miny + maxy)/2,    # Центр по Y
         minx, miny,         # Левый нижний угол
@@ -88,5 +88,4 @@ END {
         maxx, maxy,         # Правый верхний угол
         maxx, miny          # Правый нижний угол
 }' > /tmp/printer
-echo 'RESPOND TYPE=echo MSG="Exclude 2"' >/tmp/printer
 exit 0
