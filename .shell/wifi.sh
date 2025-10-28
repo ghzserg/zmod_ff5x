@@ -25,15 +25,16 @@ wifi_fix()
         return 0
     fi
 
-    if grep -q display_off.cfg /opt/config/printer.cfg; then
-        sed -i 's/"wifiStationStatus" : true/"wifiStationStatus" : false/' "$FFCONFIG"
-    else
-        sed -i 's/"wifiStationStatus" : false/"wifiStationStatus" : true/' "$FFCONFIG"
-    fi
 
     if [ ! -f "$FFCONFIG" ]; then
         echo "Config file not found: $FFCONFIG"
         return 0
+    fi
+
+    if grep -q display_off.cfg /opt/config/printer.cfg; then
+        grep -q '"wifiStationStatus" *: *true' "$FFCONFIG" && sed -i 's/"wifiStationStatus" : true/"wifiStationStatus" : false/' "$FFCONFIG"
+    else
+        grep -q '"wifiStationStatus" *: *false' "$FFCONFIG" && sed -i 's/"wifiStationStatus" : false/"wifiStationStatus" : true/' "$FFCONFIG"
     fi
 
     if grep -q '"wifiStationStatus" *: *true' "$FFCONFIG"; then
