@@ -4,13 +4,16 @@ source /opt/config/mod/.shell/0.sh
 
 if [ $# -ne 1 ]; then echo "Используйте $0 FILE"; exit 1; fi
 
-if ! [ -f "${DATA_GCODES}/$1" ]; then
+fname="${DATA_GCODES}/$1"
+[ -f "$1" ] && fname="$1"
+
+if ! [ -f "${fname}" ]; then
     [ ${ZLANG} != 'ru' ] && echo "RESPOND TYPE=error MSG=\"File $1 not found.\"" >/tmp/printer || echo "RESPOND TYPE=error MSG=\"Файл $1 не найден.\"" >/tmp/printer 
     echo "CANCEL_PRINT" >/tmp/printer
     exit 1
 fi
 
-if ! grep -q -e 'EXCLUDE_OBJECT_DEFINE' "${DATA_GCODES}/$1"; then
+if ! grep -q -e 'EXCLUDE_OBJECT_DEFINE' "${fname}"; then
     [ ${ZLANG} != 'ru' ] && \
         TXT="No objects detected! Check gcode and make sure it contains EXCLUDE_OBJECT_DEFINE. Using regular mesh. In Orca: 'Process Profile' -> 'Other' -> 'Exclude objects'." || \
         TXT="Объекты не обнаружены! Проверьте gcode и убедитесь, что в нем есть EXCLUDE_OBJECT_DEFINE. Используется обычная сетка. В Orca: 'Профиль процесса' -> 'Прочее' -> 'Исключить модели'."
@@ -18,7 +21,7 @@ if ! grep -q -e 'EXCLUDE_OBJECT_DEFINE' "${DATA_GCODES}/$1"; then
 fi
 
 # Igor Polunovskiy code
-#grep ^EXCLUDE_OBJECT_DEFINE "${DATA_GCODES}/$1" | \
+#grep ^EXCLUDE_OBJECT_DEFINE "${fname}" | \
 #awk -F= '{print $4}' | \
 #sed 's/\],/\n/g; s/,/=/g; s/\[//g; s/\]//g' | \
 #awk -F= '
@@ -54,7 +57,7 @@ sed -n '
 
     # Выводим строки между FIRST и SECOND_LAYER_CHANGE
     /;FIRST_LAYER_CHANGE/,/;SECOND_LAYER_CHANGE/p
-' "${DATA_GCODES}/$1" | \
+' "${fname}" | \
 awk '
 BEGIN {
     maxy = -1000
