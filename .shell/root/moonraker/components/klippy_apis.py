@@ -162,17 +162,7 @@ class KlippyAPI(APITransport):
         if found:
             script = f'_ZSDCARD_PRINT_FILE FILENAME="{filename}"'
         else:
-            found = False
-            with open('/opt/config/mod_data/variables.cfg') as file:
-              for line in file:
-                if re.search('print_leveling = 1', line):
-                  found = True
-                  break
-            # Если работаем с экрана и стоит параметр leveling при каждой печати
-            if found:
-                script = f'LEVELING_PRINT_FILE FILENAME="{filename}"'
-            else:
-                script = f'NOLEVELING_PRINT_FILE FILENAME="{filename}"'
+            script = f'_PRINT_FILE FILENAME="{filename}"'
         # END FF5M Fix Print Bug
         if wait_klippy_started:
             await self.klippy.wait_started()
