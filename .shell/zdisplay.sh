@@ -10,6 +10,7 @@ wifi_off()
         killall firmwareExe
         grep -q '"wifiStationStatus" : true' "$FFCONFIG" && sed -i 's/"wifiStationStatus" : true/"wifiStationStatus" : false/' "$FFCONFIG"
     fi
+    return 0
 }
 
 wifi_on()
@@ -18,6 +19,7 @@ wifi_on()
         killall firmwareExe
         grep -q '"wifiStationStatus" : false' "$FFCONFIG" && sed -i 's/"wifiStationStatus" : false/"wifiStationStatus" : true/' "$FFCONFIG"
     fi
+    return 0
 }
 
 if [ $1 = "test" ] && grep -q display_off.cfg /opt/config/printer.cfg; then
