@@ -879,11 +879,11 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "visible": true
         },
         {
-            "alias": "RESUME_MOTION_SENSOR",
+            "alias": "IFS_UNLOCK",
             "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
             "color": "#008800",
             "disabledWhilePrinting": false,
-            "name": "resume_motion_sensor",
+            "name": "ifs_unlock",
             "order": 16,
             "visible": true
         },
