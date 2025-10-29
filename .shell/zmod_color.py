@@ -866,6 +866,7 @@ class zmod_color:
     def cmd_CHANGE_FILAMENT(self, gcmd):
         channel = gcmd.get_int('CHANNEL', None)
         restore = gcmd.get_int('RESTORE', 1)
+
         if channel is None:
             raise gcmd.error("Error: CHANNEL parameter is required")
             return
