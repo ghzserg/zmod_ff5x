@@ -520,7 +520,7 @@ class zmod_color:
             config["FFMInfo"][f"ffmType{zslot}"] = ztype
 
             with open(FFCONFIG, 'w') as file:
-                return 200, json.dump(config, file, indent=2)
+                return 200, json.dump(config, file, indent='\t', separators=(',', ': '))
 
         return 500, "Error"
 
@@ -612,7 +612,7 @@ class zmod_color:
                     self.zmod_ifs.set_cur_port(zslot)
 
                 with open(FFCONFIG, 'w') as file:
-                    json.dump(config, file, indent=2)
+                    json.dump(config, file, indent='\t', separators=(',', ': '))
                     gcmd.respond_raw(f"Extruder: {zslot}")
 
     def cmd_GET_ZCOLOR(self, gcmd):
