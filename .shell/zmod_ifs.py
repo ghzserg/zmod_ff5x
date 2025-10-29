@@ -16,7 +16,7 @@ BYTESIZE = 8
 TIMEOUT = 0.2
 HOST_REPORT_TIME = 0.2
 RETRY_COUNT = 3
-FFCONFIG='/usr/data/config/Adventurer5M.json'
+FFCONFIG='/usr/prog/config/Adventurer5M.json'
 TYPECONFIG='/usr/data/config/mod_data/filament.json'
 FILE_CONFIG='/usr/data/config/mod_data/file.json'
 
