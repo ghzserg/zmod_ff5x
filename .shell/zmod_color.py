@@ -520,8 +520,8 @@ class zmod_color:
             config["FFMInfo"][f"ffmType{zslot}"] = ztype
 
             with open(FFCONFIG, 'w', encoding='utf-8') as file:
-                json_string = json.dumps(config, indent='\t', separators=(',', ':'))
-                formatted_json_string = re.sub(r'(":)', r' :', json_string)
+                json_string = json.dumps(config, indent='\t')
+                formatted_json_string = re.sub(r'(":)', r'" : ', json_string)
                 file.write(formatted_json_string)
                 return 200, formatted_json_string
 
@@ -615,8 +615,8 @@ class zmod_color:
                     self.zmod_ifs.set_cur_port(zslot)
 
                 with open(FFCONFIG, 'w', encoding='utf-8') as file:
-                    json_string = json.dumps(config, indent='\t', separators=(',', ':'))
-                    formatted_json_string = re.sub(r'(":)', r' :', json_string)
+                    json_string = json.dumps(config, indent='\t')
+                    formatted_json_string = re.sub(r'(":)', r'" : ', json_string)
                     file.write(formatted_json_string)
                     gcmd.respond_raw(f"Extruder: {zslot}")
 
