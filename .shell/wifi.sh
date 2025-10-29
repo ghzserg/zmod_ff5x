@@ -30,16 +30,6 @@ wifi_fix()
         return 0
     fi
 
-    PRINTER="/opt/config/printer.cfg"
-    [ ${FF5X} -eq 1 ] && PRINTER="/usr/data/config/printer.cfg"
-
-    if grep -q display_off.cfg $PRINTER; then
-        echo "Display off"
-        grep -q '"wifiStationStatus" : true' "$FFCONFIG" && sed -i 's/"wifiStationStatus" : true/"wifiStationStatus" : false/' "$FFCONFIG"
-    else
-        grep -q '"wifiStationStatus" : false' "$FFCONFIG" && sed -i 's/"wifiStationStatus" : false/"wifiStationStatus" : true/' "$FFCONFIG"
-    fi
-
     if grep -q '"wifiStationStatus" : true' "$FFCONFIG"; then
         echo "WiFi station enabled on original screen — skipping network restart."
         return 0
