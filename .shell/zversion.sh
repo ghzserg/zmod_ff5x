@@ -29,7 +29,7 @@ else
 fi
 
 if ! echo "$plugins" | grep -q "^recommend$\|,recommend$\|^recommend,\|,recommend,"; then
-    [ ${ZLANG} != 'ru' ] && echo "Have you forgotten to enable the recommended parameters? ENABLE_PLUGIN name=recommend" || echo "А вы не забыли включить рекломендуемые параметры? ENABLE_PLUGIN name=recommend"
+    [ ${ZLANG} != 'ru' ] && echo "Have you forgotten to enable the recommended parameters? ENABLE_PLUGIN name=recommend" || echo "А вы не забыли включить рекомендуемые параметры? ENABLE_PLUGIN name=recommend"
 else
     [ ${ZLANG} != 'ru' ] && echo "Plugins: $plugins" || echo "Плагины: $plugins"
 fi
