@@ -3,7 +3,7 @@
 source /opt/config/mod/.shell/0.sh
 
 VER_FF=$(cat /opt/config/mod/version.txt 2>/dev/null| cut  -d "." -f 1,2)
-VER_FF_FULL=$(cat /opt/config/mod/version.txt 2>/dev/null| cut  -d "." -f 1,2,3)
+VER_FF_FULL=$(cat /opt/config/mod/version_long.txt 2>/dev/null| cut  -d "." -f 1,2,3)
 
 VER_MOD="0.0"
 if [ -f "/root/printer_data/version.txt" ]; then
