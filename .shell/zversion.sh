@@ -21,6 +21,19 @@ fi
 
 [ ${ZLANG} != 'ru' ] && echo "Installed from USB: ${VER_MOD_FULL}. Update from Fluidd/Mainsail: ${VER_FF_FULL}" || echo "Установлено с флешки: ${VER_MOD_FULL}. Обновление с Fluidd/Mainsaill: ${VER_FF_FULL}"
 
+content=$(cat /opt/config/mod_data/plugins.cfg 2>/dev/null)
+if [ -z "$content" ] || ! echo "$content" | grep -q "include plugins"; then
+    plugins=""
+else
+    plugins=$(echo "$content" | grep "include plugins" | sed 's|\[include plugins/||g' | cut -d "/" -f1 | tr '\n' ',' | sed 's|,$||')
+fi
+
+if ! echo "$plugins" | grep -q "^recommend$\|,recommend$\|^recommend,\|,recommend,"; then
+    [ ${ZLANG} != 'ru' ] && echo "Have you forgotten to enable the recommended parameters? ENABLE_PLUGIN name=recommend" || echo "А вы не забыли включить рекломендуемые параметры? ENABLE_PLUGIN name=recommend"
+else
+    [ ${ZLANG} != 'ru' ] && echo "Plugins: $plugins" || echo "Плагины: $plugins"
+fi
+
 if [ "${VER_FF}" != "${VER_MOD}" ]; then
     if [ ${ZLANG} != 'ru' ]; then
         echo "RESPOND TYPE=error MSG=\"Update ZMOD from USB, latest version ${VER_FF_FULL}, current version ${VER_MOD_FULL}\"" >/tmp/printer
