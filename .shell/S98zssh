@@ -22,8 +22,7 @@ if ! [ -f /opt/config/mod_data/ssh.local.key ] || ! [ -f /opt/config/mod_data/ss
     cat /opt/config/mod_data/ssh.local.txt >>/root/.ssh/authorized_keys
 fi
 
-
-[ ${ZLANG} != 'ru' ] && echo "Zmod version: $(cat /opt/config/mod/version.txt) $(cat /opt/config/mod_data/date.txt)" || echo "Версия zmod: $(cat /opt/config/mod/version.txt) $(cat /opt/config/mod_data/date.txt)"
+/opt/config/mod/.shell/zversion.sh
 
 REMOTE_RUN="NONE"
 source /opt/config/mod_data/ssh.conf
