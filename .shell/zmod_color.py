@@ -378,7 +378,44 @@ TRANSLATIONS = {
         'unload_error': "Erro ao descarregar: {}",
         'unload_success': "Descarga iniciada",
         'unload': "Descarregar"
-    }
+    },
+    "cz": {
+        "cancel": "Zrušit",
+        "change_color": "Změnit barvu",
+        "change_spool": "Měním na cívku {}: {} / {}",
+        "change_type": "Změnit typ",
+        "config_error": "!! Chyba při změně barvy / typu\n{}",
+        "config_success": "Nastavení uložena",
+        "error_color_or_type": "Zadejte HEX nebo TYP",
+        "error_leveling": "Neplatný LEVELING: {}. Povoleno: 0 nebo 1",
+        "error_napr": "Nepovolený směr (0–1)",
+        "error_no_filename": "Není zadán název souboru (FILENAME).",
+        "error_slot": "Neplatný SLOT. Povolené: 1–4",
+        "error_tool": "Neplatný T{}: {}. Povoleno: 1–4",
+        "error_type": "Neplatný typ materiálu: {}. Povoleno: {}",
+        "file_tool": "Soubor",
+        "load_error": "!! Chyba při zavádění / vyndávání\n{}",
+        "load_success": "Zavádění spuštěno",
+        "load": "Zavést",
+        "no_response": "!! Tiskárna neodpovídá. Nastavte tiskárnu: „Nastavení“ → „WiFi“ → „Síťový režim“ → „Pouze místní sítě“\n{}",
+        "printing_error": "!! Chyba tisku souboru\n{}",
+        "prompt_choose": "Vyberte cívku ke změně",
+        "prompt_file": "Soubor k tisku: {}",
+        "prompt_leveling_off": "Tisk bez mapy podložky",
+        "prompt_leveling_on": "Tisk s mapou podložky",
+        "prompt_map_color": "Přiřaďte barvu ze souboru k cívce",
+        "prompt_material": "Nahraný materiál",
+        "reset_colors": "Obnovit barvy",
+        "select_action": "Vyberte akci",
+        "select_color": "Vyberte barvu",
+        "select_type": "Vyberte typ materiálu",
+        "send_print": "Odeslat k tisku",
+        "spool_info": "Cívka {}: {}/{}",
+        "spool": "Cívka",
+        "unload_error": "Chyba vyndávání: {}",
+        "unload_success": "Vyndávání spuštěno",
+        "unload": "Vyndat"
+}
 }
 
 class zmod_color:
