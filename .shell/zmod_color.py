@@ -379,7 +379,7 @@ TRANSLATIONS = {
         'unload_success': "Descarga iniciada",
         'unload': "Descarregar"
     },
-    "cz": {
+    "cs": {
         "cancel": "Zrušit",
         "change_color": "Změnit barvu",
         "change_spool": "Měním na cívku {}: {} / {}",
