@@ -217,7 +217,7 @@ class VirtualSD:
             #if fname not in flist:
             #    fname = files_by_lower[fname.lower()]
             fname = os.path.join(self.sdcard_dirname, fname)
-            f = io.open(fname, 'r', newline='')
+            f = io.open(fname, 'r', encoding='utf-8', errors='ignore', newline='')
             f.seek(0, os.SEEK_END)
             fsize = f.tell()
             f.seek(0)
@@ -311,7 +311,7 @@ class VirtualSD:
                     if self.print_channel != self.load_channel:
                         self.gcode.run_script("M400")
                         self.change_filament = True
-                        # zmod 1.5
+                        # zmod 1.6
                         self.gcode.run_script(f"_A_CHANGE_FILAMENT CHANNEL={self.print_channel} RESTORE_POSITION=1 RESTORE_TEMP=1")
                         while True:
                             if not self.change_filament:
@@ -321,6 +321,7 @@ class VirtualSD:
                             self.reactor.pause(self.reactor.monotonic() + 0.5)
                     self.load_channel = self.print_channel
                     self.change_filament = False
+                    self.file_position = self.next_file_position
                     continue
             try:
                 self.gcode.run_script(line)
