@@ -3618,6 +3618,18 @@ c99d9f1fc09c87f67d8f1abb56d7991c  ./usr/lib/libv4l/ov518-decomp
 f773a45312475bcca67b65763f886523  ./usr/lib/libv4l/v4l1compat.so
 4aac55eb37ce76b2f23adec3567bdb09  ./usr/lib/libv4l/v4l2convert.so
 53cbfbe85bfcf9ad8c5847ea37776b9f  ./usr/lib/libz.so.1.3.1
+72cd78e7b34cb7486e34baa3a8ca9012  ./usr/lib/locale/cs_CZ.utf8/LC_ADDRESS
+d1752c5ee7c0b02415f6c56434e7230a  ./usr/lib/locale/cs_CZ.utf8/LC_COLLATE
+907120e7b8ceba4e685fe893a03c8f9b  ./usr/lib/locale/cs_CZ.utf8/LC_CTYPE
+d716c705318cce8116c8b00c51c35156  ./usr/lib/locale/cs_CZ.utf8/LC_IDENTIFICATION
+e3c1e6b90e6b6a2eb6119802deb76010  ./usr/lib/locale/cs_CZ.utf8/LC_MEASUREMENT
+2603b3f7054a80ca34d8132497bda37b  ./usr/lib/locale/cs_CZ.utf8/LC_MESSAGES/SYS_LC_MESSAGES
+15004e49cbefa7f4883cc331deb5b081  ./usr/lib/locale/cs_CZ.utf8/LC_MONETARY
+149c1746857d1155470771d487d35b91  ./usr/lib/locale/cs_CZ.utf8/LC_NAME
+85a3bc5985d6fddcacf9f74d29db4ed4  ./usr/lib/locale/cs_CZ.utf8/LC_NUMERIC
+5cf51ae8279119ff4c1a67b81b5a6cdf  ./usr/lib/locale/cs_CZ.utf8/LC_PAPER
+e1cc327eed1ca86183cce06d9a1cf66a  ./usr/lib/locale/cs_CZ.utf8/LC_TELEPHONE
+e1bc3776ba54b3dc0781e5f134586889  ./usr/lib/locale/cs_CZ.utf8/LC_TIME
 4e8692c58483f4647db488b0005e01d1  ./usr/lib/locale/C.utf8/LC_ADDRESS
 a6a4082f562e25b34f52e1659340c7f3  ./usr/lib/locale/C.utf8/LC_COLLATE
 907120e7b8ceba4e685fe893a03c8f9b  ./usr/lib/locale/C.utf8/LC_CTYPE
@@ -3690,7 +3702,7 @@ d62f2e124782d64678a339afdc8f30c8  ./usr/lib/locale/it_IT.utf8/LC_MONETARY
 5cf51ae8279119ff4c1a67b81b5a6cdf  ./usr/lib/locale/it_IT.utf8/LC_PAPER
 439ca4cda3e1e7b0ee70460dd966cbae  ./usr/lib/locale/it_IT.utf8/LC_TELEPHONE
 f0f7fa3049cf023b1b6497ea41651fa8  ./usr/lib/locale/it_IT.utf8/LC_TIME
-5d09528b95cbd1f1c1b8d69e65f13fef  ./usr/lib/locale/locale-archive
+c69f567a91de0bdfe22ed294805a3441  ./usr/lib/locale/locale-archive
 fdf004d758138adf46ab58b59faea9ea  ./usr/lib/locale/pt_PT.utf8/LC_ADDRESS
 fd395c98c7f4bf194d24b0e4d8177c49  ./usr/lib/locale/pt_PT.utf8/LC_COLLATE
 907120e7b8ceba4e685fe893a03c8f9b  ./usr/lib/locale/pt_PT.utf8/LC_CTYPE
