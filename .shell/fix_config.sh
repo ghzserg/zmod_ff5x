@@ -47,6 +47,15 @@ restore_base()
     grep -q '^\[include ./mod/switch_sensor_display_off.cfg' ${MOD_CONF}/printer.cfg && sed -i '/switch_sensor_display_off.cfg/d' ${MOD_CONF}/printer.cfg
     grep -q '^\[include ./mod/display_off.cfg' ${MOD_CONF}/printer.cfg && sed -i '/display_off.cfg/d' ${MOD_CONF}/printer.cfg
 
+    #logo
+    if [ ${FF5X} -eq 0 ]; then
+        mount /dev/mmcblk0p1 /lost+found
+        [ -f /lost+found/bootlogo.bmp.save ] && mv /lost+found/bootlogo.bmp.save /lost+found/bootlogo.bmp
+        umount /lost+found
+    else
+        [ -f /usr/prog/logo.jpeg ] && rm -f /usr/prog/logo.jpeg
+    fi
+
     if [ ${FF5X} -eq 0 ]; then
         china_razbl api.cloud.flashforge.com
         china_razbl api.fdmcloud.flashforge.com
@@ -224,6 +233,33 @@ fix_config()
     [ -f ${MOD_CONF}/mod_data/plugins.cfg ] || echo "" >${MOD_CONF}/mod_data/plugins.cfg
     [ -d ${MOD_CONF}/mod_data/plugins ] || mkdir -p ${MOD_CONF}/mod_data/plugins
     [ -f ${MOD_CONF}/mod_data/variables.cfg ] || echo "[Variables]" >${MOD_CONF}/mod_data/variables.cfg
+
+    # logo
+    if [ ${FF5X} -eq 1 ]; then
+        if ! [ -f ${MOD_CONF}/mod_data/logo/logo.jpeg ]; then
+            mkdir -p ${MOD_CONF}/mod_data/logo/
+            cp ${MOD_CONF}/mod/.shell/logo/logo.jpeg ${MOD_CONF}/mod_data/logo/
+        fi
+        current_logo=$(md5sum /usr/prog/logo.jpeg| awk '{print $1}')
+        mod_data_logo=$(md5sum ${MOD_CONF}/mod_data/logo/logo.jpeg | awk '{print $1}')
+        [ "${current_logo}" != "${mod_data_logo}" ] && cp ${MOD_CONF}/mod_data/logo/logo.jpeg /usr/prog/logo.jpeg
+    else
+        if ! [ -f ${MOD_CONF}/mod_data/logo/bootlogo.bmp ]; then
+            [ -f /lost+found/bootlogo.bmp.save ] && cp /lost+found/bootlogo.bmp /lost+found/bootlogo.bmp.save
+            mkdir -p ${MOD_CONF}/mod_data/logo/
+            cp ${MOD_CONF}/mod/.shell/logo/bootlogo.bmp ${MOD_CONF}/mod_data/logo/
+        fi
+
+        mount /dev/mmcblk0p1 /lost+found
+
+        [ -f /lost+found/bootlogo.bmp.save ] || cp /lost+found/bootlogo.bmp /lost+found/bootlogo.bmp.save
+
+        current_logo=$(md5sum /lost+found/bootlogo.bmp| awk '{print $1}')
+        mod_data_logo=$(md5sum ${MOD_CONF}/mod_data/logo/bootlogo.bmp | awk '{print $1}')
+        [ "${current_logo}" != "${mod_data_logo}" ] && cp ${MOD_CONF}/mod_data/logo/bootlogo.bmp /lost+found/bootlogo.bmp
+
+        umount /lost+found
+    fi
 
     if [ ${FF5X} -eq 1 ]; then
         [ -f ${MOD_CONF}/mod_data/color.json ] || cp ${MOD_CONF}/mod/.shell/color.json ${MOD_CONF}/mod_data/color.json
