@@ -939,7 +939,7 @@ class zmod_ifs:
         temp = int(gcmd.get_float('TEMP', 0.0))
 
         prutok = self.get_current_channel_from_config()
-        config=self.get_prutok_config(prutok)
+        config = self.get_prutok_config(prutok)
 
         if temp < int(config['temp']):
             gcmd.respond_info(f"Extruder Temp: {config['temp']}")
