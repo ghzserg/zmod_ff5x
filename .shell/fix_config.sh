@@ -252,6 +252,11 @@ fix_config()
         mount /dev/mmcblk0p1 /lost+found
 
         [ -f /lost+found/bootlogo.bmp.save ] || cp /lost+found/bootlogo.bmp /lost+found/bootlogo.bmp.save
+        logo_save=$(md5sum /lost+found/bootlogo.bmp.save| awk '{print $1}')
+        if [ "$logo_save" != "a927ccad137533d0c239b03a20815e56" ]; then
+            mod_data_logo_save=$(md5sum "${MOD_CONF}/mod_data/logo/bootlogo.bmp.save"| awk '{print $1}')
+            [ "$mod_data_logo_save" == "a927ccad137533d0c239b03a20815e56" ] && cp "${MOD_CONF}/mod_data/logo/bootlogo.bmp.save" /lost+found/bootlogo.bmp.save
+        fi
 
         current_logo=$(md5sum /lost+found/bootlogo.bmp| awk '{print $1}')
         mod_data_logo=$(md5sum ${MOD_CONF}/mod_data/logo/bootlogo.bmp | awk '{print $1}')
