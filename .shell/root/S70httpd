@@ -23,6 +23,8 @@ WEBROOT=/root/$CLIENT
 
 sed "s/    \"defaultLocale\": \"ru\",/    \"defaultLocale\": \"${ZLANG}\",/" /opt/config/mod/.shell/root/config.json >/root/mainsail/config.json
 
+cp /opt/config/mod/.shell/.theme/sidebar-logo.svg /root/fluidd/logo_fluidd.svg
+
 start() {
     # start busybox httpd
     #start-stop-daemon -S -b -m -p $PID_FILE --exec httpd -- -p 80 -f -h $WEBROOT -c ${MOD_CONF}/mod/.shell/root/httpd.conf
