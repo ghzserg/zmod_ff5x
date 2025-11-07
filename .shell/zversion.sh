@@ -28,10 +28,10 @@ else
     plugins=$(echo "$content" | grep "include plugins" | sed 's|\[include plugins/||g' | cut -d "/" -f1 | tr '\n' ',' | sed 's|,$||')
 fi
 
+[ ${ZLANG} != 'ru' ] && echo "Enabled Plugins: $plugins" || echo "Активные плагины: $plugins"
+
 if ! echo "$plugins" | grep -q "^recommend$\|,recommend$\|^recommend,\|,recommend,"; then
     [ ${ZLANG} != 'ru' ] && echo "Have you forgotten to enable the recommended parameters? ENABLE_PLUGIN name=recommend" || echo "А вы не забыли включить рекомендуемые параметры? ENABLE_PLUGIN name=recommend"
-else
-    [ ${ZLANG} != 'ru' ] && echo "Plugins: $plugins" || echo "Плагины: $plugins"
 fi
 
 if [ "${VER_FF}" != "${VER_MOD}" ]; then
