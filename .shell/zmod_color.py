@@ -925,7 +925,7 @@ class zmod_color:
             current_spool_number = self.get_current_channel()
 
             if spool_number != current_spool_number:
-                self.gcode.run_script_from_command(f"INSERT_PRUTOK_IFS PRUTOK={spool_number} NEED_STOP=0")
+                self.gcode.run_script_from_command(f"INSERT_PRUTOK_IFS PRUTOK={spool_number} NEED_STOP=0 TRASH=0")
             else:
                 gcmd.respond_raw(f"Current Prutok = Prutok = {spool_number}")
             self.gcode.run_script_from_command("END_CHANGE_FILAMENT")
