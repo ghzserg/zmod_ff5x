@@ -35,6 +35,11 @@ wifi_fix()
         return 0
     fi
 
+    if grep -q '"ethernetStatus" : true' "$FFCONFIG"; then
+        echo "Ethernet enabled on original screen — skipping network restart."
+        return 0
+    fi
+
     echo "WiFi station enabled — restarting network..."
 
     [ ${FF5X} -eq 0 ] && insmod /lib/modules/8821cu.ko || insmod /usr/prog/modules/8821cu.ko power_on=PB07
