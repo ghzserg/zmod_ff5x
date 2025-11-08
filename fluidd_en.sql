@@ -454,6 +454,15 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "visible": true
         },
         {
+            "alias": "SCREEN",
+            "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
+            "color": "#ff0000",
+            "disabledWhilePrinting": false,
+            "name": "screen",
+            "order": 16,
+            "visible": true
+        },
+        {
             "alias": "",
             "categoryId": "0",
             "color": "",
@@ -833,6 +842,24 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "disabledWhilePrinting": false,
             "name": "get_zmod_data",
             "order": 3,
+            "visible": true
+        },
+        {
+            "alias": "ENABLE_PLUGIN",
+            "categoryId": "09a46273-5af4-4fc4-b232-442934c1e810",
+            "color": "",
+            "disabledWhilePrinting": false,
+            "name": "enable_plugin",
+            "order": 12,
+            "visible": true
+        },
+        {
+            "alias": "DISABLE_PLUGIN",
+            "categoryId": "09a46273-5af4-4fc4-b232-442934c1e810",
+            "color": "",
+            "disabledWhilePrinting": false,
+            "name": "disable_plugin",
+            "order": 13,
             "visible": true
         },
         {
