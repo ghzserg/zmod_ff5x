@@ -15,7 +15,7 @@ STOPBITS = 1
 BYTESIZE = 8
 TIMEOUT = 0.2
 HOST_REPORT_TIME = 0.2
-RETRY_COUNT = 3
+
 FFCONFIG='/usr/prog/config/Adventurer5M.json'
 TYPECONFIG='/usr/data/config/mod_data/filament.json'
 FILE_CONFIG='/usr/data/config/mod_data/file.json'
@@ -40,6 +40,13 @@ RET_RETRY    = 6         # Надо повторить запрос
 class zmod_ifs:
     def __init__(self, config):
         self.printer = config.get_printer()
+
+        self.debug = config.getboolean('debug', False)
+        self.stall_count = config.getint('stall_count', 3, minval=1)
+        self.silk_count = config.getint('silk_count', 3, minval=1)
+        self.retry_count = config.getint('retry_count', 3, minval=1)
+
+
         self.debug = config.getboolean('debug', False)
         self.reactor = self.printer.get_reactor()
         self.gcode = self.printer.lookup_object('gcode')
@@ -618,26 +625,26 @@ class zmod_ifs:
         if self.get_extruder_sensor():
             self.gcode.respond_info("В экструдере есть пруток" if self.lang == 'ru' else "There is filament in the extruder")
             # Затягиваем пруток
-            for attempt in range(RETRY_COUNT):
+            for attempt in range(self.retry_count):
                 response = self._cmd_IFS_F10(prutok, leng=config['filament_autoinsert_full_length'], speed=config['filament_autoinsert_speed'])
                 success, ret_code, values = self.wait_for_state(
                      Port=prutok,
                      FFS_state=FFS_STATUS_ZAGRUZKA,
-                     silk={'count': 3, 'status': False},
-                     stall={'count': 3, 'status': False},
+                     silk={'count': self.silk_count, 'status': False},
+                     stall={'count': self.stall_count, 'status': False},
                      timeout=120
                 )
                 if ret_code!=RET_RETRY:
                     break
         else:
             self.gcode.respond_info("В экструдере нет прутка" if self.lang == 'ru' else "No filament in the extruder")
-            for attempt in range(RETRY_COUNT):
+            for attempt in range(self.retry_count):
                 response = self._cmd_IFS_F10(prutok, leng=config['filament_autoinsert_empty_length'], speed=config['filament_autoinsert_speed'])
                 success, ret_code, values = self.wait_for_state(
                      Port=prutok,
                      FFS_state=FFS_STATUS_ZAGRUZKA,
-                     silk={'count': 3, 'status': False},
-                     stall={'count': 3, 'status': False},
+                     silk={'count': self.silk_count, 'status': False},
+                     stall={'count': self.stall_count, 'status': False},
                      extruder={'count': 1, 'status': True},
                      timeout=120
                 )
@@ -685,7 +692,7 @@ class zmod_ifs:
         check = gcmd.get_int('CHECK', 0)
         sleep = gcmd.get_int('SLEEP', 0)
 
-        for attempt in range(RETRY_COUNT):
+        for attempt in range(self.retry_count):
             response = self._cmd_IFS_F10(prutok, leng, speed)
             if sleep == 1:
                 # Ждем пока треть прутка пройдет
@@ -696,8 +703,8 @@ class zmod_ifs:
                     success, ret_code, values = self.wait_for_state(
                         Port=prutok,
                         FFS_state=FFS_STATUS_ZAGRUZKA,
-                        silk={'count': 3, 'status': False},
-                        stall={'count': 3, 'status': False},
+                        silk={'count': self.silk_count, 'status': False},
+                        stall={'count': self.stall_count, 'status': False},
                         extruder={'count': 1, 'status': True},
                         timeout=120
                     )
@@ -739,15 +746,15 @@ class zmod_ifs:
         wait = gcmd.get_int('WAIT', 1)
         check = gcmd.get_int('CHECK', 0)
 
-        for attempt in range(RETRY_COUNT):
+        for attempt in range(self.retry_count):
             response = self._cmd_IFS_F11(prutok, leng, speed)
             if wait == 1:
                 if check == 1:
                     success, ret_code, values = self.wait_for_state(
                         Port=prutok,
                         FFS_state=FFS_STATUS_VIGRUZKA,
-                        silk={'count': 3, 'status': False},
-                        stall={'count': 3, 'status': False},
+                        silk={'count': self.silk_count, 'status': False},
+                        stall={'count': self.stall_count, 'status': False},
                         extruder={'count': 1, 'status': True},
                         timeout=120
                     )
@@ -773,7 +780,7 @@ class zmod_ifs:
 
         self.gcode.respond_info(f"Помечаем пруток {prutok}" if self.lang == 'ru' else f"Marking filament {prutok}")
 
-        for attempt in range(RETRY_COUNT):
+        for attempt in range(self.retry_count):
             response = self.send_command_and_wait(f"F23 C{prutok}", result=f"F23 ok. chan {prutok}.")
             self.info(f"F23 C{prutok} > {response}")
             if wait == 1:
@@ -793,7 +800,7 @@ class zmod_ifs:
         wait = gcmd.get_int('WAIT', 1)
 
         self.gcode.respond_info(f"Блокировка прутка {prutok}" if self.lang == 'ru' else f"Locking filament {prutok}")
-        for attempt in range(RETRY_COUNT):
+        for attempt in range(self.retry_count):
             response = self.send_command_and_wait(f"F24 C{prutok}", result=f"F24 ok. chan {prutok}.")
             self.info(f"F24 C{prutok} > {response}")
             if wait == 1:
@@ -813,7 +820,7 @@ class zmod_ifs:
         wait = gcmd.get_int('WAIT', 1)
 
         self.gcode.respond_info(f"Разблокировка прутка {prutok}" if self.lang == 'ru' else f"Unlocking filament {prutok}")
-        for attempt in range(RETRY_COUNT):
+        for attempt in range(self.retry_count):
             response = self.send_command_and_wait(f"F39 C{prutok}", result=f"F39 ok. FFS channel {prutok} release.")
             self.info(f"F39 C{prutok} > {response}")
             if wait == 1:
@@ -842,7 +849,7 @@ class zmod_ifs:
         wait = gcmd.get_int('WAIT', 1)
 
         self.gcode.respond_info(f"Разблокировка всех прутков" if self.lang == 'ru' else f"Unlocking all filaments")
-        for attempt in range(RETRY_COUNT):
+        for attempt in range(self.retry_count):
             response = self.send_command_and_wait("F18", result=f"F18 ok")
             self.info(f"F18 > {response}")
             if wait == 1:
@@ -862,7 +869,7 @@ class zmod_ifs:
 
         self.gcode.respond_info(f"Останавливаю движение прутка" if self.lang == 'ru' else f"Stopping filament movement")
 
-        for attempt in range(RETRY_COUNT):
+        for attempt in range(self.retry_count):
             response = self.send_command_and_wait(f"F112", result="F112 ok.")
             self.info(f"F112 > {response}")
             if wait == 1:
