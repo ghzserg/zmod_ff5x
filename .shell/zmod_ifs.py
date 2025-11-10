@@ -42,8 +42,8 @@ class zmod_ifs:
         self.printer = config.get_printer()
 
         self.debug = config.getboolean('debug', False)
-        self.stall_count = config.getint('stall_count', 3, minval=1)
-        self.silk_count = config.getint('silk_count', 3, minval=1)
+        self.stall_count = config.getint('stall_count', 1, minval=1)
+        self.silk_count = config.getint('silk_count', 1, minval=1)
         self.retry_count = config.getint('retry_count', 3, minval=1)
 
 
