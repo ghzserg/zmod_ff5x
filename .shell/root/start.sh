@@ -111,10 +111,12 @@ if [ ${FF5X} -eq 0 ]; then
     SWAP="$1"
     echo "SWAP=$SWAP"
 
-    if ! [ -f /root/swap ]; then dd if=/dev/zero of=/root/swap bs=1024 count=131072; mkswap /root/swap; fi;
-
-    if [ "$SWAP" == "/root/swap" ]; then
-        grep -q "use_swap = 0" /opt/config/mod_data/variables.cfg || swapon $SWAP
+    if [ "$SWAP" == "/root/swap" ] && grep -q "use_swap = 0" /opt/config/mod_data/variables.cfg; then
+        if ! swapon $SWAP; then
+            dd if=/dev/zero of=$SWAP bs=1024 count=131072
+            mkswap $SWAP
+            swapon $SWAP || echo "SWAP не включен!"
+        fi
     fi
 fi
 
