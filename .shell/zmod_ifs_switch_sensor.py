@@ -8,7 +8,6 @@ class ZmodIfsSwitchSensor:
     def __init__(self, config):
         self.printer = config.get_printer()
         self.name = config.get_name().split()[-1]
-        self.query_adc = self.printer.lookup_object('query_adc')
 
         self.runout_helper = RunoutHelper(config)
         self.get_status = self.runout_helper.get_status
@@ -43,7 +42,7 @@ class ZmodIfsSwitchSensor:
             self.runout_helper.note_filament_present(False)
 
     def _handle_ready(self):
-
+        self.query_adc = self.printer.lookup_object('query_adc')
         self.check_state(self.reactor.NOW)
 
     def check_state(self, eventtime):

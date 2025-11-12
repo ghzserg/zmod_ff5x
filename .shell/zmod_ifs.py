@@ -46,12 +46,11 @@ class zmod_ifs:
         self.silk_count = config.getint('silk_count', 1, minval=1)
         self.retry_count = config.getint('retry_count', 3, minval=1)
 
-
         self.debug = config.getboolean('debug', False)
         self.reactor = self.printer.get_reactor()
         self.gcode = self.printer.lookup_object('gcode')
-        self.query_adc = self.printer.lookup_object('query_adc')
-        self.filament_sensor = self.printer.lookup_object('temperature_sensor filamentValue')
+
+
         self.lang = 'en'
         self.ifs = False
         self.zmod = self.printer.lookup_object('zmod', None)
@@ -126,6 +125,9 @@ class zmod_ifs:
         self.gcode.register_command('IFS_F112', self.cmd_IFS_F112)      # Прекращаем подачу прутка
 
     def _handle_ready(self):
+        self.query_adc = self.printer.lookup_object('query_adc')
+        self.filament_sensor = self.printer.lookup_object('temperature_sensor filamentValue')
+
         self.get_lang()
         self.get_prutok_config(1)
         self.sensor_thread.start()
