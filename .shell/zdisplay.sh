@@ -6,7 +6,7 @@ if ! [ $# -eq 1 ]; then echo "Use $0 on|off|test"; exit 1; fi
 
 wifi_off()
 {
-    if grep -q "wifi = 1" /opt/config/mod_data/variables.cfg; then
+    if grep -q "wifi = 1" /opt/config/mod_data/variables.cfg && grep -q '"ethernetStatus" : false' "$FFCONFIG"; then
         killall firmwareExe
         grep -q '"wifiStationStatus" : true' "$FFCONFIG" && sed -i 's/"wifiStationStatus" : true/"wifiStationStatus" : false/' "$FFCONFIG"
     fi
@@ -15,7 +15,7 @@ wifi_off()
 
 wifi_on()
 {
-    if grep -q "wifi = 1" /opt/config/mod_data/variables.cfg; then
+    if grep -q "wifi = 1" /opt/config/mod_data/variables.cfg && grep -q '"ethernetStatus" : false' "$FFCONFIG"; then
         killall firmwareExe
         grep -q '"wifiStationStatus" : false' "$FFCONFIG" && sed -i 's/"wifiStationStatus" : false/"wifiStationStatus" : true/' "$FFCONFIG"
     fi

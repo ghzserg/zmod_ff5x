@@ -1,5 +1,9 @@
 import os
 import logging
+import json
+
+FFCONFIG1='/usr/prog/config/Adventurer5M.json'
+FFCONFIG2='/opt/config/Adventurer5M.json'
 
 class zmod:
     def __init__(self, config):
@@ -15,6 +19,7 @@ class zmod:
 
         self.gcode.register_command('SAVE_SHAPER', self.cmd_SAVE_SHAPER)
         self.gcode.register_command('ZEXCLUDE', self.cmd_ZEXCLUDE)
+        self.gcode.register_command('LOAD_ZOFFSET_NATIVE', self.cmd_LOAD_ZOFFSET_NATIVE)
 
         self.printer.register_event_handler("klippy:ready", self._handle_ready)
 
@@ -24,6 +29,24 @@ class zmod:
 
     def get_lang(self):
         return self.language
+
+    def cmd_LOAD_ZOFFSET_NATIVE(self, gcmd):
+        config_path = FFCONFIG1 if os.path.isfile(FFCONFIG1) else FFCONFIG2 if os.path.isfile(FFCONFIG2) else None
+        if not config_path:
+            raise gcmd.error(f"LOAD_ZOFFSET_NATIVE: File not found {FFCONFIG1}, {FFCONFIG2}")
+
+        with open(config_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+
+        try:
+            z_probe_offset = data['leftExtruderOffset']['zProbeOffset']
+        except KeyError as e:
+            raise gcmd.error(f"Не найден ключ в JSON: {e}")
+
+        zoffset = round(float(z_probe_offset), 4)
+
+        self.gcode.run_script_from_command(f"SET_GCODE_OFFSET Z={zoffset:.4f}")
+        gcmd.respond_raw(f"Z-offset={zoffset:.4f}")
 
     def cmd_ZEXCLUDE(self, gcmd):
         filename = gcmd.get("FILENAME")
