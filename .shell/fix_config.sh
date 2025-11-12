@@ -284,7 +284,7 @@ fix_config()
     check_link ${MOD_CONF}/mod/client.cfg ${ZLANG}/client.cfg
     check_link ${MOD_CONF}/mod/klipper13_base.cfg ${ZLANG}/klipper13_base.cfg
 
-    [ -f ${MOD_CONF}/.theme/custom.css ] || ${MOD_CONF}/mod/.shell/.theme ${MOD_CONF}/mod_data/
+    [ -f ${MOD_CONF}/.theme/custom.css ] || cp -a ${MOD_CONF}/mod/.shell/.theme ${MOD_CONF}/mod_data/
     check_link ${MOD_CONF}/.theme mod_data/.theme
 
     if [ ${FF5X} -eq 0 ]; then
