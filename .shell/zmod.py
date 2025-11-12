@@ -10,11 +10,17 @@ class zmod:
         self.on_error_gcode = gcode_macro.load_template(
             config, 'on_error_gcode', '')
 
-        self.virtual_sdcard = self.printer.lookup_object('virtual_sdcard')
-        self.sdcard_dirname = self.virtual_sdcard.sdcard_dirname
+        self.virtual_sdcard = None
+        self.sdcard_dirname = ""
 
         self.gcode.register_command('SAVE_SHAPER', self.cmd_SAVE_SHAPER)
         self.gcode.register_command('ZEXCLUDE', self.cmd_ZEXCLUDE)
+
+        self.printer.register_event_handler("klippy:ready", self._handle_ready)
+
+    def _handle_ready(self):
+        self.virtual_sdcard = self.printer.lookup_object('virtual_sdcard')
+        self.sdcard_dirname = self.virtual_sdcard.sdcard_dirname
 
     def get_lang(self):
         return self.language
