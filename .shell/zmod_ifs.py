@@ -908,6 +908,7 @@ class zmod_ifs:
 
         prutok = gcmd.get_int('PRUTOK', 0)
         force = gcmd.get_int('FORCE', 1)
+        need_trash = gcmd.get_int('NEED_TRASH', 0)
 
         if (not self.get_extruder_sensor() and force == 0) or prutok == 0:
             return
@@ -917,6 +918,7 @@ class zmod_ifs:
             f"_IFS_REMOVE_PRUTOK "
             f"PRUTOK={prutok} "
             f"FORCE={force} "
+            f"NEED_TRASH={need_trash} "
             f"TEMP={config['temp']} "
             f"FILAMENT_TYPE={config['filament_type']} "
             f"FILAMENT_UNLOAD_SPEED={config['filament_unload_speed']} "
@@ -944,6 +946,7 @@ class zmod_ifs:
             return
 
         temp = int(gcmd.get_float('TEMP', 0.0))
+        need_trash = gcmd.get_int('NEED_TRASH', 0)
 
         prutok = self.get_current_channel_from_config()
         config = self.get_prutok_config(prutok)
@@ -952,7 +955,7 @@ class zmod_ifs:
             gcmd.respond_info(f"Extruder Temp: {config['temp']}")
             self.gcode.run_script_from_command(f"M104 S{config['temp']}")
             self.gcode.run_script_from_command(f"TEMPERATURE_WAIT SENSOR=extruder MINIMUM={config['temp']-2} MAXIMUM={config['temp']+4}")
-        self.gcode.run_script_from_command(f"IFS_REMOVE_PRUTOK PRUTOK={prutok} FORCE=0")
+        self.gcode.run_script_from_command(f"IFS_REMOVE_PRUTOK PRUTOK={prutok} FORCE=0 NEED_TRASH={need_trash}")
 
     def _sensor_reader(self):
         while not self.stop_thread:
