@@ -9,6 +9,8 @@ class zmod:
     def __init__(self, config):
         self.printer = config.get_printer()
         self.language = config.get('language', 'en')
+        self.ad5x = config.getboolean('ad5x', False)
+
         self.gcode = self.printer.lookup_object('gcode')
         gcode_macro = self.printer.load_object(config, 'gcode_macro')
         self.on_error_gcode = gcode_macro.load_template(
@@ -44,6 +46,8 @@ class zmod:
             raise gcmd.error(f"Не найден ключ в JSON: {e}")
 
         zoffset = round(float(z_probe_offset), 4)
+        if not self.ad5x:
+            zoffset += 0.025
 
         self.gcode.run_script_from_command(f"SET_GCODE_OFFSET Z={zoffset:.4f}")
         gcmd.respond_raw(f"Z-offset={zoffset:.4f}")
