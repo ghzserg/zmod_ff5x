@@ -997,9 +997,10 @@ class zmod_color:
 
             gcmd.respond_raw("// action:prompt_button_group_start")
             for slot in result:
+                color_name = slot['Color'].replace('_', '/', 1) if slot['Color'].startswith('_') else ''
                 btn_text = (
                     f"{slot['ID']}: "
-                    f"{slot['Material']}"
+                    f"{slot['Material']}{color_name}"
                 )
                 gcmd.respond_raw(
                     f"// action:prompt_button {btn_text}|"
