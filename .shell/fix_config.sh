@@ -266,7 +266,14 @@ fix_config()
     fi
 
     if [ ${FF5X} -eq 1 ]; then
-        [ -f ${MOD_CONF}/mod_data/color.json ] || cp ${MOD_CONF}/mod/.shell/color.json ${MOD_CONF}/mod_data/color.json
+        # Color
+        [ -f ${MOD_CONF}/mod_data/color.json ] && rm -f ${MOD_CONF}/mod_data/color.json
+
+        mkdir -p ${MOD_CONF}/mod_data/color/
+        for lang in ru en de fr it es pt zh ja ko cs; do
+          [ -f "${MOD_CONF}/mod_data/color/${lang}.json" ] || cp "${MOD_CONF}/mod/.shell/color/${lang}.json" "${MOD_CONF}/mod_data/color/"
+        done
+
         md5=$(md5sum ${MOD_CONF}/mod_data/cmd_pwm 2>/dev/null |awk '{print $1}')
         if [ "$md5" != "bb0a72766632c11bd83ae68a8da94688" ]; then
             umount /usr/bin/cmd_pwm
