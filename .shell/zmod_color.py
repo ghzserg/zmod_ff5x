@@ -757,7 +757,7 @@ class zmod_color:
                     for slot_info in result:
                         if int(slot_info['ID']) != tool_val:
                             continue
-                        color_name = slot['Color'].replace('_', '/', 1) if slot['Color'].startswith('_') else ''
+                        color_name = slot_info['Color'].replace('_', '/', 1) if slot_info['Color'].startswith('_') else ''
                         btn_text = (
                             f"T{tool_idx} -> "
                             f"{slot_info['ID']}: "
@@ -1113,7 +1113,7 @@ class zmod_color:
             counter = 0
             total_colors = len(self.COLOR_MAPPING)
             for hex_code, color_name in self.COLOR_MAPPING.items():
-                color_name = color_name.replace('_', '/', 1) if color_name.startswith('_') else '_'
+                color_name = color_name.replace('_', '', 1) if color_name.startswith('_') else '_'
                 gcmd.respond_raw(
                     f"// action:prompt_button {color_name} |"
                     f"CHANGE_ZCOLOR SLOT={zslot} TYPE={ztype} HEX={hex_code}|primary|{hex_code}"
