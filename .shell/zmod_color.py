@@ -6,7 +6,6 @@ import subprocess
 
 FFCONFIG='/usr/prog/config/Adventurer5M.json'
 FILE_CONFIG='/usr/data/config/mod_data/file.json'
-COLOR_CONFIG = '/usr/data/config/mod_data/color.json'
 
 TRANSLATIONS = {
     'ru': {
@@ -439,17 +438,26 @@ class zmod_color:
         self.gcode.register_command('UPDATE_FF_OFFSET', self.cmd_UPDATE_FF_OFFSET)
         self.printer.register_event_handler("klippy:ready", self._handle_ready)
 
-        self.COLOR_MAPPING = {}
-        try:
-            with open(COLOR_CONFIG, 'r', encoding='utf-8') as f:
-                self.COLOR_MAPPING = json.load(f)
-        except Exception as e:
-            self.COLOR_MAPPING = {}
-
         with open(FFCONFIG, 'r') as file:
             data = json.load(file)
             self.serialNumber = data['general']['printerSerialNumber']
             self.checkCode = data['general']['lanCode']
+
+    def _handle_ready(self):
+        self.zmod = self.printer.lookup_object('zmod', None)
+        if self.zmod is not None:
+            self.language = self.zmod.get_lang()
+
+        self.COLOR_MAPPING = {}
+        try:
+            with open(f"/usr/data/config/mod_data/color/{self.language}.json", 'r', encoding='utf-8') as f:
+                self.COLOR_MAPPING = json.load(f)
+        except Exception as e:
+            self.COLOR_MAPPING = {}
+
+        self.zmod_ifs = self.printer.lookup_object('zmod_ifs', None)
+        self.query_adc = self.printer.lookup_object('query_adc')
+        self.virtual_sd = self.printer.lookup_object('virtual_sdcard')
 
     def cmd_UPDATE_FF_OFFSET(self, gcmd):
         with open(FFCONFIG, 'r') as file:
@@ -463,14 +471,6 @@ class zmod_color:
             self.gcode.run_script_from_command(f"SET_GCODE_VARIABLE MACRO=_REZGEM_PRUTOK VARIABLE=y_cut VALUE={self.CutYOffset:.2f}")
             self.gcode.run_script_from_command(f"SET_GCODE_VARIABLE MACRO=_CLIENT_VARIABLE VARIABLE=custom_park_y VALUE={self.yOffset:.2f}")
             self.gcode.run_script_from_command(f"SET_GCODE_VARIABLE MACRO=_CLIENT_VARIABLE VARIABLE=park_at_cancel_y VALUE={self.yOffset:.2f}")
-
-    def _handle_ready(self):
-        self.zmod = self.printer.lookup_object('zmod', None)
-        if self.zmod is not None:
-            self.language = self.zmod.get_lang()
-        self.zmod_ifs = self.printer.lookup_object('zmod_ifs', None)
-        self.query_adc = self.printer.lookup_object('query_adc')
-        self.virtual_sd = self.printer.lookup_object('virtual_sdcard')
 
     def get_display(self):
         return self.display
@@ -615,7 +615,7 @@ class zmod_color:
                     slot_id = slot.get('slotId', 'N/A')
                     material = slot.get('materialName', 'N/A').upper()
                     hex_color = slot.get('materialColor', '161616').replace("#", "")
-                    color_name = self.COLOR_MAPPING.get(hex_color.lower(), {}).get(self.language, hex_color)
+                    color_name = self.COLOR_MAPPING.get(hex_color.lower(), hex_color)
                     slots_info.append({
                         'ID': slot_id,
                         'Material': material,
@@ -627,7 +627,7 @@ class zmod_color:
             if slot:
                 material = slot.get('materialName', 'N/A').upper()
                 hex_color = slot.get('materialColor', '161616').replace("#", "")
-                color_name = self.COLOR_MAPPING.get(hex_color.lower(), {}).get(self.language, hex_color)
+                color_name = self.COLOR_MAPPING.get(hex_color.lower(), hex_color)
                 slots_info.append({
                     'ID': 0,
                     'Material': material,
@@ -690,7 +690,8 @@ class zmod_color:
             else:
                 gcmd.respond_raw(f"// {prompt_text} | IFS: {self.ifs}")
             for slot in result:
-                btn_text = f"{slot['ID']}: {slot['Material']}"
+                color_name = slot['Color'].replace('_', '/', 1) if slot['Color'].startswith('_') else ''
+                btn_text = f"{slot['ID']}: {slot['Material']}{color_name}"
                 if silent == 0:
                     gcmd.respond_raw(f"// action:prompt_button {btn_text}|RUN_ZCOLOR SLOT={slot['ID']} HEX={slot['HEX']} TYPE={slot['Material']}|primary|{slot['HEX']}")
                 else:
@@ -756,10 +757,11 @@ class zmod_color:
                     for slot_info in result:
                         if int(slot_info['ID']) != tool_val:
                             continue
+                        color_name = slot['Color'].replace('_', '/', 1) if slot['Color'].startswith('_') else ''
                         btn_text = (
                             f"T{tool_idx} -> "
                             f"{slot_info['ID']}: "
-                            f"{slot_info['Material']}"
+                            f"{slot_info['Material']}{color_name}"
                         )
                         params = (
                             f"LEVELING={leveling} FILENAME=\"{fname}\" "
@@ -1022,7 +1024,7 @@ class zmod_color:
         zhex = gcmd.get('HEX', '161616').upper()
         ztype = gcmd.get('TYPE', '').upper()
 
-        color_name = self.COLOR_MAPPING.get(zhex.lower(), {}).get(self.language, zhex)
+        color_name = self.COLOR_MAPPING.get(zhex.lower(), zhex)
 
         if ztype not in self.valid_types:
             raise gcmd.error(self._t('error_type', ztype, ', '.join(self.valid_types[:-1])))
@@ -1110,10 +1112,10 @@ class zmod_color:
             gcmd.respond_raw("// action:prompt_button_group_start")
             counter = 0
             total_colors = len(self.COLOR_MAPPING)
-            for hex_code, color_data in self.COLOR_MAPPING.items():
-                #color_name = color_data[self.language]
+            for hex_code, color_name in self.COLOR_MAPPING.items():
+                color_name = color_name.replace('_', '/', 1) if color_name.startswith('_') else '_'
                 gcmd.respond_raw(
-                    f"// action:prompt_button _ |"
+                    f"// action:prompt_button {color_name} |"
                     f"CHANGE_ZCOLOR SLOT={zslot} TYPE={ztype} HEX={hex_code}|primary|{hex_code}"
                 )
                 counter += 1
@@ -1125,7 +1127,7 @@ class zmod_color:
             gcmd.respond_raw("// action:prompt_show")
 
         if zhex:
-            color_name = self.COLOR_MAPPING.get(zhex.lower(), {}).get(self.language, zhex)
+            color_name = self.COLOR_MAPPING.get(zhex.lower(), zhex)
             gcmd.respond_raw(f"// action:prompt_begin {self._t('select_type')}")
             gcmd.respond_raw(f"// action:prompt_text {self._t('spool_info', zslot, '', color_name)}")
             gcmd.respond_raw("// action:prompt_button_group_start")
