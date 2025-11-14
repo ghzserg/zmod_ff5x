@@ -220,6 +220,8 @@ class zmod_tenz:
 
                     if command_id == -1:
                         cur_temp = self.extract_last_value_before_g(response)
+                        if cur_temp > 5120:
+                            cur_temp = 1
                         measured_time = self.reactor.monotonic()
                         with self.temp_lock:
                             self.temp = cur_temp
