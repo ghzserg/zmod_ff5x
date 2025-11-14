@@ -15,6 +15,7 @@ STOPBITS = 1
 BYTESIZE = 8
 TIMEOUT = 0.2
 HOST_REPORT_TIME = 0.2
+OPROS_EXTRUDER = 0.1
 
 FFCONFIG='/usr/prog/config/Adventurer5M.json'
 TYPECONFIG='/usr/data/config/mod_data/filament.json'
@@ -172,8 +173,9 @@ class zmod_ifs:
 
             if state == check_state:          # ждем сработки нужного статуса
                 if extruder: # Если нужно контролировать экструдер
-                    for i in range(5):
-                        self.reactor.pause(self.reactor.monotonic() + HOST_REPORT_TIME)
+                    # 2 секунды подряд проверяем экструдер
+                    for i in range(20):
+                        self.reactor.pause(self.reactor.monotonic() + OPROS_EXTRUDER)
                         if self.get_extruder_sensor() == extruder['status']: # Проверяем сработку датчика в экструдере
                             extruder_count += 1
                             if extruder_count >= extruder['count']:
