@@ -30,8 +30,8 @@ TRANSLATIONS = {
         'printing_error': "!! Ошибка печати файла\n{}",
         'prompt_choose': "Выберите катушку для изменения",
         'prompt_file': "Файл для печати: {}",
-        'prompt_leveling_off': "Печать без карты стола",
-        'prompt_leveling_on': "Печать с картой стола",
+        'prompt_leveling_off': "Снять карту стола",
+        'prompt_leveling_on': "Не снимать карту стола",
         'prompt_map_color': "Сопоставьте цвет из файла с катушкой",
         'prompt_material': "Загруженный материал",
         'reset_colors': "Сбросить цвета",
@@ -746,12 +746,13 @@ class zmod_color:
                 gcmd.respond_raw("// action:prompt_end")
                 gcmd.respond_raw(f"// action:prompt_begin {self._t('prompt_material')}")
                 gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_map_color')}")
-                gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_file', fname)}")
 
                 gcmd.respond_raw("// action:prompt_button_group_start")
                 color = "006400" if leveling == 1 else "808080"
                 gcmd.respond_raw(f"// action:prompt_button {leveling_text}|SET_ZCOLOR SILENT={silent} FILENAME=\"{fname}\" LEVELING={int(not leveling)}| |{color}")
                 gcmd.respond_raw("// action:prompt_button_group_end")
+
+                gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_file', fname)}")
 
                 gcmd.respond_raw("// action:prompt_button_group_start")
                 for tool_idx, tool_val in enumerate(tools):
