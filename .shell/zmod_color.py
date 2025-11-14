@@ -750,7 +750,7 @@ class zmod_color:
 
                 gcmd.respond_raw("// action:prompt_button_group_start")
                 color = "006400" if leveling == 1 else "808080"
-                gcmd.respond_raw(f"// action:prompt_text {leveling_text}|SET_ZCOLOR SILENT={silent} FILENAME=\"{fname}\" LEVELING={int(not leveling)}| |{color}")
+                gcmd.respond_raw(f"// action:prompt_button {leveling_text}|SET_ZCOLOR SILENT={silent} FILENAME=\"{fname}\" LEVELING={int(not leveling)}| |{color}")
                 gcmd.respond_raw("// action:prompt_button_group_end")
 
                 gcmd.respond_raw("// action:prompt_button_group_start")
