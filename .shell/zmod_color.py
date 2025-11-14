@@ -29,7 +29,6 @@ TRANSLATIONS = {
         'no_response': "!! Нет ответа от принтера. Настройте принтер: \"Настройки\" -> \"WiFi\" -> \"Сетевой режим\" -> \"Только локальные сети\"\n{}",
         'printing_error': "!! Ошибка печати файла\n{}",
         'prompt_choose': "Выберите катушку для изменения",
-        'prompt_file': "Файл для печати: {}",
         'prompt_leveling_off': "Снять карту стола",
         'prompt_leveling_on': "Не снимать карту стола",
         'prompt_map_color': "Сопоставьте цвет из файла с катушкой",
@@ -66,9 +65,8 @@ TRANSLATIONS = {
         'no_response': "!! No response from printer. Configure via: \"Settings\" -> \"WiFi\" -> \"Network Mode\" -> \"Local Only\"\n{}",
         'printing_error': "!! File printing error\n{}",
         'prompt_choose': "Select a spool to modify",
-        'prompt_file': "File to print: {}",
-        'prompt_leveling_off': "Print without bed leveling",
-        'prompt_leveling_on': "Print with bed leveling",
+        'prompt_leveling_off': "Leveling Off",
+        'prompt_leveling_on': "Leveling On",
         'prompt_map_color': "Map file color to spool",
         'prompt_material': "Loaded material",
         'reset_colors': "Reset colors",
@@ -103,7 +101,6 @@ TRANSLATIONS = {
         'no_response': "!! Keine Antwort vom Drucker. Konfigurieren Sie: \"Einstellungen\" -> \"WLAN\" -> \"Netzwerkmodus\" -> \"Nur lokal\"\n{}",
         'printing_error': "!! Fehler beim Drucken der Datei\n{}",
         'prompt_choose': "Wählen Sie eine Spule zum Ändern",
-        'prompt_file': "Zu druckende Datei: {}",
         'prompt_leveling_off': "Drucken ohne Bett-Nivellierung",
         'prompt_leveling_on': "Drucken mit Bett-Nivellierung",
         'prompt_map_color': "Farbe aus Datei einer Spule zuordnen",
@@ -140,7 +137,6 @@ TRANSLATIONS = {
         'no_response': "!! Aucune réponse de l'imprimante. Configurez via : \"Paramètres\" -> \"WiFi\" -> \"Mode réseau\" -> \"Réseau local uniquement\"\n{}",
         'printing_error': "!! Erreur d'impression du fichier\n{}",
         'prompt_choose': "Sélectionnez une bobine à modifier",
-        'prompt_file': "Fichier à imprimer : {}",
         'prompt_leveling_off': "Imprimer sans nivellement du lit",
         'prompt_leveling_on': "Imprimer avec nivellement du lit",
         'prompt_map_color': "Associer la couleur du fichier à une bobine",
@@ -177,7 +173,6 @@ TRANSLATIONS = {
         'no_response': "!! Nessuna risposta dalla stampante. Configura tramite: \"Impostazioni\" -> \"WiFi\" -> \"Modalità rete\" -> \"Solo locale\"\n{}",
         'printing_error': "!! Errore di stampa del file\n{}",
         'prompt_choose': "Seleziona una bobina da modificare",
-        'prompt_file': "File da stampare: {}",
         'prompt_leveling_off': "Stampa senza livellamento del letto",
         'prompt_leveling_on': "Stampa con livellamento del letto",
         'prompt_map_color': "Associa il colore del file alla bobina",
@@ -214,7 +209,6 @@ TRANSLATIONS = {
         'no_response': "!! Sin respuesta de la impresora. Configure en: \"Ajustes\" -> \"WiFi\" -> \"Modo de red\" -> \"Solo local\"\n{}",
         'printing_error': "!! Error al imprimir el archivo\n{}",
         'prompt_choose': "Seleccione un carrete para modificar",
-        'prompt_file': "Archivo para imprimir: {}",
         'prompt_leveling_off': "Imprimir sin nivelación de cama",
         'prompt_leveling_on': "Imprimir con nivelación de cama",
         'prompt_map_color': "Mapear color del archivo al carrete",
@@ -251,7 +245,6 @@ TRANSLATIONS = {
         'no_response': "!! 打印机无响应。请通过以下方式配置：\"设置\" -> \"WiFi\" -> \"网络模式\" -> \"仅本地网络\"\n{}",
         'printing_error': "!! 文件打印错误\n{}",
         'prompt_choose': "选择要修改的线轴",
-        'prompt_file': "要打印的文件：{}",
         'prompt_leveling_off': "不使用调平打印",
         'prompt_leveling_on': "使用调平打印",
         'prompt_map_color': "将文件颜色映射到线轴",
@@ -288,7 +281,6 @@ TRANSLATIONS = {
         'no_response': "!! プリンターから応答なし。設定方法：\"設定\" -> \"WiFi\" -> \"ネットワークモード\" -> \"ローカルのみ\"\n{}",
         'printing_error': "!! ファイル印刷エラー\n{}",
         'prompt_choose': "変更するスプールを選択",
-        'prompt_file': "印刷するファイル：{}",
         'prompt_leveling_off': "ベッドレベリングなしで印刷",
         'prompt_leveling_on': "ベッドレベリングを使用して印刷",
         'prompt_map_color': "ファイルの色をスプールにマッピング",
@@ -325,7 +317,6 @@ TRANSLATIONS = {
         'no_response': "!! 프린터 응답 없음. 설정 방법: \"설정\" -> \"WiFi\" -> \"네트워크 모드\" -> \"로컬 전용\"\n{}",
         'printing_error': "!! 파일 인쇄 오류\n{}",
         'prompt_choose': "수정할 스풀 선택",
-        'prompt_file': "인쇄할 파일: {}",
         'prompt_leveling_off': "레벨링 없이 인쇄",
         'prompt_leveling_on': "레벨링으로 인쇄",
         'prompt_map_color': "파일 색상을 스풀에 매핑",
@@ -362,7 +353,6 @@ TRANSLATIONS = {
         'no_response': "!! Sem resposta da impressora. Configure via: \"Configurações\" -> \"WiFi\" -> \"Modo de Rede\" -> \"Apenas Local\"\n{}",
         'printing_error': "!! Erro na impressão do arquivo\n{}",
         'prompt_choose': "Selecione uma bobina para modificar",
-        'prompt_file': "Arquivo para imprimir: {}",
         'prompt_leveling_off': "Imprimir sem nivelamento da mesa",
         'prompt_leveling_on': "Imprimir com nivelamento da mesa",
         'prompt_map_color': "Mapear cor do arquivo para bobina",
@@ -399,7 +389,6 @@ TRANSLATIONS = {
         "no_response": "!! Tiskárna neodpovídá. Nastavte tiskárnu: „Nastavení“ → „WiFi“ → „Síťový režim“ → „Pouze místní sítě“\n{}",
         "printing_error": "!! Chyba tisku souboru\n{}",
         "prompt_choose": "Vyberte cívku ke změně",
-        "prompt_file": "Soubor k tisku: {}",
         "prompt_leveling_off": "Tisk bez mapy podložky",
         "prompt_leveling_on": "Tisk s mapou podložky",
         "prompt_map_color": "Přiřaďte barvu ze souboru k cívce",
@@ -745,14 +734,15 @@ class zmod_color:
             if silent == 0:
                 gcmd.respond_raw("// action:prompt_end")
                 gcmd.respond_raw(f"// action:prompt_begin {self._t('prompt_material')}")
-                gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_map_color')}")
+
+                gcmd.respond_raw(f"// action:prompt_text {fname}")
 
                 gcmd.respond_raw("// action:prompt_button_group_start")
                 color = "006400" if leveling == 1 else "808080"
                 gcmd.respond_raw(f"// action:prompt_button {leveling_text}|SET_ZCOLOR SILENT={silent} FILENAME=\"{fname}\" LEVELING={int(not leveling)}| |{color}")
                 gcmd.respond_raw("// action:prompt_button_group_end")
 
-                gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_file', fname)}")
+                gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_map_color')}")
 
                 gcmd.respond_raw("// action:prompt_button_group_start")
                 for tool_idx, tool_val in enumerate(tools):
@@ -784,6 +774,7 @@ class zmod_color:
                 gcmd.respond_raw(f"// action:prompt_footer_button {self._t('cancel')}|RESPOND TYPE=command MSG=action:prompt_end")
                 gcmd.respond_raw("// action:prompt_show")
             elif silent == 1:
+                gcmd.respond_raw(f"// {fname}")
                 gcmd.respond_raw(f"// {leveling_text}")
                 gcmd.respond_raw(f"// IFS ON")
                 for tool_idx, tool_val in enumerate(tools):
@@ -801,6 +792,7 @@ class zmod_color:
                         })
                 self.cmd_PRINT_ZCOLOR(gcmd2)
             elif silent == 2:
+                gcmd.respond_raw(f"// {fname}")
                 gcmd.respond_raw(f"// {leveling_text}")
                 gcmd.respond_raw(f"// IFS OFF")
                 if self.display:
@@ -936,8 +928,12 @@ class zmod_color:
 
         except Exception as e:
             if restore == 1:
-                gcmd.respond_raw(f"!! Ошибка при смене филамента: {str(e)}\nВстаю на паузу")
-                gcmd.respond_raw(f"tgalarm_photo Ошибка при смене филамента: {str(e)}\nВстаю на паузу")
+                if self.lang == 'ru':
+                    msg = f"!! Ошибка при смене филамента: {str(e)}\nВстаю на паузу"
+                else:
+                    msg = f"!! Filament change error: {str(e)}\nPausing print"
+                gcmd.respond_raw(f"{msg}")
+                gcmd.respond_raw(f"tgalarm_photo {msg}")
                 try:
                     self.gcode.run_script_from_command("IFS_F18")
                 except:
@@ -946,7 +942,12 @@ class zmod_color:
                 pause_resume.send_pause_command()
                 self.gcode.run_script_from_command("PAUSE\nM400\n")
             else:
-                gcmd.respond_raw(f"!! Ошибка при смене филамента: {str(e)}\nПечать отменена")
+                if self.lang == 'ru':
+                    msg = f"!! Ошибка при смене филамента: {str(e)}\nПечать отменена"
+                else:
+                    msg = f"!! Filament change error: {str(e)}\nPrint cancelled"
+                gcmd.respond_raw(f"{msg}")
+                gcmd.respond_raw(f"tgalarm_photo {msg}")
                 raise
 
     def cmd_CHANGE_T_ZCOLOR(self, gcmd):
@@ -993,8 +994,9 @@ class zmod_color:
                 params=f"T0={tools[0]} T1={tools[1]} T2={tools[2]}               FILENAME=\"{fname}\" LEVELING={leveling} "
 
             gcmd.respond_raw(f"// action:prompt_begin {self._t('prompt_material')}")
+            gcmd.respond_raw(f"// action:prompt_text {fname}")
+
             gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_map_color')}")
-            gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_file', fname)}")
             gcmd.respond_raw(f"// action:prompt_text T{ztool}:")
 
             gcmd.respond_raw("// action:prompt_button_group_start")
