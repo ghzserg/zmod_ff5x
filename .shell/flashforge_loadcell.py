@@ -247,16 +247,16 @@ class LoadCellSensor:
         self.gcode.register_command('ZCONTROL_STATUS', self.cmd_ZCONTROL_STATUS)
         self.gcode.register_command('ZCONTROL_OFF', self.cmd_ZCONTROL_OFF)
         self.zmod = self.printer.lookup_object('zmod', None)
-        self.language = 'en'
+        self.lang = 'en'
         if self.zmod is not None:
-            self.language = self.zmod.get_lang()
+            self.lang = self.zmod.get_lang()
 
     def getlang(self):
         if self.zmod is None:
-            self.language = 'en'
+            self.lang = 'en'
             self.zmod = self.printer.lookup_object('zmod', None)
             if self.zmod is not None:
-                self.language = self.zmod.get_lang()
+                self.lang = self.zmod.get_lang()
 
     def cmd_ZCONTROL_ON(self, gcmd):
         if self.max_temp != 2048 and self.zcontrol == 0:
@@ -283,31 +283,31 @@ class LoadCellSensor:
     def cmd_ZCONTROL_STATUS(self, gcmd):
         self.getlang()
         if self.max_temp == 2048:
-            if self.language != 'ru':
+            if self.lang != 'ru':
                 msg = "Weight control is not configured. // To configure: NOZZLE_CONTROL WEIGHT=1500"
             else:
                 msg = "Контроль веса не настроен. // Для настройки: NOZZLE_CONTROL WEIGHT=1500"
             gcmd.respond_info(msg)
         else:
             if self.zcontrol == 1:
-                if self.language != 'ru':
+                if self.lang != 'ru':
                     status_msg = "Weight: %d; Control is configured and active." % self.max_temp
                 else:
                     status_msg = "Вес: %d; Контроль настроен и активен." % self.max_temp
             else:
-                if self.language != 'ru':
+                if self.lang != 'ru':
                     status_msg = "Weight: %d; Control is configured but inactive." % self.max_temp
                 else:
                     status_msg = "Вес: %d; Контроль настроен и не активен." % self.max_temp
             gcmd.respond_info(status_msg)
 
             if self.zcommand == 1:
-                if self.language != 'ru':
+                if self.lang != 'ru':
                     action_msg = "PAUSE is triggered when activated. // ZCONTROL_PAUSE"
                 else:
                     action_msg = "При сработке вызывается PAUSE. // ZCONTROL_PAUSE"
             else:
-                if self.language != 'ru':
+                if self.lang != 'ru':
                     action_msg = "Klipper is disabled when triggered. // ZCONTROL_ABORT"
                 else:
                     action_msg = "При сработке отключается Klipper. // ZCONTROL_ABORT"
@@ -329,7 +329,7 @@ class LoadCellSensor:
         if temp > self.max_temp and self.zcontrol == 1:
             if self.zcommand == 1:
                 msg = (f"!! Nozzle hit bed or part detachment. Weight {temp}>{self.max_temp}. PAUSE. https://github.com/ghzserg/zmod/wiki/Global_en#nozzle_control"
-                       if self.language != 'ru'
+                       if self.lang != 'ru'
                        else f"!! Удар сопла о стол или отрыв детали. Вес {temp}>{self.max_temp}. PAUSE. https://github.com/ghzserg/zmod/wiki/Global_ru#nozzle_control")
                 self.gcode.respond_raw(msg)
 
@@ -345,7 +345,7 @@ class LoadCellSensor:
             else:
                 shutdown_msg = (
                     f"Nozzle hit bed or part detachment. Weight {temp}>{self.max_temp}. FIRMWARE_RESTART. https://github.com/ghzserg/zmod/wiki/Global_en#nozzle_control"
-                    if self.language != 'ru'
+                    if self.lang != 'ru'
                     else f"Удар сопла о стол или отрыв детали. Вес {temp}>{self.max_temp}. FIRMWARE_RESTART. https://github.com/ghzserg/zmod/wiki/Global_ru#nozzle_control"
                 )
                 self.printer.invoke_async_shutdown(shutdown_msg)
