@@ -920,7 +920,7 @@ class zmod_color:
             spool_number = mapping[channel]
             current_spool_number = self.get_current_channel()
 
-            if spool_number != current_spool_number:
+            if spool_number != current_spool_number or not self.get_extruder_sensor():
                 self.gcode.run_script_from_command(f"INSERT_PRUTOK_IFS PRUTOK={spool_number} NEED_STOP=0 TRASH=0")
             else:
                 gcmd.respond_raw(f"Current Prutok = Prutok = {spool_number}")
