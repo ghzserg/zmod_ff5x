@@ -411,7 +411,7 @@ class zmod_color:
         self.printer = config.get_printer()
 
         self.display = config.getboolean('display', True)
-        self.language = 'en'
+        self.lang = 'en'
         self.ifs = False
         self.valid_types = ['PLA', 'ABS', 'PETG', 'TPU', 'PLA-CF', 'PETG-CF', 'SILK', '?']
         self.gcode = self.printer.lookup_object('gcode')
@@ -435,11 +435,11 @@ class zmod_color:
     def _handle_ready(self):
         self.zmod = self.printer.lookup_object('zmod', None)
         if self.zmod is not None:
-            self.language = self.zmod.get_lang()
+            self.lang = self.zmod.get_lang()
 
         self.COLOR_MAPPING = {}
         try:
-            with open(f"/usr/data/config/mod_data/color/{self.language}.json", 'r', encoding='utf-8') as f:
+            with open(f"/usr/data/config/mod_data/color/{self.lang}.json", 'r', encoding='utf-8') as f:
                 self.COLOR_MAPPING = json.load(f)
         except Exception as e:
             self.COLOR_MAPPING = {}
@@ -592,7 +592,7 @@ class zmod_color:
             return None, str(e)
 
     def _t(self, key, *args):
-        return TRANSLATIONS[self.language][key].format(*args)
+        return TRANSLATIONS[self.lang][key].format(*args)
 
     def parse_printer_response(self, response_data):
         slots_info = []
@@ -920,7 +920,7 @@ class zmod_color:
             spool_number = mapping[channel]
             current_spool_number = self.get_current_channel()
 
-            if spool_number != current_spool_number:
+            if spool_number != current_spool_number or not self.get_extruder_sensor():
                 self.gcode.run_script_from_command(f"INSERT_PRUTOK_IFS PRUTOK={spool_number} NEED_STOP=0 TRASH=0")
             else:
                 gcmd.respond_raw(f"Current Prutok = Prutok = {spool_number}")
