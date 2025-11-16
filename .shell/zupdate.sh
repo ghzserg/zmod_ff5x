@@ -21,5 +21,4 @@ else
 fi
 
 $CCURL -X POST http://127.0.0.1:7125/machine/update/refresh \
-     -H "Content-Type: application/json" \
-     -d '{"name": "klipper"}' &
+     -H "Content-Type: application/json" &
