@@ -103,6 +103,34 @@ class GitDeploy(AppDeploy):
         # Refresh local repo state
         await self._update_repo_state(need_fetch=False)
         await self.restart_service()
+
+        if "/root/printer_data/config/mod_data/plugins" in str(self.path):
+            update_script_path = self.path.joinpath("update.sh")
+            if update_script_path.is_file():
+                self.log_info(f"Update script found at {update_script_path}, executing...")
+                try:
+                    proc = await asyncio.create_subprocess_exec(
+                        str(update_script_path),
+                        stdout=asyncio.subprocess.PIPE,
+                        stderr=asyncio.subprocess.PIPE,
+                        cwd=str(self.path)
+                    )
+                    stdout, stderr = await proc.communicate()
+
+                    if proc.returncode != 0:
+                        self.log_info(f"Update script failed with return code {proc.returncode}")
+                        if stderr:
+                            self.log_info(f"Stderr: {stderr.decode()}")
+                        if stdout:
+                            self.log_info(f"Stdout: {stdout.decode()}")
+                    else:
+                        self.log_info("Update script executed successfully")
+                        if stdout:
+                            self.log_info(f"Script output: {stdout.decode()}")
+
+                except Exception as e:
+                    self.log_info(f"Error executing update script: {e}")
+
         if self.name=="zmod":
             subprocess.run(["/bin/sudo", "systemctl", "reboot"])
         self.notify_status("Update Finished...", is_complete=True)
@@ -131,7 +159,6 @@ class GitDeploy(AppDeploy):
             await self.repo.reset(reset_ref)
             await self._update_repo_state()
         self.repo.set_rollback_state(None)
-
         if self.repo.is_dirty() or not self._is_valid:
             raise self.server.error(
                 "Recovery attempt failed, repo state not pristine", 500)
