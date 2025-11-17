@@ -104,7 +104,7 @@ class GitDeploy(AppDeploy):
         await self._update_repo_state(need_fetch=False)
         await self.restart_service()
 
-        if "/root/printer_data/config/mod_data/plugins" in str(self.path):
+        if "/mod_data/plugins/" in str(self.path):
             update_script_path = self.path.joinpath("update.sh")
             if update_script_path.is_file():
                 self.log_info(f"Update script found at {update_script_path}, executing...")
