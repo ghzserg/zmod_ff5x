@@ -606,6 +606,8 @@ def main():
     opts.add_option("--de", action="store_true", dest="en_lang", default=False, help="Use English output")
     opts.add_option("--fr", action="store_true", dest="en_lang", default=False, help="Use English output")
     opts.add_option("--es", action="store_true", dest="en_lang", default=False, help="Use English output")
+    opts.add_option("--cs", action="store_true", dest="en_lang", default=False, help="Use English output")
+    opts.add_option("--pt", action="store_true", dest="en_lang", default=False, help="Use English output")
     opts.add_option("--it", action="store_true", dest="en_lang", default=False, help="Use English output")
     opts.add_option("-o", "--output", type="string", dest="output",
                     default=None, help="filename of output graph")
