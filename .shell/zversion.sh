@@ -30,7 +30,7 @@ fi
 
 [ ${ZLANG} != 'ru' ] && echo "Enabled Plugins: $plugins" || echo "Активные плагины: $plugins"
 
-if ! echo "$plugins" | grep -q "^recommend$\|,recommend$\|^recommend,\|,recommend,"; then
+if ! echo "$plugins" | grep -q "^recommend$\|,recommend$\|^recommend,\|,recommend," && ! grep -q "no_recommend = 1" /opt/config/mod_data/variables.cfg; then
     [ ${ZLANG} != 'ru' ] && echo "Have you forgotten to enable the recommended parameters? ENABLE_PLUGIN name=recommend" || echo "А вы не забыли включить рекомендуемые параметры? ENABLE_PLUGIN name=recommend"
 fi
 
