@@ -16,19 +16,8 @@ for arg in "$@"; do
     fi
 done
 
-SCV="5.0"
-if grep -q "fix_scv = 1" /opt/config/mod_data/variables.cfg; then
-    if grep -q '^square_corner_velocity' /opt/config/mod_data/user.cfg; then
-        SCV=$(grep '^square_corner_velocity' /opt/config/mod_data/user.cfg| cut -d ":" -f 2 | awk '{print $1}')
-        if ! $json_in_present; then [ ${ZLANG} != 'ru' ] && echo "Using SCV (square_corner_velocity) = $SCV from mod_data/user.cfg" || echo "Используется SCV (square_corner_velocity) = $SCV из mod_data/user.cfg"; fi
-    else if grep -q '^square_corner_velocity' /opt/config/printer.base.cfg; then
-        SCV=$(grep '^square_corner_velocity' /opt/config/printer.base.cfg| cut -d ":" -f 2 | awk '{print $1}')
-        if ! $json_in_present; then [ ${ZLANG} != 'ru' ] && echo "Using SCV (square_corner_velocity) = $SCV from printer.base.cfg" || echo "Используется SCV (square_corner_velocity) = $SCV из printer.base.cfg"; fi
-    else
-        if ! $json_in_present; then [ ${ZLANG} != 'ru' ] && echo "Using default SCV (square_corner_velocity) = $SCV" || echo "Используется стандартный SCV (square_corner_velocity) = $SCV"; fi
-    fi
-    fi
-fi
+SCV="$(cat /opt/config/mod_data/scv.txt)"
+if ! $json_in_present; then [ ${ZLANG} != 'ru' ] && echo "Using SCV (square_corner_velocity) = $SCV" || echo "Используется SCV (square_corner_velocity) = $SCV"; fi
 
 if [ "$1"  == "/tmp/resonances_x_x.csv" ] && ! $json_in_present; then
     sed 's/psd_x/psd_Y/' /tmp/resonances_x_x.csv | sed 's/psd_y/psd_x/' | sed 's/psd_Y/psd_y/' | awk -F ',' '{print $1","$3","$2","$4","$5}' >X

@@ -4,6 +4,11 @@ source /opt/config/mod/.shell/0.sh
 
 unset LD_PRELOAD
 
+if [ "$1" == "SCV" ]; then
+    echo "$2" >/opt/config/mod_data/scv.txt
+    exit 0
+fi
+
 if [ -f /ZMOD ]; then
     /opt/config/mod/.shell/root/zshaper_new.sh $@
 else
