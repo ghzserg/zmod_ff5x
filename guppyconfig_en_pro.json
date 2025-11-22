@@ -16,11 +16,11 @@
       "fans": [
         {
           "display_name": "Internal",
-          "id": "fan_generic internal_fan"
+          "id": "fan_generic internal"
         },
         {
           "display_name": "External",
-          "id": "fan_generic external_fan"
+          "id": "fan_generic external"
         },
         {
           "display_name": "Chamber",
