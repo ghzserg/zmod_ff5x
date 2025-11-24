@@ -870,6 +870,24 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "visible": true
         },
         {
+            "alias": "ZLINK",
+            "categoryId": "09a46273-5af4-4fc4-b232-442934c1e810",
+            "color": "",
+            "disabledWhilePrinting": false,
+            "name": "zlink",
+            "order": 14,
+            "visible": true
+        },
+        {
+            "alias": "ZLINK_OFF",
+            "categoryId": "09a46273-5af4-4fc4-b232-442934c1e810",
+            "color": "",
+            "disabledWhilePrinting": false,
+            "name": "zlink_off",
+            "order": 15,
+            "visible": true
+        },
+        {
             "alias": "",
             "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
             "color": "",
@@ -1485,6 +1503,22 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
                "color" : "group",
                "name" : "ZFLASH",
                "pos" : 30,
+               "showInPause" : false,
+               "showInPrinting" : false,
+               "showInStandby" : true
+            },
+            {
+               "color" : "group",
+               "name" : "ZLINK",
+               "pos" : 31,
+               "showInPause" : false,
+               "showInPrinting" : false,
+               "showInStandby" : true
+            },
+            {
+               "color" : "group",
+               "name" : "ZLINK_OFF",
+               "pos" : 32,
                "showInPause" : false,
                "showInPrinting" : false,
                "showInStandby" : true
