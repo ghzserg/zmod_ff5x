@@ -31,12 +31,18 @@ if [ "$1" == "off" ]; then
 fi
 
 if [ "$1" == "enable" ]; then
-    m=$(( "$4" + 0 )) 2>/dev/null || m=0
-    p=$(( "$5" + 0 )) 2>/dev/null || p=0
+    m=$(( $4 + 0 )) 2>/dev/null || m=0
+    p=$(( $5 + 0 )) 2>/dev/null || p=0
+
     if [ "$2" != "" ] && [ "$3" != "" ] && [ $m -eq 0 ] && [ $p -eq 0 ]; then
         echo "Error. Bad param"
     else
-        echo -e "1\n$2\n$3\n$m\n$p\n" >${CONF}
+        echo "1
+$2
+$3
+$m
+$p
+" >${CONF}
         start_zlink
         exit 0
     fi
