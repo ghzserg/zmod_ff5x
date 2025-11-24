@@ -22,7 +22,12 @@ up() {
         ${V4l2} -d $a --list-formats-ext
     done;
 
-    if [ $START = "on" ] && [ -c /dev/$VIDEO ]; then
+    if [ $START != "on" ]; then
+        [ ${ZLANG} != 'ru' ] && echo "Camera off" || echo "Камера отключена"
+        return 0
+    fi
+
+    if [ -c /dev/$VIDEO ]; then
         ${V4l2} -d /dev/$VIDEO --list-formats
         ${V4l2} -d /dev/$VIDEO --list-formats-ext
         if ${V4l2} -d /dev/$VIDEO  --list-formats | grep MJPG; then
@@ -53,7 +58,9 @@ up() {
         fi
         [ ${ZLANG} != 'ru' ] && echo "Camera started" || echo "Запуск камеры завершен" 
     else
-        [ ${ZLANG} != 'ru' ] && echo "Camera off" || echo "Камера отключена"
+        [ ${ZLANG} != 'ru' ] && echo "Camera not found $VIDEO" || echo "Камера не существует $VIDEO"
+        cd /dev/
+        ls video*
     fi
 }
 
