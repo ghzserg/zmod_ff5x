@@ -18,6 +18,12 @@ PID_FILE=/run/camera.pid
 up() {
     ${V4l2} --all
     ls -1 /dev/video? | while read a; do
+        if ${V4l2} -d /dev/$a --list-formats-ext 2>/dev/null |grep MJPG >/dev/null 2>/dev/null; then
+            echo $a
+        fi
+    done
+
+    ls -1 /dev/video? | while read a; do
         ${V4l2} -d $a --list-formats
         ${V4l2} -d $a --list-formats-ext
     done;
@@ -60,7 +66,11 @@ up() {
     else
         [ ${ZLANG} != 'ru' ] && echo "Camera not found $VIDEO" || echo "Камера не существует $VIDEO"
         cd /dev/
-        ls video*
+        ls -1 video? | while read a; do
+            if ${V4l2} -d /dev/$a --list-formats-ext 2>/dev/null |grep MJPG >/dev/null 2>/dev/null; then
+                echo "Test: CAMERA_ON VIDEO=$a"
+            fi
+        done
     fi
 }
 
