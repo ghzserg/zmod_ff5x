@@ -17,6 +17,11 @@ PID_FILE=/run/camera.pid
 
 up() {
     ${V4l2} --all
+    ls -1 /dev/video? | while read a; do
+        ${V4l2} -d $a --list-formats
+        ${V4l2} -d $a --list-formats-ext
+    done;
+
     if [ $START = "on" ] && [ -c /dev/$VIDEO ]; then
         ${V4l2} -d /dev/$VIDEO --list-formats
         ${V4l2} -d /dev/$VIDEO --list-formats-ext
