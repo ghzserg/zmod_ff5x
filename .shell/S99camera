@@ -18,18 +18,13 @@ PID_FILE=/run/camera.pid
 up() {
     ${V4l2} --all
     ls -1 /dev/video? | while read a; do
-        if ${V4l2} -d /dev/$a --list-formats-ext 2>/dev/null |grep MJPG >/dev/null 2>/dev/null; then
-            echo $a
-        fi
-    done
-
-    ls -1 /dev/video? | while read a; do
         ${V4l2} -d $a --list-formats
         ${V4l2} -d $a --list-formats-ext
     done;
 
+    >/opt/config/mod_data/log/cam.log
     if [ $START != "on" ]; then
-        [ ${ZLANG} != 'ru' ] && echo "Camera off" || echo "Камера отключена"
+        [ ${ZLANG} != 'ru' ] && echo "Camera off" >>/opt/config/mod_data/log/cam.log || echo "Камера отключена" >>/opt/config/mod_data/log/cam.log
         return 0
     fi
 
@@ -62,13 +57,13 @@ up() {
                 [ ${FF5X} -eq 0 ] && [ "$1" != "init" ] && mount --bind ${REMOUNT_MOD} ${UMOUNT_MOD}
             fi
         fi
-        [ ${ZLANG} != 'ru' ] && echo "Camera started" || echo "Запуск камеры завершен" 
+        [ ${ZLANG} != 'ru' ] && echo "Camera started" >>/opt/config/mod_data/log/cam.log || echo "Запуск камеры завершен" >>/opt/config/mod_data/log/cam.log
     else
-        [ ${ZLANG} != 'ru' ] && echo "Camera not found $VIDEO" || echo "Камера не существует $VIDEO"
+        [ ${ZLANG} != 'ru' ] && echo "Camera not found $VIDEO" >>/opt/config/mod_data/log/cam.log || echo "Камера не существует $VIDEO" >>/opt/config/mod_data/log/cam.log
         cd /dev/
         ls -1 video? | while read a; do
             if ${V4l2} -d /dev/$a --list-formats-ext 2>/dev/null |grep MJPG >/dev/null 2>/dev/null; then
-                echo "Test: CAMERA_ON VIDEO=$a"
+                echo "Test: CAMERA_ON VIDEO=$a" >>/opt/config/mod_data/log/cam.log
             fi
         done
     fi
