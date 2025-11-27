@@ -11,11 +11,11 @@ start_zlink()
 {
     killall zlink 2>/dev/null
 
-    mv ${MOD_CONF}/mod_data/log/zlink.4.log ${MOD_CONF}/mod_data/log/zlink.5.log
-    mv ${MOD_CONF}/mod_data/log/zlink.3.log ${MOD_CONF}/mod_data/log/zlink.4.log
-    mv ${MOD_CONF}/mod_data/log/zlink.2.log ${MOD_CONF}/mod_data/log/zlink.3.log
-    mv ${MOD_CONF}/mod_data/log/zlink.1.log ${MOD_CONF}/mod_data/log/zlink.2.log
-    mv ${MOD_CONF}/mod_data/log/zlink.log   ${MOD_CONF}/mod_data/log/zlink.1.log
+    mv ${MOD_CONF}/mod_data/log/zlink.4.log ${MOD_CONF}/mod_data/log/zlink.5.log 2>/dev/null
+    mv ${MOD_CONF}/mod_data/log/zlink.3.log ${MOD_CONF}/mod_data/log/zlink.4.log 2>/dev/null
+    mv ${MOD_CONF}/mod_data/log/zlink.2.log ${MOD_CONF}/mod_data/log/zlink.3.log 2>/dev/null
+    mv ${MOD_CONF}/mod_data/log/zlink.1.log ${MOD_CONF}/mod_data/log/zlink.2.log 2>/dev/null
+    mv ${MOD_CONF}/mod_data/log/zlink.log   ${MOD_CONF}/mod_data/log/zlink.1.log 2>/dev/null
 
     if [ -f /ZMOD ]; then
         /opt/config/mod/.shell/zlink 2>/dev/null
