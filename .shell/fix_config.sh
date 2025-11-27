@@ -327,7 +327,7 @@ trusted_clients:
   0.0.0.0/0
 
 cors_domains:
-  *
+  *.zmod.link:*
 " >${MOD_CONF}/mod_data/user.moonraker.conf;
     fi
 
