@@ -306,7 +306,7 @@ class VirtualSD:
             #logging.info("Starting SD card print (line %s)", line)
             if line.startswith("EXCLUDE_OBJECT_DEFINE") or line.startswith("EXCLUDE_OBJECT_START") or line.startswith("EXCLUDE_OBJECT_END"):
                 self.gcode.run_script("M400")
-                self.reactor.pause(reactor.monotonic() + .005)
+                self.reactor.pause(self.reactor.monotonic() + .005)
             if line.startswith("T") and self.enable_ffm:
                 cmd = line.split(';', 1)[0].strip()
                 if cmd in VALID_GCODE_T:
