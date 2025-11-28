@@ -304,6 +304,9 @@ class VirtualSD:
                 next_file_position = self.file_position + len(line) + 1
             self.next_file_position = next_file_position
             #logging.info("Starting SD card print (line %s)", line)
+            if line.startswith("EXCLUDE_OBJECT_DEFINE") or line.startswith("EXCLUDE_OBJECT_START") or line.startswith("EXCLUDE_OBJECT_END"):
+                self.gcode.run_script("M400")
+                reactor.pause(reactor.monotonic() + .005)
             if line.startswith("T") and self.enable_ffm:
                 cmd = line.split(';', 1)[0].strip()
                 if cmd in VALID_GCODE_T:
@@ -311,7 +314,7 @@ class VirtualSD:
                     if self.print_channel != self.load_channel:
                         self.gcode.run_script("M400")
                         self.change_filament = True
-                        # zmod 1.6
+                        # zmod 1.7
                         self.gcode.run_script(f"_A_CHANGE_FILAMENT CHANNEL={self.print_channel} RESTORE_POSITION=1 RESTORE_TEMP=1")
                         while True:
                             if not self.change_filament:
