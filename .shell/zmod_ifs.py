@@ -408,8 +408,10 @@ class zmod_ifs:
     def cmd_IFS_MOTION(self, gcmd):
         cur_prutok=self.get_current_channel_from_config()
         if self.get_port(cur_prutok):
+            # Остановился
             self.gcode.run_script_from_command("_PRINT_IFS_MOTION PAUSE=1")
         else:
+            # Закончился
             self.gcode.run_script_from_command("_PRINT_IFS_MOTION PAUSE=0")
 
     # Указать текущий пруток
