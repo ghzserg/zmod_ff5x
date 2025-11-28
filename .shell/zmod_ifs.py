@@ -486,9 +486,11 @@ class zmod_ifs:
                 with open(FILE_CONFIG, 'w') as f:
                     json.dump(new_mapping, f)
 
+                self.gcode.run_script_from_command("_PRINT_HEAD INFO=1 PRUTOK={t_prutok}")
                 self.gcode.run_script_from_command(f"_A_CHANGE_FILAMENT CHANNEL={t_prutok} RESTORE_POSITION=0 RESTORE_TEMP=1")
-                self.gcode.run_script_from_command("RESUME")
+                #self.gcode.run_script_from_command("RESUME")
                 return
+        self.gcode.run_script_from_command("_PRINT_HEAD INFO=0")
 
     # Извлечь пруток из IFS
     def cmd_REMOVE_PRUTOK_IFS(self, gcmd):
