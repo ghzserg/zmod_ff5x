@@ -750,7 +750,7 @@ class FileManager:
         flist: Dict[str, Any] = {'dirs': [], 'files': []}
         for fname in os.listdir(path):
             full_path = os.path.join(path, fname)
-            if fname == ".shell" or fname == ".mod" or fname == "lost+found" or fname == "logFiles" or fname == "uploadThumbnail" or fname == "thumbnails" or fname == "camera":
+            if fname == ".shell" or fname == ".mod" or fname == "lost+found" or fname == "logFiles" or fname == "uploadThumbnail" or fname == "thumbnails" or fname == "camera" or fname == "3mf":
                 continue
             if not os.path.exists(full_path):
                 continue
