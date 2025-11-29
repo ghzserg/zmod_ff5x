@@ -187,6 +187,9 @@ while read a; do
     fi
 done
 
+# Rem tmp TIMELapse
+[ -d /root/printer_data/gcodes/timelapse/tmp ] && rm -rf /root/printer_data/gcodes/timelapse/tmp/*
+
 if grep -q mainsail-crew /root/mainsail/release_info.json; then
     echo '{"project_name":"mainsail","project_owner":"ghzserg","version":"v1.0.0"}' >/root/mainsail/release_info.json
     sqlite3 /opt/config/mod_data/database/moonraker-sql.db "DELETE FROM namespace_store WHERE namespace = 'update_manager' AND key = 'mainsail';"
