@@ -797,14 +797,6 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
             "color": "",
             "disabledWhilePrinting": false,
-            "name": "leveling_print_file",
-            "visible": false
-        },
-        {
-            "alias": "",
-            "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
-            "color": "",
-            "disabledWhilePrinting": false,
             "name": "sdcard_print_file",
             "order": 15,
             "visible": false
@@ -816,14 +808,6 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "disabledWhilePrinting": false,
             "name": "sdcard_reset_file",
             "order": 16,
-            "visible": false
-        },
-        {
-            "alias": "",
-            "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
-            "color": "",
-            "disabledWhilePrinting": false,
-            "name": "noleveling_print_file",
             "visible": false
         },
         {
@@ -1122,14 +1106,6 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
             },
             {
                "color" : "group",
-               "name" : "LEVELING_PRINT_FILE",
-               "pos" : 8,
-               "showInPause" : false,
-               "showInPrinting" : false,
-               "showInStandby" : false
-            },
-            {
-               "color" : "group",
                "name" : "CLOSE_DIALOGS",
                "pos" : 9,
                "showInPause" : true,
@@ -1151,14 +1127,6 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
                "showInPause" : true,
                "showInPrinting" : true,
                "showInStandby" : true
-            },
-            {
-               "color" : "group",
-               "name" : "NOLEVELING_PRINT_FILE",
-               "pos" : 12,
-               "showInPause" : false,
-               "showInPrinting" : false,
-               "showInStandby" : false
             },
             {
                "color" : "group",
