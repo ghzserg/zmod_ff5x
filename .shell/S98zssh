@@ -17,6 +17,9 @@ fi
 if ! [ -f /opt/config/mod_data/ssh.local.key ] || ! [ -f /opt/config/mod_data/ssh.local.txt ]; then
     dropbearkey -t rsa -f /opt/config/mod_data/ssh.local.key
     dropbearkey -y -t rsa -f /opt/config/mod_data/ssh.local.key |grep root >/opt/config/mod_data/ssh.local.txt
+fi
+
+if ! [ -f /root/.ssh/authorized_keys ]; then
     mkdir -p /root/.ssh/
     chmod 700 /root/.ssh/
     cat /opt/config/mod_data/ssh.local.txt >>/root/.ssh/authorized_keys
