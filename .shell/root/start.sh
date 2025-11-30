@@ -102,6 +102,8 @@ prepare_chroot()
     rm -rf /root/moonraker-env/lib/python3.12/site-packages/uvloop*  || echo "uvloop уже убит"
     if [ ${FF5X} -eq 0 ]; then
         rm -rf /root/moonraker-env/lib/python3.12/site-packages/msgspec* || echo "msgspec уже убит"
+    else
+        rm -f /root/.ssh/known_hosts /.ssh/known_hosts || echo "Not"
     fi
 }
 
@@ -189,7 +191,6 @@ done
 
 # Rem tmp TIMELapse
 [ -d /root/printer_data/gcodes/timelapse/tmp ] && rm -rf /root/printer_data/gcodes/timelapse/tmp/*
-[ ${FF5X} -eq 1 ] && rm -f /root/.ssh/known_hosts
 
 if grep -q mainsail-crew /root/mainsail/release_info.json; then
     echo '{"project_name":"mainsail","project_owner":"ghzserg","version":"v1.0.0"}' >/root/mainsail/release_info.json
