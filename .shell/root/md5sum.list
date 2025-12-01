@@ -3637,7 +3637,7 @@ d62f2e124782d64678a339afdc8f30c8  ./usr/lib/locale/it_IT.utf8/LC_MONETARY
 5cf51ae8279119ff4c1a67b81b5a6cdf  ./usr/lib/locale/it_IT.utf8/LC_PAPER
 439ca4cda3e1e7b0ee70460dd966cbae  ./usr/lib/locale/it_IT.utf8/LC_TELEPHONE
 f0f7fa3049cf023b1b6497ea41651fa8  ./usr/lib/locale/it_IT.utf8/LC_TIME
-c69f567a91de0bdfe22ed294805a3441  ./usr/lib/locale/locale-archive
+86fbc1dfeeac92c69f843573d9252b0a  ./usr/lib/locale/locale-archive
 fdf004d758138adf46ab58b59faea9ea  ./usr/lib/locale/pt_PT.utf8/LC_ADDRESS
 fd395c98c7f4bf194d24b0e4d8177c49  ./usr/lib/locale/pt_PT.utf8/LC_COLLATE
 907120e7b8ceba4e685fe893a03c8f9b  ./usr/lib/locale/pt_PT.utf8/LC_CTYPE
@@ -3662,6 +3662,18 @@ e3c1e6b90e6b6a2eb6119802deb76010  ./usr/lib/locale/ru_RU.utf8/LC_MEASUREMENT
 5cf51ae8279119ff4c1a67b81b5a6cdf  ./usr/lib/locale/ru_RU.utf8/LC_PAPER
 311fe060a5ba768d00c0dc4d645368b3  ./usr/lib/locale/ru_RU.utf8/LC_TELEPHONE
 11ee8fc19924933ff118218c13e4b9e3  ./usr/lib/locale/ru_RU.utf8/LC_TIME
+3356e564f5a760531710f43fffc2af11  ./usr/lib/locale/tr_TR.utf8/LC_ADDRESS
+bf2622763c7e5b78dbbf6fe0e114afd6  ./usr/lib/locale/tr_TR.utf8/LC_COLLATE
+856b5391a7ebba0cdab1284e19645dd6  ./usr/lib/locale/tr_TR.utf8/LC_CTYPE
+f4b7909d5664487f2fa150a68fc4dcc2  ./usr/lib/locale/tr_TR.utf8/LC_IDENTIFICATION
+e3c1e6b90e6b6a2eb6119802deb76010  ./usr/lib/locale/tr_TR.utf8/LC_MEASUREMENT
+1acee90364f013f073a20f4492b3e0c1  ./usr/lib/locale/tr_TR.utf8/LC_MESSAGES/SYS_LC_MESSAGES
+956ad345dc2540be37bc89fd3f23d858  ./usr/lib/locale/tr_TR.utf8/LC_MONETARY
+24651feb3824576312143a5bf96e8401  ./usr/lib/locale/tr_TR.utf8/LC_NAME
+500e28cb643c724cdd89e27be767fd88  ./usr/lib/locale/tr_TR.utf8/LC_NUMERIC
+5cf51ae8279119ff4c1a67b81b5a6cdf  ./usr/lib/locale/tr_TR.utf8/LC_PAPER
+59d1f8cca055d22b499987025c63b037  ./usr/lib/locale/tr_TR.utf8/LC_TELEPHONE
+2c25eead21b29279a6e2f7d5f00f4ddf  ./usr/lib/locale/tr_TR.utf8/LC_TIME
 4ba674ce26e6f444dcb1d504c0f3e5c9  ./usr/lib/mjpg-streamer/input_file.so
 ccba700929bb4d15773337dc214840b9  ./usr/lib/mjpg-streamer/input_http.so
 590b6a2ee163938a8ff3c91087df3473  ./usr/lib/mjpg-streamer/input_uvc.so
