@@ -105,8 +105,22 @@ class GitDeploy(AppDeploy):
         await self.restart_service()
 
         if "/mod_data/plugins/" in str(self.path):
+            include_line = f"[include plugins/{self.name}/{self.name}.cfg]"
+            cfg_path = "/opt/config/mod_data/plugins.cfg"
+            plugin_enabled = False
+
+            if os.path.isfile(cfg_path):
+                try:
+                    with open(cfg_path, encoding='utf-8') as f:
+                        for line in f:
+                            if line.strip() == include_line:
+                                plugin_enabled = True
+                                break
+                except OSError as e:
+                    self.log_warning(f"Cannot read {cfg_path}: {e}")
+
             update_script_path = self.path.joinpath("update.sh")
-            if update_script_path.is_file():
+            if plugin_enabled and update_script_path.is_file():
                 self.log_info(f"Update script found at {update_script_path}, executing...")
                 try:
                     proc = await asyncio.create_subprocess_exec(
