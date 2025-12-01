@@ -271,7 +271,7 @@ fix_config()
         [ -f ${MOD_CONF}/mod_data/color.json ] && rm -f ${MOD_CONF}/mod_data/color.json
 
         mkdir -p ${MOD_CONF}/mod_data/color/
-        for lang in ru en de fr it es pt zh ja ko cs; do
+        for lang in ru en de fr it es pt zh ja ko cs tr; do
           [ -f "${MOD_CONF}/mod_data/color/${lang}.json" ] || cp "${MOD_CONF}/mod/.shell/color/${lang}.json" "${MOD_CONF}/mod_data/color/"
         done
 

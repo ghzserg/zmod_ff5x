@@ -209,6 +209,8 @@ def main():
                 help="Set output language to English")
     opts.add_option("--pt", action="store_true", dest="en", default=False,
                 help="Set output language to English")
+    opts.add_option("--tr", action="store_true", dest="en", default=False,
+                help="Set output language to English")
     opts.add_option("--ko", action="store_true", dest="en", default=False,
                 help="Set output language to English")
     opts.add_option("--ru", action="store_true", dest="ru", default=False,
