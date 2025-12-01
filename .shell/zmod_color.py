@@ -403,7 +403,43 @@ TRANSLATIONS = {
         "unload_error": "Chyba vyndávání: {}",
         "unload_success": "Vyndávání spuštěno",
         "unload": "Vyndat"
-}
+    },
+    'tr': {
+        'cancel': "İptal",
+        'change_color': "Rengi değiştir",
+        'change_spool': "{} no'lu makaraya geçiliyor: {}/{}",
+        'change_type': "Türü değiştir",
+        'config_error': "!! Renk/tür değiştirme hatası\n{}",
+        'config_success': "Ayarlar kaydedildi",
+        'error_color_or_type': "HEX veya TÜR belirtin",
+        'error_leveling': "Geçersiz SEVİYELEME: {}. Geçerli: 0 veya 1",
+        'error_napr': "Geçersiz yön (0-1)",
+        'error_no_filename': "DOSYA_ADI parametresi eksik",
+        'error_slot': "Geçersiz YUVAL. Geçerli: 1-4",
+        'error_tool': "Geçersiz T{}: {}. Geçerli: 1-4",
+        'error_type': "Geçersiz malzeme türü: {}. Geçerli: {}",
+        'file_tool': "Dosyada",
+        'load_error': "!! Yükleme/boşaltma hatası\n{}",
+        'load_success': "Yükleme başlatıldı",
+        'load': "Yükle",
+        'no_response': "!! Yazıcıdan yanıt alınamadı. Şu yolla yapılandırın: \"Ayarlar\" -> \"WiFi\" -> \"Ağ Modu\" -> \"Sadece Yerel\"\n{}",
+        'printing_error': "!! Dosya yazdırma hatası\n{}",
+        'prompt_choose': "Değiştirmek için bir makara seçin",
+        'prompt_leveling_off': "Seviyeleme Kapalı",
+        'prompt_leveling_on': "Seviyeleme Açık",
+        'prompt_map_color': "Dosya rengini makarayla eşleştir",
+        'prompt_material': "Yüklü malzeme",
+        'reset_colors': "Renkleri sıfırla",
+        'select_action': "Bir işlem seçin",
+        'select_color': "Renk seçin",
+        'select_type': "Malzeme türünü seçin",
+        'send_print': "Yazdırmayı başlat",
+        'spool_info': "Makaradaki {}: {}/{}",
+        'spool': "makara",
+        'unload_error': "Boşaltma hatası: {}",
+        'unload_success': "Boşaltma başlatıldı",
+        'unload': "Boşalt"
+    }
 }
 
 class zmod_color:
