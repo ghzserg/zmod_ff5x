@@ -730,13 +730,13 @@ class zmod_ifs:
                     )
                     if ret_code==RET_RETRY:
                         continue
-                    if not success:
-                        gcmd = self.gcode.create_gcode_command("IFS_F112", "IFS_F112", {})
-                        self.cmd_IFS_F112(gcmd)
                     if ret_code == RET_EXTRUDER:
                         self.print_result(ret_code, values, prutok)
                     else:
                         self.print_result(ret_code, values, prutok, info=False)
+                    if not success:
+                        gcmd = self.gcode.create_gcode_command("IFS_F112", "IFS_F112", {})
+                        self.cmd_IFS_F112(gcmd)
                 else:
                     success, ret_code, values = self.wait_for_state(timeout=120)
                 if ret_code!=RET_RETRY:
@@ -887,7 +887,7 @@ class zmod_ifs:
 
         wait = gcmd.get_int('WAIT', 0)
 
-        self.gcode.respond_info(f"Останавливаю движение прутка" if self.lang == 'ru' else f"Stopping filament movement")
+        self.gcode.respond_info(f"Принудительно останавливаю движение прутка" if self.lang == 'ru' else f"Force stop filament movement")
 
         for attempt in range(self.retry_count):
             response = self.send_command_and_wait(f"F112", result=("F112 ok.", "F112 ok. yes."))
