@@ -268,18 +268,26 @@ class zmod_ifs:
             self._command = f"{command}#{command_id}"
         start_time = eventtime = self.reactor.monotonic()
 
+        if result is not None:
+            if isinstance(result, str):
+                expected_results = (result,)
+            else:
+                expected_results = tuple(result)
+        else:
+            expected_results = None
+
         while not self.stop_thread:
             eventtime = self.reactor.pause(eventtime + HOST_REPORT_TIME)
             with self._ret_command_lock:
                 ret_command_data=self._ret_command_data
                 ret_command_id=self._ret_command_id
             if command_id == ret_command_id:
-                if result is not None:
-                    if result == ret_command_data:
+                if expected_results is not None:
+                    if ret_command_data in expected_results:
                         return ret_command_data
                     else:
                         self.gcode.run_script_from_command("_ENABLE_SENSOR")
-                        raise self.gcode.error(f"{command}#{command_id} ret {ret_command_data} != {result}")
+                        raise self.gcode.error(f"{command}#{command_id} ret {ret_command_data} != {expected_results}")
                         return None
                 else:
                     return self._ret_command_data
@@ -882,7 +890,7 @@ class zmod_ifs:
         self.gcode.respond_info(f"Останавливаю движение прутка" if self.lang == 'ru' else f"Stopping filament movement")
 
         for attempt in range(self.retry_count):
-            response = self.send_command_and_wait(f"F112", result="F112 ok.")
+            response = self.send_command_and_wait(f"F112", result=("F112 ok.", "F112 ok. yes."))
             self.info(f"F112 > {response}")
             if wait == 1:
                 success, ret_code, values = self.wait_for_state()
