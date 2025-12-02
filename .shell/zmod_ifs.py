@@ -730,8 +730,8 @@ class zmod_ifs:
                     )
                     if ret_code==RET_RETRY:
                         continue
-                    if ret_code == RET_EXTRUDER:
-                        self.print_result(ret_code, values, prutok)
+                    if ret_code == RET_EXTRUDER or self.get_extruder_sensor():
+                        self.print_result(RET_EXTRUDER, values, prutok)
                     else:
                         self.print_result(ret_code, values, prutok, info=False)
                     if not success:
