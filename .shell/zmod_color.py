@@ -42,7 +42,8 @@ TRANSLATIONS = {
         'spool': "Катушка",
         'unload_error': "Ошибка выгрузки: {}",
         'unload_success': "Выгрузка начата",
-        'unload': "Выгрузить"
+        'unload': "Выгрузить",
+        'remove_from_extruder': "Извлечь из экструдера"
     },
     'en': {
         'cancel': "Cancel",
@@ -78,7 +79,8 @@ TRANSLATIONS = {
         'spool': "in spool",
         'unload_error': "Unloading error: {}",
         'unload_success': "Unloading started",
-        'unload': "Unload"
+        'unload': "Unload",
+        'remove_from_extruder': "Remove from extruder"
     },
     'de': {
         'cancel': "Abbrechen",
@@ -114,7 +116,8 @@ TRANSLATIONS = {
         'spool': "in Spule",
         'unload_error': "Fehler beim Entladen: {}",
         'unload_success': "Entladen gestartet",
-        'unload': "Entladen"
+        'unload': "Entladen",
+        'remove_from_extruder': "Vom Extruder entfernen"
     },
     'fr': {
         'cancel': "Annuler",
@@ -150,7 +153,8 @@ TRANSLATIONS = {
         'spool': "dans la bobine",
         'unload_error': "Erreur de déchargement : {}",
         'unload_success': "Déchargement commencé",
-        'unload': "Décharger"
+        'unload': "Décharger",
+        'remove_from_extruder': "Retirer de l'extrudeuse"
     },
     'it': {
         'cancel': "Annulla",
@@ -186,7 +190,8 @@ TRANSLATIONS = {
         'spool': "nella bobina",
         'unload_error': "Errore di scaricamento: {}",
         'unload_success': "Scaricamento avviato",
-        'unload': "Scarica"
+        'unload': "Scarica",
+        'remove_from_extruder': "Rimuovere dall'estrusore"
     },
     'es': {
         'cancel': "Cancelar",
@@ -222,7 +227,8 @@ TRANSLATIONS = {
         'spool': "en el carrete",
         'unload_error': "Error de descarga: {}",
         'unload_success': "Descarga iniciada",
-        'unload': "Descargar"
+        'unload': "Descargar",
+        'remove_from_extruder': "Extraer del extrusor"
     },
     'zh': {
         'cancel': "取消",
@@ -258,7 +264,8 @@ TRANSLATIONS = {
         'spool': "在线轴中",
         'unload_error': "卸载错误：{}",
         'unload_success': "开始卸载",
-        'unload': "卸载"
+        'unload': "卸载",
+        'remove_from_extruder': "从挤出机中取出"
     },
     'ja': {
         'cancel': "キャンセル",
@@ -294,7 +301,8 @@ TRANSLATIONS = {
         'spool': "スプール内",
         'unload_error': "排出エラー：{}",
         'unload_success': "排出を開始",
-        'unload': "排出する"
+        'unload': "排出する",
+        'remove_from_extruder': "エクストルーダーから取り出す"
     },
     'ko': {
         'cancel': "취소",
@@ -330,7 +338,8 @@ TRANSLATIONS = {
         'spool': "스풀 내",
         'unload_error': "언로드 오류: {}",
         'unload_success': "언로드 시작",
-        'unload': "언로드"
+        'unload': "언로드",
+        'remove_from_extruder': "익스트루더에서 제거"
     },
     'pt': {
         'cancel': "Cancelar",
@@ -366,7 +375,8 @@ TRANSLATIONS = {
         'spool': "na bobina",
         'unload_error': "Erro ao descarregar: {}",
         'unload_success': "Descarga iniciada",
-        'unload': "Descarregar"
+        'unload': "Descarregar",
+        'remove_from_extruder': "Remover da extrusora"
     },
     "cs": {
         "cancel": "Zrušit",
@@ -402,7 +412,8 @@ TRANSLATIONS = {
         "spool": "Cívka",
         "unload_error": "Chyba vyndávání: {}",
         "unload_success": "Vyndávání spuštěno",
-        "unload": "Vyndat"
+        "unload": "Vyndat",
+        'remove_from_extruder': "Vyjmout z extruderu"
     },
     'tr': {
         'cancel': "İptal",
@@ -438,7 +449,8 @@ TRANSLATIONS = {
         'spool': "makara",
         'unload_error': "Boşaltma hatası: {}",
         'unload_success': "Boşaltma başlatıldı",
-        'unload': "Boşalt"
+        'unload': "Boşalt",
+        'remove_from_extruder': "Ekstruderden çıkar"
     }
 }
 
@@ -699,15 +711,19 @@ class zmod_color:
             result = self.parse_printer_response(response_data)
 
             prompt_text = f"Extruder: None ({self.get_current_channel()})"
+            button_text = ""
             if self.get_extruder_sensor():
                 prompt_text = f"Extruder: {self.get_current_channel()}"
                 for slot in result:
                     if self.get_current_channel() == int(slot['ID']):
                         prompt_text = f"Extruder: {slot['ID']}: {slot['Material']}/{slot['Color']}"
+                        button_text = f"// action:prompt_button {self._t('remove_from_extruder')} | IFS_REMOVE_CURRENT_PRUTOK | primary | {slot['HEX']}"
                         break
 
             if silent == 0:
                 gcmd.respond_raw(f"// action:prompt_text {prompt_text} | IFS: {self.ifs}")
+                if button_text:
+                    gcmd.respond_raw(f"{button_text}")
                 gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_choose')}")
                 gcmd.respond_raw("// action:prompt_button_group_start")
             else:
