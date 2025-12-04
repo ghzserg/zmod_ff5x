@@ -1087,6 +1087,16 @@ class zmod_color:
             raise gcmd.error(self._t('error_type', ztype, ', '.join(self.valid_types[:-1])))
 
         gcmd.respond_raw(f"// action:prompt_begin {self._t('select_action')}")
+
+        prompt_text = f"Extruder: None ({self.get_current_channel()})"
+        if self.get_extruder_sensor():
+            prompt_text = f"Extruder: {self.get_current_channel()}"
+            for slot in result:
+                if self.get_current_channel() == int(slot['ID']):
+                    prompt_text = f"Extruder: {slot['ID']}: {slot['Material']}/{slot['Color']}"
+                    break
+
+        gcmd.respond_raw(f"// action:prompt_text {prompt_text}")
         gcmd.respond_raw(f"// action:prompt_text {self._t('spool_info', zslot, ztype, color_name)}")
 
         gcmd.respond_raw("// action:prompt_button_group_start")
