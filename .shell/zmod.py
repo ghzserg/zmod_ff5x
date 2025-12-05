@@ -43,7 +43,7 @@ class zmod:
         try:
             z_probe_offset = data['leftExtruderOffset']['zProbeOffset']
         except KeyError as e:
-            raise gcmd.error(f"Не найден ключ в JSON: {e}")
+            z_probe_offset = 0.0
 
         zoffset = round(float(z_probe_offset), 4)
         if not self.ad5x:
