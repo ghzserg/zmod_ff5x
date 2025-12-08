@@ -108,8 +108,8 @@ prepare_chroot()
     if [ ${FF5X} -eq 0 ]; then
         rm -rf /root/moonraker-env/lib/python3.12/site-packages/msgspec* || echo "msgspec уже убит"
     else
-        sed -i '/127.0.0.1 ssh-ed25519 /d' /.ssh/known_hosts
-        sed -i '/127.0.0.1 ssh-ed25519 /d' /root/.ssh/known_hosts
+        sed -i '/127.0.0.1 /d' /.ssh/known_hosts
+        sed -i '/127.0.0.1 /d' /root/.ssh/known_hosts
     fi
 }
 
