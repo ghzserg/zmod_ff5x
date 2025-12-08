@@ -853,6 +853,7 @@ class zmod_color:
                         })
                 self.cmd_PRINT_ZCOLOR(gcmd2)
             elif silent == 2:
+                self.gcode.run_script_from_command(f"SAVE_VARIABLE VARIABLE=print_leveling VALUE={leveling}")
                 gcmd.respond_raw(f"// {fname}")
                 gcmd.respond_raw(f"// {leveling_text}")
                 gcmd.respond_raw(f"// IFS OFF")
@@ -874,7 +875,6 @@ class zmod_color:
                         self.gcode.run_script_from_command("SDCARD_ENABLE_FFM ENABLE=0")
                     else:
                         self.gcode.run_script_from_command("_IFS_OFF")
-                    self.gcode.run_script_from_command(f"SAVE_VARIABLE VARIABLE=print_leveling VALUE={leveling}")
                     self.gcode.run_script_from_command(f"SDCARD_PRINT_FILE FILENAME=\"{fname}\"")
         else:
             gcmd.respond_raw(self._t('no_response', json.dumps(response_data)))
@@ -935,6 +935,7 @@ class zmod_color:
                         "slotMaterialColor": f"#{slot_info['HEX']}"
                     })
 
+            self.gcode.run_script_from_command(f"SAVE_VARIABLE VARIABLE=print_leveling VALUE={leveling}")
             if self.display:
                 data = {
                     "fileName": fname,
@@ -953,7 +954,7 @@ class zmod_color:
             else:
                 with open(FILE_CONFIG, 'w') as file:
                     json.dump(tools, file, indent=2)
-                self.gcode.run_script_from_command(f"SAVE_VARIABLE VARIABLE=print_leveling VALUE={leveling}")
+
                 self.find_t_code(fname)
                 self.gcode.run_script_from_command(f"SDCARD_PRINT_FILE FILENAME=\"{fname}\"")
         else:
