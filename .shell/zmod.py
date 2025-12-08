@@ -59,12 +59,11 @@ class zmod:
             if not file_path:
                 gcmd.respond_raw("ZEXCLUDE: FILENAME is required (no file loaded)")
                 return
-            filename = file_path
-
-        if filename.startswith('/'):
-            filename = filename[1:]
-
-        full_path = os.path.join(self.sdcard_dirname, filename)
+            full_path = file_path
+        else:
+            if filename.startswith('/'):
+                filename = filename[1:]
+            full_path = os.path.join(self.sdcard_dirname, filename)
 
         try:
             with open(full_path, 'r') as f:
