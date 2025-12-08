@@ -53,10 +53,14 @@ class zmod:
         gcmd.respond_raw(f"Z-offset={zoffset:.4f}")
 
     def cmd_ZEXCLUDE(self, gcmd):
-        filename = gcmd.get("FILENAME")
+        filename = gcmd.get("FILENAME", None)
         if not filename:
-            gcmd.respond_raw("ZEXCLUDE: FILENAME is required")
-            return
+            virtual_sdcard = self.printer.lookup_object('virtual_sdcard', None)
+            file_path = getattr(virtual_sdcard, 'file_path', "") if virtual_sdcard else ""
+            if not file_path:
+                gcmd.respond_raw("ZEXCLUDE: FILENAME is required (no file loaded)")
+                return
+            filename = file_path
 
         if filename.startswith('/'):
             filename = filename[1:]
