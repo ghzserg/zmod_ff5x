@@ -55,8 +55,7 @@ class zmod:
     def cmd_ZEXCLUDE(self, gcmd):
         filename = gcmd.get("FILENAME", None)
         if not filename:
-            virtual_sdcard = self.printer.lookup_object('virtual_sdcard', None)
-            file_path = getattr(virtual_sdcard, 'file_path', "") if virtual_sdcard else ""
+            file_path = self.virtual_sdcard.file_path()
             if not file_path:
                 gcmd.respond_raw("ZEXCLUDE: FILENAME is required (no file loaded)")
                 return
