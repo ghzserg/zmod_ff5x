@@ -800,7 +800,7 @@ class zmod_color:
 
                 gcmd.respond_raw("// action:prompt_button_group_start")
                 color = "006400" if leveling == 1 else "808080"
-                gcmd.respond_raw(f"// action:prompt_button {leveling_text}|SET_ZCOLOR SILENT={silent} FILENAME=\"{fname}\" LEVELING={int(not leveling)}| |{color}")
+                gcmd.respond_raw(f"// action:prompt_button {leveling_text}|SET_ZCOLOR SILENT={silent} FILENAME=\"{fname}\" LEVELING={int(not leveling)} T0={tools[0]} T1={tools[1]} T2={tools[2]} T3={tools[3]}| |{color}")
                 gcmd.respond_raw("// action:prompt_button_group_end")
 
                 gcmd.respond_raw(f"// action:prompt_text {self._t('prompt_map_color')}")
@@ -874,6 +874,7 @@ class zmod_color:
                         self.gcode.run_script_from_command("SDCARD_ENABLE_FFM ENABLE=0")
                     else:
                         self.gcode.run_script_from_command("_IFS_OFF")
+                    self.gcode.run_script_from_command(f"SAVE_VARIABLE VARIABLE=print_leveling VALUE={leveling}")
                     self.gcode.run_script_from_command(f"SDCARD_PRINT_FILE FILENAME=\"{fname}\"")
         else:
             gcmd.respond_raw(self._t('no_response', json.dumps(response_data)))
@@ -952,6 +953,7 @@ class zmod_color:
             else:
                 with open(FILE_CONFIG, 'w') as file:
                     json.dump(tools, file, indent=2)
+                self.gcode.run_script_from_command(f"SAVE_VARIABLE VARIABLE=print_leveling VALUE={leveling}")
                 self.find_t_code(fname)
                 self.gcode.run_script_from_command(f"SDCARD_PRINT_FILE FILENAME=\"{fname}\"")
         else:
