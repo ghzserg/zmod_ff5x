@@ -20,9 +20,10 @@ start_zlink()
     if [ -f /ZMOD ]; then
         /opt/config/mod/.shell/zlink 2>/dev/null
     else
-        [ ${FF5X} -eq 0 ] && umount ${UMOUNT_MOD}
+        NEED_MOUNT=0
+        [ ${FF5X} -eq 0 ] && umount ${UMOUNT_MOD} && NEED_MOUNT=1
         chroot ${MOD} /opt/config/mod/.shell/zlink 2>/dev/null
-        [ ${FF5X} -eq 0 ] && mount --bind ${REMOUNT_MOD} ${UMOUNT_MOD}
+        [ ${NEED_MOUNT} -eq 1 ] && mount --bind ${REMOUNT_MOD} ${UMOUNT_MOD}
     fi
 }
 
