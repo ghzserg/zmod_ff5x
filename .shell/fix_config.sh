@@ -297,7 +297,8 @@ fix_config()
 
     if [ ${FF5X} -eq 0 ]; then
         check_link ${MOD_CONF}/mod/klipper13.cfg ${ZLANG}/klipper13_ff5m.cfg
-        check_link ${MOD_CONF}/mod/klipper11.cfg ${ZLANG}/klipper11.cfg
+        check_link ${MOD_CONF}/mod/klipper11_base.cfg ${ZLANG}/klipper11_base.cfg
+        grep -q '^MACHINE=Adventurer5MPro$' /opt/auto_run.sh && check_link ${MOD_CONF}/mod/klipper11.cfg ${ZLANG}/klipper11_pro.cfg || check_link ${MOD_CONF}/mod/klipper11.cfg ${ZLANG}/klipper11.cfg
         check_link ${MOD_CONF}/mod/display_off.cfg ${ZLANG}/display_off.cfg
         check_link ${MOD_CONF}/mod/ff5.cfg ${ZLANG}/ff5.cfg
         check_link ${MOD_CONF}/mod/mod.cfg ${ZLANG}/mod.cfg
