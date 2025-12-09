@@ -32,6 +32,8 @@ start() {
 }
 
 stop() {
+    killall zmod_httpd
+    killall httpd
     start-stop-daemon -K -p $PID_FILE
 }
 restart() {
