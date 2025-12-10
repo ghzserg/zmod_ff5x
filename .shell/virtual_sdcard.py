@@ -83,6 +83,7 @@ class VirtualSD:
             flist = []
             for root, dirs, files in os.walk(
                     self.sdcard_dirname, followlinks=True):
+                dirs[:] = [d for d in dirs if d != '.zmod']
                 for name in files:
                     ext = name[name.rfind('.')+1:]
                     if ext not in VALID_GCODE_EXTS:
@@ -314,7 +315,7 @@ class VirtualSD:
                     if self.print_channel != self.load_channel:
                         self.gcode.run_script("M400")
                         self.change_filament = True
-                        # zmod 1.10
+                        # zmod 1.11
                         self.gcode.run_script(f"_A_CHANGE_FILAMENT CHANNEL={self.print_channel} RESTORE_POSITION=1 RESTORE_TEMP=1")
                         while True:
                             if not self.change_filament:
