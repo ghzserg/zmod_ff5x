@@ -135,10 +135,8 @@ fi
 if ! [ -f /ZMOD ]; then
     [ ${ZLANG} != 'ru' ] && echo "The original files can be found at https://github.com/ghzserg/zmod/tree/main/${STOCK}" || echo "Оригиналы файлов можно найти по ссылке https://github.com/ghzserg/zmod/tree/main/${STOCK}"
     [ ${ZLANG} != 'ru' ] && echo "Native system check completed" || echo "Проверка родной системы окончена"
-    [ ${FF5X} -eq 0 ] && [ "$1" != "init" ] && umount ${UMOUNT_MOD}
     unset LD_PRELOAD
     chroot ${MOD} /opt/config/mod/.shell/zcheckmd5.sh
-    [ ${FF5X} -eq 0 ] && [ "$1" != "init" ] && mount --bind ${REMOUNT_MOD} ${UMOUNT_MOD}
 else
     cd /opt/config/mod
     git clean -f

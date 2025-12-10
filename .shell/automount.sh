@@ -43,30 +43,23 @@ if [ "$ACTION" = "add" ]; then
 
         target="${MOD}${DATA_GCODES}/flash/${DEVNAME}"
         mkdir -p "$target"
-        NEED_MOUNT=0
-        [ ${FF5X} -eq 0 ] && umount ${UMOUNT_MOD} && NEED_MOUNT=1
         if ! mount --bind "$mount_point" "$target"; then
             # Если биндинг не удался — отмонтируем основное и удалим папки
             umount "$mount_point"
             rmdir "$mount_point" 2>/dev/null || rm -rf "$mount_point"
             rmdir "$target" 2>/dev/null || rm -rf "$target"
-            [ ${NEED_MOUNT} -eq 1 ] && mount --bind ${REMOUNT_MOD} ${UMOUNT_MOD}
             exit 1
         fi
-        [ ${NEED_MOUNT} -eq 1 ] && mount --bind ${REMOUNT_MOD} ${UMOUNT_MOD}
     fi
 elif [ "$ACTION" = "remove" ]; then
     mount_point="${flash}/${DEVNAME}"
 
     if mountpoint -q "$mount_point" && grep -q " ${mount_point} " /proc/mounts; then
         target="${MOD}${DATA_GCODES}/flash/${DEVNAME}"
-        NEED_MOUNT=0
-        [ ${FF5X} -eq 0 ] && umount ${UMOUNT_MOD} && NEED_MOUNT=1
         if mountpoint -q "$target" && grep -q " ${target} " /proc/mounts; then
             umount "$target"
         fi
         rm -rf "$target"
-        [ ${NEED_MOUNT} -eq 1 ] && mount --bind ${REMOUNT_MOD} ${UMOUNT_MOD}
 
         # Размонтируем основное
         umount "$mount_point"

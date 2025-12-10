@@ -33,23 +33,17 @@ if grep -q "[update_manager $1]" ${MOD_CONF}/moonraker.conf || grep -q "[update_
     if [ "$url" != "" ]; then
         if ! [ -d "${MOD_CONF}/mod_data/plugins/$1" ]; then
             if ! [ -f /ZMOD ]; then
-                NEED_MOUNT=0
-                [ ${FF5X} -eq 0 ] && umount ${UMOUNT_MOD} && NEED_MOUNT=1
                 unset LD_LIBRARY_PATH
                 unset LD_PRELOAD
                 chroot ${MOD} git clone "${url}" "${MOD_CONF}/mod_data/plugins/$1"
-                [ ${NEED_MOUNT} -eq 1 ] && mount --bind ${REMOUNT_MOD} ${UMOUNT_MOD}
             else
                 git clone "${url}" "${MOD_CONF}/mod_data/plugins/$1"
             fi
         else
             if ! [ -f /ZMOD ]; then
-                NEED_MOUNT=0
-                [ ${FF5X} -eq 0 ] && umount ${UMOUNT_MOD} && NEED_MOUNT=1
                 unset LD_LIBRARY_PATH
                 unset LD_PRELOAD
                 chroot ${MOD} /bin/bash -c "cd \"${MOD_CONF}/mod_data/plugins/$1\" && git pull"
-                [ ${NEED_MOUNT} -eq 1 ] && mount --bind ${REMOUNT_MOD} ${UMOUNT_MOD}
             else
                 cd "${MOD_CONF}/mod_data/plugins/$1"
                 git pull

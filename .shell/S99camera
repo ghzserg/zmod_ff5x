@@ -52,9 +52,7 @@ up() {
             if [ -f /ZMOD ]; then
                 start-stop-daemon -S -b -m -p $PID_FILE --exec /bin/ustreamer -- -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS --format=$FORMAT -s 0.0.0.0
             else
-                [ ${FF5X} -eq 0 ] && [ "$1" != "init" ] && umount ${UMOUNT_MOD}
                 chroot ${MOD} start-stop-daemon -S -b -m -p $PID_FILE --exec /bin/ustreamer -- -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS --format=$FORMAT -s 0.0.0.0
-                [ ${FF5X} -eq 0 ] && [ "$1" != "init" ] && mount --bind ${REMOUNT_MOD} ${UMOUNT_MOD}
             fi
         fi
         [ ${ZLANG} != 'ru' ] && echo "Camera started" >>/opt/config/mod_data/log/cam.log || echo "Запуск камеры завершен" >>/opt/config/mod_data/log/cam.log

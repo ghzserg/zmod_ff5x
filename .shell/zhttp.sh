@@ -24,8 +24,5 @@ sync
 if [ -f /ZMOD ]; then
     /opt/config/mod/.shell/root/S70httpd restart
 else
-    NEED_MOUNT=0
-    [ ${FF5X} -eq 0 ] && umount ${UMOUNT_MOD} && NEED_MOUNT=1
     chroot ${MOD} /opt/config/mod/.shell/root/S70httpd restart
-    [ ${NEED_MOUNT} -eq 1 ] && mount --bind ${REMOUNT_MOD} ${UMOUNT_MOD}
 fi

@@ -93,9 +93,7 @@ start_moon()
 
     chroot ${MOD} /opt/config/mod/.shell/root/start.sh "$SWAP" "$VER" "$MACHINE" &
 
-    [ ${FF5X} -eq 0 ] && mkdir -p ${REMOUNT_MOD}
     sleep 10
-    [ ${FF5X} -eq 0 ] && mount --bind ${REMOUNT_MOD} ${UMOUNT_MOD}
     mount
     ps w
     sleep 30
@@ -156,7 +154,6 @@ start_prepare()
 
 if [ -f ${MOD_CONF}/mod/SKIP_ZMOD ]; then
     rm -f ${MOD_CONF}/mod/SKIP_ZMOD
-    [ ${FF5X} -eq 0 ] && mount --bind ${REMOUNT_MOD} ${UMOUNT_MOD}
     exit 0
 fi
 

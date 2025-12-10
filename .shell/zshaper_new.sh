@@ -13,9 +13,7 @@ if [ -f /ZMOD ]; then
     /opt/config/mod/.shell/root/zshaper_new.sh $@
 else
     if [ ${FF5X} -eq 0 ]; then
-        while umount ${UMOUNT_MOD} 2>/dev/null; do a=b; done
         chroot ${MOD} /opt/config/mod/.shell/root/zshaper_new.sh $@
-        mount --bind ${REMOUNT_MOD} ${UMOUNT_MOD}
     else
         export PATH=$PATH:/usr/prog/Python-3.8.2/bin
         export LD_LIBRARY_PATH=/usr/prog/Python-3.8.2/lib:$LD_LIBRARY_PATH
