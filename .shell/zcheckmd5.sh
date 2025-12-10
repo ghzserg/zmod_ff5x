@@ -23,7 +23,7 @@ fi
 if [ -f /ZMOD ]; then
     DIR="/opt/config/mod/.shell/root"
     if [ "$2" == "1" ]; then
-        /opt/config/mod/.shell/zremote.sh "/opt/config/mod/.shell/zcheckmd5.sh $1"
+        /opt/config/mod/.shell/zremote.sh /opt/config/mod/.shell/zcheckmd5.sh "$1"
         exit 0
     fi
 else
