@@ -69,6 +69,7 @@ class VirtualSD:
             flist = []
             for root, dirs, files in os.walk(
                     self.sdcard_dirname, followlinks=True):
+                dirs[:] = [d for d in dirs if d != '.zmod']
                 for name in files:
                     ext = name[name.rfind('.')+1:]
                     if ext not in VALID_GCODE_EXTS:
