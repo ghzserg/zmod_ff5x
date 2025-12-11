@@ -895,6 +895,24 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "alias": "",
             "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
             "color": "#008800",
+            "disabledWhilePrinting": false,
+            "name": "global",
+            "order": 17,
+            "visible": true
+        },
+        {
+            "alias": "",
+            "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
+            "color": "#008800",
+            "disabledWhilePrinting": false,
+            "name": "global",
+            "order": 17,
+            "visible": true
+        },
+        {
+            "alias": "",
+            "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
+            "color": "#008800",
             "disabledWhilePrinting": true,
             "name": "lang",
             "visible": true
@@ -1334,6 +1352,14 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
                "color" : "group",
                "name" : "SAVE_ZMOD_DATA",
                "pos" : 16,
+               "showInPause" : true,
+               "showInPrinting" : true,
+               "showInStandby" : true
+            },
+            {
+               "color" : "group",
+               "name" : "GLOBAL",
+               "pos" : 33,
                "showInPause" : true,
                "showInPrinting" : true,
                "showInStandby" : true
