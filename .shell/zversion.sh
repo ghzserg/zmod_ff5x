@@ -32,6 +32,7 @@ fi
 
 if ! echo "$plugins" | grep -q "^recommend$\|,recommend$\|^recommend,\|,recommend," && ! grep -q "no_recommend = 1" /opt/config/mod_data/variables.cfg; then
     [ ${ZLANG} != 'ru' ] && echo "Have you forgotten to enable the recommended parameters? ENABLE_PLUGIN name=recommend" || echo "А вы не забыли включить рекомендуемые параметры? ENABLE_PLUGIN name=recommend"
+    [ -f /opt/config/mod_data/plugins/recommend/recommend.cfg ] && ! grep -q "skip_recommend = 1" /opt/config/mod_data/variables.cfg && echo _RECOMMEND >/tmp/printer
 fi
 
 if [ "${VER_FF}" != "${VER_MOD}" ]; then
