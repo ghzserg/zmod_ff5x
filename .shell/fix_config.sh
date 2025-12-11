@@ -154,7 +154,7 @@ press_gcode:
 
     if [ ${FF5X} -eq 0 ] && grep -q "motion_sensor = 1" ${MOD_CONF}/mod_data/variables.cfg; then
         # Возвращаем filament_motion_sensor e0_sensor
-        if ! grep -q '\[filament_motion_sensor e0_sensor' ${MOD_CONF}/printer.base.cfg
+        if ! grep -q '^\[filament_motion_sensor e0_sensor' ${MOD_CONF}/printer.base.cfg
             then
                 echo '
 [filament_motion_sensor e0_sensor]
@@ -168,7 +168,7 @@ runout_gcode:
         fi
     else
         # Возвращаем filament_switch_sensor e0_sensor
-        if [ ${FF5X} -eq 0 ] && ! grep -q '\[filament_switch_sensor e0_sensor' ${MOD_CONF}/printer.base.cfg
+        if [ ${FF5X} -eq 0 ] && ! grep -q '^\[filament_switch_sensor e0_sensor' ${MOD_CONF}/printer.base.cfg
             then
                 echo '
 [filament_switch_sensor e0_sensor]
@@ -181,7 +181,7 @@ event_delay: 1.0
     fi
 
     # Возвращаем weightValue
-    if [ ${FF5X} -eq 0 ] && ! grep -q '\[temperature_sensor weightValue' ${MOD_CONF}/printer.base.cfg; then
+    if [ ${FF5X} -eq 0 ] && ! grep -q '^\[temperature_sensor weightValue' ${MOD_CONF}/printer.base.cfg; then
         echo '[temperature_sensor weightValue]
 sensor_type: MAX31856
 sensor_pin: PD5
@@ -198,7 +198,7 @@ gcode_id: W
     fi
 
     # Возвращаем tvocValue
-    if [ ${FF5X} -eq 0 ] && ! grep -q '\[temperature_sensor tvocValue' ${MOD_CONF}/printer.base.cfg; then
+    if [ ${FF5X} -eq 0 ] && ! grep -q '^\[temperature_sensor tvocValue' ${MOD_CONF}/printer.base.cfg; then
         echo '[temperature_sensor tvocValue]
 sensor_type: MAX31865
 sensor_pin: PD4
