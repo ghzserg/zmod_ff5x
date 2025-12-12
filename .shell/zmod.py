@@ -33,6 +33,8 @@ class zmod:
         return self.lang
 
     def cmd_LOAD_ZOFFSET_NATIVE(self, gcmd):
+        start = gcmd.get_int("START", 0)
+
         config_path = FFCONFIG1 if os.path.isfile(FFCONFIG1) else FFCONFIG2 if os.path.isfile(FFCONFIG2) else None
         if not config_path:
             raise gcmd.error(f"LOAD_ZOFFSET_NATIVE: File not found {FFCONFIG1}, {FFCONFIG2}")
@@ -49,7 +51,7 @@ class zmod:
         if not self.ad5x:
             zoffset += 0.025
 
-        self.gcode.run_script_from_command(f"SET_GCODE_OFFSET Z={zoffset:.4f}")
+        self.gcode.run_script_from_command(f"SET_GCODE_OFFSET Z={zoffset:.4f} START={start}")
         gcmd.respond_raw(f"Z-offset={zoffset:.4f}")
 
     def cmd_ZEXCLUDE(self, gcmd):
