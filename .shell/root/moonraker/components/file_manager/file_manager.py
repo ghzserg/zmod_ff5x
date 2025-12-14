@@ -329,7 +329,7 @@ class FileManager:
         if isinstance(req_path, str):
             req_path = pathlib.Path(req_path)
         req_path = req_path.expanduser().resolve()
-        if ".git" in req_path.parts or ".mod" in req_path.parts or ".zmod" in req_path.parts or "lost+found" in req_path.parts:
+        if ".git" in req_path.parts or ".shell" in req_path.parts or ".mod" in req_path.parts or ".zmod" in req_path.parts or "lost+found" in req_path.parts:
             if raise_error:
                 raise self.server.error(
                     "Access to .git folders is forbidden", 403
