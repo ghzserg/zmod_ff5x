@@ -329,7 +329,7 @@ class FileManager:
         if isinstance(req_path, str):
             req_path = pathlib.Path(req_path)
         req_path = req_path.expanduser().resolve()
-        if ".git" in req_path.parts or ".mod" in req_path.parts or ".zmod" in req_path.parts or "lost+found" in req_path.parts:
+        if ".git" in req_path.parts or ".shell" in req_path.parts or ".mod" in req_path.parts or ".zmod" in req_path.parts or "lost+found" in req_path.parts:
             if raise_error:
                 raise self.server.error(
                     "Access to .git folders is forbidden", 403
@@ -997,9 +997,12 @@ class FileManager:
             scan_dirs: List[str] = []
             # Filter out directories that have already been visited. This
             # prevents infinite recursion "followlinks" is set to True
+            ignore_dirs = {'.git', '.mod', '.zmod', '.shell'}
             for dname in dir_names:
                 full_path = os.path.join(dir_path, dname)
                 if not os.path.exists(full_path):
+                    continue
+                if dname in ignore_dirs:
                     continue
                 st = os.stat(full_path)
                 key = (st.st_dev, st.st_ino)
