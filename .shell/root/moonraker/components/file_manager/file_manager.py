@@ -997,9 +997,12 @@ class FileManager:
             scan_dirs: List[str] = []
             # Filter out directories that have already been visited. This
             # prevents infinite recursion "followlinks" is set to True
+            ignore_dirs = {'.git', '.mod', '.zmod', '.shell'}
             for dname in dir_names:
                 full_path = os.path.join(dir_path, dname)
                 if not os.path.exists(full_path):
+                    continue
+                if dname in ignore_dirs:
                     continue
                 st = os.stat(full_path)
                 key = (st.st_dev, st.st_ino)
