@@ -2,8 +2,10 @@
 
 FILE_NAME=${1}
 if [ -z "${FILE_NAME}" ]; then
+    [ ${ZLANG} == 'ru' ] && echo "RESPOND PREFIX=\"!!\" MSG=\"Не задано имя файла\"">/tmp/printer || echo "RESPOND PREFIX=\"!!\" MSG=\"Filename not found\"">/tmp/printer
     exit 1
 elif [ ! -f "${FILE_NAME}" ]; then
+    [ ${ZLANG} == 'ru' ] && echo "RESPOND PREFIX=\"!!\" MSG=\"Файл "${FILE_NAME}" не найден\"">/tmp/printer || echo "RESPOND PREFIX=\"!!\" MSG=\"File "${FILE_NAME}" not found\"">/tmp/printer
     exit 2
 fi
 
