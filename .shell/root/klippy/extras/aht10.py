@@ -12,7 +12,7 @@ from . import bus
 #       AHT10      -    Tested w/ BTT GTR 1.0 MCU on i2c3
 #       AHT20      -    Tested w/ N32G455 on i2c2
 #       AHT21      -    Tested w/ BTT GTR 1.0 MCU on i2c3
-#       AHT35      -    Untested, but should work
+#       AHT30      -    Untested, but should work
 ######################################################################
 
 I2C_ADDR = 0x38
@@ -29,24 +29,21 @@ STATUS_CALIBRATED = 0x08
 MAX_BUSY_CYCLES = 5
 
 class AHTBase:
+    model = None
+
     def __init__(self, config):
         self.printer = config.get_printer()
         self.name = config.get_name().split()[-1]
         self.reactor = self.printer.get_reactor()
         self.i2c = bus.MCU_I2C_from_config(
             config, default_addr=I2C_ADDR, default_speed=100000)
-
-        config.deprecate('aht10_report_time')
-
-        self.report_time = config.getint('aht_report_time', 30, minval=5)
+        self.report_time = config.getint('aht10_report_time', 30, minval=5)
         self.temp = self.min_temp = self.max_temp = self.humidity = 0.
         self.sample_timer = self.reactor.register_timer(self._sample_aht)
 
-        # Keep "aht10" name for backwards compatibility with ecosystem
         self.printer.add_object("aht10 " + self.name, self)
         self.printer.register_event_handler("klippy:connect",
                                                 self.handle_connect)
-
         self.is_calibrated = False
         self.init_sent = False
         self._callback = None
@@ -55,11 +52,23 @@ class AHTBase:
         self._init_sensor()
         self.reactor.update_timer(self.sample_timer, self.reactor.NOW)
 
-    def _init_sensor(self):
-        raise NotImplementedError("Subclass must implement _init_sensor")
+    def _send_init(self):
+        raise NotImplementedError("Subclass must implement _send_init")
 
+    def _init_sensor(self):
+        self._send_init()
+
+        self.init_sent = True
+
+        if self._make_measurement():
+            if not self.is_calibrated:
+                logging.warning("%s %s: not calibrated, possible OTP fault"
+                                % (self.model, self.name))
+            logging.info("%s %s: successfully initialized, "
+                         "initial temp: %.3f, humidity: %.3f"
+                         % (self.model, self.name, self.temp, self.humidity))
     def _soft_reset(self):
-        logging.info("ahtxx %s: performing soft reset" % self.name)
+        logging.info("%s %s: performing soft reset" % (self.model, self.name))
         self.i2c.i2c_write(CMD_RESET)
         self.reactor.pause(self.reactor.monotonic() + 0.020)
 
@@ -75,10 +84,11 @@ class AHTBase:
         try:
             while is_busy:
                 # Check if we're constantly busy. If so, send soft-reset
+                # and issue warning.
                 if is_busy and cycles > MAX_BUSY_CYCLES:
-                    logging.warning("ahtxx %s: device reported busy after "
-                        "%d cycles, resetting device"
-                        % (self.name, MAX_BUSY_CYCLES))
+                    logging.warning("%s %s: device reported busy after "
+                                    "%d cycles, resetting device"
+                                    % (self.model, self.name, MAX_BUSY_CYCLES))
                     self._soft_reset()
                     data = None
                     break
@@ -92,14 +102,15 @@ class AHTBase:
                 # Read 6 bytes of data
                 read = self.i2c.i2c_read([], 6)
                 if read is None:
-                    logging.warning("ahtxx %s: received data" % self.name +
-                                    " from i2c_read is None")
+                    logging.warning("%s %s: received data from i2c_read is None"
+                                    % (self.model, self.name))
                     continue
 
                 data = bytearray(read['response'])
                 if len(data) < 6:
-                    logging.warning("ahtxx %s: received bytes less"%self.name +
-                                    " expected 6 [%d]"%len(data))
+                    logging.warning("%s %s: received bytes less than expected:"
+                                    " got %d, need 6"
+                                    % (self.model, self.name, len(data)))
                     continue
 
                 self.is_calibrated = bool(data[0] & STATUS_CALIBRATED)
@@ -108,8 +119,8 @@ class AHTBase:
             if is_busy:
                 return False
         except Exception as e:
-            logging.exception("ahtxx %s: exception encountered reading data: %s"
-                            % (self.name, str(e)))
+            logging.exception("%s %s: exception encountered reading data: %s"
+                              % (self.model, self.name, str(e)))
             return False
 
         # Parse temperature: 20 bits starting at data[3] (low nibble)
@@ -135,8 +146,8 @@ class AHTBase:
 
         if self.temp < self.min_temp or self.temp > self.max_temp:
             self.printer.invoke_shutdown(
-                "AHTxx temperature %.1f outside range of %.1f:%.1f" %
-                (self.temp, self.min_temp, self.max_temp))
+                "%s temperature %.1f outside range of %.1f:%.1f" %
+                (self.model.upper(), self.temp, self.min_temp, self.max_temp))
 
         measured_time = self.reactor.monotonic()
         print_time = self.i2c.get_mcu().estimated_print_time(measured_time)
@@ -160,47 +171,33 @@ class AHTBase:
         }
 
 class AHT1x(AHTBase):
-    def _init_sensor(self):
-        logging.info("ahtxx %s: initializing as AHT1x" % self.name)
+    model = "aht1x"
 
+    def _send_init(self):
         self.i2c.i2c_write(CMD_INIT_AHT1X)
         self.reactor.pause(self.reactor.monotonic() + 0.040)
-        self.init_sent = True
-
-        if self._make_measurement():
-            logging.info("ahtxx %s: AHT1x ready, temp=%.2f°C, humidity=%.1f%%"
-                        % (self.name, self.temp, self.humidity))
 
 class AHT2x(AHTBase):
-    def _init_sensor(self):
-        logging.info("ahtxx %s: initializing as AHT2x" % self.name)
+    model = "aht2x"
 
+    def _send_init(self):
         self.i2c.i2c_write(CMD_INIT_AHT2X)
         self.reactor.pause(self.reactor.monotonic() + 0.100)
-        self.init_sent = True
-
-        if self._make_measurement():
-            logging.info("ahtxx %s: AHT2x ready, temp=%.2f°C, humidity=%.1f%%"
-                        % (self.name, self.temp, self.humidity))
 
 class AHT3x(AHTBase):
-    def _init_sensor(self):
-        logging.info("ahtxx %s: initializing as AHT3x" % self.name)
+    model = "aht3x"
 
+    def _send_init(self):
         # Wait for auto-calibration at power-on
         self.reactor.pause(self.reactor.monotonic() + 0.100)
-        self.init_sent = True
-
-        if self._make_measurement():
-            if not self.is_calibrated:
-                logging.warning("ahtxx %s: not calibrated, possible fault"
-                               % self.name)
-            logging.info("ahtxx %s: AHT3x ready, temp=%.2f°C, humidity=%.1f%%"
-                        % (self.name, self.temp, self.humidity))
 
 def load_config(config):
     # Register sensor
     pheater = config.get_printer().lookup_object("heaters")
+
+    # Backwards compatibility alias
+    pheater.add_sensor_factory("AHT10", AHT1x)
+
     pheater.add_sensor_factory("AHT1X", AHT1x)
     pheater.add_sensor_factory("AHT2X", AHT2x)
     pheater.add_sensor_factory("AHT3X", AHT3x)
