@@ -223,6 +223,8 @@ fix_config()
     echo "START fix_config"
     date
     echo 15 > /proc/sys/vm/swappiness
+    /usr/data/config/mod/.shell/serial/serial_start.sh
+
     fstrim ${DATA} -v
     [ ${FF5X} -eq 0 ] && fstrim / -v || fstrim /usr/prog -v
 
