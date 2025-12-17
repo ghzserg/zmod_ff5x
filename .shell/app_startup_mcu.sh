@@ -24,24 +24,27 @@ app_startup_mcu()
 {
     if grep -q "klipper13 = 1" ${MOD_CONF}/mod_data/variables.cfg; then
         echo "Klipper 13"
-        cnt=$(find ${PROGRAM_DIR}control/ -name Update|wc -l)
-        if [ "$cnt" -ne 0 ]; then
-            # Если обновляем MCU
-            find ${PROGRAM_DIR}control/ -name Update| sed 's/Update//'| while read a; do
-                mount -o bind ${MOD_CONF}/mod/.shell/update_mcu.sh ${a}run.sh
-                if [ ${FF5X} -eq 1 ]; then
-                    cd "${a}"
-                    ./run.sh
-                    reboot -f
-                fi
-            done
-        else
-            # Если обновлений нет
-            mount -o bind ${MOD_CONF}/mod/.shell/klipper13.sh ${KLIPPER_DIR}/start.sh
-            sync
-        fi
+        KLIPPER13=1
     else
         echo "Родной Klipper"
+        KLIPPER13=0
+    fi
+
+    CONTROL_DIR=${PROGRAM_DIR}control/
+    cd ${CONTROL_DIR}
+    CONTROL_VERSION=`ls -d [0-9]*/ | sort -Vr | head -n 1`
+    CONTRIL_FLAG=${CONTROL_DIR}${CONTROL_VERSION}Update
+    CONTRIL_M=${CONTROL_DIR}${CONTROL_VERSION}UpdateM
+
+    if  [ -f "${CONTRIL_M}" ] || [ -f ${CONTRIL_FLAG} ]; then
+        if [ ${FF5X} -eq 1 ]; then
+            cd "${CONTROL_DIR}${CONTROL_VERSION}"
+            [ ${KLIPPER13} -eq 1 ] && mount -o bind ${MOD_CONF}/mod/.shell/update_mcu.sh ${a}run.sh
+            ./run.sh
+            reboot -f
+        fi
+    else
+        [ ${KLIPPER13} -eq 1 ] && mount -o bind ${MOD_CONF}/mod/.shell/klipper13.sh ${KLIPPER_DIR}/start.sh
     fi
 }
 

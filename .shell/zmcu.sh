@@ -7,6 +7,7 @@ CONTROL_DIR=${PROGRAM_DIR}control/
 cd ${CONTROL_DIR}
 CONTROL_VERSION=`ls -d [0-9]*/ | sort -Vr | head -n 1`
 CONTRIL_FLAG=${CONTROL_DIR}${CONTROL_VERSION}Update
+CONTRIL_M=${CONTROL_DIR}${CONTROL_VERSION}UpdateM
 
 [ ${FF5X} -eq 1 ] && echo "">${CONTRIL_M}
 echo "">${CONTRIL_FLAG}
