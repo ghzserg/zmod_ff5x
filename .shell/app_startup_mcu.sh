@@ -12,6 +12,13 @@ else if [ -f /usr/data/config/mod/.shell/0.sh ]; then
 fi
 fi
 
+if [ "${CHECH_ARCH}" == "armv7l" ]; then
+    CONFIG_DIR="/opt/config"
+else if [ "${CHECH_ARCH}" == "mips" ]; then
+    CONFIG_DIR="/usr/data/config"
+fi
+fi
+
 app_startup_mcu()
 {
     if grep -q "klipper13 = 1" ${MOD_CONF}/mod_data/variables.cfg; then
