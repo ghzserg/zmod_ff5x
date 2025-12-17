@@ -24,10 +24,10 @@ app_startup_mcu()
 {
     if grep -q "klipper13 = 1" ${MOD_CONF}/mod_data/variables.cfg; then
         echo "Klipper 13"
-        cnt=$(find ${PROGRAM_DIR}/control/ -name Update|wc -l)
+        cnt=$(find ${PROGRAM_DIR}control/ -name Update|wc -l)
         if [ "$cnt" -ne 0 ]; then
             # Если обновляем MCU
-            find ${PROGRAM_DIR}/control/ -name Update| sed 's/Update//'| while read a; do
+            find ${PROGRAM_DIR}control/ -name Update| sed 's/Update//'| while read a; do
                 mount -o bind ${MOD_CONF}/mod/.shell/update_mcu.sh ${a}run.sh
             done
         else
