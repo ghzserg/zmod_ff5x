@@ -111,6 +111,12 @@ prepare_chroot()
         sed -i '/127.0.0.1 /d' /.ssh/known_hosts
         sed -i '/127.0.0.1 /d' /root/.ssh/known_hosts
     fi
+
+    if ! [ -f /root/printer_data/moonraker.secrets ]; then
+        echo "[notify]
+url: tgram://{bottoken}/{ChatID}
+" >/root/printer_data/moonraker.secrets
+    fi
 }
 
 ${MOD_CONF}/mod/.shell/znice.sh
