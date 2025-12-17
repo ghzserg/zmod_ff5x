@@ -12,6 +12,7 @@ else if [ -f /usr/data/config/mod/.shell/0.sh ]; then
 fi
 fi
 
+CHECH_ARCH=`uname -m`
 if [ "${CHECH_ARCH}" == "armv7l" ]; then
     CONFIG_DIR="/opt/config"
 else if [ "${CHECH_ARCH}" == "mips" ]; then
