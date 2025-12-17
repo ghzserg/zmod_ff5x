@@ -43,9 +43,9 @@ app_startup_mcu()
     CONTRIL_M=${CONTROL_DIR}${CONTROL_VERSION}UpdateM
 
     if  [ -f "${CONTRIL_M}" ] || [ -f ${CONTRIL_FLAG} ]; then
+        [ ${KLIPPER13} -eq 1 ] && mount -o bind ${MOD_CONF}/mod/.shell/update_mcu.sh ${CONTROL_DIR}${CONTROL_VERSION}run.sh
         if [ ${FF5X} -eq 1 ]; then
-            cd "${CONTROL_DIR}${CONTROL_VERSION}"
-            [ ${KLIPPER13} -eq 1 ] && mount -o bind ${MOD_CONF}/mod/.shell/update_mcu.sh ${a}run.sh
+            cd ${CONTROL_DIR}${CONTROL_VERSION}
             ./run.sh
             reboot -f
         fi
