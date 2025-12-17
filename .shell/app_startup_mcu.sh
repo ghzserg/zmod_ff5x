@@ -22,6 +22,15 @@ fi
 
 app_startup_mcu()
 {
+
+    CONTROL_DIR=${PROGRAM_DIR}control/
+    cd ${CONTROL_DIR}
+    if [ ${FF5X} -eq 1 ]; then
+        CONTROL_VERSION=`ls -d [0-9]*/ | sort -Vr | head -n 1`
+    else
+        CONTROL_VERSION=`ls -d [0-9]*/ | sort -t '.' -k1,1n -k2,2n -k3,3n -r | head -n 1`
+    fi
+
     if grep -q "klipper13 = 1" ${MOD_CONF}/mod_data/variables.cfg; then
         echo "Klipper 13"
         KLIPPER13=1
@@ -30,9 +39,6 @@ app_startup_mcu()
         KLIPPER13=0
     fi
 
-    CONTROL_DIR=${PROGRAM_DIR}control/
-    cd ${CONTROL_DIR}
-    CONTROL_VERSION=`ls -d [0-9]*/ | sort -Vr | head -n 1`
     CONTRIL_FLAG=${CONTROL_DIR}${CONTROL_VERSION}Update
     CONTRIL_M=${CONTROL_DIR}${CONTROL_VERSION}UpdateM
 
