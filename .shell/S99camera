@@ -61,7 +61,7 @@ up() {
         cd /dev/
         ls -1 video? | while read a; do
             if ${V4l2} -d /dev/$a --list-formats-ext 2>/dev/null |grep MJPG >/dev/null 2>/dev/null; then
-                echo "Test: CAMERA_ON VIDEO=$a" >>/opt/config/mod_data/log/cam.log
+                [ ${ZLANG} != 'ru' ] && echo "Test Run: CAMERA_ON VIDEO=$a" >>/opt/config/mod_data/log/cam.log || echo "Попробуйте ввести: CAMERA_ON VIDEO=$a" >>/opt/config/mod_data/log/cam.log
             fi
         done
     fi
