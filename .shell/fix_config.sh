@@ -829,6 +829,15 @@ stepper: stepper_x, stepper_y, stepper_z
         rm -f ${MOD_CONF}/mod_data/mesh_data.cfg
     fi
 
+    if grep -q "update_manager zmod" ${MOD_CONF}/mod_data/user.moonraker.conf; then
+        awk '
+          /^\[update_manager zmod\]$/ { in_section = 1; next }
+          /^\[/ && in_section { in_section = 0 }
+          !in_section
+        ' ${MOD_CONF}/mod_data/user.moonraker.conf > ${MOD_CONF}/mod_data/user.moonraker.conf.tmp && \
+        mv ${MOD_CONF}/mod_data/user.moonraker.conf.tmp ${MOD_CONF}/mod_data/user.moonraker.conf
+    fi
+
     if [ ${NEED_REBOOT} -eq 1 ]
         then
             echo "Kill firmwareExe"
