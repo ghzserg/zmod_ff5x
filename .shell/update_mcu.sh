@@ -110,7 +110,7 @@ if [ "$1" == "mainboard" ]; then
     poweroff
 else
     if [ "${CHECH_ARCH}" == "mips" ]; then
-        update_ifs
+        #update_ifs
         update_mainboard
     fi
 
