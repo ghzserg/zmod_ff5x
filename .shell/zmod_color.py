@@ -837,7 +837,11 @@ class zmod_color:
             elif silent == 1:
                 gcmd.respond_raw(f"// {fname}")
                 gcmd.respond_raw(f"// {leveling_text}")
-                gcmd.respond_raw(f"// IFS ON")
+                gcmd.respond_raw("// IFS ON // SAVE_ZMOD_DATA SILENT=1")
+                if self.lang == 'ru':
+                    gcmd.respond_raw("Скрыть выбор цвета, печатать с IFS")
+                else:
+                    gcmd.respond_raw("Hide color selection, print with IFS")
                 for tool_idx, tool_val in enumerate(tools):
                     for slot_info in result:
                         if int(slot_info['ID']) != tool_val:
@@ -856,7 +860,11 @@ class zmod_color:
                 self.gcode.run_script_from_command(f"SAVE_VARIABLE VARIABLE=print_leveling VALUE={leveling}")
                 gcmd.respond_raw(f"// {fname}")
                 gcmd.respond_raw(f"// {leveling_text}")
-                gcmd.respond_raw(f"// IFS OFF")
+                gcmd.respond_raw("// IFS OFF // SAVE_ZMOD_DATA SILENT=2")
+                if self.lang == 'ru':
+                    gcmd.respond_raw("Скрыть выбор цвета, печатать без IFS")
+                else:
+                    gcmd.respond_raw("Hide color selection, print without IFS");
                 if self.display:
                     data = {
                         "fileName": fname,
