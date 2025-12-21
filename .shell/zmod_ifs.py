@@ -174,14 +174,14 @@ class zmod_ifs:
             if state == check_state:          # ждем сработки нужного статуса
                 if extruder: # Если нужно контролировать экструдер
                     # 2 секунды подряд проверяем экструдер
-                    for i in range(20):
-                        self.reactor.pause(self.reactor.monotonic() + OPROS_EXTRUDER)
-                        if self.get_extruder_sensor() == extruder['status']: # Проверяем сработку датчика в экструдере
-                            extruder_count += 1
-                            if extruder_count >= extruder['count']:
-                                return False, RET_EXTRUDER, current_values
-                        else:
-                            extruder_count = 0
+                    #for i in range(20):
+                    #    self.reactor.pause(self.reactor.monotonic() + OPROS_EXTRUDER)
+                    if self.get_extruder_sensor() == extruder['status']: # Проверяем сработку датчика в экструдере
+                        extruder_count += 1
+                        if extruder_count >= extruder['count']:
+                            return False, RET_EXTRUDER, current_values
+                    else:
+                        extruder_count = 0
                 if silk and Port != 0:        # проверяем наличие прутка
                     current_silk = current_values['Silk']
                     if ((current_silk >> (Port - 1)) & 1 == 1) == silk['status']:
