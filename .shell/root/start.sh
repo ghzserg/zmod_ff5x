@@ -115,6 +115,7 @@ prepare_chroot()
     if ! [ -f /root/printer_data/moonraker.secrets ]; then
         echo "[notify]
 url: tgram://{bottoken}/{ChatID}
+name: {printer_name}
 " >/root/printer_data/moonraker.secrets
     fi
 }
