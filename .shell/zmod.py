@@ -51,7 +51,7 @@ class zmod:
         if not self.ad5x:
             zoffset += 0.025
 
-        self.gcode.run_script_from_command(f"SET_GCODE_OFFSET Z={zoffset:.4f} START={start}")
+        self.gcode.run_script_from_command(f"SET_GCODE_OFFSET Z={zoffset:.4f} START={start} FROM=LOAD_ZOFFSET_NATIVE")
         if start == 0:
             gcmd.respond_raw(f"Z-offset={zoffset:.4f}")
 
