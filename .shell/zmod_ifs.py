@@ -162,7 +162,7 @@ class zmod_ifs:
         while not self.stop_thread:
             if extruder: # Если нужно контролировать экструдер
                 if self.get_extruder_sensor() == extruder['status']:
-                    self.info("Extruder trigger 1")
+                    #self.info("Extruder trigger 1")
                     return None
 
             eventtime = self.reactor.pause(eventtime + HOST_REPORT_TIME)
@@ -171,8 +171,8 @@ class zmod_ifs:
                 ret_command_id = self._ret_command_id
                 self._ret_command_id = 0
 
-            if ret_command_id != 0:
-                self.info(f"WAIT: {command}#{command_id} RET: #{ret_command_id} {ret_command_data}")
+            #if ret_command_id != 0:
+            #    self.info(f"WAIT: {command}#{command_id} RET: #{ret_command_id} {ret_command_data}")
             if command_id == ret_command_id:
                 if expected_results is not None:
                     if ret_command_data in expected_results:
