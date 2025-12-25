@@ -879,7 +879,7 @@ class zmod_ifs:
 
         self.gcode.respond_info(f"Разблокировка всех прутков" if self.lang == 'ru' else f"Unlocking all filaments")
         for attempt in range(self.retry_count):
-            response = self.send_command_and_wait("F18", result=f"F18 ok")
+            response = self.send_command_and_wait("F18", result=f"F18 ok", timeout=10.0)
             self.info(f"F18 > {response}")
             if wait == 1:
                 success, ret_code, values = self.wait_for_state()
