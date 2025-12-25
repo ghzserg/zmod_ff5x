@@ -1007,6 +1007,7 @@ class zmod_color:
                 gcmd.respond_raw(f"{msg}")
                 gcmd.respond_raw(f"tgalarm_photo {msg}")
                 try:
+                    self.gcode.run_script_from_command("IFS_F112")
                     self.gcode.run_script_from_command("IFS_F18")
                 except:
                     pass
