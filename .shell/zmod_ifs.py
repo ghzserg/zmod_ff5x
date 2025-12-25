@@ -172,7 +172,8 @@ class zmod_ifs:
                 self._ret_command_data=""
                 self._ret_command_id=0
 
-            self.info(f"WAIT: {command}#{command_id} RET: #{ret_command_id} {ret_command_data}")
+            if ret_command_id != 0:
+                self.info(f"WAIT: {command}#{command_id} RET: #{ret_command_id} {ret_command_data}")
             if command_id == ret_command_id:
                 if expected_results is not None:
                     if ret_command_data in expected_results:
@@ -314,10 +315,6 @@ class zmod_ifs:
     def get_command(self):
         with self._command_lock:
             return self._command
-
-    def set_command(self, new_command):
-        with self._command_lock:
-            self._command = f"{new_command}"
 
     def get_port(self, port=0):
         if not self.ifs:
@@ -1065,8 +1062,8 @@ class zmod_ifs:
                         with self._ret_command_lock:
                             self._ret_command_data = response
                             self._ret_command_id = command_id
-                        with self._command_lock:
-                            self._command = "F13"
+                            with self._command_lock:
+                                self._command = "F13"
                     time.sleep(HOST_REPORT_TIME)
             except serial.SerialException as e:
                 logging.warning("IFS: Serial communication error: %s", e)
