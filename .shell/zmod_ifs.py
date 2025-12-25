@@ -172,8 +172,8 @@ class zmod_ifs:
                 return True, RET_OK, current_values
 
             if state == FFS_STATUS_DRV_ERROR:
-                gcmd = self.gcode.create_gcode_command("IFS_F15", "IFS_F15", {})
-                self.cmd_IFS_F15(gcmd)
+                gcmd_tmp = self.gcode.create_gcode_command("IFS_F15", "IFS_F15", {})
+                self.cmd_IFS_F15(gcmd_tmp)
                 return False, RET_RETRY, current_values
 
             if state == check_state:          # ждем сработки нужного статуса
@@ -641,8 +641,8 @@ class zmod_ifs:
         self.wait_for_state()
 
         # Прижим прутка
-        gcmd = self.gcode.create_gcode_command("IFS_F24", "IFS_F24", {'PRUTOK': prutok})
-        self.cmd_IFS_F24(gcmd)
+        gcmd_tmp = self.gcode.create_gcode_command("IFS_F24", "IFS_F24", {'PRUTOK': prutok})
+        self.cmd_IFS_F24(gcmd_tmp)
 
         # Проверяем есть ли чтото в экструдере
         if self.get_extruder_sensor():
@@ -674,21 +674,21 @@ class zmod_ifs:
                 if ret_code!=RET_RETRY:
                     break
         if not success:
-            gcmd = self.gcode.create_gcode_command("IFS_F112", "IFS_F112", {})
-            self.cmd_IFS_F112(gcmd)
+            gcmd_tmp = self.gcode.create_gcode_command("IFS_F112", "IFS_F112", {})
+            self.cmd_IFS_F112(gcmd_tmp)
             self.print_result(ret_code, values, prutok)
             if ret_code == RET_EXTRUDER:
                 # Втягиваем пруток
-                gcmd = self.gcode.create_gcode_command("IFS_F11", "IFS_F11", {'PRUTOK': prutok, 'LEN': config["filament_autoinsert_ret_length"], 'SPEED': config["filament_autoinsert_speed"]})
-                self.cmd_IFS_F11(gcmd)
+                gcmd_tmp = self.gcode.create_gcode_command("IFS_F11", "IFS_F11", {'PRUTOK': prutok, 'LEN': config["filament_autoinsert_ret_length"], 'SPEED': config["filament_autoinsert_speed"]})
+                self.cmd_IFS_F11(gcmd_tmp)
 
         # Помечаем как вставленный
-        gcmd = self.gcode.create_gcode_command("IFS_F23", "IFS_F23", {'PRUTOK': prutok})
-        self.cmd_IFS_F23(gcmd)
+        gcmd_tmp = self.gcode.create_gcode_command("IFS_F23", "IFS_F23", {'PRUTOK': prutok})
+        self.cmd_IFS_F23(gcmd_tmp)
 
         # Отжимаем пруток
-        gcmd = self.gcode.create_gcode_command("IFS_F39", "IFS_F39", {'PRUTOK': prutok})
-        self.cmd_IFS_F39(gcmd)
+        gcmd_tmp = self.gcode.create_gcode_command("IFS_F39", "IFS_F39", {'PRUTOK': prutok})
+        self.cmd_IFS_F39(gcmd_tmp)
 
     def _cmd_IFS_F10(self, prutok, leng, speed):
         if not self.ifs:
@@ -738,8 +738,8 @@ class zmod_ifs:
                     else:
                         self.print_result(ret_code, values, prutok, info=False)
                     if not success:
-                        gcmd = self.gcode.create_gcode_command("IFS_F112", "IFS_F112", {})
-                        self.cmd_IFS_F112(gcmd)
+                        gcmd_tmp = self.gcode.create_gcode_command("IFS_F112", "IFS_F112", {})
+                        self.cmd_IFS_F112(gcmd_tmp)
                 else:
                     success, ret_code, values = self.wait_for_state(timeout=120)
                 if ret_code!=RET_RETRY:
@@ -783,8 +783,8 @@ class zmod_ifs:
                     )
                     if ret_code==RET_RETRY:
                         continue
-                    gcmd = self.gcode.create_gcode_command("IFS_F112", "IFS_F112", {})
-                    self.cmd_IFS_F112(gcmd)
+                    gcmd_tmp = self.gcode.create_gcode_command("IFS_F112", "IFS_F112", {})
+                    self.cmd_IFS_F112(gcmd_tmp)
                 else:
                     success, ret_code, values = self.wait_for_state(timeout=120)
                 if ret_code!=RET_RETRY:
