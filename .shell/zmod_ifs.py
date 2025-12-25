@@ -161,6 +161,7 @@ class zmod_ifs:
             current_values = self.ifs_data.get_values()
             if extruder:
                 if self.get_extruder_sensor() == extruder['status']: # Проверяем сработку датчика в экструдере
+                    self.info("Extruder trigger 2")
                     return False, RET_EXTRUDER, current_values
 
             state = current_values['State']
@@ -274,6 +275,7 @@ class zmod_ifs:
         while not self.stop_thread:
             if extruder: # Если нужно контролировать экструдер
                 if self.get_extruder_sensor() == extruder['status']:
+                    self.info("Extruder trigger 1")
                     return None
 
             eventtime = self.reactor.pause(eventtime + HOST_REPORT_TIME)
@@ -776,7 +778,7 @@ class zmod_ifs:
                         FFS_state=FFS_STATUS_VIGRUZKA,
                         silk={'count': self.silk_count, 'status': False},
                         stall={'count': self.stall_count, 'status': False},
-                        extruder={'status': True},
+                        extruder={'status': False},
                         timeout=120
                     )
                     if ret_code==RET_RETRY:
