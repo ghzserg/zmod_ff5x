@@ -141,7 +141,7 @@ class zmod_ifs:
     #     FFS_state=FFS_STATUS_ZAGRUZKA,
     #     silk={'count': 3, 'status': True},
     #     stall={'count': 3, 'status': True},
-    #     extruder={'count': 1, 'status': True},
+    #     extruder={'status': True},
     #     timeout=15
     #     )
     def wait_for_state(self, Port=0, FFS_state=None, silk=None, stall=None, extruder=None, timeout=10):
@@ -152,13 +152,17 @@ class zmod_ifs:
                 check_state = (FFS_state + (Port-1)*FFS_STATUS_DELTA)
             else:
                 check_state = FFS_state
-        silk_count = stall_count = extruder_count = 0
+        silk_count = stall_count = 0
 
         while not self.stop_thread:
             # Запрос статуса
-            response = self.send_command_and_wait("F13")
+            response = self.send_command_and_wait("F13", extruder=extruder)
             self.ifs_data.update_from_string(response)
             current_values = self.ifs_data.get_values()
+            if extruder:
+                if self.get_extruder_sensor() == extruder['status']: # Проверяем сработку датчика в экструдере
+                    return False, RET_EXTRUDER, current_values
+
             state = current_values['State']
             self.info(f"F13 need:{check_state}|{FFS_STATUS_READY} cur:{state} > {response}")
 
@@ -172,16 +176,6 @@ class zmod_ifs:
                 return False, RET_RETRY, current_values
 
             if state == check_state:          # ждем сработки нужного статуса
-                if extruder: # Если нужно контролировать экструдер
-                    # 2 секунды подряд проверяем экструдер
-                    #for i in range(20):
-                    #    self.reactor.pause(self.reactor.monotonic() + OPROS_EXTRUDER)
-                    if self.get_extruder_sensor() == extruder['status']: # Проверяем сработку датчика в экструдере
-                        extruder_count += 1
-                        if extruder_count >= extruder['count']:
-                            return False, RET_EXTRUDER, current_values
-                    else:
-                        extruder_count = 0
                 if silk and Port != 0:        # проверяем наличие прутка
                     current_silk = current_values['Silk']
                     if ((current_silk >> (Port - 1)) & 1 == 1) == silk['status']:
@@ -256,7 +250,7 @@ class zmod_ifs:
     def set_cur_port(self, port):
         return self.ifs_data.set_cur_port(port)
 
-    def send_command_and_wait(self, command, timeout=5.0, result=None):
+    def send_command_and_wait(self, command, timeout=5.0, result=None, extruder=None):
         """
         Отправляет команду и возвращает ответ.
         :param command: Команда для отправки (например, "H1").
@@ -278,6 +272,10 @@ class zmod_ifs:
             expected_results = None
 
         while not self.stop_thread:
+            if extruder: # Если нужно контролировать экструдер
+                if self.get_extruder_sensor() == extruder['status']:
+                    return None
+
             eventtime = self.reactor.pause(eventtime + HOST_REPORT_TIME)
             with self._ret_command_lock:
                 ret_command_data=self._ret_command_data
@@ -668,7 +666,7 @@ class zmod_ifs:
                      FFS_state=FFS_STATUS_ZAGRUZKA,
                      silk={'count': self.silk_count, 'status': False},
                      stall={'count': self.stall_count, 'status': False},
-                     extruder={'count': 1, 'status': True},
+                     extruder={'status': True},
                      timeout=120
                 )
                 if ret_code!=RET_RETRY:
@@ -728,7 +726,7 @@ class zmod_ifs:
                         FFS_state=FFS_STATUS_ZAGRUZKA,
                         silk={'count': self.silk_count, 'status': False},
                         stall={'count': self.stall_count, 'status': False},
-                        extruder={'count': 1, 'status': True},
+                        extruder={'status': True},
                         timeout=120
                     )
                     if ret_code==RET_RETRY:
@@ -778,7 +776,7 @@ class zmod_ifs:
                         FFS_state=FFS_STATUS_VIGRUZKA,
                         silk={'count': self.silk_count, 'status': False},
                         stall={'count': self.stall_count, 'status': False},
-                        extruder={'count': 1, 'status': True},
+                        extruder={'status': True},
                         timeout=120
                     )
                     if ret_code==RET_RETRY:
