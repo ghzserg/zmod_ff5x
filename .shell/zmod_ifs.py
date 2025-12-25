@@ -190,6 +190,7 @@ class zmod_ifs:
                     error_msg = f"Таймаут ожидания ответа от команды {command}#{command_id}"
                 else:
                     error_msg = f"Timeout waiting for response from command {command}#{command_id}"
+                self.info(error_msg)
                 self.gcode.run_script_from_command("IFS_F112")
                 self.gcode.run_script_from_command("IFS_F18")
                 raise self.gcode.error(error_msg)
@@ -258,6 +259,7 @@ class zmod_ifs:
                     error_msg = f"IFS: Вышло время для получения статуса {check_state}|{FFS_STATUS_READY} получен {state}"
                 else:
                     error_msg = f"IFS: Timeout waiting for status {check_state}|{FFS_STATUS_READY}, received {state}"
+                self.info(error_msg)
                 self.gcode.run_script_from_command("IFS_F112")
                 self.gcode.run_script_from_command("IFS_F18")
                 raise self.gcode.error(error_msg)
@@ -325,6 +327,7 @@ class zmod_ifs:
         if info:
             self.gcode.respond_info(string)
         else:
+            self.info(string)
             self.gcode.run_script_from_command("IFS_F112")
             self.gcode.run_script_from_command("IFS_F18")
             raise self.gcode.error(string)
@@ -959,6 +962,7 @@ class zmod_ifs:
         )
 
         if self.get_extruder_sensor():
+            self.info("Не удалось извлечь пруток из экструдера")
             self.gcode.run_script_from_command("IFS_F112")
             self.gcode.run_script_from_command("IFS_F18")
             raise self.gcode.error("Не удалось извлечь пруток из экструдера" if self.lang == 'ru' else "Failed to extract filament from extruder")
