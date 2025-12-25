@@ -169,9 +169,10 @@ class zmod_ifs:
             with self._ret_command_lock:
                 ret_command_data=self._ret_command_data
                 ret_command_id=self._ret_command_id
+                self._ret_command_data=""
+                self._ret_command_id=0
 
-            self.info(f"WAIT: {command}#{command_id}")
-            self.info(f"RET : {ret_command_id} {ret_command_data}")
+            self.info(f"WAIT: {command}#{command_id} RET: #{ret_command_id} {ret_command_data}")
             if command_id == ret_command_id:
                 if expected_results is not None:
                     if ret_command_data in expected_results:
