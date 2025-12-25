@@ -167,10 +167,9 @@ class zmod_ifs:
 
             eventtime = self.reactor.pause(eventtime + HOST_REPORT_TIME)
             with self._ret_command_lock:
-                ret_command_data=self._ret_command_data
-                ret_command_id=self._ret_command_id
-                self._ret_command_data=""
-                self._ret_command_id=0
+                ret_command_data = self._ret_command_data
+                ret_command_id = self._ret_command_id
+                self._ret_command_id = 0
 
             if ret_command_id != 0:
                 self.info(f"WAIT: {command}#{command_id} RET: #{ret_command_id} {ret_command_data}")
