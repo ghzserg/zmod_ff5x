@@ -136,6 +136,64 @@ class zmod_ifs:
     def get_ifs_status(self):
         return self.ifs
 
+    def send_command_and_wait(self, command, timeout=5.0, result=None, extruder=None):
+        """
+        Отправляет команду и возвращает ответ.
+        :param command: Команда для отправки (например, "H1").
+        :param timeout: Таймаут ожидания ответа.
+        :param result: Ожидаемый ответ
+        :param extruder: Контролировать состояние экструдера
+        :return: Ответ от датчика или None при таймауте.
+        """
+        with self._command_lock:
+            self._command_id += 1
+            command_id = self._command_id  # Уникальный ID команды
+            self._command = f"{command}#{command_id}"
+        start_time = eventtime = self.reactor.monotonic()
+
+        if result is not None:
+            if isinstance(result, str):
+                expected_results = (result,)
+            else:
+                expected_results = tuple(result)
+        else:
+            expected_results = None
+
+        while not self.stop_thread:
+            if extruder: # Если нужно контролировать экструдер
+                if self.get_extruder_sensor() == extruder['status']:
+                    self.info("Extruder trigger 1")
+                    return None
+
+            eventtime = self.reactor.pause(eventtime + HOST_REPORT_TIME)
+            with self._ret_command_lock:
+                ret_command_data=self._ret_command_data
+                ret_command_id=self._ret_command_id
+
+            self.info(f"WAIT: {command}#{command_id}")
+            self.info(f"RET : {ret_command_id} {ret_command_data}")
+            if command_id == ret_command_id:
+                if expected_results is not None:
+                    if ret_command_data in expected_results:
+                        return ret_command_data
+                    else:
+                        self.gcode.run_script_from_command("_ENABLE_SENSOR")
+                        raise self.gcode.error(f"{command}#{command_id} ret {ret_command_data} != {expected_results}")
+                        return None
+                else:
+                    return self._ret_command_data
+            if eventtime - start_time > timeout:
+                self.gcode.run_script_from_command("_ENABLE_SENSOR")
+                if self.lang == 'ru':
+                    error_msg = f"Таймаут ожидания ответа от команды {command}#{command_id}"
+                else:
+                    error_msg = f"Timeout waiting for response from command {command}#{command_id}"
+                self.gcode.run_script_from_command("IFS_F112")
+                self.gcode.run_script_from_command("IFS_F18")
+                raise self.gcode.error(error_msg)
+                return None
+        return None
+
     # self.wait_for_state(
     #     Port=2,
     #     FFS_state=FFS_STATUS_ZAGRUZKA,
@@ -251,59 +309,6 @@ class zmod_ifs:
 
     def set_cur_port(self, port):
         return self.ifs_data.set_cur_port(port)
-
-    def send_command_and_wait(self, command, timeout=5.0, result=None, extruder=None):
-        """
-        Отправляет команду и возвращает ответ.
-        :param command: Команда для отправки (например, "H1").
-        :param timeout: Таймаут ожидания ответа.
-        :return: Ответ от датчика или None при таймауте.
-        """
-        with self._command_lock:
-            self._command_id += 1
-            command_id = self._command_id  # Уникальный ID команды
-            self._command = f"{command}#{command_id}"
-        start_time = eventtime = self.reactor.monotonic()
-
-        if result is not None:
-            if isinstance(result, str):
-                expected_results = (result,)
-            else:
-                expected_results = tuple(result)
-        else:
-            expected_results = None
-
-        while not self.stop_thread:
-            if extruder: # Если нужно контролировать экструдер
-                if self.get_extruder_sensor() == extruder['status']:
-                    self.info("Extruder trigger 1")
-                    return None
-
-            eventtime = self.reactor.pause(eventtime + HOST_REPORT_TIME)
-            with self._ret_command_lock:
-                ret_command_data=self._ret_command_data
-                ret_command_id=self._ret_command_id
-            if command_id == ret_command_id:
-                if expected_results is not None:
-                    if ret_command_data in expected_results:
-                        return ret_command_data
-                    else:
-                        self.gcode.run_script_from_command("_ENABLE_SENSOR")
-                        raise self.gcode.error(f"{command}#{command_id} ret {ret_command_data} != {expected_results}")
-                        return None
-                else:
-                    return self._ret_command_data
-            if eventtime - start_time > timeout:
-                self.gcode.run_script_from_command("_ENABLE_SENSOR")
-                if self.lang == 'ru':
-                    error_msg = f"Таймаут ожидания ответа от команды {command}#{command_id}"
-                else:
-                    error_msg = f"Timeout waiting for response from command {command}#{command_id}"
-                self.gcode.run_script_from_command("IFS_F112")
-                self.gcode.run_script_from_command("IFS_F18")
-                raise self.gcode.error(error_msg)
-                return None
-        return None
 
     def get_command(self):
         with self._command_lock:
