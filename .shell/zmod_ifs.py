@@ -677,8 +677,7 @@ class zmod_ifs:
                 if ret_code!=RET_RETRY:
                     break
         if not success:
-            gcmd_tmp = self.gcode.create_gcode_command("IFS_F112", "IFS_F112", {})
-            self.cmd_IFS_F112(gcmd_tmp)
+            self.gcode.run_script_from_command("IFS_F112")
             self.print_result(ret_code, values, prutok)
             if ret_code == RET_EXTRUDER:
                 # Втягиваем пруток
@@ -741,8 +740,7 @@ class zmod_ifs:
                     else:
                         self.print_result(ret_code, values, prutok, info=False)
                     if not success:
-                        gcmd_tmp = self.gcode.create_gcode_command("IFS_F112", "IFS_F112", {})
-                        self.cmd_IFS_F112(gcmd_tmp)
+                        self.gcode.run_script_from_command("IFS_F112")
                 else:
                     success, ret_code, values = self.wait_for_state(timeout=120)
                 if ret_code!=RET_RETRY:
@@ -786,8 +784,7 @@ class zmod_ifs:
                     )
                     if ret_code==RET_RETRY:
                         continue
-                    gcmd_tmp = self.gcode.create_gcode_command("IFS_F112", "IFS_F112", {})
-                    self.cmd_IFS_F112(gcmd_tmp)
+                    self.gcode.run_script_from_command("IFS_F112")
                 else:
                     success, ret_code, values = self.wait_for_state(timeout=120)
                 if ret_code!=RET_RETRY:
