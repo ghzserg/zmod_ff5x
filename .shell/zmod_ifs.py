@@ -106,6 +106,7 @@ class zmod_ifs:
         self.gcode.register_command('SET_CURRENT_PRUTOK', self.cmd_SET_CURRENT_PRUTOK)  # Указать klipper какой пруток сейчас активен
         self.gcode.register_command('ANALOG_PRUTOK', self.cmd_ANALOG_PRUTOK)            # Загрузить аналогичный пруток
         self.gcode.register_command('IFS_MOTION', self.cmd_IFS_MOTION)                  # Проверить, остановился или кончился филамент
+        self.gcode.register_command('IFS_GET_COMAND', self.cmd_IFS_GET_COMMAND)         # Сообщить текущую команду
 
         # Внутренние конманды начинаются с IFS
         self.gcode.register_command('IFS_PRINT_DEFAULTS', self.cmd_IFS_PRINT_DEFAULTS)
@@ -313,10 +314,6 @@ class zmod_ifs:
     def set_cur_port(self, port):
         return self.ifs_data.set_cur_port(port)
 
-    def get_command(self):
-        with self._command_lock:
-            return self._command
-
     def get_port(self, port=0):
         if not self.ifs:
             return False
@@ -422,6 +419,16 @@ class zmod_ifs:
         for filament_type, temp in self.temp_defaults.items():
             msg += f"{filament_type}: {temp}°C\n"
         self.print_str(msg.strip())
+
+    def cmd_IFS_GET_COMMAND(self, gcmd):
+        with self._command_lock:
+            current_command = self._command
+            current_id = self._command_id
+        with self._ret_command_lock:
+            ret_command_data = self._ret_command_data
+            ret_command_id = self._ret_command_id
+
+        self.print_str(f"IFS_GET_COMMAND: {current_command} ID: {current_id} RET: {ret_command_data} RET_ID: {ret_command_id}")
 
     # Проверить остановился или закончился пруток
     def cmd_IFS_MOTION(self, gcmd):
@@ -1004,7 +1011,8 @@ class zmod_ifs:
                 )
                 logging.info(f"IFS: {PORT} open")
                 while not self.stop_thread:
-                    current_command = self.get_command()
+                    with self._command_lock:
+                        current_command = self._command
                     command_id = -1
                     if '#' in current_command:
                         command, command_id = current_command.split('#', 1)
@@ -1066,7 +1074,8 @@ class zmod_ifs:
                             self._ret_command_data = response
                             self._ret_command_id = command_id
                             with self._command_lock:
-                                self._command = "F13"
+                                if command_id == self._command_id: # Если текущая команда последняя, то переходим в режим опроса
+                                    self._command = "F13"
                     time.sleep(HOST_REPORT_TIME)
             except serial.SerialException as e:
                 logging.warning("IFS: Serial communication error: %s", e)
