@@ -20,7 +20,7 @@ if [ -f /opt/config/mod_data/klipper_data.json ]; then
     if ! [ -f /ZMOD ]; then
         chroot ${MOD} /opt/config/mod/.shell/root/restore_gcode /opt/config/mod_data/klipper_data.json /tmp/uds ${DATA_GCODES} ${ZLANG}
     else
-        /opt/config/mod/.shell/root/restore_gcode /opt/config/mod_data/klipper_data.json /tmp/uds ${DATA_GCODES} --${ZLANG}
+        /opt/config/mod/.shell/root/restore_gcode /opt/config/mod_data/klipper_data.json /tmp/uds ${DATA_GCODES} ${ZLANG}
     fi
 else
     [ ${ZLANG} != 'ru' ] && echo "Print recovery file not found" || echo "Файл восстановления печати не найден"
