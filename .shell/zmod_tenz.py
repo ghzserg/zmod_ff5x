@@ -112,6 +112,7 @@ class zmod_tenz:
             self._command = new_command
 
     def cmd_LOAD_CELL_TARE(self, gcmd):
+        self.getlang()
         max_attempts = 10
         attempt = 0
         while attempt < max_attempts:
@@ -119,12 +120,22 @@ class zmod_tenz:
             self.cmd_H1(gcmd)  # Вызов команды H1 для сброса веса
             with self.temp_lock:
                 cur_temp=self.temp
-            gcmd.respond_info(f"N {attempt}. Weight: {cur_temp}")
+            if self.lang != 'ru':
+                gcmd.respond_info(f"N {attempt}. Weight: {cur_temp}")
+            else:
+                gcmd.respond_info(f"N {attempt}. Вес: {cur_temp}")
             if abs(cur_temp) < 100:
-                gcmd.respond_info(f"Cell Tare: OK. Weight: {cur_temp}")
+                if self.lang != 'ru':
+                    gcmd.respond_info(f"Cell Tare: OK. Weight: {cur_temp}")
+                else:
+                    gcmd.respond_info(f"Сброс тензодатчка: ОК. Вес: {cur_temp}")
                 return
             self.reactor.pause(self.reactor.monotonic() + 0.5)
-        error_msg = f"Cell Tare: Error. Weight: {cur_temp} https://github.com/ghzserg/zmod/wiki/FAQ"
+
+        if self.lang != 'ru':
+            error_msg = f"Cell Tare: Error. Weight: {cur_temp} https://github.com/ghzserg/zmod/wiki/FAQ_en"
+        else:
+            error_msg = f"Сброс тензодатчка: Ошибка. Вес: {cur_temp} https://github.com/ghzserg/zmod/wiki/FAQ"
         raise gcmd.error(error_msg)
 
     def cmd_H1(self, gcmd):
@@ -318,7 +329,7 @@ class zmod_tenz:
                 if self.lang != 'ru':
                     status_msg = "Weight: %d; Control is configured but inactive." % self.max_temp
                 else:
-                    status_msg = "Вес: %d; Контроль настроен и не активен." % self.max_temp
+                    status_msg = "Вес: %d; Контроль настроен, но не активен." % self.max_temp
             gcmd.respond_info(status_msg)
             if self.zcommand == 1:
                 if self.lang != 'ru':
