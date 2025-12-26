@@ -183,6 +183,7 @@ class FlashforgeLoadCell:
         gcmd.respond_info(message)
 
     def cmd_LOAD_CELL_TARE(self, gcmd):
+        self.getlang()
         if self.language != 'ru':
             message = f"{self.name}: Starting tare procedure..."
         else:
