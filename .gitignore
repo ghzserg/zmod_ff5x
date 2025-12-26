@@ -9,4 +9,3 @@ base
 ./switch_sensor_display_off.cfg
 *.orig
 .shell/root/moonraker/components/timelapse.py
-
