@@ -10,6 +10,7 @@ class zmod:
         self.printer = config.get_printer()
         self.lang = config.get('language', 'en')
         self.ad5x = config.getboolean('ad5x', False)
+        self.screen = config.getboolean('screen', True)
 
         self.gcode = self.printer.lookup_object('gcode')
         gcode_macro = self.printer.load_object(config, 'gcode_macro')
@@ -49,16 +50,16 @@ class zmod:
 
         zoffset = round(float(z_probe_offset), 4)
         if not self.ad5x:
-            if self.lang != 'ru':
-                gcmd.respond_raw("Actual Z-Offset for AD5M/AD5MPro is 0.025mm greater than value displayed on native screen")
-                gcmd.respond_raw(f"On native screen: {zoffset}")
-                zoffset += 0.025
-                gcmd.respond_raw(f"Actual: {zoffset}")
-            else:
-                gcmd.respond_raw("Фактический Z-Offset принтера AD5M/AD5MPro на 0.025 мм больше значения, отображаемого на родном экране")
-                gcmd.respond_raw(f"На родном экране: {zoffset}")
-                zoffset += 0.025
-                gcmd.respond_raw(f"Фактический: {zoffset}")
+            zoffset += 0.025
+            if self.screen or start == 0:
+                if self.lang != 'ru':
+                    gcmd.respond_raw("Actual Z-Offset for AD5M/AD5MPro is 0.025mm greater than value displayed on native screen")
+                    gcmd.respond_raw(f"On native screen: {zoffset-0.025}")
+                    gcmd.respond_raw(f"Actual: {zoffset}")
+                else:
+                    gcmd.respond_raw("Фактический Z-Offset принтера AD5M/AD5MPro на 0.025 мм больше значения, отображаемого на родном экране")
+                    gcmd.respond_raw(f"На родном экране: {zoffset-0.025}")
+                    gcmd.respond_raw(f"Фактический: {zoffset}")
 
         self.gcode.run_script_from_command(f"SET_GCODE_OFFSET Z={zoffset:.4f} START={start} FROM=LOAD_ZOFFSET_NATIVE")
         if start == 0:
