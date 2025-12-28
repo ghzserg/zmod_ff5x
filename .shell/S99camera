@@ -50,7 +50,31 @@ start_ustreamer() {
 }
 
 up() {
+    mkdir -p ${MOD_CONF}/mod_data/log/cam/
+    [ -f ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.log ] || echo "" > ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.log
+    [ -f ${MOD_CONF}/mod_data/log/cam/ustreamer.log ] || echo "" > ${MOD_CONF}/mod_data/log/cam/ustreamer.log
+    [ -f ${MOD_CONF}/mod_data/log/cam/camera.log ] || echo "" > ${MOD_CONF}/mod_data/log/cam/camera.log
+
+    mv ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.4.log ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.5.log
+    mv ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.3.log ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.4.log
+    mv ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.2.log ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.3.log
+    mv ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.1.log ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.2.log
+    mv ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.log   ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.1.log
+
+    mv ${MOD_CONF}/mod_data/log/cam/ustreamer.4.log ${MOD_CONF}/mod_data/log/cam/ustreamer.5.log
+    mv ${MOD_CONF}/mod_data/log/cam/ustreamer.3.log ${MOD_CONF}/mod_data/log/cam/ustreamer.4.log
+    mv ${MOD_CONF}/mod_data/log/cam/ustreamer.2.log ${MOD_CONF}/mod_data/log/cam/ustreamer.3.log
+    mv ${MOD_CONF}/mod_data/log/cam/ustreamer.1.log ${MOD_CONF}/mod_data/log/cam/ustreamer.2.log
+    mv ${MOD_CONF}/mod_data/log/cam/ustreamer.log   ${MOD_CONF}/mod_data/log/cam/ustreamer.1.log
+
+    mv ${MOD_CONF}/mod_data/log/cam/camera.4.log ${MOD_CONF}/mod_data/log/cam/camera.5.log
+    mv ${MOD_CONF}/mod_data/log/cam/camera.3.log ${MOD_CONF}/mod_data/log/cam/camera.4.log
+    mv ${MOD_CONF}/mod_data/log/cam/camera.2.log ${MOD_CONF}/mod_data/log/cam/camera.3.log
+    mv ${MOD_CONF}/mod_data/log/cam/camera.1.log ${MOD_CONF}/mod_data/log/cam/camera.2.log
+    mv ${MOD_CONF}/mod_data/log/cam/camera.log   ${MOD_CONF}/mod_data/log/cam/camera.1.log
+
     >/opt/config/mod_data/log/cam/cam.log
+
     if [ $START != "on" ]; then
         [ ${ZLANG} != 'ru' ] && echo "Camera off" >>/opt/config/mod_data/log/cam/cam.log || echo "Камера отключена" >>${MOD_CONF}/mod_data/log/cam/cam.log
         return 0
@@ -95,36 +119,13 @@ stop() {
 restart() {
     stop
     sleep 2
-    up &>${MOD_CONF}/mod_data/log/cam/camera.log
+    up
 }
 
 case "$1" in
   start)
     ;;
   up|init)
-    mkdir -p ${MOD_CONF}/mod_data/log/cam/
-    [ -f ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.log ] || echo "" > ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.log
-    [ -f ${MOD_CONF}/mod_data/log/cam/ustreamer.log ] || echo "" > ${MOD_CONF}/mod_data/log/cam/ustreamer.log
-    [ -f ${MOD_CONF}/mod_data/log/cam/camera.log ] || echo "" > ${MOD_CONF}/mod_data/log/cam/camera.log
-
-    mv ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.4.log ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.5.log
-    mv ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.3.log ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.4.log
-    mv ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.2.log ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.3.log
-    mv ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.1.log ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.2.log
-    mv ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.log   ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.1.log
-
-    mv ${MOD_CONF}/mod_data/log/cam/ustreamer.4.log ${MOD_CONF}/mod_data/log/cam/ustreamer.5.log
-    mv ${MOD_CONF}/mod_data/log/cam/ustreamer.3.log ${MOD_CONF}/mod_data/log/cam/ustreamer.4.log
-    mv ${MOD_CONF}/mod_data/log/cam/ustreamer.2.log ${MOD_CONF}/mod_data/log/cam/ustreamer.3.log
-    mv ${MOD_CONF}/mod_data/log/cam/ustreamer.1.log ${MOD_CONF}/mod_data/log/cam/ustreamer.2.log
-    mv ${MOD_CONF}/mod_data/log/cam/ustreamer.log   ${MOD_CONF}/mod_data/log/cam/ustreamer.1.log
-
-    mv ${MOD_CONF}/mod_data/log/cam/camera.4.log ${MOD_CONF}/mod_data/log/cam/camera.5.log
-    mv ${MOD_CONF}/mod_data/log/cam/camera.3.log ${MOD_CONF}/mod_data/log/cam/camera.4.log
-    mv ${MOD_CONF}/mod_data/log/cam/camera.2.log ${MOD_CONF}/mod_data/log/cam/camera.3.log
-    mv ${MOD_CONF}/mod_data/log/cam/camera.1.log ${MOD_CONF}/mod_data/log/cam/camera.2.log
-    mv ${MOD_CONF}/mod_data/log/cam/camera.log   ${MOD_CONF}/mod_data/log/cam/camera.1.log
-
     up $1
     ;;
   stop)
