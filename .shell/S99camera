@@ -12,16 +12,53 @@ if ! [ -f /opt/config/mod_data/camera.conf ]; then
 fi
 
 FS=0
+STREAMER=auto
+FORMAT=MJPEG
 source /opt/config/mod_data/camera.conf
 PID_FILE=/run/camera.pid
 
-up() {
-    ${V4l2} --all
-    ls -1 /dev/video? | while read a; do
-        ${V4l2} -d $a --list-formats
-        ${V4l2} -d $a --list-formats-ext
-    done;
+start_mjpg_streamer() {
+    echo "mjpg_streamer"
+    mv ${MOD_CONF}/mod_data/log/mjpg_streamer.4.log ${MOD_CONF}/mod_data/log/mjpg_streamer.5.log
+    mv ${MOD_CONF}/mod_data/log/mjpg_streamer.3.log ${MOD_CONF}/mod_data/log/mjpg_streamer.4.log
+    mv ${MOD_CONF}/mod_data/log/mjpg_streamer.2.log ${MOD_CONF}/mod_data/log/mjpg_streamer.3.log
+    mv ${MOD_CONF}/mod_data/log/mjpg_streamer.1.log ${MOD_CONF}/mod_data/log/mjpg_streamer.2.log
+    mv ${MOD_CONF}/mod_data/log/mjpg_streamer.log   ${MOD_CONF}/mod_data/log/mjpg_streamer.1.log
+    if [ "$FS" -ne "0" ]; then
+        FFS="-fs $(( ${WIDTH} * ${HEIGHT} * 2 ))"
+    else
+        FFS=""
+    fi
 
+    ${V4l2} -d /dev/$VIDEO --set-fmt-video=width=${WIDTH},height=${HEIGHT},pixelformat=MJPG
+    if [ -f /ZMOD ]; then
+        nohup /usr/bin/mjpg_streamer -o "/usr/lib/mjpg-streamer/output_http.so -w /usr/share/mjpg-streamer/www -p 8080" -i  "/usr/lib/mjpg-streamer/input_uvc.so -b 1 -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS $FFS" 2>&1 >/opt/config/mod_data/log/mjpg_streamer.log &
+    else
+        if [ ${FF5X} -eq 0 ]; then
+            nohup /opt/config/mod/.shell/eabi/mjpg_streamer -o "/opt/config/mod/.shell/eabi/lib/output_http.so -w /opt/mjpg-streamer/www -p 8080" -i  "/opt/config/mod/.shell/eabi/lib/input_uvc.so -b 1 -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS $FFS" 2>&1 >/opt/config/mod_data/log/mjpg_streamer.log &
+        else
+            chroot $MOD nohup /usr/bin/mjpg_streamer -o "/usr/lib/mjpg-streamer/output_http.so -w /usr/share/mjpg-streamer/www -p 8080" -i  "/usr/lib/mjpg-streamer/input_uvc.so -b 1 -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS $FFS" 2>&1 >/opt/config/mod_data/log/mjpg_streamer.log &
+        fi
+    fi
+}
+
+start_ustreamer() {
+    echo "ustreamer"
+    mv ${MOD_CONF}/mod_data/log/ustreamer.4.log ${MOD_CONF}/mod_data/log/ustreamer.5.log
+    mv ${MOD_CONF}/mod_data/log/ustreamer.3.log ${MOD_CONF}/mod_data/log/ustreamer.4.log
+    mv ${MOD_CONF}/mod_data/log/ustreamer.2.log ${MOD_CONF}/mod_data/log/ustreamer.3.log
+    mv ${MOD_CONF}/mod_data/log/ustreamer.1.log ${MOD_CONF}/mod_data/log/ustreamer.2.log
+    mv ${MOD_CONF}/mod_data/log/ustreamer.log   ${MOD_CONF}/mod_data/log/ustreamer.1.log
+
+    [ "$STREAMER" == "auto" ] && FORMAT=$(${V4l2} -d /dev/$VIDEO --list-formats| grep '\[' | tail -1| cut -d "'" -f2)
+    if [ -f /ZMOD ]; then
+        nohup /bin/ustreamer -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS --format=$FORMAT -s 0.0.0.0 2>&1 >/opt/config/mod_data/log/mjpg_streamer.log &
+    else
+        chroot ${MOD} nohup /bin/ustreamer -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS --format=$FORMAT -s 0.0.0.0 2>&1 >/opt/config/mod_data/log/mjpg_streamer.log &
+    fi
+}
+
+up() {
     >/opt/config/mod_data/log/cam.log
     if [ $START != "on" ]; then
         [ ${ZLANG} != 'ru' ] && echo "Camera off" >>/opt/config/mod_data/log/cam.log || echo "Камера отключена" >>/opt/config/mod_data/log/cam.log
@@ -31,30 +68,17 @@ up() {
     if [ -c /dev/$VIDEO ]; then
         ${V4l2} -d /dev/$VIDEO --list-formats
         ${V4l2} -d /dev/$VIDEO --list-formats-ext
-        if ${V4l2} -d /dev/$VIDEO  --list-formats | grep MJPG; then
-            if [ "$FS" -ne "0" ]; then
-                FFS="-fs $(( ${WIDTH} * ${HEIGHT} * 2 ))"
-            else
-                FFS=""
-            fi
-            ${V4l2} -d /dev/$VIDEO --set-fmt-video=width=${WIDTH},height=${HEIGHT},pixelformat=MJPG
-            if [ -f /ZMOD ]; then
-                start-stop-daemon -S -b -m -p $PID_FILE --exec /usr/bin/mjpg_streamer -- -o "/usr/lib/mjpg-streamer/output_http.so -w /usr/share/mjpg-streamer/www -p 8080" -i  "/usr/lib/mjpg-streamer/input_uvc.so -b 1 -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS $FFS"
-            else
-                if [ ${FF5X} -eq 0 ]; then
-                    start-stop-daemon -S -b -m -p $PID_FILE --exec /opt/config/mod/.shell/eabi/mjpg_streamer -- -o "/opt/config/mod/.shell/eabi/lib/output_http.so -w /opt/mjpg-streamer/www -p 8080" -i  "/opt/config/mod/.shell/eabi/lib/input_uvc.so -b 1 -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS $FFS"
-                else
-                    chroot $MOD start-stop-daemon -S -b -m -p $PID_FILE --exec /usr/bin/mjpg_streamer -- -o "/usr/lib/mjpg-streamer/output_http.so -w /usr/share/mjpg-streamer/www -p 8080" -i  "/usr/lib/mjpg-streamer/input_uvc.so -b 1 -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS $FFS"
-                fi
-            fi
+        if [ "$STREAMER" == "mjpg_streamer" ]; then
+            start_mjpg_streamer
+        else if [ "$STREAMER" == "ustreamer" ]; then
+            start_ustreamer
         else
-            FORMAT=$(${V4l2} -d /dev/$VIDEO --list-formats| grep '\[' | tail -1| cut -d "'" -f2)
-            if [ -f /ZMOD ]; then
-                start-stop-daemon -S -b -m -p $PID_FILE --exec /bin/ustreamer -- -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS --format=$FORMAT -s 0.0.0.0
+            if ${V4l2} -d /dev/$VIDEO  --list-formats | grep MJPG; then
+                start_mjpg_streamer
             else
-                chroot ${MOD} start-stop-daemon -S -b -m -p $PID_FILE --exec /bin/ustreamer -- -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS --format=$FORMAT -s 0.0.0.0
+                start_ustreamer
             fi
-        fi
+        fi; fi
         [ ${ZLANG} != 'ru' ] && echo "Camera started" >>/opt/config/mod_data/log/cam.log || echo "Запуск камеры завершен" >>/opt/config/mod_data/log/cam.log
     else
         [ ${ZLANG} != 'ru' ] && echo "Camera not found $VIDEO" >>/opt/config/mod_data/log/cam.log || echo "Камера не существует $VIDEO" >>/opt/config/mod_data/log/cam.log
@@ -65,10 +89,14 @@ up() {
             fi
         done
     fi
+    ${V4l2} --all
+    ls -1 /dev/video? | while read a; do
+        ${V4l2} -d $a --list-formats
+        ${V4l2} -d $a --list-formats-ext
+    done;
 }
 
 stop() {
-    start-stop-daemon -K -p $PID_FILE 2>/dev/null >/dev/null
     killall mjpg_streamer ustreamer
 }
 restart() {
@@ -79,16 +107,21 @@ restart() {
 
 case "$1" in
   start)
-        ;;
+    ;;
   up|init)
-        up $1 &>/opt/config/mod_data/log/camera.log
-        ;;
+    mv ${MOD_CONF}/mod_data/log/camera.4.log ${MOD_CONF}/mod_data/log/camera.5.log
+    mv ${MOD_CONF}/mod_data/log/camera.3.log ${MOD_CONF}/mod_data/log/camera.4.log
+    mv ${MOD_CONF}/mod_data/log/camera.2.log ${MOD_CONF}/mod_data/log/camera.3.log
+    mv ${MOD_CONF}/mod_data/log/camera.1.log ${MOD_CONF}/mod_data/log/camera.2.log
+    mv ${MOD_CONF}/mod_data/log/camera.log   ${MOD_CONF}/mod_data/log/camera.1.log
+    up $1 &>/opt/config/mod_data/log/camera.log
+    ;;
   stop)
-        stop
-        ;;
+    stop
+    ;;
   restart|reload)
-        restart
-        ;;
+    restart
+    ;;
   *)
         echo "Usage: $0 {init|up|stop|restart}"
         exit 1
