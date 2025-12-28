@@ -25,7 +25,7 @@ start_mjpg_streamer() {
         FFS=""
     fi
 
-    ${V4l2} -d /dev/$VIDEO --set-fmt-video=width=${WIDTH},height=${HEIGHT},pixelformat=MJPG > ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.log
+    ${V4l2} -d /dev/$VIDEO --set-fmt-video=width=${WIDTH},height=${HEIGHT},pixelformat=MJPG >>${MOD_CONF}/mod_data/log/cam/mjpg_streamer.log 2>&1
     if [ -f /ZMOD ]; then
         nohup /usr/bin/mjpg_streamer -o "/usr/lib/mjpg-streamer/output_http.so -w /usr/share/mjpg-streamer/www -p 8080" -i  "/usr/lib/mjpg-streamer/input_uvc.so -b 1 -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS $FFS" >>${MOD_CONF}/mod_data/log/cam/mjpg_streamer.log 2>&1 &
     else
@@ -39,9 +39,10 @@ start_mjpg_streamer() {
 
 start_ustreamer() {
     echo "ustreamer" >>${MOD_CONF}/mod_data/log/cam/camera.log
-
-    >${MOD_CONF}/mod_data/log/cam/ustreamer.log
+    echo ${FORMAT} >>${MOD_CONF}/mod_data/log/cam/ustreamer.log 2>&1
+    ${V4l2} -d /dev/$VIDEO --list-formats >>${MOD_CONF}/mod_data/log/cam/ustreamer.log 2>&1
     [ "$STREAMER" == "auto" ] && FORMAT=$(${V4l2} -d /dev/$VIDEO --list-formats| grep '\[' | tail -1| cut -d "'" -f2)
+    echo ${FORMAT} >>${MOD_CONF}/mod_data/log/cam/ustreamer.log 2>&1
     if [ -f /ZMOD ]; then
         nohup /bin/ustreamer -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS --format=$FORMAT -s 0.0.0.0 >>${MOD_CONF}/mod_data/log/cam/ustreamer.log 2>&1 &
     else
@@ -74,6 +75,8 @@ up() {
     mv ${MOD_CONF}/mod_data/log/cam/camera.log   ${MOD_CONF}/mod_data/log/cam/camera.1.log
 
     >/opt/config/mod_data/log/cam/cam.log
+    >/opt/config/mod_data/log/cam/mjpg_streamer.log
+    >/opt/config/mod_data/log/cam/ustreamer.log
 
     if [ $START != "on" ]; then
         [ ${ZLANG} != 'ru' ] && echo "Camera off" >>/opt/config/mod_data/log/cam/cam.log || echo "Камера отключена" >>${MOD_CONF}/mod_data/log/cam/cam.log
@@ -96,7 +99,7 @@ up() {
         fi; fi
         [ ${ZLANG} != 'ru' ] && echo "Camera started" >>${MOD_CONF}/mod_data/log/cam/cam.log || echo "Запуск камеры завершен" >>${MOD_CONF}/mod_data/log/cam/cam.log
     else
-        [ ${ZLANG} != 'ru' ] && echo "Camera not found $VIDEO"  2>&1 >>${MOD_CONF}/mod_data/log/cam/cam.log || echo "Камера не существует $VIDEO" >>${MOD_CONF}/mod_data/log/cam/cam.log
+        [ ${ZLANG} != 'ru' ] && echo "Camera not found $VIDEO" >>${MOD_CONF}/mod_data/log/cam/cam.log || echo "Камера не существует $VIDEO" >>${MOD_CONF}/mod_data/log/cam/cam.log
         cd /dev/
         ls -1 video? | while read a; do
             if ${V4l2} -d /dev/$a --list-formats-ext 2>/dev/null |grep MJPG >/dev/null 2>/dev/null; then
@@ -104,11 +107,11 @@ up() {
             fi
         done
     fi
-    ${V4l2} --all 2>&1 >>${MOD_CONF}/mod_data/log/cam/camera.log
+    ${V4l2} --all >>${MOD_CONF}/mod_data/log/cam/camera.log 2>&1
     ls -1 /dev/video? | while read a; do
-        echo "$a" 2>&1 >>${MOD_CONF}/mod_data/log/cam/camera.log
+        echo "$a" >>${MOD_CONF}/mod_data/log/cam/camera.log
         ${V4l2} -d $a --list-formats >>${MOD_CONF}/mod_data/log/cam/camera.log 2>&1
-        ${V4l2} -d $a --list-formats-ext >>${MOD_CONF}/mod_data/log/cam/camera.log 2>&1 
+        ${V4l2} -d $a --list-formats-ext >>${MOD_CONF}/mod_data/log/cam/camera.log 2>&1
     done;
 }
 
