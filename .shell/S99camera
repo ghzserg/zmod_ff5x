@@ -52,9 +52,9 @@ start_ustreamer() {
 
     [ "$STREAMER" == "auto" ] && FORMAT=$(${V4l2} -d /dev/$VIDEO --list-formats| grep '\[' | tail -1| cut -d "'" -f2)
     if [ -f /ZMOD ]; then
-        nohup /bin/ustreamer -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS --format=$FORMAT -s 0.0.0.0 2>&1 >/opt/config/mod_data/log/mjpg_streamer.log &
+        nohup /bin/ustreamer -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS --format=$FORMAT -s 0.0.0.0 2>&1 >/opt/config/mod_data/log/ustreamer.log &
     else
-        chroot ${MOD} nohup /bin/ustreamer -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS --format=$FORMAT -s 0.0.0.0 2>&1 >/opt/config/mod_data/log/mjpg_streamer.log &
+        chroot ${MOD} nohup /bin/ustreamer -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS --format=$FORMAT -s 0.0.0.0 2>&1 >/opt/config/mod_data/log/ustreamer.log &
     fi
 }
 
