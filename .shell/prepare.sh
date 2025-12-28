@@ -89,7 +89,7 @@ start_moon()
     [ ${FF5X} -eq 1 ] && VER=$(find /usr/prog/PROGRAM/software/ -type d | sed 's|/usr/prog/PROGRAM/software/||' | grep .)
 
     # Запуск камеры
-    [ ${FF5X} -eq 0 ] && ${MOD_CONF}/mod/.shell/S99camera init
+    #[ ${FF5X} -eq 0 ] && ${MOD_CONF}/mod/.shell/S99camera init
 
     chroot ${MOD} /opt/config/mod/.shell/root/start.sh "$SWAP" "$VER" "$MACHINE" &
 

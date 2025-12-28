@@ -27,8 +27,11 @@ cp /opt/config/mod/.shell/.theme/sidebar-logo.svg /root/fluidd/logo_fluidd.svg
 
 start() {
     # start busybox httpd
-    #start-stop-daemon -S -b -m -p $PID_FILE --exec httpd -- -p 80 -f -h $WEBROOT -c ${MOD_CONF}/mod/.shell/root/httpd.conf
-    start-stop-daemon -S -b -m -p $PID_FILE --exec ${MOD_CONF}/mod/.shell/root/zmod_httpd -- $WEBROOT
+    #if [ "$CLIENT" == "mainsail" ]; then
+        start-stop-daemon -S -b -m -p $PID_FILE --exec ${MOD_CONF}/mod/.shell/root/zmod_httpd -- $WEBROOT
+    #else
+    #    start-stop-daemon -S -b -m -p $PID_FILE --exec httpd -- -p 80 -f -h $WEBROOT -c ${MOD_CONF}/mod/.shell/root/httpd.conf
+    #fi
 }
 
 stop() {
