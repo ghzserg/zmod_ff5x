@@ -18,47 +18,47 @@ source /opt/config/mod_data/camera.conf
 PID_FILE=/run/camera.pid
 
 start_mjpg_streamer() {
-    echo "mjpg_streamer" >>${MOD_CONF}/mod_data/log/camera/camera.log
+    echo "mjpg_streamer" >>${MOD_CONF}/mod_data/log/cam/camera.log
     if [ "$FS" -ne "0" ]; then
         FFS="-fs $(( ${WIDTH} * ${HEIGHT} * 2 ))"
     else
         FFS=""
     fi
 
-    ${V4l2} -d /dev/$VIDEO --set-fmt-video=width=${WIDTH},height=${HEIGHT},pixelformat=MJPG > ${MOD_CONF}/mod_data/log/camera/mjpg_streamer.log
+    ${V4l2} -d /dev/$VIDEO --set-fmt-video=width=${WIDTH},height=${HEIGHT},pixelformat=MJPG > ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.log
     if [ -f /ZMOD ]; then
-        nohup /usr/bin/mjpg_streamer -o "/usr/lib/mjpg-streamer/output_http.so -w /usr/share/mjpg-streamer/www -p 8080" -i  "/usr/lib/mjpg-streamer/input_uvc.so -b 1 -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS $FFS" 2>&1 >>${MOD_CONF}/mod_data/log/camera/mjpg_streamer.log &
+        nohup /usr/bin/mjpg_streamer -o "/usr/lib/mjpg-streamer/output_http.so -w /usr/share/mjpg-streamer/www -p 8080" -i  "/usr/lib/mjpg-streamer/input_uvc.so -b 1 -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS $FFS" 2>&1 >>${MOD_CONF}/mod_data/log/cam/mjpg_streamer.log &
     else
         if [ ${FF5X} -eq 0 ]; then
-            nohup /opt/config/mod/.shell/eabi/mjpg_streamer -o "/opt/config/mod/.shell/eabi/lib/output_http.so -w /opt/mjpg-streamer/www -p 8080" -i  "/opt/config/mod/.shell/eabi/lib/input_uvc.so -b 1 -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS $FFS" 2>&1 >>${MOD_CONF}/mod_data/log/camera/mjpg_streamer.log &
+            nohup /opt/config/mod/.shell/eabi/mjpg_streamer -o "/opt/config/mod/.shell/eabi/lib/output_http.so -w /opt/mjpg-streamer/www -p 8080" -i  "/opt/config/mod/.shell/eabi/lib/input_uvc.so -b 1 -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS $FFS" 2>&1 >>${MOD_CONF}/mod_data/log/cam/mjpg_streamer.log &
         else
-            chroot $MOD nohup /usr/bin/mjpg_streamer -o "/usr/lib/mjpg-streamer/output_http.so -w /usr/share/mjpg-streamer/www -p 8080" -i  "/usr/lib/mjpg-streamer/input_uvc.so -b 1 -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS $FFS" 2>&1 >>${MOD_CONF}/mod_data/log/camera/mjpg_streamer.log &
+            chroot $MOD nohup /usr/bin/mjpg_streamer -o "/usr/lib/mjpg-streamer/output_http.so -w /usr/share/mjpg-streamer/www -p 8080" -i  "/usr/lib/mjpg-streamer/input_uvc.so -b 1 -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS $FFS" 2>&1 >>${MOD_CONF}/mod_data/log/cam/mjpg_streamer.log &
         fi
     fi
 }
 
 start_ustreamer() {
-    echo "ustreamer" >>${MOD_CONF}/mod_data/log/camera/camera.log
+    echo "ustreamer" >>${MOD_CONF}/mod_data/log/cam/camera.log
 
-    >${MOD_CONF}/mod_data/log/camera/ustreamer.log
+    >${MOD_CONF}/mod_data/log/cam/ustreamer.log
     [ "$STREAMER" == "auto" ] && FORMAT=$(${V4l2} -d /dev/$VIDEO --list-formats| grep '\[' | tail -1| cut -d "'" -f2)
     if [ -f /ZMOD ]; then
-        nohup /bin/ustreamer -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS --format=$FORMAT -s 0.0.0.0 2>&1 >>${MOD_CONF}/mod_data/log/camera/ustreamer.log &
+        nohup /bin/ustreamer -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS --format=$FORMAT -s 0.0.0.0 2>&1 >>${MOD_CONF}/mod_data/log/cam/ustreamer.log &
     else
-        chroot ${MOD} nohup /bin/ustreamer -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS --format=$FORMAT -s 0.0.0.0 2>&1 >>${MOD_CONF}/mod_data/log/camera/ustreamer.log &
+        chroot ${MOD} nohup /bin/ustreamer -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS --format=$FORMAT -s 0.0.0.0 2>&1 >>${MOD_CONF}/mod_data/log/cam/ustreamer.log &
     fi
 }
 
 up() {
-    >/opt/config/mod_data/log/camera/cam.log
+    >/opt/config/mod_data/log/cam/cam.log
     if [ $START != "on" ]; then
-        [ ${ZLANG} != 'ru' ] && echo "Camera off" >>/opt/config/mod_data/log/camera/cam.log || echo "Камера отключена" >>${MOD_CONF}/mod_data/log/camera/cam.log
+        [ ${ZLANG} != 'ru' ] && echo "Camera off" >>/opt/config/mod_data/log/cam/cam.log || echo "Камера отключена" >>${MOD_CONF}/mod_data/log/cam/cam.log
         return 0
     fi
 
     if [ -c /dev/$VIDEO ]; then
-        ${V4l2} -d /dev/$VIDEO --list-formats 2>&1 >>${MOD_CONF}/mod_data/log/camera/camera.log
-        ${V4l2} -d /dev/$VIDEO --list-formats-ext 2>&1 >>${MOD_CONF}/mod_data/log/camera/camera.log
+        ${V4l2} -d /dev/$VIDEO --list-formats 2>&1 >>${MOD_CONF}/mod_data/log/cam/camera.log
+        ${V4l2} -d /dev/$VIDEO --list-formats-ext 2>&1 >>${MOD_CONF}/mod_data/log/cam/camera.log
         if [ "$STREAMER" == "mjpg_streamer" ]; then
             start_mjpg_streamer
         else if [ "$STREAMER" == "ustreamer" ]; then
@@ -70,21 +70,21 @@ up() {
                 start_ustreamer
             fi
         fi; fi
-        [ ${ZLANG} != 'ru' ] && echo "Camera started" >>${MOD_CONF}/mod_data/log/camera/cam.log || echo "Запуск камеры завершен" >>${MOD_CONF}/mod_data/log/camera/cam.log
+        [ ${ZLANG} != 'ru' ] && echo "Camera started" >>${MOD_CONF}/mod_data/log/cam/cam.log || echo "Запуск камеры завершен" >>${MOD_CONF}/mod_data/log/cam/cam.log
     else
-        [ ${ZLANG} != 'ru' ] && echo "Camera not found $VIDEO"  2>&1 >>${MOD_CONF}/mod_data/log/camera/cam.log || echo "Камера не существует $VIDEO" >>${MOD_CONF}/mod_data/log/camera/cam.log
+        [ ${ZLANG} != 'ru' ] && echo "Camera not found $VIDEO"  2>&1 >>${MOD_CONF}/mod_data/log/cam/cam.log || echo "Камера не существует $VIDEO" >>${MOD_CONF}/mod_data/log/cam/cam.log
         cd /dev/
         ls -1 video? | while read a; do
             if ${V4l2} -d /dev/$a --list-formats-ext 2>/dev/null |grep MJPG >/dev/null 2>/dev/null; then
-                [ ${ZLANG} != 'ru' ] && echo "Test Run: CAMERA_ON VIDEO=$a" >>/opt/config/mod_data/log/camera/cam.log || echo "Попробуйте ввести: CAMERA_ON VIDEO=$a" >>${MOD_CONF}/mod_data/log/camera/cam.log
+                [ ${ZLANG} != 'ru' ] && echo "Test Run: CAMERA_ON VIDEO=$a" >>/opt/config/mod_data/log/cam/cam.log || echo "Попробуйте ввести: CAMERA_ON VIDEO=$a" >>${MOD_CONF}/mod_data/log/cam/cam.log
             fi
         done
     fi
-    ${V4l2} --all 2>&1 >>${MOD_CONF}/mod_data/log/camera/camera.log
+    ${V4l2} --all 2>&1 >>${MOD_CONF}/mod_data/log/cam/camera.log
     ls -1 /dev/video? | while read a; do
-        echo "$a" 2>&1 >>${MOD_CONF}/mod_data/log/camera/camera.log
-        ${V4l2} -d $a --list-formats  2>&1 >>${MOD_CONF}/mod_data/log/camera/camera.log
-        ${V4l2} -d $a --list-formats-ext  2>&1 >>${MOD_CONF}/mod_data/log/camera/camera.log
+        echo "$a" 2>&1 >>${MOD_CONF}/mod_data/log/cam/camera.log
+        ${V4l2} -d $a --list-formats  2>&1 >>${MOD_CONF}/mod_data/log/cam/camera.log
+        ${V4l2} -d $a --list-formats-ext  2>&1 >>${MOD_CONF}/mod_data/log/cam/camera.log
     done;
 }
 
@@ -95,35 +95,35 @@ stop() {
 restart() {
     stop
     sleep 2
-    up &>${MOD_CONF}/mod_data/log/camera/camera.log
+    up &>${MOD_CONF}/mod_data/log/cam/camera.log
 }
 
 case "$1" in
   start)
     ;;
   up|init)
-    mkdir -p ${MOD_CONF}/mod_data/log/camera/
-    [ -f ${MOD_CONF}/mod_data/log/camera/mjpg_streamer.log ] || echo "" > ${MOD_CONF}/mod_data/log/camera/mjpg_streamer.log
-    [ -f ${MOD_CONF}/mod_data/log/camera/ustreamer.log ] || echo "" > ${MOD_CONF}/mod_data/log/camera/ustreamer.log
-    [ -f ${MOD_CONF}/mod_data/log/camera/camera.log ] || echo "" > ${MOD_CONF}/mod_data/log/camera/camera.log
+    mkdir -p ${MOD_CONF}/mod_data/log/cam/
+    [ -f ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.log ] || echo "" > ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.log
+    [ -f ${MOD_CONF}/mod_data/log/cam/ustreamer.log ] || echo "" > ${MOD_CONF}/mod_data/log/cam/ustreamer.log
+    [ -f ${MOD_CONF}/mod_data/log/cam/camera.log ] || echo "" > ${MOD_CONF}/mod_data/log/cam/camera.log
 
-    mv ${MOD_CONF}/mod_data/log/camera/mjpg_streamer.4.log ${MOD_CONF}/mod_data/log/camera/mjpg_streamer.5.log
-    mv ${MOD_CONF}/mod_data/log/camera/mjpg_streamer.3.log ${MOD_CONF}/mod_data/log/camera/mjpg_streamer.4.log
-    mv ${MOD_CONF}/mod_data/log/camera/mjpg_streamer.2.log ${MOD_CONF}/mod_data/log/camera/mjpg_streamer.3.log
-    mv ${MOD_CONF}/mod_data/log/camera/mjpg_streamer.1.log ${MOD_CONF}/mod_data/log/camera/mjpg_streamer.2.log
-    mv ${MOD_CONF}/mod_data/log/camera/mjpg_streamer.log   ${MOD_CONF}/mod_data/log/camera/mjpg_streamer.1.log
+    mv ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.4.log ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.5.log
+    mv ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.3.log ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.4.log
+    mv ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.2.log ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.3.log
+    mv ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.1.log ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.2.log
+    mv ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.log   ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.1.log
 
-    mv ${MOD_CONF}/mod_data/log/camera/ustreamer.4.log ${MOD_CONF}/mod_data/log/camera/ustreamer.5.log
-    mv ${MOD_CONF}/mod_data/log/camera/ustreamer.3.log ${MOD_CONF}/mod_data/log/camera/ustreamer.4.log
-    mv ${MOD_CONF}/mod_data/log/camera/ustreamer.2.log ${MOD_CONF}/mod_data/log/camera/ustreamer.3.log
-    mv ${MOD_CONF}/mod_data/log/camera/ustreamer.1.log ${MOD_CONF}/mod_data/log/camera/ustreamer.2.log
-    mv ${MOD_CONF}/mod_data/log/camera/ustreamer.log   ${MOD_CONF}/mod_data/log/camera/ustreamer.1.log
+    mv ${MOD_CONF}/mod_data/log/cam/ustreamer.4.log ${MOD_CONF}/mod_data/log/cam/ustreamer.5.log
+    mv ${MOD_CONF}/mod_data/log/cam/ustreamer.3.log ${MOD_CONF}/mod_data/log/cam/ustreamer.4.log
+    mv ${MOD_CONF}/mod_data/log/cam/ustreamer.2.log ${MOD_CONF}/mod_data/log/cam/ustreamer.3.log
+    mv ${MOD_CONF}/mod_data/log/cam/ustreamer.1.log ${MOD_CONF}/mod_data/log/cam/ustreamer.2.log
+    mv ${MOD_CONF}/mod_data/log/cam/ustreamer.log   ${MOD_CONF}/mod_data/log/cam/ustreamer.1.log
 
-    mv ${MOD_CONF}/mod_data/log/camera/camera.4.log ${MOD_CONF}/mod_data/log/camera/camera.5.log
-    mv ${MOD_CONF}/mod_data/log/camera/camera.3.log ${MOD_CONF}/mod_data/log/camera/camera.4.log
-    mv ${MOD_CONF}/mod_data/log/camera/camera.2.log ${MOD_CONF}/mod_data/log/camera/camera.3.log
-    mv ${MOD_CONF}/mod_data/log/camera/camera.1.log ${MOD_CONF}/mod_data/log/camera/camera.2.log
-    mv ${MOD_CONF}/mod_data/log/camera/camera.log   ${MOD_CONF}/mod_data/log/camera/camera.1.log
+    mv ${MOD_CONF}/mod_data/log/cam/camera.4.log ${MOD_CONF}/mod_data/log/cam/camera.5.log
+    mv ${MOD_CONF}/mod_data/log/cam/camera.3.log ${MOD_CONF}/mod_data/log/cam/camera.4.log
+    mv ${MOD_CONF}/mod_data/log/cam/camera.2.log ${MOD_CONF}/mod_data/log/cam/camera.3.log
+    mv ${MOD_CONF}/mod_data/log/cam/camera.1.log ${MOD_CONF}/mod_data/log/cam/camera.2.log
+    mv ${MOD_CONF}/mod_data/log/cam/camera.log   ${MOD_CONF}/mod_data/log/cam/camera.1.log
 
     up $1
     ;;
