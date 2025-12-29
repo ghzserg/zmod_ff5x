@@ -11,9 +11,18 @@ if ! [ -f /opt/config/mod_data/camera.conf ]; then
     /opt/config/mod/.shell/zcamera.sh off 640 480 20 ${VIDEO} 0 NOTRESTART
 fi
 
+VIDEO=video0
 FS=0
 STREAMER=auto
+if [ ${FF5X} -eq 1 ]; then
+    WIDTH=1280
+    HEIGHT=720
+else
+    WIDTH=640
+    HEIGHT=480
+fi
 FORMAT=MJPEG
+FPS=20
 source /opt/config/mod_data/camera.conf
 PID_FILE=/run/camera.pid
 
@@ -92,7 +101,7 @@ up() {
             start_ustreamer
         else
             if ${V4l2} -d /dev/$VIDEO  --list-formats | grep MJPG; then
-                start_mjpg_streamer
+                [ ${FF5X} -eq 1 ] && start_ustreamer || start_mjpg_streamer
             else
                 start_ustreamer
             fi
