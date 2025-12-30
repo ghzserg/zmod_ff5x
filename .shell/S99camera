@@ -8,7 +8,7 @@
 source /opt/config/mod/.shell/0.sh
 
 if ! [ -f /opt/config/mod_data/camera.conf ]; then
-    /opt/config/mod/.shell/zcamera.sh off 640 480 20 ${VIDEO} 0 NOTRESTART
+    /opt/config/mod/.shell/zcamera.sh off 640 480 20 ${VIDEO} 0 auto MJPEG NOTRESTART
 fi
 
 VIDEO=video0
