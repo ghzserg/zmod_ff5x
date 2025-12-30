@@ -712,7 +712,7 @@ class zmod_color:
 
             prompt_text = f"Extruder: None ({self.get_current_channel()})"
             button_text = ""
-            if self.get_extruder_sensor():
+            if self.get_extruder_sensor() and not self.display:
                 prompt_text = f"Extruder: {self.get_current_channel()}"
                 for slot in result:
                     if self.get_current_channel() == int(slot['ID']):
