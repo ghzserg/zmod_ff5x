@@ -717,7 +717,7 @@ class zmod_color:
                 for slot in result:
                     if self.get_current_channel() == int(slot['ID']):
                         prompt_text = f"Extruder: {slot['ID']}: {slot['Material']}/{slot['Color']}"
-                        button_text = f"// action:prompt_button {self._t('remove_from_extruder')}|_IFS_REMOVE_CURRENT_PRUTOK|primary|{slot['HEX']}"
+                        button_text = f"// action:prompt_button {self._t('remove_from_extruder')}|IFS_REMOVE_CURRENT_PRUTOK TEMP=1000 NEED_TRASH=1|primary|{slot['HEX']}"
                         break
 
             if silent == 0:
