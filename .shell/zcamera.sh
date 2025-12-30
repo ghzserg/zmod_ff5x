@@ -3,7 +3,7 @@
 # Camera config
 #
 
-if [ "$1" == "off" ]; then
+if [ "$1" == "off" ] && [ "$9" != "NOTRESTART" ]; then
     sed -i 's/^START=.*/START=off/' /opt/config/mod_data/camera.conf
     /opt/config/mod/.shell/S99camera stop
     exit 0;
