@@ -7,7 +7,7 @@
 import math, logging
 from . import bus
 
-# Zcontrol 1.18
+# Zcontrol 1.19
 
 ######################################################################
 # SensorBase
@@ -39,6 +39,7 @@ class SensorBase:
             self.gcode.register_command('ZCONTROL_ON', self.cmd_ZCONTROL_ON)
             self.gcode.register_command('ZCONTROL_PAUSE', self.cmd_ZCONTROL_PAUSE)
             self.gcode.register_command('ZCONTROL_ABORT', self.cmd_ZCONTROL_ABORT)
+            self.gcode.register_command('ZCONTROL_AUTO', self.cmd_ZCONTROL_AUTO)
             self.gcode.register_command('ZCONTROL_STATUS', self.cmd_ZCONTROL_STATUS)
             self.gcode.register_command('ZCONTROL_OFF', self.cmd_ZCONTROL_OFF)
             self.zmod = self.printer.lookup_object('zmod', None)
@@ -58,7 +59,9 @@ class SensorBase:
 
     def cmd_ZCONTROL_ON(self, gcmd):
         if self.max_temp != 2048 and self.zcontrol == 0:
-            status_msg = f"ZCONTROL_ON. {self.max_temp}. {'PAUSE' if self.zcommand == 1 else 'ABORT'}"
+            ACTIONS = {0: "ABORT", 1: "PAUSE", 2: "AUTO"}
+            action = ACTIONS.get(self.zcommand, "UNKNOWN")
+            status_msg = f"ZCONTROL_ON. {self.max_temp}. {action}"
             gcmd.respond_info(status_msg)
         self.zcontrol = 1
 
@@ -68,15 +71,20 @@ class SensorBase:
             gcmd.respond_info(status_msg)
         self.zcontrol = 0
 
+    def cmd_ZCONTROL_ABORT(self, gcmd):
+        if self.max_temp != 2048 and self.zcommand != 0:
+            status_msg = f"{'ZCONTROL_ON' if self.zcontrol == 1 else 'ZCONTROL_OFF'}. {self.max_temp}. ABORT"
+        self.zcommand = 0
+
     def cmd_ZCONTROL_PAUSE(self, gcmd):
-        if self.max_temp != 2048 and self.zcommand == 0:
+        if self.max_temp != 2048 and self.zcommand != 1:
             status_msg = f"{'ZCONTROL_ON' if self.zcontrol == 1 else 'ZCONTROL_OFF'}. {self.max_temp}. PAUSE"
         self.zcommand = 1
 
-    def cmd_ZCONTROL_ABORT(self, gcmd):
-        if self.max_temp != 2048 and self.zcommand == 1:
-            status_msg = f"{'ZCONTROL_ON' if self.zcontrol == 1 else 'ZCONTROL_OFF'}. {self.max_temp}. ABORT"
-        self.zcommand = 0
+    def cmd_ZCONTROL_AUTO(self, gcmd):
+        if self.max_temp != 2048 and self.zcommand != 2:
+            status_msg = f"{'ZCONTROL_ON' if self.zcontrol == 1 else 'ZCONTROL_OFF'}. {self.max_temp}. AUTO"
+        self.zcommand = 2
 
     def cmd_ZCONTROL_STATUS(self, gcmd):
         self.getlang()
@@ -99,16 +107,21 @@ class SensorBase:
                     status_msg = "Вес: %d; Контроль настроен и не активен." % self.max_temp
             gcmd.respond_info(status_msg)
 
+            if self.zcommand == 0:
+                if self.language != 'ru':
+                    action_msg = "Klipper is disabled when triggered. // ZCONTROL_ABORT"
+                else:
+                    action_msg = "При сработке отключается Klipper. // ZCONTROL_ABORT"
             if self.zcommand == 1:
                 if self.language != 'ru':
                     action_msg = "PAUSE is triggered when activated. // ZCONTROL_PAUSE"
                 else:
                     action_msg = "При сработке вызывается PAUSE. // ZCONTROL_PAUSE"
-            else:
+            if self.zcommand == 2:
                 if self.language != 'ru':
-                    action_msg = "Klipper is disabled when triggered. // ZCONTROL_ABORT"
+                    action_msg = "ABORT(z<10) or PAUSE(z>=10) is triggered when activated. // ZCONTROL_AUTO"
                 else:
-                    action_msg = "При сработке отключается Klipper. // ZCONTROL_ABORT"
+                    action_msg = "При сработке вызывается ABORT(z<10) или PAUSE(z>=10). // ZCONTROL_AUTO"
             gcmd.respond_info(action_msg)
 
     def setup_minmax(self, min_temp, max_temp):
@@ -139,7 +152,13 @@ class SensorBase:
         temp = self.calc_temp(params['value'])
         # zmod
         if temp > self.max_temp and self.zcontrol == 1:
-            if self.zcommand == 1:
+            try:
+                toolhead = self.printer.lookup_object('toolhead')
+                current_pos = toolhead.get_position()
+                z_pos = current_pos[2]
+            except Exception as e:
+                z_pos = 0
+            if self.zcommand == 1 or (self.zcommand == 2 and z_pos >= 10):
                 msg = (f"!! Nozzle hit bed or part detachment. Weight {temp}>{self.max_temp}. PAUSE. https://github.com/ghzserg/zmod/wiki/Global_en#nozzle_control"
                        if self.language != 'ru'
                        else f"!! Удар сопла о стол или отрыв детали. Вес {temp}>{self.max_temp}. PAUSE. https://github.com/ghzserg/zmod/wiki/Global_ru#nozzle_control")
