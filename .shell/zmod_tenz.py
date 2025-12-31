@@ -317,17 +317,17 @@ class zmod_tenz:
             gcmd.respond_info(status_msg)
         self.zcontrol = 0
 
-    def cmd_ZCONTROL_PAUSE(self, gcmd):
-        if self.max_temp != 2048 and self.zcommand == 0:
-            status_msg = f"{'ZCONTROL_ON' if self.zcontrol == 1 else 'ZCONTROL_OFF'}. {self.max_temp}. PAUSE"
-            gcmd.respond_info(status_msg)
-        self.zcommand = 1
-
     def cmd_ZCONTROL_ABORT(self, gcmd):
-        if self.max_temp != 2048 and self.zcommand == 1:
+        if self.max_temp != 2048 and self.zcommand != 0:
             status_msg = f"{'ZCONTROL_ON' if self.zcontrol == 1 else 'ZCONTROL_OFF'}. {self.max_temp}. ABORT"
             gcmd.respond_info(status_msg)
         self.zcommand = 0
+
+    def cmd_ZCONTROL_PAUSE(self, gcmd):
+        if self.max_temp != 2048 and self.zcommand != 1:
+            status_msg = f"{'ZCONTROL_ON' if self.zcontrol == 1 else 'ZCONTROL_OFF'}. {self.max_temp}. PAUSE"
+            gcmd.respond_info(status_msg)
+        self.zcommand = 1
 
     def cmd_ZCONTROL_AUTO(self, gcmd):
         if self.max_temp != 2048 and self.zcommand != 2:
