@@ -163,6 +163,12 @@ class zmod_tenz:
         gcmd.respond_info(f"{current_command} > {message}")
 
     def _zcontrol(self, cur_temp):
+        try:
+            toolhead = self.printer.lookup_object('toolhead')
+            current_pos = toolhead.get_position()
+            z_pos = current_pos[2]
+        except Exception as e:
+            z_pos = 0
         if self.zcommand == 1 or (self.zcommand == 2 and z_pos >= self.z):
             self.reactor.register_callback(
                 lambda e: self._async_zcontrol_action(cur_temp)
@@ -178,7 +184,7 @@ class zmod_tenz:
 
     def _async_zcontrol_action(self, cur_temp):
         msg = (
-            f"!! Nozzle hit bed or part detachment. Weight {int(temp)}>{self.max_temp}. Z={int(self.z)}.. PAUSE. https://github.com/ghzserg/zmod/wiki/Global_en#nozzle_control"
+            f"!! Nozzle hit bed or part detachment. Weight {int(temp)}>{self.max_temp}. Z={int(self.z)}. PAUSE. https://github.com/ghzserg/zmod/wiki/Global_en#nozzle_control"
             if self.language != 'ru'
             else f"!! Удар сопла о стол или отрыв детали. Вес {int(temp)}>{self.max_temp}. Z={int(self.z)}. PAUSE. https://github.com/ghzserg/zmod/wiki/Global_ru#nozzle_control"
         )
