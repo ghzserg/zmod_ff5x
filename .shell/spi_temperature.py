@@ -7,7 +7,7 @@
 import math, logging
 from . import bus
 
-# Zcontrol 1.21
+# Zcontrol 1.22
 
 ######################################################################
 # SensorBase
@@ -169,7 +169,7 @@ class SensorBase:
 
                 def async_pause(eventtime):
                     pause_resume.send_pause_command()
-                    self.gcode.run_script_from_command("PAUSE\nM400\n")
+                    #self.gcode.run_script_from_command("PAUSE\nM400\n")
                     return reactor.NEVER
 
                 reactor.register_callback(async_pause)

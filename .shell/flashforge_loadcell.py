@@ -415,7 +415,7 @@ class LoadCellSensor:
 
                 def async_pause(eventtime):
                     pause_resume.send_pause_command()
-                    self.gcode.run_script_from_command("PAUSE\nM400\n")
+                    #self.gcode.run_script_from_command("PAUSE\nM400\n")
                     return reactor.NEVER
 
                 reactor.register_callback(async_pause)
