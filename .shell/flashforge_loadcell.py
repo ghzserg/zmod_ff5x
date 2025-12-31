@@ -411,10 +411,13 @@ class LoadCellSensor:
                 z_pos = 0
 
             if self.zcommand == 1 or (self.zcommand == 2 and z_pos >= self.z):
-                msg = (f"!! Nozzle hit bed or part detachment. Weight {int(temp)}>{self.max_temp}. Z={int(self.z)}. PAUSE. https://github.com/ghzserg/zmod/wiki/Global_en#nozzle_control"
+                msg = (f"!! Nozzle hit bed or part detachment. Weight {int(temp)}>{self.max_temp}. Z={int(self.z)}. PAUSE."
                        if self.language != 'ru'
-                       else f"!! Удар сопла о стол или отрыв детали. Вес {int(temp)}>{self.max_temp}. Z={int(self.z)}. PAUSE. https://github.com/ghzserg/zmod/wiki/Global_ru#nozzle_control")
-                self.gcode.respond_raw(msg)
+                       else f"!! Удар сопла о стол или отрыв детали. Вес {int(temp)}>{self.max_temp}. Z={int(self.z)}. PAUSE.")
+                url = ("https://github.com/ghzserg/zmod/wiki/Global_en#nozzle_control"
+                       if self.language != 'ru'
+                       else "https://github.com/ghzserg/zmod/wiki/Global_ru#nozzle_control")
+                self.gcode.respond_raw(f"{msg} {url}")
                 self.zcontrol = 0
 
                 reactor = self.printer.get_reactor()
@@ -422,7 +425,7 @@ class LoadCellSensor:
 
                 def async_pause(eventtime):
                     pause_resume.send_pause_command()
-                    self.gcode.run_script_from_command("PAUSE\nM400\n")
+                    self.gcode.run_script_from_command(f"PAUSE\nM400\n_NOTIFY MSG='{msg}'\n")
                     return reactor.NEVER
 
                 reactor.register_callback(async_pause)
