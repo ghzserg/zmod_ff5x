@@ -282,7 +282,7 @@ class LoadCellSensor:
         self.name = config.get_name().split()[-1]
         self.logger = logging.getLogger('klippy')
         self.gcode = self.printer.lookup_object('gcode')
-        self.zcontrol = 0
+        self.zcontrol = 2
         self.zcommand = 0
         self.max_temp = 2048
         self.sample_interval = config.getfloat('sample_interval', 0.2, 0.1)
@@ -322,7 +322,7 @@ class LoadCellSensor:
             action = ACTIONS.get(self.zcommand, "UNKNOWN")
             status_msg = f"ZCONTROL_ON. {self.max_temp}. {action}"
             gcmd.respond_info(status_msg)
-        self.zcontrol = 1
+        self.zcontrol = 2
 
     def cmd_ZCONTROL_OFF(self, gcmd):
         if self.max_temp != 2048 and self.zcontrol == 1:

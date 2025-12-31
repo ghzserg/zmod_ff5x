@@ -7,7 +7,7 @@
 import math, logging
 from . import bus
 
-# Zcontrol 1.19
+# Zcontrol 1.20
 
 ######################################################################
 # SensorBase
@@ -32,7 +32,7 @@ class SensorBase:
         self.oid = oid = mcu.create_oid()
 
         self.zcontrol = 0
-        self.zcommand = 0
+        self.zcommand = 2
         self.printer.load_object(config, 'pause_resume')
         self.gcode = self.printer.lookup_object('gcode')
         if (chip_type == 'MAX31856'):
@@ -63,7 +63,7 @@ class SensorBase:
             action = ACTIONS.get(self.zcommand, "UNKNOWN")
             status_msg = f"ZCONTROL_ON. {self.max_temp}. {action}"
             gcmd.respond_info(status_msg)
-        self.zcontrol = 1
+        self.zcontrol = 2
 
     def cmd_ZCONTROL_OFF(self, gcmd):
         if self.max_temp != 2048 and self.zcontrol == 1:
