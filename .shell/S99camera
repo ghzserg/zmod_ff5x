@@ -101,7 +101,7 @@ up() {
             start_ustreamer
         else
             if ${V4l2} -d /dev/$VIDEO  --list-formats | grep MJPG; then
-                [ ${FF5X} -eq 1 ] && start_ustreamer || start_mjpg_streamer
+                start_mjpg_streamer
             else
                 start_ustreamer
             fi

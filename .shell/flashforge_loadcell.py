@@ -187,7 +187,7 @@ class FlashforgeLoadCell:
         if self.language != 'ru':
             message = f"{self.name}: Starting tare procedure..."
         else:
-            message = f"{self.name}: Начало процедуры тарирования..."
+            message = f"{self.name}: Сброс тензодачиков..."
         gcmd.respond_info(message)
         deadline = self.reactor.monotonic() + self.tare_timeout
         while self.reactor.monotonic() < deadline:
@@ -204,7 +204,7 @@ class FlashforgeLoadCell:
                 if self.language != 'ru':
                     success_msg = f"Tare successful. Final weight: {response.value}g"
                 else:
-                    success_msg = f"Тарирование успешно. Окончательный вес: {response.value}г"
+                    success_msg = f"Сброс тензодачиков завершен. Вес: {response.value}г"
                 gcmd.respond_info(success_msg)
                 return
             if self.language != 'ru':
@@ -216,7 +216,7 @@ class FlashforgeLoadCell:
         if self.language != 'ru':
             timeout_msg = f"Tare failed to complete within {self.tare_timeout}s."
         else:
-            timeout_msg = f"Тарирование не удалось завершить за {self.tare_timeout}с."
+            timeout_msg = f"Сброс тензодатчиков не удалось завершить за {self.tare_timeout}с."
         raise gcmd.error(timeout_msg)
 
     def cmd_H1(self, gcmd):
@@ -229,7 +229,7 @@ class FlashforgeLoadCell:
                 if self.language != 'ru':
                     error_msg = f"Tare step failed: {e}"
                 else:
-                    error_msg = f"Шаг тарирования не удался: {e}"
+                    error_msg = f"Шаг сброса не удался: {e}"
                 raise gcmd.error(error_msg)
             if abs(response.value) <= self.tare_threshold:
                 return
@@ -237,7 +237,7 @@ class FlashforgeLoadCell:
         if self.language != 'ru':
             timeout_msg = f"Tare failed to complete within {self.tare_timeout}s."
         else:
-            timeout_msg = f"Тарирование не удалось завершить за {self.tare_timeout}с."
+            timeout_msg = f"Сброс тензодатчиков не удалось завершить за {self.tare_timeout}с."
         raise gcmd.error(timeout_msg)
 
     def cmd_LOAD_CELL_CALIBRATE(self, gcmd):
@@ -283,7 +283,8 @@ class LoadCellSensor:
         self.logger = logging.getLogger('klippy')
         self.gcode = self.printer.lookup_object('gcode')
         self.zcontrol = 0
-        self.zcommand = 0
+        self.zcommand = 2
+        self.z = 10
         self.max_temp = 2048
         self.sample_interval = config.getfloat('sample_interval', 0.2, 0.1)
         self.check_only_when_printing = config.getboolean('check_only_when_printing', True)
@@ -301,7 +302,9 @@ class LoadCellSensor:
         self.gcode.register_command('ZCONTROL_ON', self.cmd_ZCONTROL_ON)
         self.gcode.register_command('ZCONTROL_PAUSE', self.cmd_ZCONTROL_PAUSE)
         self.gcode.register_command('ZCONTROL_ABORT', self.cmd_ZCONTROL_ABORT)
+        self.gcode.register_command('ZCONTROL_AUTO', self.cmd_ZCONTROL_AUTO)
         self.gcode.register_command('ZCONTROL_STATUS', self.cmd_ZCONTROL_STATUS)
+        self.gcode.register_command('ZCONTROL_Z', self.cmd_ZCONTROL_Z)
         self.gcode.register_command('ZCONTROL_OFF', self.cmd_ZCONTROL_OFF)
         self.zmod = self.printer.lookup_object('zmod', None)
         self.language = 'en'
@@ -317,7 +320,9 @@ class LoadCellSensor:
 
     def cmd_ZCONTROL_ON(self, gcmd):
         if self.max_temp != 2048 and self.zcontrol == 0:
-            status_msg = f"ZCONTROL_ON. {self.max_temp}. {'PAUSE' if self.zcommand == 1 else 'ABORT'}"
+            ACTIONS = {0: "ABORT", 1: "PAUSE", 2: "AUTO"}
+            action = ACTIONS.get(self.zcommand, "UNKNOWN")
+            status_msg = f"ZCONTROL_ON. {self.max_temp}. {action}"
             gcmd.respond_info(status_msg)
         self.zcontrol = 1
 
@@ -327,15 +332,24 @@ class LoadCellSensor:
             gcmd.respond_info(status_msg)
         self.zcontrol = 0
 
+    def cmd_ZCONTROL_ABORT(self, gcmd):
+        if self.max_temp != 2048 and self.zcommand != 0:
+            status_msg = f"{'ZCONTROL_ON' if self.zcontrol == 1 else 'ZCONTROL_OFF'}. {self.max_temp}. ABORT"
+        self.zcommand = 0
+
     def cmd_ZCONTROL_PAUSE(self, gcmd):
-        if self.max_temp != 2048 and self.zcommand == 0:
+        if self.max_temp != 2048 and self.zcommand != 1:
             status_msg = f"{'ZCONTROL_ON' if self.zcontrol == 1 else 'ZCONTROL_OFF'}. {self.max_temp}. PAUSE"
         self.zcommand = 1
 
-    def cmd_ZCONTROL_ABORT(self, gcmd):
-        if self.max_temp != 2048 and self.zcommand == 1:
-            status_msg = f"{'ZCONTROL_ON' if self.zcontrol == 1 else 'ZCONTROL_OFF'}. {self.max_temp}. ABORT"
-        self.zcommand = 0
+    def cmd_ZCONTROL_AUTO(self, gcmd):
+        if self.max_temp != 2048 and self.zcommand != 2:
+            status_msg = f"{'ZCONTROL_ON' if self.zcontrol == 1 else 'ZCONTROL_OFF'}. {self.max_temp}. AUTO"
+        self.zcommand = 2
+
+    def cmd_ZCONTROL_Z(self, gcmd):
+        self.z = gcmd.get_int('Z', 10)
+        self.cmd_ZCONTROL_STATUS(gcmd)
 
     def cmd_ZCONTROL_STATUS(self, gcmd):
         self.getlang()
@@ -348,26 +362,31 @@ class LoadCellSensor:
         else:
             if self.zcontrol == 1:
                 if self.language != 'ru':
-                    status_msg = "Weight: %d; Control is configured and active." % self.max_temp
+                    status_msg = "Weight: %d; Z: %d Control is configured and active." % (self.max_temp, int(self.z))
                 else:
-                    status_msg = "Вес: %d; Контроль настроен и активен." % self.max_temp
+                    status_msg = "Вес: %d; Z: %d Контроль настроен и активен." % (self.max_temp, int(self.z))
             else:
                 if self.language != 'ru':
-                    status_msg = "Weight: %d; Control is configured but inactive." % self.max_temp
+                    status_msg = "Weight: %d; Z: %d  Control is configured but inactive." % (self.max_temp, int(self.z))
                 else:
-                    status_msg = "Вес: %d; Контроль настроен и не активен." % self.max_temp
+                    status_msg = "Вес: %d; Z: %d  Контроль настроен и не активен." % (self.max_temp, int(self.z))
             gcmd.respond_info(status_msg)
 
+            if self.zcommand == 0:
+                if self.language != 'ru':
+                    action_msg = "Klipper is disabled when triggered. // ZCONTROL_ABORT"
+                else:
+                    action_msg = "При сработке отключается Klipper. // ZCONTROL_ABORT"
             if self.zcommand == 1:
                 if self.language != 'ru':
                     action_msg = "PAUSE is triggered when activated. // ZCONTROL_PAUSE"
                 else:
                     action_msg = "При сработке вызывается PAUSE. // ZCONTROL_PAUSE"
-            else:
+            if self.zcommand == 2:
                 if self.language != 'ru':
-                    action_msg = "Klipper is disabled when triggered. // ZCONTROL_ABORT"
+                    action_msg = "ABORT(z<%d) or PAUSE(z>=%d) is triggered when activated. // ZCONTROL_AUTO" % (int(self.z), int(self.z))
                 else:
-                    action_msg = "При сработке отключается Klipper. // ZCONTROL_ABORT"
+                    action_msg = "При сработке вызывается ABORT(z<%d) или PAUSE(z>=%d). // ZCONTROL_AUTO" % (int(self.z), int(self.z))
             gcmd.respond_info(action_msg)
     # zmod end
 
@@ -384,11 +403,19 @@ class LoadCellSensor:
         temp = self.loadcell.last_weight_grams
         # zmod
         if temp > self.max_temp and self.zcontrol == 1:
-            if self.zcommand == 1:
-                msg = (f"!! Nozzle hit bed or part detachment. Weight {temp}>{self.max_temp}. PAUSE. https://github.com/ghzserg/zmod/wiki/Global_en#nozzle_control"
+            try:
+                toolhead = self.printer.lookup_object('toolhead')
+                current_pos = toolhead.get_position()
+                z_pos = current_pos[2]
+            except Exception as e:
+                z_pos = 0
+
+            if self.zcommand == 1 or (self.zcommand == 2 and z_pos >= self.z):
+                msg = (f"!! Nozzle hit bed or part detachment. Weight {int(temp)}>{self.max_temp}. Z={int(self.z)}. PAUSE. https://github.com/ghzserg/zmod/wiki/Global_en#nozzle_control"
                        if self.language != 'ru'
-                       else f"!! Удар сопла о стол или отрыв детали. Вес {temp}>{self.max_temp}. PAUSE. https://github.com/ghzserg/zmod/wiki/Global_ru#nozzle_control")
+                       else f"!! Удар сопла о стол или отрыв детали. Вес {int(temp)}>{self.max_temp}. Z={int(self.z)}. PAUSE. https://github.com/ghzserg/zmod/wiki/Global_ru#nozzle_control")
                 self.gcode.respond_raw(msg)
+                self.zcontrol = 0
 
                 reactor = self.printer.get_reactor()
                 pause_resume = self.printer.lookup_object('pause_resume')
@@ -401,9 +428,9 @@ class LoadCellSensor:
                 reactor.register_callback(async_pause)
             else:
                 shutdown_msg = (
-                    f"Nozzle hit bed or part detachment. Weight {temp}>{self.max_temp}. FIRMWARE_RESTART. https://github.com/ghzserg/zmod/wiki/Global_en#nozzle_control"
+                    f"Nozzle hit bed or part detachment. Weight {int(temp)}>{self.max_temp}. Z={int(self.z)}. FIRMWARE_RESTART. https://github.com/ghzserg/zmod/wiki/Global_en#nozzle_control"
                     if self.language != 'ru'
-                    else f"Удар сопла о стол или отрыв детали. Вес {temp}>{self.max_temp}. FIRMWARE_RESTART. https://github.com/ghzserg/zmod/wiki/Global_ru#nozzle_control"
+                    else f"Удар сопла о стол или отрыв детали. Вес {int(temp)}>{self.max_temp}. Z={int(self.z)}. FIRMWARE_RESTART. https://github.com/ghzserg/zmod/wiki/Global_ru#nozzle_control"
                 )
                 self.printer.invoke_async_shutdown(shutdown_msg)
             return self.reactor.NEVER
