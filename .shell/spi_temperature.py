@@ -7,7 +7,7 @@
 import math, logging
 from . import bus
 
-# Zcontrol 1.20
+# Zcontrol 1.21
 
 ######################################################################
 # SensorBase
@@ -63,7 +63,7 @@ class SensorBase:
             action = ACTIONS.get(self.zcommand, "UNKNOWN")
             status_msg = f"ZCONTROL_ON. {self.max_temp}. {action}"
             gcmd.respond_info(status_msg)
-        self.zcontrol = 2
+        self.zcontrol = 1
 
     def cmd_ZCONTROL_OFF(self, gcmd):
         if self.max_temp != 2048 and self.zcontrol == 1:
