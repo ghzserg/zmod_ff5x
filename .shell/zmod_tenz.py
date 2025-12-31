@@ -300,7 +300,9 @@ class zmod_tenz:
 
     def cmd_ZCONTROL_ON(self, gcmd):
         if self.max_temp != 2048 and self.zcontrol == 0:
-            status_msg = f"ZCONTROL_ON. {self.max_temp}. {'PAUSE' if self.zcommand == 1 else 'ABORT'}"
+            ACTIONS = {0: "ABORT", 1: "PAUSE", 2: "AUTO"}
+            action = ACTIONS.get(self.zcommand, "UNKNOWN")
+            status_msg = f"ZCONTROL_ON. {self.max_temp}. {action}"
             gcmd.respond_info(status_msg)
         self.zcontrol = 1
 
