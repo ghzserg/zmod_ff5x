@@ -183,16 +183,21 @@ class zmod_tenz:
             self.printer.invoke_async_shutdown(shutdown_msg, shutdown_msg)
 
     def _async_zcontrol_action(self, cur_temp):
-        msg = (
-            f"!! Nozzle hit bed or part detachment. Weight {int(cur_temp)}>{self.max_temp}. Z={int(self.z)}. PAUSE. https://github.com/ghzserg/zmod/wiki/Global_en#nozzle_control"
+        url = (
+            "https://github.com/ghzserg/zmod/wiki/Global_en#nozzle_control"
             if self.language != 'ru'
-            else f"!! Удар сопла о стол или отрыв детали. Вес {int(cur_temp)}>{self.max_temp}. Z={int(self.z)}. PAUSE. https://github.com/ghzserg/zmod/wiki/Global_ru#nozzle_control"
+            else "https://github.com/ghzserg/zmod/wiki/Global_ru#nozzle_control"
         )
-        self.gcode.respond_raw(msg)
+        msg = (
+            f"!! Nozzle hit bed or part detachment. Weight {int(cur_temp)}>{self.max_temp}. Z={int(self.z)}. PAUSE."
+            if self.language != 'ru'
+            else f"!! Удар сопла о стол или отрыв детали. Вес {int(cur_temp)}>{self.max_temp}. Z={int(self.z)}. PAUSE."
+        )
+        self.gcode.respond_raw(f"{msg} {url}")
         self.zcontrol = 0
         pause_resume = self.printer.lookup_object('pause_resume')
         pause_resume.send_pause_command()
-        self.gcode.run_script_from_command("PAUSE\nM400\n")
+        self.gcode.run_script_from_command(f"PAUSE\nM400\n_NOTIFY MSG='{msg}'\n")
 
     def extract_last_value_before_g(self, response):
         matches = re.findall(r'(-?\d+\.?\d*)\s+g', response, re.IGNORECASE)
