@@ -409,13 +409,14 @@ class LoadCellSensor:
                        if self.language != 'ru'
                        else f"!! Удар сопла о стол или отрыв детали. Вес {temp}>{self.max_temp}. PAUSE. https://github.com/ghzserg/zmod/wiki/Global_ru#nozzle_control")
                 self.gcode.respond_raw(msg)
+                self.zcontrol = 0
 
                 reactor = self.printer.get_reactor()
                 pause_resume = self.printer.lookup_object('pause_resume')
 
                 def async_pause(eventtime):
                     pause_resume.send_pause_command()
-                    #self.gcode.run_script_from_command("PAUSE\nM400\n")
+                    self.gcode.run_script_from_command("PAUSE\nM400\n")
                     return reactor.NEVER
 
                 reactor.register_callback(async_pause)
