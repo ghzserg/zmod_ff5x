@@ -133,7 +133,7 @@ up() {
 }
 
 stop() {
-    killall mjpg_streamer ustreamer
+    killall zcam mjpg_streamer ustreamer
 }
 
 restart() {
