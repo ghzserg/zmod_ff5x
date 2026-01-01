@@ -53,9 +53,9 @@ start_ustreamer() {
     [ "$STREAMER" == "auto" ] && FORMAT=$(${V4l2} -d /dev/$VIDEO --list-formats| grep '\[' | tail -1| cut -d "'" -f2)
     echo ${FORMAT} >>${MOD_CONF}/mod_data/log/cam/ustreamer.log 2>&1
     if [ -f /ZMOD ]; then
-        nohup /bin/ustreamer -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS --format=$FORMAT -s 0.0.0.0 -m MJPEG --device-timeout=2 -w 1 -I MMAP -c HW >>${MOD_CONF}/mod_data/log/cam/ustreamer.log 2>&1 &
+        /opt/config/mod/.shell/zcam/zcam ${MOD_CONF}/mod_data/log/cam/ustreamer.log /opt/config/mod/.shell/zcam/ustreamer -l -b 1 -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS --format=$FORMAT -s 0.0.0.0 -m MJPEG --device-timeout=2 -w 1 -I MMAP -c HW
     else
-        chroot ${MOD} nohup /bin/ustreamer -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS --format=$FORMAT -s 0.0.0.0 -m MJPEG --device-timeout=2 -w 1 -I MMAP -c HW >>${MOD_CONF}/mod_data/log/cam/ustreamer.log 2>&1 &
+        chroot ${MOD} /opt/config/mod/.shell/zcam/zcam ${MOD_CONF}/mod_data/log/cam/ustreamer.log /opt/config/mod/.shell/zcam/ustreamer -l -b 1 -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS --format=$FORMAT -s 0.0.0.0 -m MJPEG --device-timeout=2 -w 1 -I MMAP -c HW
     fi
 }
 
@@ -64,6 +64,7 @@ up() {
     [ -f ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.log ] || echo "" > ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.log
     [ -f ${MOD_CONF}/mod_data/log/cam/ustreamer.log ] || echo "" > ${MOD_CONF}/mod_data/log/cam/ustreamer.log
     [ -f ${MOD_CONF}/mod_data/log/cam/camera.log ] || echo "" > ${MOD_CONF}/mod_data/log/cam/camera.log
+    [ -f ${MOD_CONF}/mod_data/log/cam/zcam.log ] || echo "" > ${MOD_CONF}/mod_data/log/cam/zcam.log
 
     mv ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.4.log ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.5.log
     mv ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.3.log ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.4.log
@@ -83,7 +84,14 @@ up() {
     mv ${MOD_CONF}/mod_data/log/cam/camera.1.log ${MOD_CONF}/mod_data/log/cam/camera.2.log
     mv ${MOD_CONF}/mod_data/log/cam/camera.log   ${MOD_CONF}/mod_data/log/cam/camera.1.log
 
+    mv ${MOD_CONF}/mod_data/log/cam/zcam.4.log ${MOD_CONF}/mod_data/log/cam/zcam.5.log
+    mv ${MOD_CONF}/mod_data/log/cam/zcam.3.log ${MOD_CONF}/mod_data/log/cam/zcam.4.log
+    mv ${MOD_CONF}/mod_data/log/cam/zcam.2.log ${MOD_CONF}/mod_data/log/cam/zcam.3.log
+    mv ${MOD_CONF}/mod_data/log/cam/zcam.1.log ${MOD_CONF}/mod_data/log/cam/zcam.2.log
+    mv ${MOD_CONF}/mod_data/log/cam/zcam.log   ${MOD_CONF}/mod_data/log/cam/zcam.1.log
+
     >/opt/config/mod_data/log/cam/cam.log
+    >/opt/config/mod_data/log/cam/zcam.log
     >/opt/config/mod_data/log/cam/mjpg_streamer.log
     >/opt/config/mod_data/log/cam/ustreamer.log
 
