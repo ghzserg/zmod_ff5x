@@ -53,9 +53,9 @@ start_ustreamer() {
     [ "$STREAMER" == "auto" ] && FORMAT=$(${V4l2} -d /dev/$VIDEO --list-formats| grep '\[' | tail -1| cut -d "'" -f2)
     echo ${FORMAT} >>${MOD_CONF}/mod_data/log/cam/ustreamer.log 2>&1
     if [ -f /ZMOD ]; then
-        /opt/config/mod/.shell/root/zcam/zcam ${MOD_CONF}/mod_data/log/cam/ustreamer.log /opt/config/mod/.shell/zcam/ustreamer -l -b 1 -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS --format=$FORMAT -s 0.0.0.0 -m MJPEG --device-timeout=2 -w 1 -I MMAP -c HW
+        /opt/config/mod/.shell/root/zcam/zcam ${MOD_CONF}/mod_data/log/cam/ustreamer.log /opt/config/mod/.shell/root/zcam/ustreamer -l -b 1 -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS --format=$FORMAT -s 0.0.0.0 -m MJPEG --device-timeout=2 -w 1 -I MMAP -c HW
     else
-        chroot ${MOD} /opt/config/mod/.shell/root/zcam/zcam ${MOD_CONF}/mod_data/log/cam/ustreamer.log /opt/config/mod/.shell/zcam/ustreamer -l -b 1 -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS --format=$FORMAT -s 0.0.0.0 -m MJPEG --device-timeout=2 -w 1 -I MMAP -c HW
+        chroot ${MOD} /opt/config/mod/.shell/root/zcam/zcam ${MOD_CONF}/mod_data/log/cam/ustreamer.log /opt/config/mod/.shell/root/zcam/ustreamer -l -b 1 -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS --format=$FORMAT -s 0.0.0.0 -m MJPEG --device-timeout=2 -w 1 -I MMAP -c HW
     fi
 }
 
