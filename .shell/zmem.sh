@@ -18,11 +18,12 @@ fi
 $PYTHON /opt/config/mod/.shell/ps_mem.py -S >/tmp/list.txt
 
 [ ${ZLANG} != 'ru' ] && cat /tmp/list.txt || awk '{
+    gsub(/main/, "Камера ustreamer");
     gsub(/python3.7/, "Klipper");
     gsub(/python3.8/, "Klipper");
     gsub(/python3.12/, "Moonraker");
     gsub(/firmwareExe/, "Экран");
-    gsub(/mjpg_streamer/, "Камера");
+    gsub(/mjpg_streamer/, "Камера mjpg");
     gsub(/dropbear/, "SSH сервер");
     gsub(/wpa_cli/, "Wi-Fi клиент");
     gsub(/console_log/, "Восстановление печати");
