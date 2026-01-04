@@ -7,7 +7,7 @@ unset LD_PRELOAD
 if [ -f /ZMOD ]; then
     /opt/config/mod/.shell/root/zshaper_guppy.sh $@
 else
-    if [ ${FF5X} -eq 0 ]; then
+    if [ ${AD5X} -eq 0 ]; then
         chroot ${MOD} /opt/config/mod/.shell/root/zshaper_guppy.sh $@
     else
         export PATH=$PATH:/usr/prog/Python-3.8.2/bin

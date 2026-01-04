@@ -54,7 +54,7 @@ get_branch_from_config() {
 prepare_chroot()
 {
     echo ZMOD >/ZMOD
-    [ ${FF5X} -eq 0 ] && mv /tmp/localtime /etc/localtime
+    [ ${AD5X} -eq 0 ] && mv /tmp/localtime /etc/localtime
 
     mv /tmp/pointercal /etc/pointercal
     mv /tmp/ts.conf /etc/ts.conf
@@ -71,7 +71,7 @@ prepare_chroot()
     [ -L /etc/init.d/S98camera ] && rm -f /etc/init.d/S98camera
     [ -L /etc/init.d/S99camera ] || ln -s /opt/config/mod/.shell/root/S99camera /etc/init.d/
     [ -L /etc/init.d/S60klipper ] || ln -s /opt/config/mod/.shell/root/S60klipper /etc/init.d/
-    [ ${FF5X} -eq 0 ] && [ -L /root/klipper-env/klippy ] || ln -s /opt/config/mod/.shell/root/klippy /root/klipper-env/
+    [ ${AD5X} -eq 0 ] && [ -L /root/klipper-env/klippy ] || ln -s /opt/config/mod/.shell/root/klippy /root/klipper-env/
 
     [ -L /etc/init.d/S35tslib ] && rm -f /etc/init.d/S35tslib
     [ -L /etc/init.d/S80guppyscreen ] || ln -s /opt/config/mod/.shell/root/S80guppyscreen /etc/init.d/
@@ -81,7 +81,7 @@ prepare_chroot()
 
     [ -L /usr/lib/python3.12/site-packages/mido ] || ln -s /opt/config/mod/.shell/root/mido/ /usr/lib/python3.12/site-packages/
     [ -L /usr/lib/python3.12/site-packages/mido-1.3.3.dist-info ] || ln -s /opt/config/mod/.shell/root/mido-1.3.3.dist-info/ /usr/lib/python3.12/site-packages/
-    [ ${FF5X} -eq 0 ] && [ -L /root/klipper-env/lib/python3.12/site-packages/numpy ] || ln -s /usr/lib/python3.12/site-packages/numpy /root/klipper-env/lib/python3.12/site-packages/
+    [ ${AD5X} -eq 0 ] && [ -L /root/klipper-env/lib/python3.12/site-packages/numpy ] || ln -s /usr/lib/python3.12/site-packages/numpy /root/klipper-env/lib/python3.12/site-packages/
 
     [ -L /bin/sudo ] || ln -s /opt/config/mod/.shell/root/sudo /bin/sudo
 
@@ -105,7 +105,7 @@ prepare_chroot()
     mkdir -p /root/.ssh/ /.ssh/
     grep -q "zmod.link ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJSFHaPS7Ms0PPIEE+E7T0eOZcCP4HZtUv7JJmCDDd9l" /root/.ssh/known_hosts || echo "zmod.link ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJSFHaPS7Ms0PPIEE+E7T0eOZcCP4HZtUv7JJmCDDd9l" >>/root/.ssh/known_hosts
     grep -q "zmod.link ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJSFHaPS7Ms0PPIEE+E7T0eOZcCP4HZtUv7JJmCDDd9l" /.ssh/known_hosts || echo "zmod.link ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJSFHaPS7Ms0PPIEE+E7T0eOZcCP4HZtUv7JJmCDDd9l" >>/.ssh/known_hosts
-    if [ ${FF5X} -eq 0 ]; then
+    if [ ${AD5X} -eq 0 ]; then
         rm -rf /root/moonraker-env/lib/python3.12/site-packages/msgspec* || echo "msgspec уже убит"
     else
         sed -i '/127.0.0.1 /d' /.ssh/known_hosts
@@ -122,7 +122,7 @@ name: {printer_name}
 
 ${MOD_CONF}/mod/.shell/znice.sh
 
-if [ ${FF5X} -eq 0 ]; then
+if [ ${AD5X} -eq 0 ]; then
     SWAP="$1"
     echo "SWAP=$SWAP"
 
@@ -161,14 +161,14 @@ grep -q VERSION_CODENAME /etc/os-release || echo "VERSION_CODENAME=\"${VER}\"" >
 grep -q "VERSION_CODENAME=\"${VER}\"" /etc/os-release || sed -i "s|VERSION_CODENAME=.*|VERSION_CODENAME=\"${VER}\"|" /etc/os-release
 
 V1=$(cat /etc/os-release|grep PRETTY_NAME| cut  -d '"' -f2| awk '{print $1" "$2}')
-[ ${FF5X} -eq 0 ] && V2=$(cat /opt/config/mod/version_5m.txt) || V2=$(cat /opt/config/mod/version_5x.txt)
+[ ${AD5X} -eq 0 ] && V2=$(cat /opt/config/mod/version_5m.txt) || V2=$(cat /opt/config/mod/version_5x.txt)
 
 grep -q PRETTY_NAME /etc/os-release || echo "VERSION_CODENAME=\"${V1} -> ${V2}\"" >>/etc/os-release
 grep -q "PRETTY_NAME=\"${V1} -> ${V2}\"" /etc/os-release || sed -i "s|PRETTY_NAME=.*|PRETTY_NAME=\"${V1} -> ${V2}\"|" /etc/os-release
 
 mkdir -p ${DATA_GCODES}/tmp
 
-if [ ${FF5X} -eq 0 ]; then
+if [ ${AD5X} -eq 0 ]; then
     if grep -q "klipper13 = 1" /opt/config/mod_data/variables.cfg; then
         /opt/config/mod/.shell/root/S60klipper start
     fi

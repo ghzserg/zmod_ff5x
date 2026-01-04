@@ -42,7 +42,7 @@ wifi_fix()
 
     echo "WiFi station enabled — restarting network..."
 
-    [ ${FF5X} -eq 0 ] && insmod /lib/modules/8821cu.ko || insmod /usr/prog/modules/8821cu.ko power_on=PB07
+    [ ${AD5X} -eq 0 ] && insmod /lib/modules/8821cu.ko || insmod /usr/prog/modules/8821cu.ko power_on=PB07
 
     echo "Waiting for interface $INTERFACE to appear..."
 
