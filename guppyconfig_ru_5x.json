@@ -1,13 +1,13 @@
 {
   "config_path": "/root/guppyscreen/guppyconfig.json",
-  "default_printer": "FF5X",
+  "default_printer": "AD5X",
   "display_brightness": 90,
   "display_rotate": 0,
   "display_sleep_sec": -1,
   "guppy_init_script": "/etc/init.d/S80guppyscreen",
   "log_path": "/opt/config/mod_data/log/guppyscreen.log",
   "printers": {
-    "FF5X": {
+    "AD5X": {
       "default_macros": {
         "cooldown": "SET_HEATER_TEMPERATURE HEATER=extruder TARGET=0\nSET_HEATER_TEMPERATURE HEATER=heater_bed TARGET=0",
         "load_filament": "LOAD_FILAMENT"
