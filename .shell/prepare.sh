@@ -19,7 +19,7 @@ remove_base()
     [ -f ${MOD_CONF}/mod/FULL_REMOVE ] && rm -rf ${MOD_CONF}/mod_data/
     sync
 
-    if [ ${FF5X} -eq 0 ]; then
+    if [ ${AD5X} -eq 0 ]; then
         rm /etc/init.d/S00fix
         rm /etc/init.d/S99moon
         rm /etc/init.d/S98camera
@@ -64,7 +64,7 @@ remove_base()
 start_moon()
 {
     SWAP="/root/swap"
-    if grep -q "use_swap = 2" ${MOD_CONF}/mod_data/variables.cfg && [ ${FF5X} -eq 0 ]; then
+    if grep -q "use_swap = 2" ${MOD_CONF}/mod_data/variables.cfg && [ ${AD5X} -eq 0 ]; then
         for i in `seq 1 6`; do mount |grep /media && break; echo $i; sleep 10; done;
 
         if mount |grep /media; then
@@ -85,11 +85,11 @@ start_moon()
     grep -q '^MACHINE=Adventurer5MPro$' /opt/auto_run.sh && MACHINE=Adventurer5MPro
     grep -q '^MACHINE=Adventurer5M$' /opt/auto_run.sh && MACHINE=Adventurer5M
     grep -q "^MACHINE=AD5X" /usr/prog/app_startup.sh && MACHINE=AD5X
-    [ ${FF5X} -eq 0 ] && VER=$(cat /root/version)
-    [ ${FF5X} -eq 1 ] && VER=$(find /usr/prog/PROGRAM/software/ -type d | sed 's|/usr/prog/PROGRAM/software/||' | grep .)
+    [ ${AD5X} -eq 0 ] && VER=$(cat /root/version)
+    [ ${AD5X} -eq 1 ] && VER=$(find /usr/prog/PROGRAM/software/ -type d | sed 's|/usr/prog/PROGRAM/software/||' | grep .)
 
     # Запуск камеры
-    #[ ${FF5X} -eq 0 ] && ${MOD_CONF}/mod/.shell/S99camera init
+    #[ ${AD5X} -eq 0 ] && ${MOD_CONF}/mod/.shell/S99camera init
 
     chroot ${MOD} /opt/config/mod/.shell/root/start.sh "$SWAP" "$VER" "$MACHINE" &
 
@@ -106,7 +106,7 @@ start_moon()
 
 start_prepare()
 {
-    if [ ${FF5X} -eq 0 ] && ! [ -L /etc/init.d/S00fix ]; then ln -s ${MOD_CONF}/mod/.shell/fix_config.sh /etc/init.d/S00fix; fi
+    if [ ${AD5X} -eq 0 ] && ! [ -L /etc/init.d/S00fix ]; then ln -s ${MOD_CONF}/mod/.shell/fix_config.sh /etc/init.d/S00fix; fi
     echo "System start" >${MOD_CONF}/mod_data/log/ssh.log
 
     mount -t proc /proc ${MOD}/proc
@@ -118,7 +118,7 @@ start_prepare()
     mkdir -p ${MOD}/opt/config
     mount --bind ${MOD_CONF} ${MOD}/opt/config
 
-    if [ ${FF5X} -eq 1 ]; then
+    if [ ${AD5X} -eq 1 ]; then
         mkdir -p ${MOD}${MOD_CONF} ${MOD}/usr/prog/config
         mount --bind ${MOD_CONF} ${MOD}${MOD_CONF}
         mount --bind ${MOD}/opt/ /opt
@@ -145,7 +145,7 @@ start_prepare()
     mkdir -p ${MOD}/root/printer_data/comms
     mkdir -p ${MOD}/root/printer_data/certs
 
-    [ ${FF5X} -eq 0 ] && cat /etc/localtime >/tmp/localtime
+    [ ${AD5X} -eq 0 ] && cat /etc/localtime >/tmp/localtime
     cp ${TS_LIB}/pointercal /tmp/pointercal
     cp ${TS_LIB}/ts.conf /tmp/ts.conf
 

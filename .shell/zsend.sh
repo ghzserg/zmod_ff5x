@@ -5,7 +5,7 @@ source /opt/config/mod/.shell/0.sh
 unset LD_PRELOAD
 unset LD_LIBRARY_PATH
 
-if [ ${FF5X} -eq 1 ]; then
+if [ ${AD5X} -eq 1 ]; then
     export LD_LIBRARY_PATH=/usr/prog/qt-4.8.6/lib:$LD_LIBRARY_PATH
     export LD_LIBRARY_PATH=/usr/prog/openssl-1.0.2d/lib:$LD_LIBRARY_PATH
     export LD_LIBRARY_PATH=/usr/prog/curl-7.55.1-https/lib:$LD_LIBRARY_PATH

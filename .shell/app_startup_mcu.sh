@@ -25,7 +25,7 @@ app_startup_mcu()
 
     CONTROL_DIR=${PROGRAM_DIR}control/
     cd ${CONTROL_DIR}
-    if [ ${FF5X} -eq 1 ]; then
+    if [ ${AD5X} -eq 1 ]; then
         CONTROL_VERSION=`ls -d [0-9]*/ | sort -Vr | head -n 1`
     else
         CONTROL_VERSION=`ls -d [0-9]*/ | sort -t '.' -k1,1n -k2,2n -k3,3n -r | head -n 1`
@@ -44,7 +44,7 @@ app_startup_mcu()
 
     if  [ -f "${CONTRIL_M}" ] || [ -f ${CONTRIL_FLAG} ]; then
         [ ${KLIPPER13} -eq 1 ] && mount -o bind ${MOD_CONF}/mod/.shell/update_mcu.sh ${CONTROL_DIR}${CONTROL_VERSION}run.sh
-        if [ ${FF5X} -eq 1 ]; then
+        if [ ${AD5X} -eq 1 ]; then
             cd ${CONTROL_DIR}${CONTROL_VERSION}
             ./run.sh
             reboot -f

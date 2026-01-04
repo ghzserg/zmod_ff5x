@@ -7,11 +7,11 @@ unset LD_LIBRARY_PATH
 
 if ! [ -f "/opt/config/mod_data/midi/$1" ]; then #&& ! [ -f "/opt/config/mod_data/midi/$1.wav" ]
     echo "Файл mod_data/midi/$1 не найден"
-    #[ ${FF5X} -eq 1 ] && echo "FF5X воспроизводит wav файлы"
+    #[ ${AD5X} -eq 1 ] && echo "AD5X воспроизводит wav файлы"
     exit 1
 fi
 
-if [ ${FF5X} -eq 1 ]; then
+if [ ${AD5X} -eq 1 ]; then
 #    [ -f "/opt/config/mod_data/midi/$1.wav" ] && chroot $MOD aplay /opt/config/mod_data/midi/$1.wav &
 #    [ -f "/opt/config/mod_data/midi/$1" ] && chroot $MOD aplay /opt/config/mod_data/midi/$1 &
     export PATH=$PATH:/usr/prog/Python-3.8.2/bin

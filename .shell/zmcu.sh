@@ -11,7 +11,7 @@ fi
 
 CONTROL_DIR=${PROGRAM_DIR}control/
 cd ${CONTROL_DIR}
-if [ ${FF5X} -eq 1 ]; then
+if [ ${AD5X} -eq 1 ]; then
     CONTROL_VERSION=`ls -d [0-9]*/ | sort -Vr | head -n 1`
 else
     CONTROL_VERSION=`ls -d [0-9]*/ | sort -t '.' -k1,1n -k2,2n -k3,3n -r | head -n 1`
@@ -19,7 +19,7 @@ fi
 CONTRIL_FLAG=${CONTROL_DIR}${CONTROL_VERSION}Update
 CONTRIL_M=${CONTROL_DIR}${CONTROL_VERSION}UpdateM
 
-[ ${FF5X} -eq 1 ] && echo "">${CONTRIL_M}
+[ ${AD5X} -eq 1 ] && echo "">${CONTRIL_M}
 echo "">${CONTRIL_FLAG}
 
 if [ -d "${CONTROL_DIR}${CONTROL_VERSION}" ]; then
