@@ -1,4 +1,5 @@
 #!/bin/sh
+# (C) 2024-2026 ghzserg https://github.com/ghzserg/zmod
 
 FILE_NAME=${1}
 if [ -z "${FILE_NAME}" ]; then

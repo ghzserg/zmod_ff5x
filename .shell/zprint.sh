@@ -1,5 +1,5 @@
 #!/bin/sh
-
+# (C) 2024-2026 ghzserg https://github.com/ghzserg/zmod
 # "lanCode"
 # "printerSerialNumber"
 # Adventurer5M.json

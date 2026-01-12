@@ -1,4 +1,5 @@
 #!/bin/bash
+# (C) 2024-2026 ghzserg https://github.com/ghzserg/zmod
 
 if [ $2 == 'file' ]; then
     stat -c "check_file '%n' '%a'" "$1"

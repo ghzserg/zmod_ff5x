@@ -1,4 +1,5 @@
 #!/bin/sh
+# (C) 2024-2026 ghzserg https://github.com/ghzserg/zmod
 
 if [ -f /opt/config/mod/.shell/0.sh ]; then
     source /opt/config/mod/.shell/0.sh

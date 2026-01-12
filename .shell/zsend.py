@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# (C) 2024-2026 ghzserg https://github.com/ghzserg/zmod
 
 import socket
 import sys

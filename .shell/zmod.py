@@ -1,3 +1,4 @@
+# (C) 2024-2026 ghzserg https://github.com/ghzserg/zmod
 import os
 import logging
 import json

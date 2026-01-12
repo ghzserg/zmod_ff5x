@@ -1,4 +1,5 @@
 #!/bin/bash
+# (C) 2024-2026 ghzserg https://github.com/ghzserg/zmod
 
 rm -rf ../stock
 mkdir -p ../stock

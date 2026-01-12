@@ -1,4 +1,5 @@
 #!/bin/sh
+# (C) 2024-2026 ghzserg https://github.com/ghzserg/zmod
 
 [ $1 == "systemctl" ] && [ $2 == "reboot" ] && echo "REBOOT" >/tmp/printer
 [ $1 == "systemctl" ] && [ $2 == "poweroff" ] && echo "SHUTDOWN" >/tmp/printer

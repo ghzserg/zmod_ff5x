@@ -1,4 +1,5 @@
 #!/bin/sh
+# (C) 2024-2026 ghzserg https://github.com/ghzserg/zmod
 
 if [ -f /usr/data/config/mod/.shell/fix_config.sh ]; then
     /usr/data/config/mod/.shell/fix_config.sh start
