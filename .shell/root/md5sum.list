@@ -3177,7 +3177,6 @@ ee9c3acda041e404bd411f9d17931b5a  ./usr/bin/ts_test_mt
 75901b39847fb1ce9440788142809e4b  ./usr/bin/ts_uinput
 4693c055797fe983432888a8c6b8babd  ./usr/bin/ts_verify
 de055369df3a934883faed399d141ddc  ./usr/bin/ttx
-05ae5e943e25ee07704d303f2a58270a  ./usr/bin/ustreamer
 737c14dff7a8eac4adfbe58264a67ada  ./usr/bin/ustreamer-dump
 738473515b577d92c6a869830b302029  ./usr/bin/v4l2-compliance
 bea0abab72a2db0f83c778cba5e3d7b2  ./usr/bin/v4l2-ctl
