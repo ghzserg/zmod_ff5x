@@ -3180,7 +3180,6 @@ deed280fc6ea15ac86be12d12109d08f  ./usr/bin/touchpad-edge-detector
 3bbaeacdba52f125c9575148dfe4f0c4  ./usr/bin/ts_uinput
 2977118382982b222a32efa94df47a7e  ./usr/bin/ts_verify
 de055369df3a934883faed399d141ddc  ./usr/bin/ttx
-c03ca735a44e7a96460f4457e8e72610  ./usr/bin/ustreamer
 1bcc834672104590cd691272eb186ca7  ./usr/bin/ustreamer-dump
 26012bc7813de76f3eb334ad0be6fcde  ./usr/bin/v4l2-compliance
 3cecfa9a1d636f40ed68c39486f46cf0  ./usr/bin/v4l2-ctl
