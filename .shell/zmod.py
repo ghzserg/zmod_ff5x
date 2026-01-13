@@ -63,8 +63,6 @@ class zmod:
                     gcmd.respond_raw(f"Фактический: {zoffset}")
 
         self.gcode.run_script_from_command(f"SET_GCODE_OFFSET Z={zoffset:.4f} START={start} FROM=LOAD_ZOFFSET_NATIVE")
-        if start == 0:
-            gcmd.respond_raw(f"Z-Offset={zoffset:.4f}")
 
     def cmd_ZEXCLUDE(self, gcmd):
         filename = gcmd.get("FILENAME", None)
