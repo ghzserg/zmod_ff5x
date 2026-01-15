@@ -33,6 +33,8 @@ wifi_on()
     return 0
 }
 
+[ $1 = "off" ] && killall firmwareExe guppyscreen
+
 if [ $1 = "test" ] && grep -q display_off.cfg /opt/config/printer.cfg; then
     killall firmwareExe
 
@@ -41,13 +43,25 @@ if [ $1 = "test" ] && grep -q display_off.cfg /opt/config/printer.cfg; then
     wifi_off
 fi
 
-[ $1 = "on" ]   && sed -i 's|\[include ./mod/display_off.cfg\]|\[include ./mod/mod.cfg\]|' /opt/config/printer.cfg && sync && wifi_on && /opt/config/mod/.shell/zremote.sh reboot
-[ $1 = "off" ]  && sed -i 's|\[include ./mod/mod.cfg\]|\[include ./mod/display_off.cfg\]|' /opt/config/printer.cfg && sync && killall firmwareExe && xzcat /opt/config/mod/.shell/screen_off.raw.xz > /dev/fb0 #&& echo /sbin/mdev >/proc/sys/kernel/hotplug
-[ $1 = "guppy" ]  && sed -i 's|\[include ./mod/mod.cfg\]|\[include ./mod/display_off.cfg\]|' /opt/config/printer.cfg && sync && killall firmwareExe && /opt/config/mod/.shell/zguppy.sh up #&& echo /sbin/mdev >/proc/sys/kernel/hotplug
+if [ $1 = "on" ]; then
+    sed -i 's|\[include ./mod/display_off.cfg\]|\[include ./mod/mod.cfg\]|' /opt/config/printer.cfg
+    sync
+    wifi_on
+    /opt/config/mod/.shell/zremote.sh reboot
+fi
 
 if [ $1 = "off" ] || [ $1 = "guppy" ]; then
-    killall console_log
+    sed -i 's|\[include ./mod/mod.cfg\]|\[include ./mod/display_off.cfg\]|' /opt/config/printer.cfg
+    sync
+    killall firmwareExe guppyscreen console_log
     [ -f /ZMOD ] && /opt/config/mod/.shell/root/console_log --save --${ZLANG} || chroot ${MOD} /opt/config/mod/.shell/root/console_log --save --${ZLANG}
+
+    if [ $1 = "off" ]; then
+        xzcat /opt/config/mod/.shell/screen_off.raw.xz > /dev/fb0
+    else
+        /opt/config/mod/.shell/zguppy.sh up
+    fi
+
     echo '/opt/config/mod/.shell/automount.sh' > /proc/sys/kernel/hotplug
     wifi_off
 fi
