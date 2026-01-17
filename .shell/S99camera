@@ -37,12 +37,12 @@ start_mjpg_streamer() {
 
     ${V4l2} -d /dev/$VIDEO --set-fmt-video=width=${WIDTH},height=${HEIGHT},pixelformat=MJPG >>${MOD_CONF}/mod_data/log/cam/mjpg_streamer.log 2>&1
     if [ -f /ZMOD ]; then
-        /opt/config/mod/.shell/root/zcam/zcam /usr/bin/mjpg_streamer -o "/usr/lib/mjpg-streamer/output_http.so -w /usr/share/mjpg-streamer/www -p 8080" -i  "/usr/lib/mjpg-streamer/input_uvc.so -b 1 -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS $FFS" >>${MOD_CONF}/mod_data/log/cam/mjpg_streamer.log 2>&1 &
+        /opt/config/mod/.shell/root/zcam/zcam ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.log /usr/bin/mjpg_streamer -o "/usr/lib/mjpg-streamer/output_http.so -w /usr/share/mjpg-streamer/www -p 8080" -i  "/usr/lib/mjpg-streamer/input_uvc.so -b 1 -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS $FFS"
     else
         if [ ${AD5X} -eq 0 ]; then
             nohup /opt/config/mod/.shell/eabi/mjpg_streamer -o "/opt/config/mod/.shell/eabi/lib/output_http.so -w /opt/mjpg-streamer/www -p 8080" -i  "/opt/config/mod/.shell/eabi/lib/input_uvc.so -b 1 -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS $FFS" >>${MOD_CONF}/mod_data/log/cam/mjpg_streamer.log 2>&1 &
         else
-            chroot $MOD /opt/config/mod/.shell/root/zcam/zcam /usr/bin/mjpg_streamer -o "/usr/lib/mjpg-streamer/output_http.so -w /usr/share/mjpg-streamer/www -p 8080" -i  "/usr/lib/mjpg-streamer/input_uvc.so -b 1 -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS $FFS" >>${MOD_CONF}/mod_data/log/cam/mjpg_streamer.log 2>&1 &
+            chroot $MOD /opt/config/mod/.shell/root/zcam/zcam ${MOD_CONF}/mod_data/log/cam/mjpg_streamer.log /usr/bin/mjpg_streamer -o "/usr/lib/mjpg-streamer/output_http.so -w /usr/share/mjpg-streamer/www -p 8080" -i  "/usr/lib/mjpg-streamer/input_uvc.so -b 1 -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS $FFS"
         fi
     fi
 }
