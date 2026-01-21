@@ -140,9 +140,9 @@ if ! [ -f /ZMOD ]; then
     chroot ${MOD} /opt/config/mod/.shell/zcheckmd5.sh
 else
     cd /opt/config/mod
-    git clean -f
-    git restore .
-    git status --porcelain
+    git clean -f 2>&1 |grep -v ".cfg"
+    git restore . 2>&1 |grep -v ".cfg"
+    git status --porcelain 2>&1 |grep -v ".cfg"
 
     [ ${ZLANG} != 'ru' ] && echo "Restoring the correct ZMOD language" || echo "Восстановление правильного языка ZMOD"
     check_link ${MOD_CONF}/mod/base.cfg ${ZLANG}/base.cfg &>/dev/null
