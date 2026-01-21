@@ -5030,8 +5030,6 @@ e3eb0a1df437f3f97a64aca5952c8ea0  ./usr/prog/nginx/html/index.html
 025ce59fab18cc6e29d7cba7b60f3162  ./usr/prog/nginx/off
 e7bf6f5c3f43d7a85a65eff9592a865e  ./usr/prog/nginx/sbin/nginx
 e7bf6f5c3f43d7a85a65eff9592a865e  ./usr/prog/nginx/sbin/nginx.old
-ec9abc171632669acf43c15fa4fcc64a  ./usr/prog/nim/lib/libnim_chatroom.so
-81ce43a1684bdb10d9f6d57b833ffecc  ./usr/prog/nim/lib/libnim.so
 ad04afb943c3e5742becca48dc91cbf2  ./usr/prog/opencv-4.2.0_mips/bin/opencv_annotation
 75cf9a275e5d331d6efd579aa1dd0f17  ./usr/prog/opencv-4.2.0_mips/bin/opencv_interactive-calibration
 f3b05d770df7def6be827cc3496f6ede  ./usr/prog/opencv-4.2.0_mips/bin/opencv_version
