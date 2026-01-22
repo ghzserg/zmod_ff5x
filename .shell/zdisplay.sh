@@ -11,7 +11,8 @@ wifi_off()
         grep -q '"wifiHotspotStatus" : false' "$FFCONFIG" && \
         grep -q '"isManual" : false' "$FFCONFIG" && \
         grep -q '"isUdhcpc" : true' "$FFCONFIG" && \
-        grep -q '"ethernetStatus" : false' "$FFCONFIG"; then
+        grep -q '"ethernetStatus" : false' "$FFCONFIG" && \
+        grep -q "disabled=1" ${WPA_CONFIG}; then
 
         killall firmwareExe
         grep -q '"wifiStationStatus" : true' "$FFCONFIG" && sed -i 's/"wifiStationStatus" : true/"wifiStationStatus" : false/' "$FFCONFIG"
@@ -25,15 +26,14 @@ wifi_on()
         grep -q '"wifiHotspotStatus" : false' "$FFCONFIG" && \
         grep -q '"isManual" : false' "$FFCONFIG" && \
         grep -q '"isUdhcpc" : true' "$FFCONFIG" && \
-        grep -q '"ethernetStatus" : false' "$FFCONFIG"; then
+        grep -q '"ethernetStatus" : false' "$FFCONFIG" && \
+        grep -q "disabled=1" ${WPA_CONFIG}; then
 
         killall firmwareExe
         grep -q '"wifiStationStatus" : false' "$FFCONFIG" && sed -i 's/"wifiStationStatus" : false/"wifiStationStatus" : true/' "$FFCONFIG"
     fi
     return 0
 }
-
-[ $1 = "off" ] && killall firmwareExe guppyscreen
 
 if [ $1 = "test" ] && grep -q display_off.cfg /opt/config/printer.cfg; then
     killall firmwareExe
