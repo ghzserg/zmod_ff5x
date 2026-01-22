@@ -56,6 +56,11 @@ wifi_fix()
         return 0
     fi
 
+    if ! grep -q "disabled=1" ${WPA_CONFIG}; then
+        echo "Wi-Fi not configured"
+        return 0
+    fi
+
     echo "WiFi station enabled — restarting network..."
 
     [ ${AD5X} -eq 0 ] && insmod /lib/modules/8821cu.ko || insmod /usr/prog/modules/8821cu.ko power_on=PB07
