@@ -52,7 +52,7 @@ restore_file()
 {
     fname="$1"
     [ ${ZLANG} != 'ru' ] && /bin/echo -n "Recovering file" || /bin/echo -n "Восстанавливаю файл $fname: "
-    if ${CURL} --create-dirs -s -k -H 'Accept: application/vnd.github.v3.raw' -o "$fname" -L "https://api.github.com/repos/ghzserg/zmod/contents/${STOCK}${fname}"; then
+    if ${CURL} --create-dirs -s -k -H 'Accept: application/vnd.github.v3.raw' -o "$fname" -L "https://api.github.com/repos/ghzserg/FF/contents/${STOCK}${fname}"; then
         chmod 777 "$fname"
         [ ${ZLANG} != 'ru' ] && echo "Ok" || echo "Успешно"
     else
@@ -134,7 +134,7 @@ else
 fi
 
 if ! [ -f /ZMOD ]; then
-    [ ${ZLANG} != 'ru' ] && echo "The original files can be found at https://github.com/ghzserg/zmod/tree/main/${STOCK}" || echo "Оригиналы файлов можно найти по ссылке https://github.com/ghzserg/zmod/tree/main/${STOCK}"
+    [ ${ZLANG} != 'ru' ] && echo "The original files can be found at https://github.com/ghzserg/FF/tree/main/${STOCK}" || echo "Оригиналы файлов можно найти по ссылке https://github.com/ghzserg/FF/tree/main/${STOCK}"
     [ ${ZLANG} != 'ru' ] && echo "Native system check completed" || echo "Проверка родной системы окончена"
     unset LD_PRELOAD
     chroot ${MOD} /opt/config/mod/.shell/zcheckmd5.sh
