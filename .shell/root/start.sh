@@ -82,7 +82,25 @@ prepare_chroot()
     [ -L /etc/init.d/S98camera ] && rm -f /etc/init.d/S98camera
     [ -L /etc/init.d/S99camera ] || ln -s /opt/config/mod/.shell/root/S99camera /etc/init.d/
     [ -L /etc/init.d/S60klipper ] || ln -s /opt/config/mod/.shell/root/S60klipper /etc/init.d/
-    [ ${AD5X} -eq 0 ] && check_link /root/klipper-env/klippy /opt/config/base/klipper/klippy
+
+    check_link /root/klipper-env/klippy /opt/config/base/klipper/klippy
+    if [ -f /opt/config/base/klipper/klippy/klippy.py ]; then
+        check_link ${MOD_CONF}/base/klipper/klippy/extras/gcode_shell_command.py ${MOD_CONF}/mod/.shell/gcode_shell_command.py
+        check_link ${MOD_CONF}/base/klipper/klippy/extras/zmod.py ${MOD_CONF}/mod/.shell/zmod.py
+
+        if [ ${AD5X} -eq 0 ]; then
+            check_link /opt/config/base/klipper/klippy/chelper/c_helper.so /opt/config/base/klipper/mcu/ff5m/c_helper.so
+            check_link ${MOD_CONF}/base/klipper/klippy/extras/ens160.py ${MOD_CONF}/mod/.shell/ens160.py
+            check_link ${MOD_CONF}/base/klipper/klippy/extras/flashforge_loadcell.py ${MOD_CONF}/mod/.shell/flashforge_loadcell.py
+        else
+            check_link ${MOD_CONF}/base/klipper/klippy/chelper/c_helper.so ${MOD_CONF}/base/klipper/mcu/ad5x/c_helper.so
+            check_link ${MOD_CONF}/base/klipper/klippy/extras/zmod_color.py ${MOD_CONF}/mod/.shell/zmod_color.py
+            check_link ${MOD_CONF}/base/klipper/klippy/extras/zmod_ifs_motion_sensor.py ${MOD_CONF}/mod/.shell/zmod_ifs_motion_sensor.py
+            check_link ${MOD_CONF}/base/klipper/klippy/extras/zmod_ifs_switch_sensor.py ${MOD_CONF}/mod/.shell/zmod_ifs_switch_sensor.py
+            check_link ${MOD_CONF}/base/klipper/klippy/extras/zmod_ifs.py ${MOD_CONF}/mod/.shell/zmod_ifs.py
+            check_link ${MOD_CONF}/base/klipper/klippy/extras/zmod_tenz.py ${MOD_CONF}/mod/.shell/zmod_tenz.py
+            check_link ${MOD_CONF}/base/klipper/klippy/extras/virtual_sdcard.py ${MOD_CONF}/mod/.shell/virtual_sdcard.py
+    fi
 
     [ -L /etc/init.d/S35tslib ] && rm -f /etc/init.d/S35tslib
     [ -L /etc/init.d/S80guppyscreen ] || ln -s /opt/config/mod/.shell/root/S80guppyscreen /etc/init.d/
