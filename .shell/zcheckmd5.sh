@@ -164,6 +164,7 @@ else
     fi
     check_link ${MOD_CONF}/mod/motion_sensor.cfg ${ZLANG}/motion_sensor.cfg &>/dev/null
     check_link ${MOD_CONF}/mod/switch_sensor_display_off.cfg ${ZLANG}/switch_sensor_display_off.cfg &>/dev/null
+    find /opt/config/ -name '*.pyc' -delete
 
     [ ${ZLANG} != 'ru' ] && echo "ZMOD self-test completed" || echo "Самопроверка ZMOD окончена"
 fi
