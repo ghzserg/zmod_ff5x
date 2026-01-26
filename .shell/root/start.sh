@@ -213,7 +213,7 @@ while read a; do
 done
 
 if ! [ -f /root/printer_data/config/base/klipper/klippy/klippy.py ]; then
-    branch="master"
+    branch="main"
     url="https://github.com/ghzserg/zmod_klipper.git"
     a="klippy"
     sqlite3 /opt/config/mod_data/database/moonraker-sql.db \
