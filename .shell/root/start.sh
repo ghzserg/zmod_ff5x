@@ -212,6 +212,12 @@ while read a; do
     fi
 done
 
+if ! [ -f /root/printer_data/config/base/klipper/klippy/klippy.py ]; then
+    sqlite3 /opt/config/mod_data/database/moonraker-sql.db \
+    "DELETE FROM namespace_store WHERE namespace = 'update_manager' AND key = 'klippy'; \
+     INSERT INTO namespace_store (namespace, key, value) VALUES ('update_manager', 'klippy', '{\"last_config_hash\":\"?\",\"last_refresh_time\":0.0,\"is_valid\":false,\"pip_version_info\":null,\"repo_valid\":false,\"git_owner\":\"none\",\"git_repo_name\":\"$a\",\"git_remote\":\"origin\",\"git_branch\":\"$branch\",\"current_version\":\"0.0.0.0\",\"upstream_version\":\"0.0.0.0\",\"current_commit\":\"?\",\"upstream_commit\":\"?\",\"rollback_commit\":\"?\",\"rollback_branch\":\"$branch\",\"rollback_version\":\"0.0.0.0\",\"upstream_url\":\"$url\",\"recovery_url\":\"$url\",\"branches\":[\"$branch\"],\"head_detached\":false,\"git_messages\":[],\"commits_behind\":[],\"cbh_count\":0,\"diverged\":false,\"corrupt\":true,\"modified_files\":[],\"untracked_files\":[],\"pinned_commit_valid\":true}');"
+fi
+
 # Rem tmp TIMELapse
 [ -d /root/printer_data/gcodes/timelapse/tmp ] && rm -rf /root/printer_data/gcodes/timelapse/tmp/*
 
