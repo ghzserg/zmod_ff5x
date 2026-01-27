@@ -304,16 +304,16 @@ fix_config()
         check_link ${MOD_CONF}/mod/klipper13.cfg ${ZLANG}/klipper13_ff5m.cfg
         check_link ${MOD_CONF}/mod/klipper11_base.cfg ${ZLANG}/klipper11_base.cfg
         grep -q '^MACHINE=Adventurer5MPro$' /opt/auto_run.sh && check_link ${MOD_CONF}/mod/klipper11.cfg ${ZLANG}/klipper11_pro.cfg || check_link ${MOD_CONF}/mod/klipper11.cfg ${ZLANG}/klipper11.cfg
-        check_link ${MOD_CONF}/mod/display_off.cfg ${ZLANG}/display_off.cfg
+        check_link ${MOD_CONF}/mod/display_off.cfg ${ZLANG}/ff5m_display_off.cfg
         check_link ${MOD_CONF}/mod/ff5.cfg ${ZLANG}/ff5.cfg
         check_link ${MOD_CONF}/mod/mod.cfg ${ZLANG}/mod.cfg
     else
         check_link ${MOD_CONF}/mod/klipper13.cfg ${ZLANG}/klipper13_ad5x.cfg
         check_link ${MOD_CONF}/mod/display_off.cfg ${ZLANG}/ad5x_display_off.cfg
         check_link ${MOD_CONF}/mod/ad5x.cfg ${ZLANG}/ad5x.cfg
-        check_link ${MOD_CONF}/mod/base_display_off.cfg ${ZLANG}/display_off.cfg
         check_link ${MOD_CONF}/mod/base_mod.cfg ${ZLANG}/mod.cfg
     fi
+        check_link ${MOD_CONF}/mod/base_display_off.cfg ${ZLANG}/base_display_off.cfg
     check_link ${MOD_CONF}/mod/motion_sensor.cfg ${ZLANG}/motion_sensor.cfg
     check_link ${MOD_CONF}/mod/switch_sensor_display_off.cfg ${ZLANG}/switch_sensor_display_off.cfg
 
