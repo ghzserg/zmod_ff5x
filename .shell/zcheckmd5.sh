@@ -152,16 +152,16 @@ else
         check_link ${MOD_CONF}/mod/klipper13.cfg ${ZLANG}/klipper13_ff5m.cfg &>/dev/null
         check_link ${MOD_CONF}/mod/klipper11_base.cfg ${ZLANG}/klipper11_base.cfg &>/dev/null
         grep -q 'Adventurer5MPro' /etc/os-release && check_link ${MOD_CONF}/mod/klipper11.cfg ${ZLANG}/klipper11_pro.cfg &>/dev/null || check_link ${MOD_CONF}/mod/klipper11.cfg ${ZLANG}/klipper11.cfg &>/dev/null
-        check_link ${MOD_CONF}/mod/display_off.cfg ${ZLANG}/display_off.cfg &>/dev/null
+        check_link ${MOD_CONF}/mod/display_off.cfg ${ZLANG}/ff5m_display_off.cfg &>/dev/null
         check_link ${MOD_CONF}/mod/ff5.cfg ${ZLANG}/ff5.cfg &>/dev/null
         check_link ${MOD_CONF}/mod/mod.cfg ${ZLANG}/mod.cfg &>/dev/null
     else
         check_link ${MOD_CONF}/mod/klipper13.cfg ${ZLANG}/klipper13_ad5x.cfg &>/dev/null
         check_link ${MOD_CONF}/mod/display_off.cfg ${ZLANG}/ad5x_display_off.cfg &>/dev/null
-        check_link ${MOD_CONF}/mod/base_display_off.cfg ${ZLANG}/display_off.cfg &>/dev/null
         check_link ${MOD_CONF}/mod/ad5x.cfg ${ZLANG}/ad5x.cfg &>/dev/null
         check_link ${MOD_CONF}/mod/base_mod.cfg ${ZLANG}/mod.cfg &>/dev/null
     fi
+    check_link ${MOD_CONF}/mod/base_display_off.cfg ${ZLANG}/base_display_off.cfg &>/dev/null
     check_link ${MOD_CONF}/mod/motion_sensor.cfg ${ZLANG}/motion_sensor.cfg &>/dev/null
     check_link ${MOD_CONF}/mod/switch_sensor_display_off.cfg ${ZLANG}/switch_sensor_display_off.cfg &>/dev/null
     find /opt/config/ -name '*.pyc' -delete
