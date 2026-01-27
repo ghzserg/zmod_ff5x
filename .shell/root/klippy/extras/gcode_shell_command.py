@@ -1,1 +1,0 @@
-/usr/data/config/mod/.shell/gcode_shell_command.py
