@@ -6,6 +6,11 @@ source /opt/config/mod/.shell/0.sh
 VER_FF=$(cat /opt/config/mod/version.txt 2>/dev/null| cut  -d "." -f 1,2)
 [ ${AD5X} -eq 0 ] && VER_FF_FULL=$(cat /opt/config/mod/version_5m.txt 2>/dev/null) || VER_FF_FULL=$(cat /opt/config/mod/version_5x.txt 2>/dev/null)
 
+if [ -f /opt/config/base/klipper/klippy/.version ]; then
+    KLIPPER_VER=$(cat /opt/config/base/klipper/klippy/.version)
+    echo "_CHECK_VERSION VER=${KLIPPER_VER}" >/tmp/printer
+fi
+
 VER_MOD="0.0"
 if [ -f "/root/printer_data/version.txt" ]; then
     VER_MOD=$(cat /root/printer_data/version.txt 2>/dev/null| cut  -d "." -f 1,2)

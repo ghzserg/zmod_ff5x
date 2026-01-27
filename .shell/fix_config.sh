@@ -8,8 +8,10 @@ unset LD_PRELOAD
 
 if [ -f /opt/config/mod/.shell/0.sh ]; then
     source /opt/config/mod/.shell/0.sh
+    mkdir -p /opt/config/base/klipper/
 else if [ -f /usr/data/config/mod/.shell/0.sh ]; then
     source /usr/data/config/mod/.shell/0.sh
+    mkdir -p /usr/data/config/base/klipper/
 fi
 fi
 

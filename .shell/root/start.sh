@@ -52,6 +52,16 @@ get_branch_from_config() {
   ' "$config_file"
 }
 
+check_link()
+{
+    a=$(readlink "$1" 2>/dev/null)
+    if [ "$a" != "$2" ]; then
+        /bin/echo -n "$1 - Incorrect link ($a!=$2): "
+        rm -f "$1" 2>/dev/null
+        ln -s "$2" "$1" 2>/dev/null && echo "Исправлено"  || echo "Ошибка исправления"
+    fi
+}
+
 prepare_chroot()
 {
     echo ZMOD >/ZMOD
@@ -72,7 +82,26 @@ prepare_chroot()
     [ -L /etc/init.d/S98camera ] && rm -f /etc/init.d/S98camera
     [ -L /etc/init.d/S99camera ] || ln -s /opt/config/mod/.shell/root/S99camera /etc/init.d/
     [ -L /etc/init.d/S60klipper ] || ln -s /opt/config/mod/.shell/root/S60klipper /etc/init.d/
-    [ ${AD5X} -eq 0 ] && [ -L /root/klipper-env/klippy ] || ln -s /opt/config/mod/.shell/root/klippy /root/klipper-env/
+
+    check_link /root/klipper-env/klippy /opt/config/base/klipper/klippy
+    if [ -f /opt/config/base/klipper/klippy/klippy.py ]; then
+        check_link ${MOD_CONF}/base/klipper/klippy/extras/gcode_shell_command.py ${MOD_CONF}/mod/.shell/gcode_shell_command.py
+        check_link ${MOD_CONF}/base/klipper/klippy/extras/zmod.py ${MOD_CONF}/mod/.shell/zmod.py
+
+        if [ ${AD5X} -eq 0 ]; then
+            check_link /opt/config/base/klipper/klippy/chelper/c_helper.so /opt/config/base/klipper/mcu/ff5m/c_helper.so
+            check_link ${MOD_CONF}/base/klipper/klippy/extras/ens160.py ${MOD_CONF}/mod/.shell/ens160.py
+            check_link ${MOD_CONF}/base/klipper/klippy/extras/flashforge_loadcell.py ${MOD_CONF}/mod/.shell/flashforge_loadcell.py
+        else
+            check_link ${MOD_CONF}/base/klipper/klippy/chelper/c_helper.so ${MOD_CONF}/base/klipper/mcu/ad5x/c_helper.so
+            check_link ${MOD_CONF}/base/klipper/klippy/extras/zmod_color.py ${MOD_CONF}/mod/.shell/zmod_color.py
+            check_link ${MOD_CONF}/base/klipper/klippy/extras/zmod_ifs_motion_sensor.py ${MOD_CONF}/mod/.shell/zmod_ifs_motion_sensor.py
+            check_link ${MOD_CONF}/base/klipper/klippy/extras/zmod_ifs_switch_sensor.py ${MOD_CONF}/mod/.shell/zmod_ifs_switch_sensor.py
+            check_link ${MOD_CONF}/base/klipper/klippy/extras/zmod_ifs.py ${MOD_CONF}/mod/.shell/zmod_ifs.py
+            check_link ${MOD_CONF}/base/klipper/klippy/extras/zmod_tenz.py ${MOD_CONF}/mod/.shell/zmod_tenz.py
+            check_link ${MOD_CONF}/base/klipper/klippy/extras/virtual_sdcard.py ${MOD_CONF}/mod/.shell/virtual_sdcard.py
+        fi
+    fi
 
     [ -L /etc/init.d/S35tslib ] && rm -f /etc/init.d/S35tslib
     [ -L /etc/init.d/S80guppyscreen ] || ln -s /opt/config/mod/.shell/root/S80guppyscreen /etc/init.d/
@@ -97,7 +126,7 @@ prepare_chroot()
         done
     cd ${CUR_DIR}
 
-    [ -L /bin/boot_eboard_mcu ] || ln -s /opt/config/mod/.shell/root/mcu/boot_eboard_mcu /bin/boot_eboard_mcu
+    #[ -L /bin/boot_eboard_mcu ] || ln -s /opt/config/mod/.shell/root/mcu/boot_eboard_mcu /bin/boot_eboard_mcu
     [ -L /bin/backlight ] || ln -s /opt/config/mod/.shell/root/backlight /bin/backlight
 
     rm -rf /root/moonraker-env/lib/python3.12/site-packages/uvloop*  || echo "uvloop уже убит"
@@ -201,6 +230,15 @@ while read a; do
         echo "Репозиторий $a уже  существует, пропускаю."
     fi
 done
+
+if ! [ -f /root/printer_data/config/base/klipper/klippy/klippy.py ]; then
+    branch="main"
+    url="https://github.com/ghzserg/zmod_klipper.git"
+    a="klippy"
+    sqlite3 /opt/config/mod_data/database/moonraker-sql.db \
+    "DELETE FROM namespace_store WHERE namespace = 'update_manager' AND key = '$a'; \
+     INSERT INTO namespace_store (namespace, key, value) VALUES ('update_manager', '$a', '{\"last_config_hash\":\"?\",\"last_refresh_time\":0.0,\"is_valid\":false,\"pip_version_info\":null,\"repo_valid\":false,\"git_owner\":\"none\",\"git_repo_name\":\"$a\",\"git_remote\":\"origin\",\"git_branch\":\"$branch\",\"current_version\":\"0.0.0.0\",\"upstream_version\":\"0.0.0.0\",\"current_commit\":\"?\",\"upstream_commit\":\"?\",\"rollback_commit\":\"?\",\"rollback_branch\":\"$branch\",\"rollback_version\":\"0.0.0.0\",\"upstream_url\":\"$url\",\"recovery_url\":\"$url\",\"branches\":[\"$branch\"],\"head_detached\":false,\"git_messages\":[],\"commits_behind\":[],\"cbh_count\":0,\"diverged\":false,\"corrupt\":true,\"modified_files\":[],\"untracked_files\":[],\"pinned_commit_valid\":true}');"
+fi
 
 # Rem tmp TIMELapse
 [ -d /root/printer_data/gcodes/timelapse/tmp ] && rm -rf /root/printer_data/gcodes/timelapse/tmp/*

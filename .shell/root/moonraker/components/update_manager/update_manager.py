@@ -97,11 +97,11 @@ class UpdateManager:
         mclass = get_deploy_class(mcfg.get("type"), BaseDeploy)
         self.updaters['moonraker'] = mclass(mcfg)
         kclass = BaseDeploy
-        if (
-            os.path.exists(kcfg.get("path")) and
-            os.path.exists(kcfg.get("env"))
-        ):
-            kclass = get_deploy_class(kcfg.get("type"), BaseDeploy)
+        #if (
+        #    os.path.exists(kcfg.get("path")) and
+        #    os.path.exists(kcfg.get("env"))
+        #):
+        #    kclass = get_deploy_class(kcfg.get("type"), BaseDeploy)
         self.updaters['klipper'] = kclass(kcfg)
 
         # TODO: The below check may be removed when invalid config options

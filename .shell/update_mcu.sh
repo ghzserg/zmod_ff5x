@@ -10,10 +10,12 @@ CHECH_ARCH=`uname -m`
 if [ "${CHECH_ARCH}" == "armv7l" ]; then
     CONFIG_DIR="/opt/config"
     EBOARD_TTY="/dev/ttyS1"
+    PLATFORM=ff5m
 else if [ "${CHECH_ARCH}" == "mips" ]; then
     export PATH=/bin:/sbin:/usr/bin:/usr/sbin
     CONFIG_DIR="/usr/data/config"
     EBOARD_TTY="/dev/ttyS5"
+    PLATFORM=ad5x
 else
     echo "Machine architecture error."
     echo ${CHECH_ARCH}
@@ -21,8 +23,8 @@ else
 fi
 fi
 
-FIRMWARE_Head_M3="${CONFIG_DIR}/mod/.shell/root/mcu/Eboard.hex"
-FIRMWARE_Board_M3="${CONFIG_DIR}/mod/.shell/root/mcu/Mainboard.bin"
+FIRMWARE_Head_M3="${CONFIG_DIR}/base/klipper/mcu/${PLATFORM}/Eboard.hex"
+FIRMWARE_Board_M3="${CONFIG_DIR}/base/klipper/mcu/${PLATFORM}/Mainboard.bin"
 
 cat $WORK_DIR/mcu.img > /dev/fb0
 

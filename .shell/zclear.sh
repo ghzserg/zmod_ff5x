@@ -9,6 +9,7 @@ if  [ "$1" == 1 ]
         rm -rf ${LOG_FILES}/*
         rm -rf /opt/config/mod_data/log/*
         rm -rf ${UPDATE_DIR}/*
+        find /opt/config/ -name '*.pyc' -delete
         sync
 fi
 
