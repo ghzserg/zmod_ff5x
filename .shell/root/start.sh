@@ -145,10 +145,14 @@ prepare_chroot()
     fi
 
     if ! [ -f /root/printer_data/moonraker.secrets ]; then
-        echo "[notify]
+        if [ -f /opt/config/mod_data/notify.txt ]; then
+            cp /opt/config/mod_data/notify.txt /root/printer_data/moonraker.secrets
+        else
+            echo "[notify]
 url: tgram://{bottoken}/{ChatID}
 name: {printer_name}
 " >/root/printer_data/moonraker.secrets
+        fi
     fi
 }
 
