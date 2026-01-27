@@ -334,4 +334,13 @@ for i in `seq 0 50`; do
     sleep 5
 done
 date
+
+cd /opt/config/base/
+if ! [ -f klipper/klippy/klippy.py ]; then
+    git clone https://github.com/ghzserg/zmod_klipper klipper
+fi
+if ! [ -f moonraker/moonraker.py ]; then
+    git clone https://github.com/ghzserg/zmod_moonraker moonraker
+fi
 echo "Start END"
+
