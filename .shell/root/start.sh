@@ -226,7 +226,7 @@ grep -q "PRETTY_NAME=\"${V1} -> ${V2}\"" /etc/os-release || sed -i "s|PRETTY_NAM
 mkdir -p ${DATA_GCODES}/tmp
 
 KLIPPER=0
-if [ -f klipper/klippy/klippy.py ]; then
+if [ -f /opt/config/base/klipper/klippy/klippy.py ]; then
     start_klipper
     KLIPPER=1
 fi
@@ -298,7 +298,7 @@ fi
 [ -d /root/printer_data/gcodes/timelapse/tmp ] && rm -rf /root/printer_data/gcodes/timelapse/tmp/*
 
 MOONRAKER=0
-if [ -f moonraker/moonraker.py ]; then
+if [ -f /opt/config/base/moonraker/moonraker.py ]; then
     start_moonraker
     MOONRAKER=1
 fi
