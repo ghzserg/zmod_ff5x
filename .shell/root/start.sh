@@ -5,6 +5,19 @@ source /opt/config/mod/.shell/0.sh
 
 set -x
 
+start_moonraker() {
+    /opt/config/mod/.shell/root/S65moonraker start
+    /opt/config/mod/.shell/root/S70httpd start
+}
+
+start_klipper() {
+    if [ ${AD5X} -eq 0 ]; then
+        if grep -q "klipper13 = 1" /opt/config/mod_data/variables.cfg; then
+            /opt/config/mod/.shell/root/S60klipper start
+        fi
+    fi
+}
+
 get_origin_from_config() {
   local config_file="$1"
   local section="[update_manager $2]"
@@ -212,11 +225,14 @@ grep -q "PRETTY_NAME=\"${V1} -> ${V2}\"" /etc/os-release || sed -i "s|PRETTY_NAM
 
 mkdir -p ${DATA_GCODES}/tmp
 
-if [ ${AD5X} -eq 0 ]; then
-    if grep -q "klipper13 = 1" /opt/config/mod_data/variables.cfg; then
-        /opt/config/mod/.shell/root/S60klipper start
-    fi
+KLIPPER=0
+if [ -f klipper/klippy/klippy.py ]; then
+    start_klipper
+    KLIPPER=1
 fi
+
+# Очищаем данные о старых обновлениях
+sqlite3 /opt/config/mod_data/database/moonraker-sql.db "DELETE FROM namespace_store WHERE namespace = 'update_manager';"
 
 # Создаем каталоги под плагины
 grep '/root/printer_data/config/mod_data/plugins/' /opt/config/moonraker.conf /opt/config/mod_data/user.moonraker.conf | sed 's|/$||' | sed 's|.*/||' | \
@@ -268,9 +284,6 @@ if ! [ -f /root/printer_data/config/base/moonraker/moonraker.py ]; then
      INSERT INTO namespace_store (namespace, key, value) VALUES ('update_manager', '$a', '{\"last_config_hash\":\"?\",\"last_refresh_time\":0.0,\"is_valid\":false,\"pip_version_info\":null,\"repo_valid\":false,\"git_owner\":\"none\",\"git_repo_name\":\"$a\",\"git_remote\":\"origin\",\"git_branch\":\"$branch\",\"current_version\":\"0.0.0.0\",\"upstream_version\":\"0.0.0.0\",\"current_commit\":\"?\",\"upstream_commit\":\"?\",\"rollback_commit\":\"?\",\"rollback_branch\":\"$branch\",\"rollback_version\":\"0.0.0.0\",\"upstream_url\":\"$url\",\"recovery_url\":\"$url\",\"branches\":[\"$branch\"],\"head_detached\":false,\"git_messages\":[],\"commits_behind\":[],\"cbh_count\":0,\"diverged\":false,\"corrupt\":true,\"modified_files\":[],\"untracked_files\":[],\"pinned_commit_valid\":true}');"
 fi
 
-# Rem tmp TIMELapse
-[ -d /root/printer_data/gcodes/timelapse/tmp ] && rm -rf /root/printer_data/gcodes/timelapse/tmp/*
-
 if grep -q mainsail-crew /root/mainsail/release_info.json; then
     echo '{"project_name":"mainsail","project_owner":"ghzserg","version":"v1.0.0"}' >/root/mainsail/release_info.json
     sqlite3 /opt/config/mod_data/database/moonraker-sql.db "DELETE FROM namespace_store WHERE namespace = 'update_manager' AND key = 'mainsail';"
@@ -281,10 +294,16 @@ if grep -q fluidd-core /root/fluidd/release_info.json; then
     sqlite3 /opt/config/mod_data/database/moonraker-sql.db "DELETE FROM namespace_store WHERE namespace = 'update_manager' AND key = 'fluidd';"
 fi
 
-/opt/config/mod/.shell/root/S65moonraker start
-/opt/config/mod/.shell/root/S70httpd start
+# Rem tmp TIMELapse
+[ -d /root/printer_data/gcodes/timelapse/tmp ] && rm -rf /root/printer_data/gcodes/timelapse/tmp/*
 
-date -s "2025-10-21 00:00:00"
+MOONRAKER=0
+if [ -f moonraker/moonraker.py ]; then
+    start_moonraker
+    MOONRAKER=1
+fi
+
+date -s "2026-01-01 00:00:00"
 
 # Пробуем синхронизировать время
 ntpd -dd -n -q -p pool.ntp.org || \
@@ -336,11 +355,19 @@ done
 date
 
 cd /opt/config/base/
+# Klipper
 if ! [ -f klipper/klippy/klippy.py ]; then
     git clone https://github.com/ghzserg/zmod_klipper klipper
 fi
+if [ -f klipper/klippy/klippy.py ] && [ "${KLIPPER}" -eq 0 ]; then
+    start_klipper
+fi
+
+# Moonraker
 if ! [ -f moonraker/moonraker.py ]; then
     git clone https://github.com/ghzserg/zmod_moonraker moonraker
 fi
+if [ -f moonraker/moonraker.py ] && [ "${MOONRAKER}" -eq 0 ]; then
+    start_moonraker
+fi
 echo "Start END"
-
