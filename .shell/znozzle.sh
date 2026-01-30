@@ -1,6 +1,8 @@
 #!/bin/sh
 # (C) 2024-2026 ghzserg https://github.com/ghzserg/zmod
 
+echo "_REBOOT" >/tmp/printer
+
 if [ "$1" == "0" ]; then
     echo "">/opt/config/mod_data/nozzle.cfg
 else
