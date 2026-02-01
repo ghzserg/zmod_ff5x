@@ -235,7 +235,7 @@ fi
 sqlite3 /opt/config/mod_data/database/moonraker-sql.db "DELETE FROM namespace_store WHERE namespace = 'update_manager';"
 
 # Создаем каталоги под плагины
-grep '/root/printer_data/config/mod_data/plugins/' /opt/config/moonraker.conf /opt/config/mod_data/user.moonraker.conf | sed 's|/$||' | sed 's|.*/||' | \
+grep '/root/printer_data/config/mod_data/plugins/' /opt/config/moonraker.conf /opt/config/extra_plugins.moonraker.conf /opt/config/mod_data/user.moonraker.conf | sed 's|/$||' | sed 's|.*/||' | \
 while read a; do
     echo "Plugin $a"
     if ! [ -f "${MOD_CONF}/mod_data/plugins/$a/.git/config" ]; then
