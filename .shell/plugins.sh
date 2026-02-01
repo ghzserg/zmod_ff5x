@@ -52,6 +52,14 @@ if grep -q "[update_manager $1]" ${MOD_CONF}/moonraker.conf || grep -q "[update_
         fi
     fi
 
+    if ! [ -f /ZMOD ]; then
+        unset LD_LIBRARY_PATH
+        unset LD_PRELOAD
+        chroot ${MOD} /opt/config/mod/.shell/reset_git.sh $1
+    else
+        /opt/config/mod/.shell/reset_git.sh "$1"
+    fi
+
     if ! [ -f "${MOD_CONF}/mod_data/plugins/$1/$1.cfg" ] && ! [ -f "${MOD_CONF}/mod_data/plugins/$1/${ZLANG}/$1.cfg" ]; then
         if [ "${ZLANG}" != 'ru' ]; then
             echo "Plugin $1 not found in mod_data/plugins/$1/$1.cfg and mod_data/plugins/$1/${ZLANG}/$1.cfg"
