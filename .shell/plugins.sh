@@ -50,6 +50,14 @@ if grep -q "[update_manager $1]" ${MOD_CONF}/moonraker.conf || grep -q "[update_
                 git pull
             fi
         fi
+        channel=$(curl -s "http://localhost:7125/machine/update/status" 2>/dev/null | grep -o "\"$1\":{[^}]*}" 2>/dev/null | grep -o '"channel":"[^"]*"' 2>/dev/null | cut -d'"' -f4 | head -n1)
+  	    if [[ "${channel}" == "stable" ]]; then
+            cd "${MOD_CONF}/mod_data/plugins/$1"
+  	        latest_tag=$(git describe --tags "$(git rev-list --tags --max-count=1)")
+  	        if [[ -n "$latest_tag" ]]; then
+  		          git reset --hard "$latest_tag"
+            fi
+        fi
     fi
 
     if ! [ -f "${MOD_CONF}/mod_data/plugins/$1/$1.cfg" ] && ! [ -f "${MOD_CONF}/mod_data/plugins/$1/${ZLANG}/$1.cfg" ]; then
