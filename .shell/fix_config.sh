@@ -235,8 +235,12 @@ fix_config()
 
     mkdir -p ${MOD_CONF}/mod_data/database/
     [ -f ${MOD_CONF}/mod_data/user.cfg ] || echo "" >${MOD_CONF}/mod_data/user.cfg
+
     [ -f ${MOD_CONF}/mod_data/plugins.cfg ] || echo "" >${MOD_CONF}/mod_data/plugins.cfg
     [ -f ${MOD_CONF}/mod_data/plugins.moonraker.conf ] || echo "" >${MOD_CONF}/mod_data/plugins.moonraker.conf
+    [ -f ${MOD_CONF}/mod_data/extra_plugins.moonraker.conf ] || echo "" >${MOD_CONF}/mod_data/extra_plugins.moonraker.conf
+    grep -q bambufy ${MOD_CONF}/mod_data/plugins.cfg && echo "../extra_plugins.moonraker.conf" >${MOD_CONF}/mod_data/extra_plugins.moonraker.conf
+
     [ -d ${MOD_CONF}/mod_data/plugins ] || mkdir -p ${MOD_CONF}/mod_data/plugins
     [ -f ${MOD_CONF}/mod_data/variables.cfg ] || echo "[Variables]" >${MOD_CONF}/mod_data/variables.cfg
 
