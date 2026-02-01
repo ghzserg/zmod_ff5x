@@ -5,6 +5,7 @@ source /opt/config/mod/.shell/0.sh
 
 set -x
 
+
 start_moonraker() {
     /opt/config/mod/.shell/root/S65moonraker start
     /opt/config/mod/.shell/root/S70httpd start
@@ -64,6 +65,29 @@ get_branch_from_config() {
     }
   ' "$config_file"
 }
+
+update_plugins() {
+    grep '/root/printer_data/config/mod_data/plugins/' "$1" | sed 's|/$||' | sed 's|.*/||' | \
+    while read a; do
+        echo "Plugin $a"
+        if ! [ -f "${MOD_CONF}/mod_data/plugins/$a/.git/config" ]; then
+            url=$(get_origin_from_config "$1" "$a")
+            branch=$(get_branch_from_config "$1" "$a")
+            if [ "$url" != "" ] && [ "$branch" != "" ]; then
+                echo "Инициализирую репозиторий"
+                mkdir -p "${MOD_CONF}/mod_data/plugins/$a/"
+                sqlite3 /opt/config/mod_data/database/moonraker-sql.db \
+                "DELETE FROM namespace_store WHERE namespace = 'update_manager' AND key = '$a'; \
+                 INSERT INTO namespace_store (namespace, key, value) VALUES ('update_manager', '$a', '{\"last_config_hash\":\"?\",\"last_refresh_time\":0.0,\"is_valid\":false,\"pip_version_info\":null,\"repo_valid\":false,\"git_owner\":\"none\",\"git_repo_name\":\"$a\",\"git_remote\":\"origin\",\"git_branch\":\"$branch\",\"current_version\":\"0.0.0.0\",\"upstream_version\":\"0.0.0.0\",\"current_commit\":\"?\",\"upstream_commit\":\"?\",\"rollback_commit\":\"?\",\"rollback_branch\":\"$branch\",\"rollback_version\":\"0.0.0.0\",\"upstream_url\":\"$url\",\"recovery_url\":\"$url\",\"branches\":[\"$branch\"],\"head_detached\":false,\"git_messages\":[],\"commits_behind\":[],\"cbh_count\":0,\"diverged\":false,\"corrupt\":true,\"modified_files\":[],\"untracked_files\":[],\"pinned_commit_valid\":true}');"
+            else
+                echo "Не найден url=$url или branch=$branh для $a. Пропускаю."
+            fi
+        else
+            echo "Репозиторий $a уже  существует, пропускаю."
+        fi
+    done
+}
+
 
 check_link()
 {
@@ -235,31 +259,9 @@ fi
 sqlite3 /opt/config/mod_data/database/moonraker-sql.db "DELETE FROM namespace_store WHERE namespace = 'update_manager';"
 
 # Создаем каталоги под плагины
-grep '/root/printer_data/config/mod_data/plugins/' /opt/config/moonraker.conf /opt/config/mod/extra_plugins.moonraker.conf /opt/config/mod_data/user.moonraker.conf | sed 's|/$||' | sed 's|.*/||' | \
-while read a; do
-    echo "Plugin $a"
-    if ! [ -f "${MOD_CONF}/mod_data/plugins/$a/.git/config" ]; then
-        url=$(get_origin_from_config ${MOD_CONF}/moonraker.conf "$a")
-        if [ "$url" == "" ]; then
-            url=$(get_origin_from_config ${MOD_CONF}/mod_data/user.moonraker.conf "$a")
-        fi
-        branch=$(get_branch_from_config ${MOD_CONF}/moonraker.conf "$a")
-        if [ "$branch" == "" ]; then
-            branch=$(get_branch_from_config ${MOD_CONF}/mod_data/user.moonraker.conf "$a")
-        fi
-        if [ "$url" != "" ] && [ "$branch" != "" ]; then
-            echo "Инициализирую репозиторий"
-            mkdir -p "${MOD_CONF}/mod_data/plugins/$a/"
-            sqlite3 /opt/config/mod_data/database/moonraker-sql.db \
-            "DELETE FROM namespace_store WHERE namespace = 'update_manager' AND key = '$a'; \
-             INSERT INTO namespace_store (namespace, key, value) VALUES ('update_manager', '$a', '{\"last_config_hash\":\"?\",\"last_refresh_time\":0.0,\"is_valid\":false,\"pip_version_info\":null,\"repo_valid\":false,\"git_owner\":\"none\",\"git_repo_name\":\"$a\",\"git_remote\":\"origin\",\"git_branch\":\"$branch\",\"current_version\":\"0.0.0.0\",\"upstream_version\":\"0.0.0.0\",\"current_commit\":\"?\",\"upstream_commit\":\"?\",\"rollback_commit\":\"?\",\"rollback_branch\":\"$branch\",\"rollback_version\":\"0.0.0.0\",\"upstream_url\":\"$url\",\"recovery_url\":\"$url\",\"branches\":[\"$branch\"],\"head_detached\":false,\"git_messages\":[],\"commits_behind\":[],\"cbh_count\":0,\"diverged\":false,\"corrupt\":true,\"modified_files\":[],\"untracked_files\":[],\"pinned_commit_valid\":true}');"
-        else
-            echo "Не найден url=$url или branch=$branh для $a. Пропускаю."
-        fi
-    else
-        echo "Репозиторий $a уже  существует, пропускаю."
-    fi
-done
+update_plugins /opt/config/moonraker.conf
+grep -q "extra_plugins.moonraker.conf" ${MOD_CONF}/mod_data/extra_plugins.moonraker.conf && update_plugins /opt/config/mod/extra_plugins.moonraker.conf
+update_plugins /opt/config/mod_data/user.moonraker.conf
 
 if ! [ -f /root/printer_data/config/base/klipper/klippy/klippy.py ]; then
     branch="main"
