@@ -35,6 +35,9 @@ else
 fi
 
 [ ${ZLANG} != 'ru' ] && echo "Enabled Plugins: $plugins" || echo "Активные плагины: $plugins"
+if ! grep -q "extra_plugins.moonraker.conf" ${MOD_CONF}/mod_data/extra_plugins.moonraker.conf && [ ${AD5X} -eq 1 ]; then
+    [ ${ZLANG} != 'ru' ] && echo "To enable the repository of third-party plugins not developed by zMod author, run the `ENABLE_EXTRA_PLUGINS` command." || echo "Чтобы включить репозиторий внешних плагинов, не разрабатываемых автором zMod, выполните команду `ENABLE_EXTRA_PLUGINS`."
+fi
 
 if ! echo "$plugins" | grep -q "^recommend$\|,recommend$\|^recommend,\|,recommend," && ! grep -q "no_recommend = 1" /opt/config/mod_data/variables.cfg; then
     [ ${ZLANG} != 'ru' ] && echo "Have you forgotten to enable the recommended parameters? ENABLE_PLUGIN name=recommend" || echo "А вы не забыли включить рекомендуемые параметры? ENABLE_PLUGIN name=recommend"
