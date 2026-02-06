@@ -38,6 +38,31 @@ RET_TIMEOUT  = 4         # Таймаут получения нужного ст
 RET_EXIT     = 5         # По завершению программы
 RET_RETRY    = 6         # Надо повторить запрос
 
+NO_EXCLUDE_FIELDS = ['temp']  # Any filament.json field listed in this array will not be excluded when writing to file even if identical to default.
+
+DEFAULT_FILAMENT_SETTINGS = {
+    "temp": 230,                            # Placeholder - generally gets overwritten from user.cfg value
+    "filament_unload_before_cutting": 0,    # На сколько поднимать филамент ПЕРЕД тем  как отрезать (по умолчанию 0)
+    "filament_unload_after_cutting": 5,     # На сколько поднимать филамент ПОСЛЕ того как отрезали (по умолчанию 5)
+    "filament_unload_after_drop": 3,        # Ретракт после сброса филамента (немного вытащить пруток из сопла, для предотвращения протечки,
+                                            #   когда смена прутка уже прошла и сопло едет дальше печатать)
+    "filament_load_speed": 300,             # Скорость загрузки филамента (скорость вращения экструдера, 300 мм/м = 5 мм/c)
+    "filament_unload_speed": 600,           # Скорость подъема  филамента (скорость вращения экструдера, 600 мм/м = 10 мм/c)
+                                            #   IFS работает на скорости 2*filament_unload_speed
+    "filament_tube_length": 1000,           # Длина полной загрузки/выгрузки филамента (длинна тефлоновой трубки от IFS до головы, полезно дял тех у кого не стоковые трубки)
+    "filament_drop_length": 90,             # Длина сброса в какашник (дистанция прутка который будет выдавлен в какашник, то есть дистанция прочистки сопла
+                                            #   от преведущего филамената и смешения цветов, полезно когда не используется башня для сброса смешанных цветов)
+    "filament_drop_length_add": 90,         # Дополнительная длина сброса в какашник при смене типа филамента (смена разных материаалов, к примеру PETG на композитный PETG)
+    "nozzle_cleaning_length": 70,           # Длина прочистки сопла (дистанция на сколько вытаскивать пруток из экструдера
+                                            #   (то есть на сколько милиметров доставать пруток из фидера, когда текущая катушка больше не используется)
+    "filament_fan_speed": 102,              # Скорость работы вентилятора при сбросе через какашник (то есть сдувает подтеки из сопла, когда происходит очистка)
+
+    "filament_autoinsert_empty_length": 600,# Сколько мм затягивать при автоматической вставке прутка, если экструдер пустой
+    "filament_autoinsert_full_length": 550, # Сколько мм затягивать при автоматической вставке прутка, если экструдер был занят
+    "filament_autoinsert_ret_length": 90,   # Сколько мм втягивать обратно, если сработал эдатчик экструдера (срабатывает только на пустом экструдере)
+    "filament_autoinsert_speed": 1200       # Скорость вставки прутка
+}
+
 class zmod_ifs:
     def __init__(self, config):
         self.printer = config.get_printer()
@@ -125,6 +150,17 @@ class zmod_ifs:
         self.gcode.register_command('IFS_F24', self.cmd_IFS_F24)        # Прижим филамента
         self.gcode.register_command('IFS_F39', self.cmd_IFS_F39)        # Отжим филамента
         self.gcode.register_command('IFS_F112', self.cmd_IFS_F112)      # Прекращаем подачу прутка
+
+        # Translations:
+        # F10: Insert a rod
+        # F11: Remove a rod
+        # F13: IFS state
+        # F15: Reset driver
+        # F18: Squeeze filament everywhere [Disable clamp for all spools]
+        # F23: Mark the rod as inserted
+        # F24: Press the filament [for a specific spool]
+        # F39: Press the filament [Disable clamp for a specific spool]
+        # F112: Stop feeding the rod
 
     def _handle_ready(self):
         self.query_adc = self.printer.lookup_object('query_adc')
@@ -348,66 +384,154 @@ class zmod_ifs:
             ret="PLA"
         return ret
 
+    # https://github.com/ninjamida
+    def upgrade_filament_json(self):
+        try:
+            with open(TYPECONFIG, 'r') as f:
+                existing_file_data = json.load(f)
+
+            if 'default' in existing_file_data:
+                self.print_str('Filament.json already contains default section')
+                return
+
+            default_filament = DEFAULT_FILAMENT_SETTINGS.copy()
+
+            for key in default_filament:
+                value_frequency = {}
+                for filament_name in existing_file_data:
+                    if key not in existing_file_data[filament_name]:
+                        continue
+
+                    this_value = existing_file_data[filament_name][key]
+
+                    if this_value in value_frequency:
+                        value_frequency[this_value] += 1
+                    else:
+                        value_frequency[this_value] = 1
+
+                if len(value_frequency) == 0:
+                    continue
+
+                value_frequency = dict(sorted(value_frequency.items(), key=lambda item: item[1], reverse=True))
+                highest_frequency = next(iter(value_frequency.values()))
+
+                if default_filament[key] not in value_frequency or value_frequency[default_filament[key]] < highest_frequency:
+                    default_filament[key] = next(iter(value_frequency.keys()))
+
+            data = {'default': default_filament}
+            for filament_name in existing_file_data:
+                new_filament = existing_file_data[filament_name].copy()
+
+                for key in NO_EXCLUDE_FIELDS:
+                    if key not in new_filament:
+                        new_filament[key] = default_filament[key]
+
+                data[filament_name] = new_filament
+
+            self.save_filament_json(data, True)
+
+            if self.lang == 'ru':
+                self.print_str('Filament.json: Секция по умолчанию создана успешно')
+            else:
+                self.print_str('Filament.json: Default section generated successfully')
+
+        except (FileNotFoundError, json.JSONDecodeError):
+            if self.lang == 'ru':
+                self.print_str('Filament.json: Файл не найден')
+            else:
+                self.print_str('Filament.json not found')
+
+    # https://github.com/ninjamida
+    def save_filament_json(self, data, cleanup=False):
+        # Modified save routine to not double-up on most parameters if they're identical to default.
+
+        if cleanup:
+            existing_file_data = {}
+        else:
+            try:
+                with open(TYPECONFIG, 'r') as f:
+                    existing_file_data = json.load(f)
+            except (FileNotFoundError, json.JSONDecodeError):
+                existing_file_data = {}
+
+        # Deep copy list, with default first
+        new_data = {}
+        new_data['default'] = data['default'].copy()
+
+        # For filaments that didn't already exist, or if cleanup, write all values that don't match default or are in NO_EXCLUDE_FIELDS
+        # For filaments that do already exist, keep existing values from file + add any that are in NO_EXCLUDE_FIELDS
+        for filament_name in data.keys():
+            if filament_name == 'default':
+                continue
+            if filament_name not in existing_file_data:
+                this_filament = data[filament_name]
+                new_filament = {}
+                for key in this_filament.keys():
+                    if key in NO_EXCLUDE_FIELDS or this_filament[key] != new_data['default'][key]:
+                        new_filament[key] = this_filament[key]
+                new_data[filament_name] = new_filament
+            else:
+                this_filament = existing_file_data[filament_name]
+                new_filament = {}
+                for key in this_filament:
+                    new_filament[key] = this_filament[key]
+                for key in NO_EXCLUDE_FIELDS:
+                    if key not in new_filament:
+                        new_filament[key] = data[filament_name][key]
+
+        with open(TYPECONFIG, 'w') as f:
+            json.dump(new_data, f, indent=4)
+
     # Получить конфиг прутка по номеру прутка
     def get_prutok_config(self, prutok):
         if prutok < 0 or prutok > 4:
             self.print_str(f"Некорректный номер прутка {prutok}" if self.lang == 'ru' else f"Incorrect filament number {prutok}", False)
         filament=self.get_prutok_type_from_config(prutok)
 
-        base_default = {
-            "filament_unload_before_cutting": 0,    # На сколько поднимать филамент ПЕРЕД тем  как отрезать (по умолчанию 0)
-            "filament_unload_after_cutting": 5,     # На сколько поднимать филамент ПОСЛЕ того как отрезали (по умолчанию 5)
-            "filament_unload_after_drop": 3,        # Ретракт после сброса филамента (немного вытащить пруток из сопла, для предотвращения протечки,
-                                                    #   когда смена прутка уже прошла и сопло едет дальше печатать)
-            "filament_load_speed": 300,             # Скорость загрузки филамента (скорость вращения экструдера, 300 мм/м = 5 мм/c)
-            "filament_unload_speed": 600,           # Скорость подъема  филамента (скорость вращения экструдера, 600 мм/м = 10 мм/c)
-                                                    #   IFS работает на скорости 2*filament_unload_speed
-            "filament_tube_length": 1000,           # Длина полной загрузки/выгрузки филамента (длинна тефлоновой трубки от IFS до головы, полезно дял тех у кого не стоковые трубки)
-            "filament_drop_length": 90,             # Длина сброса в какашник (дистанция прутка который будет выдавлен в какашник, то есть дистанция прочистки сопла
-                                                    #   от преведущего филамената и смешения цветов, полезно когда не используется башня для сброса смешанных цветов)
-            "filament_drop_length_add": 90,         # Дополнительная длина сброса в какашник при смене типа филамента (смена разных материаалов, к примеру PETG на композитный PETG)
-            "nozzle_cleaning_length": 60,           # Длина прочистки сопла (дистанция на сколько вытаскивать пруток из экструдера
-                                                    #   (то есть на сколько милиметров доставать пруток из фидера, когда текущая катушка больше не используется)
-            "filament_fan_speed": 102,              # Скорость работы вентилятора при сбросе через какашник (то есть сдувает подтеки из сопла, когда происходит очистка)
-            #"temp": 230,                           # Температура до которой необхоидмо разогреть сопло для смены филамента
-
-            "filament_autoinsert_empty_length": 600,# Сколько мм затягивать при автоматической вставке прутка, если экструдер пустой
-            "filament_autoinsert_full_length": 550, # Сколько мм затягивать при автоматической вставке прутка, если экструдер был занят
-            "filament_autoinsert_ret_length": 90,   # Сколько мм втягивать обратно, если сработал эдатчик экструдера (срабатывает только на пустом экструдере)
-            "filament_autoinsert_speed": 1200       # Скорость вставки прутка
-        }
-
-
-        required_fields = ['temp'] + list(base_default.keys())
+        changed = False
 
         try:
             with open(TYPECONFIG, 'r') as f:
                 data = json.load(f)
+            if 'default' not in data:
+                self.upgrade_filament_json()
+                with open(TYPECONFIG, 'r') as f:
+                    data = json.load(f)
         except (FileNotFoundError, json.JSONDecodeError):
-            data = {}
+            data = {'default': DEFAULT_FILAMENT_SETTINGS.copy()}
+            changed = True
 
-        changed = False
+        default_data = data['default']
+
+        for key, val in DEFAULT_FILAMENT_SETTINGS.items():
+            if key not in default_data:
+                changed = True
+                default_data[key] = val
 
         for filament_name, temp_default in self.temp_defaults.items():
             if filament_name in data:
                 existing = data[filament_name]
                 normalized = {}
-                normalized['temp'] = existing.get('temp', temp_default)
-                for key, default_val in base_default.items():
-                    normalized[key] = existing.get(key, default_val)
+                for key, default_val in default_data.items():
+                    if key in existing:
+                        normalized[key] = existing[key]
+                    else:
+                        if key in NO_EXCLUDE_FIELDS:
+                            changed = True
+                        if key == 'temp':
+                            normalized[key] = temp_default
+                        else:
+                            normalized[key] = default_val
 
-                if existing != normalized:
-                    data[filament_name] = normalized
-                    changed = True
+                data[filament_name] = normalized
             else:
-                new_config = base_default.copy()
+                new_config = default_data.copy()
                 new_config['temp'] = temp_default
                 data[filament_name] = new_config
                 changed = True
 
         if changed:
-            with open(TYPECONFIG, 'w') as f:
-                json.dump(data, f, indent=4)
+            self.save_filament_json(data) # True here is debug, should be False in release version
 
         config = data.get(filament, {})
         config['filament_type'] = filament
@@ -512,7 +636,7 @@ class zmod_ifs:
                 with open(FILE_CONFIG, 'w') as f:
                     json.dump(new_mapping, f)
 
-                self.gcode.run_script_from_command("_PRINT_HEAD INFO=1 CHANNEL={t_prutok}")
+                self.gcode.run_script_from_command(f"_PRINT_HEAD INFO=1 CHANNEL={t_prutok}")
                 self.gcode.run_script_from_command(f"_A_CHANGE_FILAMENT CHANNEL={t_prutok} RESTORE_POSITION=0 RESTORE_TEMP=1")
                 self.gcode.run_script_from_command("RESUME")
                 return
