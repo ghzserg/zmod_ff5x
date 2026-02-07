@@ -879,10 +879,7 @@ class zmod_color:
                         gcmd.respond_raw(self._t('printing_error', response_data2))
                 else:
                     gcmd.respond_raw(f"IFS Off")
-                    if self.display:
-                        self.gcode.run_script_from_command("SDCARD_ENABLE_FFM ENABLE=0")
-                    else:
-                        self.gcode.run_script_from_command("_IFS_OFF")
+                    self.gcode.run_script_from_command("_IFS_OFF")
                     self.gcode.run_script_from_command(f"SDCARD_PRINT_FILE FILENAME=\"{fname}\"")
         else:
             gcmd.respond_raw(self._t('no_response', json.dumps(response_data)))
