@@ -474,6 +474,8 @@ class zmod_color:
         self.gcode.register_command('IN_ZCOLOR', self.cmd_IN_ZCOLOR)
         self.gcode.register_command('UPDATE_FF_OFFSET', self.cmd_UPDATE_FF_OFFSET)
         self.printer.register_event_handler("klippy:ready", self._handle_ready)
+        
+        self.reactor = self.printer.get_reactor()
 
         with open(FFCONFIG, 'r') as file:
             data = json.load(file)
@@ -989,7 +991,16 @@ class zmod_color:
             spool_number = mapping[channel]
             current_spool_number = self.get_current_channel()
 
-            if spool_number != current_spool_number or not self.get_extruder_sensor():
+            full_color_change = True
+            if self.get_extruder_sensor() and spool_number == current_spool_number:
+                print_state = self.printer.lookup_object('print_stats').get_status(self.reactor.monotonic())['state']
+                is_printing = print_state == 'printing'
+                save_variables = self.printer.lookup_object('save_variables', None)
+                save_variables = {} if save_variables == None else save_variables.allVariables
+                if save_variables.get('always_full_color_change', 0) == 0 or not is_printing:  # I think this can be called while not printing. Let's not mess with that.
+                    full_color_change = False
+        
+            if full_color_change:
                 self.gcode.run_script_from_command(f"INSERT_PRUTOK_IFS PRUTOK={spool_number} NEED_STOP=0 TRASH=0")
             else:
                 gcmd.respond_raw(f"Current Prutok = Prutok = {spool_number}")
