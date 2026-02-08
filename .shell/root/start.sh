@@ -152,13 +152,19 @@ prepare_chroot()
     [ -L /usr/lib/python3.12/site-packages/mido-1.3.3.dist-info ] || ln -s /opt/config/mod/.shell/root/mido-1.3.3.dist-info/ /usr/lib/python3.12/site-packages/
     [ ${AD5X} -eq 0 ] && [ -L /root/klipper-env/lib/python3.12/site-packages/numpy ] || ln -s /usr/lib/python3.12/site-packages/numpy /root/klipper-env/lib/python3.12/site-packages/
 
-    [ -L /bin/sudo ] || ln -s /opt/config/mod/.shell/root/sudo /bin/sudo
+    if ! [ -L /bin/sudo ]; then
+        rm -f /bin/sudo
+        ln -s /opt/config/mod/.shell/root/sudo /bin/sudo
+    fi
+
+    if ! [ -L /bin/systemctl ]; then
+        rm -f /bin/systemctl
+        ln -s /opt/config/mod/.shell/root/sudo /bin/systemctl
+    fi
 
     [ -L /usr/bin/audio ] || ln -s /opt/config/mod/.shell/root/audio/audio /usr/bin/audio
     [ -L /usr/bin/audio_midi.sh ] || ln -s /opt/config/mod/.shell/root/audio/audio_midi.sh /usr/bin/audio_midi.sh
     [ -L /usr/bin/audio.py ] || ln -s /opt/config/mod/.shell/root/audio/audio.py /usr/bin/audio.py
-
-
 
     CUR_DIR=$(pwd)
         cd /opt/config/mod/.shell/midi/
