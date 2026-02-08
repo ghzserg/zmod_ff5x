@@ -989,7 +989,14 @@ class zmod_color:
             spool_number = mapping[channel]
             current_spool_number = self.get_current_channel()
 
-            if spool_number != current_spool_number or not self.get_extruder_sensor():
+            full_color_change = True
+            if self.get_extruder_sensor() and spool_number == current_spool_number:
+                save_variables = self.printer.lookup_object('save_variables', None)
+                save_variables = {} if save_variables == None else save_variables.allVariables
+                if save_variables.get('always_full_color_change', 0) == 0:
+                    full_color_change = False
+        
+            if full_color_change:
                 self.gcode.run_script_from_command(f"INSERT_PRUTOK_IFS PRUTOK={spool_number} NEED_STOP=0 TRASH=0")
             else:
                 gcmd.respond_raw(f"Current Prutok = Prutok = {spool_number}")
