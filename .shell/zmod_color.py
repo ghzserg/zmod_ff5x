@@ -474,8 +474,6 @@ class zmod_color:
         self.gcode.register_command('IN_ZCOLOR', self.cmd_IN_ZCOLOR)
         self.gcode.register_command('UPDATE_FF_OFFSET', self.cmd_UPDATE_FF_OFFSET)
         self.printer.register_event_handler("klippy:ready", self._handle_ready)
-        
-        self.reactor = self.printer.get_reactor()
 
         with open(FFCONFIG, 'r') as file:
             data = json.load(file)
