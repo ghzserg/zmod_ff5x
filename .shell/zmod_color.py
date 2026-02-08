@@ -993,11 +993,9 @@ class zmod_color:
 
             full_color_change = True
             if self.get_extruder_sensor() and spool_number == current_spool_number:
-                print_state = self.printer.lookup_object('print_stats').get_status(self.reactor.monotonic())['state']
-                is_printing = print_state == 'printing'
                 save_variables = self.printer.lookup_object('save_variables', None)
                 save_variables = {} if save_variables == None else save_variables.allVariables
-                if save_variables.get('always_full_color_change', 0) == 0 or not is_printing:  # I think this can be called while not printing. Let's not mess with that.
+                if save_variables.get('always_full_color_change', 0) == 0:
                     full_color_change = False
         
             if full_color_change:
