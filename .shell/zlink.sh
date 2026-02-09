@@ -32,7 +32,7 @@ if [ "$1" == "get" ]; then
     exit 0
 fi
 
-if [ "$1" == "off" ]; then
+if [ "$1" == "off" ] || [ "$1" == "disable" ]; then
     sed -i '1c\0' "${CONF}"
     killall zlink 2>/dev/null
     exit 0
