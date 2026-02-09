@@ -120,6 +120,9 @@ prepare_chroot()
     [ -L /etc/init.d/S99camera ] || ln -s /opt/config/mod/.shell/root/S99camera /etc/init.d/
     [ -L /etc/init.d/S60klipper ] || ln -s /opt/config/mod/.shell/root/S60klipper /etc/init.d/
 
+    sed -i 's/zmod_ff5m/z_ff5m/' /opt/config/mod/.git/config
+    sed -i 's/zmod_ff5x/z_ad5x/' /opt/config/mod/.git/config
+
     check_link /root/klipper-env/klippy /opt/config/base/klipper/klippy
     if [ -f /opt/config/base/klipper/klippy/klippy.py ]; then
         check_link ${MOD_CONF}/base/klipper/klippy/extras/gcode_shell_command.py ${MOD_CONF}/mod/.shell/gcode_shell_command.py
