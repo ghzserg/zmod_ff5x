@@ -888,7 +888,9 @@ class zmod_color:
         pattern = re.compile(r'^T([0-9])')
 
         with open(f"{self.virtual_sd.sdcard_dirname}/{filename}", 'r', encoding='utf-8') as file:
-            for line in file:
+            for i, line in enumerate(file):
+                if i > 3000:
+                    break;
                 stripped_line = line.strip()
                 match = pattern.match(stripped_line)
                 if match:
