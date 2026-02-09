@@ -10,6 +10,10 @@ if  [ "$1" == 1 ]
         rm -rf /opt/config/mod_data/log/*
         rm -rf ${UPDATE_DIR}/*
         find /opt/config/ -name '*.pyc' -delete
+        find /opt/config/ -name '*.tar' -delete
+        find /opt/config/ -name '*.zip' -delete
+        find /opt/config/ -name '*.tar.gz' -delete
+        find /opt/config/ -name '*.tgz' -delete
         sync
 fi
 
